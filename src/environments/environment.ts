@@ -5,5 +5,5 @@
 // - flags de producció per activar o desactivar logs i mesures
 export const environment = {
   production: true,
-  apiUrl: 'https://api.example.com'
+  apiUrl: 'http://localhost:8080/api'
 };
