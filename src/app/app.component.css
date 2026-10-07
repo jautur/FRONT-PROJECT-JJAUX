@@ -43,6 +43,31 @@
   opacity: 1;
 }
 
+.user-badge {
+  font-size: 0.9rem;
+  color: #93c5fd;
+  display: flex;
+  align-items: center;
+}
+
+.btn-logout {
+  background: #374151;
+  color: #f9fafb;
+  border: 1px solid #4b5563;
+  padding: 0.35rem 0.8rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: background 0.15s ease;
+}
+
+.btn-logout:hover {
+  background: #ef4444;
+  border-color: #ef4444;
+}
+
+
 .content {
   flex: 1;
   display: flex;

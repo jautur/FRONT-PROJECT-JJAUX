@@ -2,9 +2,17 @@
   <header class="topbar">
     <div class="brand">JJAUX</div>
     <nav class="nav">
-      <a routerLink="/">Main</a>
-      <a routerLink="/login">Login</a>
-      <a routerLink="/registre">Registre</a>
+      <a routerLink="/">Inici</a>
+      <ng-container *ngIf="!authService.isLoggedIn()">
+        <a routerLink="/login">Login</a>
+        <a routerLink="/registre">Registre</a>
+      </ng-container>
+      <ng-container *ngIf="authService.isLoggedIn()">
+        <span class="user-badge">
+          {{ authService.getCurrentUser()?.nom }} ({{ authService.getCurrentUser()?.rol }})
+        </span>
+        <button type="button" class="btn-logout" (click)="logout()">Sortir</button>
+      </ng-container>
     </nav>
   </header>
 
@@ -12,3 +20,4 @@
     <router-outlet />
   </main>
 </div>
+
