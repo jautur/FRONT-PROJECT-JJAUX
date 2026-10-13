@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { DashboardResponse, DashboardService } from '../../services/dashboard.service';
+import { OfertaService } from '../../services/oferta.service';
 import { AuthService } from '../../core/services/auth.service';
 
 @Component({
@@ -356,11 +357,16 @@ export class MainComponent implements OnInit {
 
   constructor(
     private readonly dashboardService: DashboardService,
+    private readonly ofertaService: OfertaService,
     private readonly authService: AuthService,
     private readonly router: Router
   ) {}
 
   ngOnInit(): void {
+    this.loadDashboard();
+  }
+
+  loadDashboard(): void {
     this.dashboardService.getDashboard().subscribe({
       next: (dashboard) => {
         this.dashboard = dashboard;
@@ -430,54 +436,43 @@ export class MainComponent implements OnInit {
   }
 
   onVeureTotesTasques(): void {
-    if (!this.requireLogin('veure el llistat complet de tasques', '/client/tasques')) return;
-    const user = this.authService.getCurrentUser();
-    if (user?.rol === 'professional') {
-      this.router.navigate(['/professional/tasques']);
-    } else if (user?.rol === 'admin') {
-      this.router.navigate(['/admin/tasques']);
-    } else {
-      this.router.navigate(['/client/tasques']);
-    }
+    if (!this.requireLogin('veure el llistat complet de tasques', '/')) return;
+    this.router.navigate(['/']);
   }
 
   onDetallTasca(taskId: string): void {
-    if (!this.requireLogin(`veure el detall de la tasca ${taskId}`, '/client/tasca-detall')) return;
-    const user = this.authService.getCurrentUser();
-    if (user?.rol === 'professional') {
-      this.router.navigate(['/professional/tasca-detall']);
-    } else {
-      this.router.navigate(['/client/tasca-detall']);
-    }
+    if (!this.requireLogin(`veure el detall de la tasca ${taskId}`, `/tasca-detall/${taskId}`)) return;
+    this.router.navigate(['/tasca-detall', taskId]);
   }
 
   onFerOferta(taskId: string): void {
     if (!this.requireLogin(`fer una oferta per a la tasca ${taskId}`, '/professional/crear-oferta')) return;
     const user = this.authService.getCurrentUser();
     if (user?.rol === 'professional' || user?.rol === 'admin') {
-      this.router.navigate(['/professional/crear-oferta']);
+      this.router.navigate(['/professional/crear-oferta'], { queryParams: { taskId } });
     } else {
       this.noticeMessage = 'Només els comptes amb rol de "Professional" poden fer ofertes econòmiques.';
     }
   }
 
   onVeureTotesOfertes(): void {
-    if (!this.requireLogin('veure el llistat complet d’ofertes', '/professional/ofertes')) return;
-    const user = this.authService.getCurrentUser();
-    if (user?.rol === 'client') {
-      this.router.navigate(['/client/tasques']);
-    } else if (user?.rol === 'admin') {
-      this.router.navigate(['/admin/ofertes']);
-    } else {
-      this.router.navigate(['/professional/ofertes']);
-    }
+    if (!this.requireLogin('veure el llistat complet d’ofertes', '/')) return;
+    this.router.navigate(['/']);
   }
 
   onAcceptarOferta(offerId: string): void {
-    if (!this.requireLogin(`acceptar l'oferta ${offerId}`, '/client/dashboard')) return;
+    if (!this.requireLogin(`acceptar l'oferta ${offerId}`, '/')) return;
     const user = this.authService.getCurrentUser();
     if (user?.rol === 'client' || user?.rol === 'admin') {
-      alert(`Has acceptat l'oferta ${offerId}.`);
+      this.ofertaService.accept(offerId).subscribe({
+        next: () => {
+          this.noticeMessage = `S'ha acceptat la proposta ${offerId} correctament a la base de dades.`;
+          this.loadDashboard();
+        },
+        error: () => {
+          this.noticeMessage = `No s'ha pogut acceptar l'oferta.`;
+        }
+      });
     } else {
       this.noticeMessage = 'Només el client que ha publicat la tasca pot acceptar aquesta oferta.';
     }

@@ -56,6 +56,7 @@ else
     echo "  -> Engegant Spring Boot en segon pla..."
     nohup java -jar "${JAR_FILE}" > "${BACK_DIR}/backend.log" 2>&1 &
     BACKEND_PID=$!
+    disown $BACKEND_PID 2>/dev/null || true
     echo $BACKEND_PID > "${BACK_DIR}/backend.pid"
 
     echo -n "  -> Esperant que el backend estigui llest..."
@@ -85,6 +86,7 @@ else
     cd "${FRONT_DIR}"
     nohup node serve.js > "${FRONT_DIR}/frontend.log" 2>&1 &
     FRONT_PID=$!
+    disown $FRONT_PID 2>/dev/null || true
     echo $FRONT_PID > "${FRONT_DIR}/frontend.pid"
     sleep 1
 fi

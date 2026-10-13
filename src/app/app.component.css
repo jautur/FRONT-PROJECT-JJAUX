@@ -1,9 +1,9 @@
 :host {
   display: block;
   min-height: 100vh;
-  background: linear-gradient(135deg, #f5f7ff 0%, #eef5ff 100%);
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
   color: #1f2937;
-  font-family: Inter, Arial, sans-serif;
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
 .shell {
@@ -16,62 +16,135 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 2rem;
-  background: #111827;
+  padding: 0.85rem 2rem;
+  background: #0f172a;
   color: white;
-  box-shadow: 0 4px 12px rgba(17, 24, 39, 0.12);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
+  position: sticky;
+  top: 0;
+  z-index: 50;
 }
 
-.brand {
+.brand-link {
   font-size: 1.4rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  color: #38bdf8;
+  text-decoration: none;
 }
 
 .nav {
   display: flex;
-  gap: 1rem;
+  align-items: center;
+  gap: 1.1rem;
 }
 
 .nav a {
-  color: white;
+  color: #cbd5e1;
   text-decoration: none;
-  opacity: 0.8;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
 }
 
 .nav a:hover {
-  opacity: 1;
+  color: #ffffff;
 }
 
-.user-badge {
-  font-size: 0.9rem;
-  color: #93c5fd;
-  display: flex;
-  align-items: center;
+.active-link {
+  color: #38bdf8 !important;
+  font-weight: 600 !important;
+}
+
+.nav-cta {
+  background: rgba(14, 165, 233, 0.15);
+  border: 1px solid rgba(14, 165, 233, 0.4);
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
+  color: #38bdf8 !important;
+  font-size: 0.85rem !important;
+}
+
+.nav-cta:hover {
+  background: rgba(14, 165, 233, 0.3);
+}
+
+.nav-highlight {
+  background: #0284c7;
+  color: #ffffff !important;
+  padding: 0.35rem 0.85rem;
+  border-radius: 6px;
+}
+
+.nav-highlight:hover {
+  background: #0369a1;
+}
+
+.nav-avisos {
+  position: relative;
+  background: rgba(255, 255, 255, 0.06);
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.badge-notif {
+  background: #ef4444;
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.1rem 0.4rem;
+  border-radius: 9999px;
+  margin-left: 0.25rem;
+}
+
+.nav-perfil {
+  background: rgba(59, 130, 246, 0.15);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  padding: 0.35rem 0.8rem;
+  border-radius: 6px;
+  color: #93c5fd !important;
+  font-size: 0.88rem;
+}
+
+.nav-perfil:hover {
+  background: rgba(59, 130, 246, 0.25);
+}
+
+.user-role-badge {
+  font-size: 0.75rem;
+  background: #1e293b;
+  color: #94a3b8;
+  padding: 0.25rem 0.6rem;
+  border-radius: 4px;
+  text-transform: uppercase;
+  font-weight: 600;
+  border: 1px solid #334155;
 }
 
 .btn-logout {
-  background: #374151;
-  color: #f9fafb;
-  border: 1px solid #4b5563;
+  background: #1e293b;
+  color: #f1f5f9;
+  border: 1px solid #334155;
   padding: 0.35rem 0.8rem;
-  border-radius: 8px;
+  border-radius: 6px;
   cursor: pointer;
   font-size: 0.85rem;
   font-weight: 600;
-  transition: background 0.15s ease;
+  transition: all 0.15s ease;
 }
 
 .btn-logout:hover {
   background: #ef4444;
   border-color: #ef4444;
+  color: white;
 }
-
 
 .content {
   flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 2rem;
+  display: block;
+  padding: 2rem 1.5rem;
 }
