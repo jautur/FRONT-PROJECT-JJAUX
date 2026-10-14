@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { DashboardResponse, DashboardService } from '../../services/dashboard.service';
 import { OfertaService } from '../../services/oferta.service';
 import { AuthService } from '../../core/services/auth.service';
@@ -8,7 +8,7 @@ import { AuthService } from '../../core/services/auth.service';
 @Component({
   selector: 'app-main',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   template: `
     <section class="main-page">
       <!-- PORTADA INICIAL DE PANTALLA COMPLETA AMB FOTO DINÀMICA I SLOGAN FIX -->
@@ -51,7 +51,7 @@ import { AuthService } from '../../core/services/auth.service';
           <section class="panel">
             <div class="panel-header">
               <h2>Últimes tasques</h2>
-              <a href="javascript:void(0)" (click)="onNavegarTasquesOfertes('tasques')">
+              <a routerLink="/tasques-ofertes" [queryParams]="{ tipus: 'tasques' }">
                 Veure totes ({{ tasks.length }})
               </a>
             </div>
@@ -89,7 +89,7 @@ import { AuthService } from '../../core/services/auth.service';
           <section class="panel">
             <div class="panel-header">
               <h2>Ofertes recents</h2>
-              <a href="javascript:void(0)" (click)="onNavegarTasquesOfertes('ofertes')">
+              <a routerLink="/tasques-ofertes" [queryParams]="{ tipus: 'ofertes' }">
                 Veure totes ({{ offers.length }})
               </a>
             </div>
@@ -371,10 +371,10 @@ import { AuthService } from '../../core/services/auth.service';
             <div class="footer-col">
               <h4>Navegació i Àrees</h4>
               <ul>
-                <li><a href="javascript:void(0)" (click)="onNavegarTasquesOfertes()">Mercat de Tasques i Ofertes</a></li>
-                <li><a href="javascript:void(0)" (click)="onNovaTasca()">Publicar tasca nova</a></li>
-                <li><a href="javascript:void(0)" (click)="onAnarRegistreProfessional()">Àrea Professionals</a></li>
-                <li><a href="javascript:void(0)" (click)="onAnarRegistreClient()">Registre de clients</a></li>
+                <li><a routerLink="/tasques-ofertes">Mercat de Tasques i Ofertes</a></li>
+                <li><a routerLink="/client/crear-tasca">Publicar tasca nova</a></li>
+                <li><a routerLink="/registre" [queryParams]="{ rol: 'professional' }">Àrea Professionals</a></li>
+                <li><a routerLink="/registre" [queryParams]="{ rol: 'client' }">Registre de clients</a></li>
                 <li><a href="#que-es-avisa">Què fa AVISA</a></li>
                 <li><a href="#blog-avisa">Blog i Consells SEO</a></li>
               </ul>
