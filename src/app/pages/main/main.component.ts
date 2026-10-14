@@ -13,6 +13,12 @@ import { AuthService } from '../../core/services/auth.service';
     <section class="main-page">
       <!-- PORTADA INICIAL DE PANTALLA COMPLETA AMB IMATGE DE FONS -->
       <header class="fullscreen-cover">
+        <!-- NOM DE LA WEB EN MIG DE LA PÀGINA I SLOGAN EN CURSIVA LLIGADA -->
+        <div class="hero-center">
+          <h1 class="hero-brand">JJAUX</h1>
+          <p class="hero-slogan">Connectant necessitats i professionals</p>
+        </div>
+
         <div class="cover-scroll-hint">
           <div class="mouse-icon">
             <div class="mouse-wheel"></div>
@@ -116,8 +122,8 @@ import { AuthService } from '../../core/services/auth.service';
       .fullscreen-cover {
         width: 100%;
         height: 100vh;
-        min-height: 550px;
-        background-image: linear-gradient(rgba(15, 23, 42, 0.45), rgba(15, 23, 42, 0.75)),
+        min-height: 580px;
+        background-image: linear-gradient(rgba(8, 8, 12, 0.45), rgba(8, 8, 12, 0.72)),
           url('https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=2000&q=80');
         background-size: cover;
         background-position: center;
@@ -125,21 +131,59 @@ import { AuthService } from '../../core/services/auth.service';
         display: flex;
         flex-direction: column;
         align-items: center;
-        justify-content: flex-end;
-        padding-bottom: 3.5rem;
+        justify-content: center;
+        padding: 2rem 1.5rem;
         box-sizing: border-box;
         position: relative;
       }
 
+      .hero-center {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        user-select: none;
+        z-index: 2;
+        margin-top: -2.5rem;
+      }
+
+      .hero-brand {
+        margin: 0;
+        font-size: clamp(3.6rem, 9vw, 6.8rem);
+        font-weight: 900;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: #f7f3ed; /* Color blanc brut */
+        text-shadow: 0 4px 30px rgba(0, 0, 0, 0.95), 0 2px 10px rgba(0, 0, 0, 0.7);
+        line-height: 1.05;
+      }
+
+      .hero-slogan {
+        margin: 0.85rem 0 0;
+        font-family: 'Dancing Script', cursive;
+        font-size: clamp(1.8rem, 4.5vw, 3rem);
+        font-weight: 600;
+        color: #f7f3ed; /* Color blanc brut */
+        text-shadow: 0 3px 20px rgba(0, 0, 0, 0.95);
+        line-height: 1.3;
+        letter-spacing: 0.02em;
+      }
+
       .cover-scroll-hint {
+        position: absolute;
+        bottom: 2.8rem;
+        left: 50%;
+        transform: translateX(-50%);
         display: flex;
         flex-direction: column;
         align-items: center;
         gap: 0.75rem;
-        color: #ffffff;
+        color: #f7f3ed;
         opacity: 0.9;
         animation: bounceSlow 2.2s infinite ease-in-out;
         user-select: none;
+        z-index: 2;
       }
 
       @keyframes bounceSlow {
@@ -179,6 +223,7 @@ import { AuthService } from '../../core/services/auth.service';
         letter-spacing: 0.12em;
         text-transform: uppercase;
         font-weight: 800;
+        color: #f7f3ed;
         text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
       }
 
