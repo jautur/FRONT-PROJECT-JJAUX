@@ -9,6 +9,7 @@ import { TascaDetallComponent } from './pages/client/tasca-detall/tasca-detall.c
 import { AvisosComponent } from './pages/avisos/avisos.component';
 import { LesMevesTasquesComponent } from './pages/client/les-meves-tasques/les-meves-tasques.component';
 import { LesMevesOfertesComponent } from './pages/professional/les-meves-ofertes/les-meves-ofertes.component';
+import { TasquesOfertesComponent } from './pages/tasques-ofertes/tasques-ofertes.component';
 import { AdminPanellComponent } from './pages/admin/panell/admin-panell.component';
 import { authGuard } from './core/guards/auth.guard';
 import { adminGuard } from './core/guards/admin.guard';
@@ -16,6 +17,7 @@ import { adminGuard } from './core/guards/admin.guard';
 /**
  * Configuració global de rutes de la plataforma AVISA.
  * - '': Vista prèvia de tasques i ofertes públiques (Dashboard).
+ * - 'tasques-ofertes': Mercat complet de tasques i ofertes amb cerca i categories.
  * - 'login': Inici de sessió d'usuaris.
  * - 'registre': Registre de nous usuaris (clients, professionals o ambdós).
  * - 'perfil': Consulta i modificació de dades de l'usuari connectat.
@@ -29,6 +31,7 @@ import { adminGuard } from './core/guards/admin.guard';
  */
 export const appRoutes: Routes = [
   { path: '', component: MainComponent },
+  { path: 'tasques-ofertes', component: TasquesOfertesComponent },
   { path: 'login', component: LoginComponent },
   { path: 'registre', component: RegistreComponent },
   { path: 'perfil', component: PerfilComponent, canActivate: [authGuard] },

@@ -46,31 +46,16 @@ import { AuthService } from '../../core/services/auth.service';
           </button>
         </div>
 
-        <div class="stats">
-          <div class="stat-card">
-            <span class="label">Tasques obertes</span>
-            <strong>{{ dashboard?.openTasks ?? 0 }}</strong>
-          </div>
-          <div class="stat-card">
-            <span class="label">Ofertes actives</span>
-            <strong>{{ dashboard?.activeOffers ?? 0 }}</strong>
-          </div>
-          <div class="stat-card">
-            <span class="label">Projectes finalitzats</span>
-            <strong>{{ dashboard?.completedProjects ?? 0 }}</strong>
-          </div>
-        </div>
-
         <div class="columns">
-          <!-- SECCIÓ DE VISTA PRÈVIA DE 3 TASQUES REENTS -->
+          <!-- SECCIÓ DE VISTA PRÈVIA DE 3 TASQUES RECENTS -->
           <section class="panel">
             <div class="panel-header">
               <div class="panel-title-wrap">
                 <h2>Últimes tasques</h2>
-                <span class="preview-badge" *ngIf="!showAllTasks">Vista prèvia (3 tasques)</span>
+                <span class="preview-badge">Vista prèvia (3 tasques)</span>
               </div>
-              <a href="javascript:void(0)" (click)="showAllTasks = !showAllTasks">
-                {{ showAllTasks ? 'Mostrar només 3' : 'Veure totes (' + tasks.length + ')' }}
+              <a href="javascript:void(0)" (click)="onNavegarTasquesOfertes('tasques')">
+                Veure totes ({{ tasks.length }})
               </a>
             </div>
 
@@ -92,24 +77,30 @@ import { AuthService } from '../../core/services/auth.service';
               </div>
             </article>
 
-            <div class="preview-toggle-wrap" *ngIf="tasks.length > 3">
-              <button type="button" class="btn-preview-toggle" (click)="showAllTasks = !showAllTasks">
-                {{ showAllTasks ? 'Reduir a 3 tasques' : 'Explorar totes les tasques disponibles (' + tasks.length + ')' }}
+            <div class="preview-toggle-wrap">
+              <button type="button" class="btn-preview-toggle" (click)="onNavegarTasquesOfertes('tasques')">
+                Explorar totes les tasques disponibles ({{ tasks.length }})
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 6px; vertical-align: middle;">
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                  <polyline points="12 5 19 12 12 19"></polyline>
+                </svg>
               </button>
             </div>
           </section>
 
-          <!-- SECCIÓ D'OFERTES RECENTS -->
+          <!-- SECCIÓ DE VISTA PRÈVIA D'OFERTES RECENTS -->
           <section class="panel">
             <div class="panel-header">
               <div class="panel-title-wrap">
                 <h2>Ofertes recents</h2>
-                <span class="preview-badge">En temps real</span>
+                <span class="preview-badge">Vista prèvia ({{ previewOffers.length }} ofertes)</span>
               </div>
-              <a href="javascript:void(0)" (click)="onVeureTotesOfertes()">Veure totes</a>
+              <a href="javascript:void(0)" (click)="onNavegarTasquesOfertes('ofertes')">
+                Veure totes ({{ offers.length }})
+              </a>
             </div>
 
-            <article class="card offer-card" *ngFor="let offer of offers">
+            <article class="card offer-card" *ngFor="let offer of previewOffers">
               <div class="card-top">
                 <span class="tag alt">{{ offer.task }}</span>
                 <span class="status status-offer" [ngClass]="getOfferStatusClass(offer.status)">
@@ -123,6 +114,16 @@ import { AuthService } from '../../core/services/auth.service';
                 <button type="button" (click)="onAcceptarOferta(offer.id)">Acceptar</button>
               </div>
             </article>
+
+            <div class="preview-toggle-wrap">
+              <button type="button" class="btn-preview-toggle" (click)="onNavegarTasquesOfertes('ofertes')">
+                Explorar totes les ofertes disponibles ({{ offers.length }})
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 6px; vertical-align: middle;">
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                  <polyline points="12 5 19 12 12 19"></polyline>
+                </svg>
+              </button>
+            </div>
           </section>
         </div>
 
@@ -376,6 +377,7 @@ import { AuthService } from '../../core/services/auth.service';
             <div class="footer-col">
               <h4>Navegació i Àrees</h4>
               <ul>
+                <li><a href="javascript:void(0)" (click)="onNavegarTasquesOfertes()">Mercat de Tasques i Ofertes</a></li>
                 <li><a href="javascript:void(0)" (click)="onNovaTasca()">Publicar tasca nova</a></li>
                 <li><a href="javascript:void(0)" (click)="onAnarRegistreProfessional()">Àrea Professionals</a></li>
                 <li><a href="javascript:void(0)" (click)="onAnarRegistreClient()">Registre de clients</a></li>
@@ -1872,9 +1874,14 @@ export class MainComponent implements OnInit, OnDestroy {
     }
   ];
 
-  /** Retorna la vista prèvia de 3 tasques o totes segons la selecció de l'usuari */
+  /** Retorna la vista prèvia de 3 tasques per a la pàgina principal */
   get previewTasks() {
-    return this.showAllTasks ? this.tasks : this.tasks.slice(0, 3);
+    return this.tasks.slice(0, 3);
+  }
+
+  /** Retorna la vista prèvia de 3 ofertes per a la pàgina principal */
+  get previewOffers() {
+    return this.offers.slice(0, 3);
   }
 
   get offers() {
@@ -1921,9 +1928,16 @@ export class MainComponent implements OnInit, OnDestroy {
     }
   }
 
+  onNavegarTasquesOfertes(tipus: 'tots' | 'tasques' | 'ofertes' = 'tots'): void {
+    if (tipus !== 'tots') {
+      this.router.navigate(['/tasques-ofertes'], { queryParams: { tipus } });
+    } else {
+      this.router.navigate(['/tasques-ofertes']);
+    }
+  }
+
   onVeureTotesTasques(): void {
-    if (!this.requireLogin('veure el llistat complet de tasques', '/')) return;
-    this.router.navigate(['/']);
+    this.onNavegarTasquesOfertes('tasques');
   }
 
   onDetallTasca(taskId: string): void {
@@ -1941,8 +1955,7 @@ export class MainComponent implements OnInit, OnDestroy {
   }
 
   onVeureTotesOfertes(): void {
-    if (!this.requireLogin('veure el llistat complet d’ofertes', '/')) return;
-    this.router.navigate(['/']);
+    this.onNavegarTasquesOfertes('ofertes');
   }
 
   onAcceptarOferta(offerId: string): void {

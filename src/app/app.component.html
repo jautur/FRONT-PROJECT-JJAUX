@@ -186,6 +186,16 @@
         <span>Inici</span>
       </a>
 
+      <a routerLink="/tasques-ofertes" routerLinkActive="active-nav-item" (click)="tancarMenu()">
+        <span class="nav-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+          </svg>
+        </span>
+        <span>Tasques i Ofertes</span>
+      </a>
+
       <!-- Secció per a clients i professionals -->
       <ng-container *ngIf="authService.isLoggedIn() && isClient()">
         <div class="nav-group-title">GESTIÓ DE FEINA</div>
