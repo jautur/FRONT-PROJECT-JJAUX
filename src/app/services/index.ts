@@ -11,3 +11,4 @@ export * from './tasca.service';
 export * from './oferta.service';
 export * from './proposta.service';
 export * from './avis.service';
+export * from './resenya.service';

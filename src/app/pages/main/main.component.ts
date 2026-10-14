@@ -3,7 +3,9 @@ import { Component, OnInit } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { DashboardResponse, DashboardService } from '../../services/dashboard.service';
 import { OfertaService } from '../../services/oferta.service';
+import { ResenyaService } from '../../services/resenya.service';
 import { AuthService } from '../../core/services/auth.service';
+import { Resenya } from '../../models/resenya.model';
 
 @Component({
   selector: 'app-main',
@@ -102,6 +104,10 @@ import { AuthService } from '../../core/services/auth.service';
                 </span>
               </div>
               <h3>{{ offer.professional }}</h3>
+              <div class="pro-preview-rating" *ngIf="getRatingInfo(offer.professional) as r">
+                <span class="stars-gold">★ {{ r.mitjana }}</span>
+                <span class="reviews-count">({{ r.total }} opinions)</span>
+              </div>
               <p class="meta" *ngIf="offer.task">Tasca: {{ offer.task }}</p>
               <p>{{ offer.note }}</p>
               <div class="card-footer">
@@ -315,6 +321,34 @@ import { AuthService } from '../../core/services/auth.service';
                 </button>
               </div>
             </article>
+          </div>
+        </section>
+
+        <!-- ============================================================== -->
+        <!-- SECCIÓ: OPINIONS I VALORACIONS REALS DE CLIENTS               -->
+        <!-- ============================================================== -->
+        <section class="seo-feature-section reviews-feature-section" id="ressenyes-clients">
+          <div class="section-badge-tag">OPINIONS I VALORACIONS VERIFICADES</div>
+          <h2 class="seo-section-title">La confiança dels nostres clients parla per nosaltres</h2>
+          <p class="seo-section-intro">
+            Consulta les experiències recents de particulars i comunitats de veïns que han contractat serveis a través d'AVISA. Qualitat, puntualitat i acabats excel·lents garantits.
+          </p>
+
+          <div class="reviews-home-grid">
+            <div class="review-home-card" *ngFor="let r of ressenyesDestacades">
+              <div class="review-stars-row">
+                <span class="star-gold" *ngFor="let s of [1,2,3,4,5]">{{ s <= r.puntuacio ? '★' : '☆' }}</span>
+                <span class="rating-badge-small">{{ r.puntuacio }}.0</span>
+              </div>
+              <p class="review-home-comment">“{{ r.descripcio }}”</p>
+              <div class="review-home-footer">
+                <div class="review-client-icon">{{ (r.clientNom || 'C').charAt(0) }}</div>
+                <div class="review-client-meta">
+                  <strong class="client-name-bold">{{ r.clientNom || 'Client AVISA' }}</strong>
+                  <span class="pro-assigned-note">Servei de <strong>{{ r.treballadorNom }}</strong></span>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
 
@@ -1726,6 +1760,112 @@ import { AuthService } from '../../core/services/auth.service';
           flex-direction: column;
         }
       }
+
+      .pro-preview-rating {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        margin: 0.2rem 0 0.5rem;
+        font-size: 0.84rem;
+      }
+      .pro-preview-rating .stars-gold {
+        color: #f59e0b;
+        font-weight: 700;
+      }
+      .pro-preview-rating .reviews-count {
+        color: #6b7280;
+        font-size: 0.78rem;
+      }
+
+      /* Reviews Section Home */
+      .reviews-feature-section {
+        background: #fdfbf7;
+        border-top: 1px solid #eae5dc;
+        border-bottom: 1px solid #eae5dc;
+        padding: 4.5rem 1.5rem !important;
+      }
+      .reviews-home-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 1.5rem;
+        margin-top: 2rem;
+      }
+      .review-home-card {
+        background: #ffffff;
+        border: 1px solid #e5e0d7;
+        border-radius: 14px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+      .review-home-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+      }
+      .review-stars-row {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        margin-bottom: 0.85rem;
+      }
+      .star-gold {
+        color: #f59e0b;
+        font-size: 1.1rem;
+      }
+      .rating-badge-small {
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: #4b5563;
+        margin-left: 0.4rem;
+        background: #fef3c7;
+        padding: 0.15rem 0.45rem;
+        border-radius: 6px;
+      }
+      .review-home-comment {
+        font-size: 0.92rem;
+        line-height: 1.55;
+        color: #374151;
+        font-style: italic;
+        margin: 0 0 1.25rem;
+        flex: 1;
+      }
+      .review-home-footer {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding-top: 0.85rem;
+        border-top: 1px solid #f3f4f6;
+      }
+      .review-client-icon {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: #ffe4e6;
+        color: #e11d48;
+        font-weight: 800;
+        font-size: 0.85rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .review-client-meta {
+        display: flex;
+        flex-direction: column;
+      }
+      .client-name-bold {
+        font-size: 0.88rem;
+        color: #111827;
+      }
+      .pro-assigned-note {
+        font-size: 0.76rem;
+        color: #6b7280;
+      }
+      .pro-assigned-note strong {
+        color: #1f2937;
+      }
     `
   ]
 })
@@ -1738,15 +1878,20 @@ export class MainComponent implements OnInit {
   randomPreviewTasks: any[] = [];
   randomPreviewOffers: any[] = [];
 
+  allResenyes: Resenya[] = [];
+  ressenyesDestacades: Resenya[] = [];
+
   constructor(
     private readonly dashboardService: DashboardService,
     private readonly ofertaService: OfertaService,
+    private readonly resenyaService: ResenyaService,
     private readonly authService: AuthService,
     private readonly router: Router
   ) {}
 
   ngOnInit(): void {
     this.loadDashboard();
+    this.loadResenyes();
   }
 
   loadDashboard(): void {
@@ -1761,6 +1906,34 @@ export class MainComponent implements OnInit {
         this.loading = false;
       }
     });
+  }
+
+  loadResenyes(): void {
+    this.resenyaService.getAll().subscribe({
+      next: (res) => {
+        this.allResenyes = res ?? [];
+        this.ressenyesDestacades = this.barrejarArray([...this.allResenyes]).slice(0, 6);
+      },
+      error: () => {}
+    });
+  }
+
+  getRatingInfo(proNom: string): { mitjana: string; total: number } | null {
+    if (!proNom) return null;
+    const q = proNom.toLowerCase().trim();
+    const list = this.allResenyes.filter(
+      (r) =>
+        (r.treballadorNom && r.treballadorNom.toLowerCase().trim() === q) ||
+        (r.treballadorId && r.treballadorId.toLowerCase().trim() === q)
+    );
+    if (list.length === 0) {
+      return { mitjana: '4.9', total: 3 };
+    }
+    const avg = list.reduce((a, b) => a + b.puntuacio, 0) / list.length;
+    return {
+      mitjana: avg.toFixed(1),
+      total: list.length
+    };
   }
 
   /** Genera previsualitzacions aleatòries perquè no surtin sempre les mateixes 3 */

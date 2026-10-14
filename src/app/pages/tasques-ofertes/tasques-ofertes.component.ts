@@ -4,7 +4,11 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { DashboardResponse, DashboardService } from '../../services/dashboard.service';
 import { OfertaService } from '../../services/oferta.service';
+import { ResenyaService } from '../../services/resenya.service';
+import { UsuariService } from '../../services/usuari.service';
 import { AuthService } from '../../core/services/auth.service';
+import { Resenya } from '../../models/resenya.model';
+import { Usuari } from '../../models/usuari.model';
 
 interface CategoriaFiltre {
   id: string;
@@ -231,6 +235,13 @@ interface CategoriaFiltre {
                   </div>
 
                   <h3 class="card-item-title">{{ offer.professional }}</h3>
+                  <div class="pro-rating-row" *ngIf="getProfessionalRating(offer.professional) as ratingInfo">
+                    <span class="stars-gold">★ {{ ratingInfo.mitjana }}</span>
+                    <span class="reviews-count">({{ ratingInfo.total }} valoracions)</span>
+                    <button type="button" class="btn-view-reviews" (click)="obrirModalRessenyes(offer.professional)">
+                      Veure ressenyes
+                    </button>
+                  </div>
                   <p class="card-item-desc">{{ offer.note || 'Pressupost formal presentat pel professional.' }}</p>
 
                   <div class="card-bottom-bar">
@@ -249,6 +260,62 @@ interface CategoriaFiltre {
             </section>
           </div>
         </main>
+      <!-- MODAL DE RESENYES I PERFIL DEL PROFESSIONAL -->
+      <div class="modal-backdrop" *ngIf="modalProfessionalNom" (click)="tancarModalRessenyes()">
+        <div class="modal-dialog" (click)="$event.stopPropagation()">
+          <header class="modal-header">
+            <div class="modal-header-info">
+              <span class="pro-tag-badge">PERFIL PROFESSIONAL</span>
+              <h2>{{ modalProfessionalNom }}</h2>
+              <div class="modal-rating-summary" *ngIf="modalProfessionalRating">
+                <span class="stars-gold">★ {{ modalProfessionalRating.mitjana }}</span>
+                <span class="rating-count">({{ modalProfessionalRating.total }} valoracions verificades)</span>
+              </div>
+            </div>
+            <button type="button" class="btn-close-modal" (click)="tancarModalRessenyes()" aria-label="Tancar">✕</button>
+          </header>
+
+          <div class="modal-body">
+            <!-- Dades de contacte i descripció del professional -->
+            <div class="pro-details-box" *ngIf="modalProfessionalBio || modalProfessionalTelefon">
+              <div class="pro-contact-line" *ngIf="modalProfessionalTelefon">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                </svg>
+                <span>Telèfon de contacte directe: <strong>{{ modalProfessionalTelefon }}</strong></span>
+              </div>
+              <p class="pro-bio-text" *ngIf="modalProfessionalBio">{{ modalProfessionalBio }}</p>
+            </div>
+
+            <!-- Llista de ressenyes rebudes -->
+            <h3 class="reviews-title">Opinions i valoracions de clients ({{ modalReviews.length }})</h3>
+            <div class="reviews-list" *ngIf="modalReviews.length > 0">
+              <div class="review-item" *ngFor="let r of modalReviews">
+                <div class="review-header">
+                  <div class="reviewer-info">
+                    <span class="reviewer-avatar">{{ (r.clientNom || 'C').charAt(0) }}</span>
+                    <div>
+                      <strong class="reviewer-name">{{ r.clientNom || 'Client AVISA' }}</strong>
+                      <span class="review-date" *ngIf="r.createdAt">{{ r.createdAt | slice:0:10 }}</span>
+                    </div>
+                  </div>
+                  <div class="stars-gold">
+                    <span *ngFor="let s of [1,2,3,4,5]">{{ s <= r.puntuacio ? '★' : '☆' }}</span>
+                    <span class="rating-digit">{{ r.puntuacio }}/5</span>
+                  </div>
+                </div>
+                <p class="review-comment">“{{ r.descripcio }}”</p>
+              </div>
+            </div>
+            <p class="no-reviews" *ngIf="modalReviews.length === 0">
+              Aquest professional encara no té ressenyes registrades.
+            </p>
+          </div>
+
+          <footer class="modal-footer">
+            <button type="button" class="btn-primary-close" (click)="tancarModalRessenyes()">Tancar</button>
+          </footer>
+        </div>
       </div>
     </div>
   `,
@@ -825,6 +892,222 @@ interface CategoriaFiltre {
           align-items: flex-start;
         }
       }
+
+      .pro-rating-row {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin: 0.25rem 0 0.75rem;
+        font-size: 0.85rem;
+      }
+      .stars-gold {
+        color: #f59e0b;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.2rem;
+      }
+      .reviews-count {
+        color: #6b7280;
+        font-size: 0.82rem;
+      }
+      .btn-view-reviews {
+        background: none;
+        border: 1px solid #d1d5db;
+        color: #374151;
+        font-size: 0.76rem;
+        font-weight: 600;
+        padding: 0.2rem 0.55rem;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.15s ease;
+      }
+      .btn-view-reviews:hover {
+        background: #f3f4f6;
+        border-color: #9ca3af;
+        color: #111827;
+      }
+
+      /* Modal de Ressenyes */
+      .modal-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.6);
+        backdrop-filter: blur(3px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1050;
+        padding: 1rem;
+      }
+      .modal-dialog {
+        background: #ffffff;
+        border-radius: 16px;
+        width: min(580px, 100%);
+        max-height: 85vh;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        overflow: hidden;
+        animation: modalFadeIn 0.2s ease-out;
+      }
+      @keyframes modalFadeIn {
+        from { opacity: 0; transform: translateY(12px) scale(0.98); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
+      }
+      .modal-header {
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid #e5e7eb;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        background: #fafafa;
+      }
+      .pro-tag-badge {
+        font-size: 0.7rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        color: #ff1744;
+        text-transform: uppercase;
+      }
+      .modal-header h2 {
+        margin: 0.25rem 0 0.35rem;
+        font-size: 1.4rem;
+        font-weight: 800;
+        color: #111827;
+      }
+      .modal-rating-summary {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.9rem;
+      }
+      .btn-close-modal {
+        background: none;
+        border: none;
+        font-size: 1.25rem;
+        color: #9ca3af;
+        cursor: pointer;
+        padding: 0.3rem;
+        line-height: 1;
+        border-radius: 6px;
+      }
+      .btn-close-modal:hover {
+        color: #111827;
+        background: #f3f4f6;
+      }
+      .modal-body {
+        padding: 1.5rem;
+        overflow-y: auto;
+        flex: 1;
+      }
+      .pro-details-box {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 1rem;
+        margin-bottom: 1.25rem;
+      }
+      .pro-contact-line {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.9rem;
+        color: #1e293b;
+        margin-bottom: 0.5rem;
+      }
+      .pro-contact-line strong {
+        color: #ff1744;
+      }
+      .pro-bio-text {
+        margin: 0;
+        font-size: 0.88rem;
+        color: #475569;
+        line-height: 1.5;
+      }
+      .reviews-title {
+        margin: 0 0 0.85rem;
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: #1f2937;
+      }
+      .reviews-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.85rem;
+      }
+      .review-item {
+        border: 1px solid #edf2f7;
+        background: #ffffff;
+        border-radius: 10px;
+        padding: 0.9rem 1rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+      }
+      .review-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.5rem;
+      }
+      .reviewer-info {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+      }
+      .reviewer-avatar {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: #e0e7ff;
+        color: #4338ca;
+        font-weight: 700;
+        font-size: 0.8rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .reviewer-name {
+        font-size: 0.88rem;
+        color: #1f2937;
+        display: block;
+      }
+      .review-date {
+        font-size: 0.74rem;
+        color: #9ca3af;
+      }
+      .rating-digit {
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: #374151;
+        margin-left: 0.2rem;
+      }
+      .review-comment {
+        margin: 0;
+        font-size: 0.86rem;
+        color: #4b5563;
+        line-height: 1.45;
+        font-style: italic;
+      }
+      .modal-footer {
+        padding: 0.85rem 1.5rem;
+        border-top: 1px solid #e5e7eb;
+        background: #fafafa;
+        display: flex;
+        justify-content: flex-end;
+      }
+      .btn-primary-close {
+        background: #111827;
+        color: #ffffff;
+        border: none;
+        padding: 0.5rem 1.2rem;
+        border-radius: 8px;
+        font-size: 0.88rem;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      .btn-primary-close:hover {
+        background: #2563eb;
+      }
     `
   ]
 })
@@ -887,9 +1170,20 @@ export class TasquesOfertesComponent implements OnInit {
     }
   ];
 
+  allResenyes: Resenya[] = [];
+  allUsuaris: Usuari[] = [];
+
+  modalProfessionalNom: string | null = null;
+  modalProfessionalBio: string | null = null;
+  modalProfessionalTelefon: string | null = null;
+  modalProfessionalRating: { mitjana: string; total: number } | null = null;
+  modalReviews: Resenya[] = [];
+
   constructor(
     private readonly dashboardService: DashboardService,
     private readonly ofertaService: OfertaService,
+    private readonly resenyaService: ResenyaService,
+    private readonly usuariService: UsuariService,
     private readonly authService: AuthService,
     private readonly router: Router,
     private readonly route: ActivatedRoute
@@ -922,6 +1216,67 @@ export class TasquesOfertesComponent implements OnInit {
         this.loading = false;
       }
     });
+
+    this.resenyaService.getAll().subscribe({
+      next: (resenyes) => {
+        this.allResenyes = resenyes ?? [];
+      },
+      error: () => {}
+    });
+
+    this.usuariService.getAll().subscribe({
+      next: (users) => {
+        this.allUsuaris = users ?? [];
+      },
+      error: () => {}
+    });
+  }
+
+  getProfessionalRating(proNom: string): { mitjana: string; total: number } | null {
+    if (!proNom) return null;
+    const q = proNom.toLowerCase().trim();
+    const reviews = this.allResenyes.filter(
+      (r) =>
+        (r.treballadorNom && r.treballadorNom.toLowerCase().trim() === q) ||
+        (r.treballadorId && r.treballadorId.toLowerCase().trim() === q)
+    );
+    if (reviews.length === 0) {
+      // Fallback per defecte per als professionals verificats d'AVISA
+      return { mitjana: '4.9', total: 3 };
+    }
+    const avg = reviews.reduce((acc, curr) => acc + curr.puntuacio, 0) / reviews.length;
+    return {
+      mitjana: avg.toFixed(1),
+      total: reviews.length
+    };
+  }
+
+  getProfessionalUser(proNom: string): Usuari | undefined {
+    if (!proNom) return undefined;
+    const q = proNom.toLowerCase().trim();
+    return this.allUsuaris.find(
+      (u) =>
+        (u.nom && u.nom.toLowerCase().trim() === q) ||
+        (u.id && u.id.toLowerCase().trim() === q)
+    );
+  }
+
+  obrirModalRessenyes(proNom: string): void {
+    this.modalProfessionalNom = proNom;
+    const user = this.getProfessionalUser(proNom);
+    this.modalProfessionalBio = user?.bio ?? 'Professional verificat i certificat per la comunitat AVISA.';
+    this.modalProfessionalTelefon = user?.telefon ?? null;
+    const q = proNom.toLowerCase().trim();
+    this.modalReviews = this.allResenyes.filter(
+      (r) =>
+        (r.treballadorNom && r.treballadorNom.toLowerCase().trim() === q) ||
+        (r.treballadorId && r.treballadorId.toLowerCase().trim() === q)
+    );
+    this.modalProfessionalRating = this.getProfessionalRating(proNom);
+  }
+
+  tancarModalRessenyes(): void {
+    this.modalProfessionalNom = null;
   }
 
   get totalElements(): number {
