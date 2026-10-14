@@ -512,6 +512,14 @@
   flex-direction: column;
   gap: 0.25rem;
   overflow: hidden;
+  flex: 1;
+}
+
+.user-name-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
 }
 
 .user-name {
@@ -521,6 +529,45 @@
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
+}
+
+.user-avisos-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: #171722;
+  border: 1px solid #2d2d3e;
+  color: var(--color-bone, #f5f4ef);
+  padding: 0.22rem 0.55rem;
+  border-radius: 9999px;
+  text-decoration: none;
+  font-size: 0.72rem;
+  font-weight: 800;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.user-avisos-btn:hover {
+  background: rgba(255, 23, 68, 0.15);
+  border-color: var(--neon, #ff1744);
+  color: var(--neon, #ff1744);
+  box-shadow: 0 0 10px rgba(255, 23, 68, 0.35);
+  transform: scale(1.05);
+}
+
+.user-avisos-btn svg {
+  color: var(--neon, #ff1744);
+}
+
+.avisos-pill-count {
+  background: var(--neon, #ff1744);
+  color: #ffffff;
+  font-size: 0.65rem;
+  font-weight: 900;
+  padding: 0.05rem 0.38rem;
+  border-radius: 9999px;
+  line-height: 1.2;
 }
 
 .user-role-tag {
