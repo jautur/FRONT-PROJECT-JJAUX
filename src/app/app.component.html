@@ -42,7 +42,7 @@
             <circle cx="12" cy="7" r="4"></circle>
           </svg>
         </span>
-        <span class="profile-label">Perfil</span>
+        <span class="profile-label">{{ authService.isLoggedIn() ? (authService.getCurrentUser()?.nom || 'Perfil') : 'Perfil' }}</span>
         <span class="profile-chevron" [class.rotated]="perfilDropdownObert" aria-hidden="true">
           <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="6 9 12 15 18 9"></polyline>
