@@ -19,6 +19,9 @@ export interface Tasca {
   /** Nom de l'usuari client que ha publicat la tasca */
   client?: string;
 
+  /** Àlies per al nom del client */
+  clientNom?: string;
+
   /** Pressupost orientatiu o estimat pel client (ex: '€350') */
   budget?: string;
 

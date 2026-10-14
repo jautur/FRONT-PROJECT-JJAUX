@@ -1,8 +1,45 @@
-// Guard per a rols d'administrador.
-// Ha de restringir l'accés a les pàgines d'administració, per exemple /admin/*.
-// Lògica esperada:
-// - verificar autenticació a través d'AuthGuard
-// - comprovar que l'usuari té rol "admin"
-// - bloquejar l'accés i redirigir si no és administrador
-// El backend ha de retornar el rol dins del JWT o de la resposta de /api/auth/me.
-export class AdminGuard {}
+import { inject, Injectable } from '@angular/core';
+import { CanActivate, CanActivateFn, Router, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
+import { AuthService } from '../services/auth.service';
+
+/**
+ * Funció Guard funcional per a la protecció de rutes administratives (/admin/*).
+ * Garanteix que només els usuaris amb rol d'administrador (`admin`) puguin accedir-hi.
+ */
+export const adminGuard: CanActivateFn = (
+  route: ActivatedRouteSnapshot,
+  state: RouterStateSnapshot
+) => {
+  const authService = inject(AuthService);
+  const router = inject(Router);
+
+  if (!authService.isLoggedIn()) {
+    router.navigate(['/login'], { queryParams: { returnUrl: state.url, message: 'Cal iniciar sessió com a administrador.' } });
+    return false;
+  }
+
+  if (authService.isAdmin()) {
+    return true;
+  }
+
+  // Redirigeix usuaris sense permisos d'administrador
+  router.navigate(['/'], { queryParams: { error: 'Accés denegat: es requereixen permisos d’administrador.' } });
+  return false;
+};
+
+/**
+ * Guard de tipus classe per a compatibilitat amb mòduls clàssics.
+ */
+@Injectable({
+  providedIn: 'root'
+})
+export class AdminGuard implements CanActivate {
+  constructor(
+    private readonly authService: AuthService,
+    private readonly router: Router
+  ) {}
+
+  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
+    return adminGuard(route, state) as boolean;
+  }
+}

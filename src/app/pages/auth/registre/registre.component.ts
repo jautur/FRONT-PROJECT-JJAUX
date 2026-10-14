@@ -7,7 +7,8 @@ import { AuthService, RegisterData } from '../../../core/services/auth.service';
 /**
  * Component de Registre d'usuaris (/registre).
  * Permet a nous usuaris crear un compte a la plataforma JJAUX escollint
- * si volen actuar com a Clients (publicar tasques) o Professionals (enviar ofertes).
+ * si volen actuar com a Clients (publicar tasques), Professionals (enviar ofertes)
+ * o Ambdós (funcionalitat híbrida completa: client i professional a la vegada).
  */
 @Component({
   selector: 'app-registre',
@@ -42,7 +43,7 @@ import { AuthService, RegisterData } from '../../../core/services/auth.service';
               [class.active]="formData.rol === 'client'"
               (click)="formData.rol = 'client'">
               <strong>Client</strong>
-              <small>Vull publicar feines</small>
+              <small>Publicar feines</small>
             </button>
             <button
               type="button"
@@ -50,7 +51,15 @@ import { AuthService, RegisterData } from '../../../core/services/auth.service';
               [class.active]="formData.rol === 'professional'"
               (click)="formData.rol = 'professional'">
               <strong>Professional</strong>
-              <small>Vull oferir serveis</small>
+              <small>Oferir serveis</small>
+            </button>
+            <button
+              type="button"
+              class="role-btn"
+              [class.active]="formData.rol === 'ambdos'"
+              (click)="formData.rol = 'ambdos'">
+              <strong>Ambdós</strong>
+              <small>Client & Professional</small>
             </button>
           </div>
         </label>
@@ -73,7 +82,7 @@ import { AuthService, RegisterData } from '../../../core/services/auth.service';
   styles: [
     `
       .auth-card {
-        width: min(480px, 100%);
+        width: min(520px, 100%);
         background: white;
         padding: 2.2rem;
         border-radius: 20px;
@@ -122,8 +131,8 @@ import { AuthService, RegisterData } from '../../../core/services/auth.service';
 
       .role-selector {
         display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 0.75rem;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.5rem;
         margin-top: 0.2rem;
       }
 
@@ -131,7 +140,8 @@ import { AuthService, RegisterData } from '../../../core/services/auth.service';
         display: flex;
         flex-direction: column;
         align-items: center;
-        padding: 0.8rem 0.5rem;
+        text-align: center;
+        padding: 0.75rem 0.35rem;
         background: #f8fafc;
         border: 2px solid #e2e8f0;
         border-radius: 12px;
@@ -140,12 +150,12 @@ import { AuthService, RegisterData } from '../../../core/services/auth.service';
       }
 
       .role-btn strong {
-        font-size: 0.95rem;
+        font-size: 0.88rem;
         color: #1e293b;
       }
 
       .role-btn small {
-        font-size: 0.75rem;
+        font-size: 0.72rem;
         color: #64748b;
         margin-top: 0.2rem;
       }
@@ -239,7 +249,7 @@ export class RegistreComponent {
     this.errorMessage = '';
 
     this.authService.register(this.formData).subscribe({
-      next: (user) => {
+      next: () => {
         this.loading = false;
         // Sessió iniciada directament -> tornem a l'inici
         this.router.navigate(['/']);

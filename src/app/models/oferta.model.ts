@@ -13,6 +13,9 @@ export interface Oferta {
   /** Nom o identificador del professional que ha enviat l'oferta */
   professional: string;
 
+  /** Àlies per al nom del professional */
+  professionalNom?: string;
+
   /** Import econòmic o pressupost ofertat (ex: '€320') */
   price: string;
 

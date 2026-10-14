@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
-import { Usuari } from '../../models/usuari.model';
+import { Usuari, RolUsuari } from '../../models/usuari.model';
 import { environment } from '../../../environments/environment';
 
 /**
@@ -18,14 +18,14 @@ export interface LoginCredentials {
 export interface RegisterData {
   nom: string;
   email: string;
-  rol: 'client' | 'professional' | 'admin';
+  rol: RolUsuari;
   password?: string;
 }
 
 /**
- * Servei central d'Autenticació i Gestió de Sessió de l'aplicació.
- * S'encarrega d'iniciar sessió, registrar usuaris, mantenir l'estat local a localStorage
- * i verificar permisos segons el rol de l'usuari.
+ * Servei central d'Autenticació i Gestió de Sessió de l'aplicació JJAUX.
+ * S'encarrega d'iniciar sessió, registrar usuaris (clients, professionals o ambdós),
+ * mantenir l'estat local a localStorage i verificar permisos d'accés.
  */
 @Injectable({
   providedIn: 'root'
@@ -70,6 +70,44 @@ export class AuthService {
   }
 
   /**
+   * Comprova si l'usuari connectat té permisos de client.
+   * Retorna true si el seu rol és 'client', 'ambdos' o 'admin'.
+   */
+  isClient(): boolean {
+    const user = this.getCurrentUser();
+    if (!user) return false;
+    const r = user.rol?.toLowerCase();
+    return r === 'client' || r === 'ambdos' || r === 'admin';
+  }
+
+  /**
+   * Comprova si l'usuari connectat té permisos de professional.
+   * Retorna true si el seu rol és 'professional', 'ambdos' o 'admin'.
+   */
+  isProfessional(): boolean {
+    const user = this.getCurrentUser();
+    if (!user) return false;
+    const r = user.rol?.toLowerCase();
+    return r === 'professional' || r === 'ambdos' || r === 'admin';
+  }
+
+  /**
+   * Comprova si l'usuari connectat té el rol d'administrador global.
+   */
+  isAdmin(): boolean {
+    const user = this.getCurrentUser();
+    return user?.rol?.toLowerCase() === 'admin';
+  }
+
+  /**
+   * Comprova si l'usuari és híbrid (client i professional simultàniament).
+   */
+  isBoth(): boolean {
+    const user = this.getCurrentUser();
+    return user?.rol?.toLowerCase() === 'ambdos';
+  }
+
+  /**
    * Inicia sessió enviant les credencials al backend (/api/auth/login).
    * En cas d'èxit, desa automàticament l'usuari a la sessió local.
    * @param credentials Correu i contrasenya
@@ -110,11 +148,11 @@ export class AuthService {
   }
 
   /**
-   * Comprova si l'usuari connectat té un rol específic (ex: 'client', 'professional', 'admin').
-   * @param rol Rol a verificar
+   * Comprova si l'usuari connectat té un rol específic.
+   * @param rol Rol a verificar ('client' | 'professional' | 'ambdos' | 'admin')
    * @returns true si coincideix, false en cas contrari
    */
-  hasRole(rol: 'client' | 'professional' | 'admin'): boolean {
+  hasRole(rol: RolUsuari): boolean {
     const user = this.getCurrentUser();
     return user?.rol === rol;
   }

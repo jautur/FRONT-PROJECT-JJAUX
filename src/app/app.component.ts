@@ -34,19 +34,24 @@ export class AppComponent implements OnInit {
   }
 
   /**
-   * Comprova si l'usuari actual té el rol de client.
+   * Comprova si l'usuari actual té permisos de client (rol client, ambdós o admin).
    */
   isClient(): boolean {
-    const user = this.authService.getCurrentUser();
-    return user?.rol?.toLowerCase() === 'client';
+    return this.authService.isClient();
   }
 
   /**
-   * Comprova si l'usuari actual té el rol de professional.
+   * Comprova si l'usuari actual té permisos de professional (rol professional, ambdós o admin).
    */
   isProfessional(): boolean {
-    const user = this.authService.getCurrentUser();
-    return user?.rol?.toLowerCase() === 'professional';
+    return this.authService.isProfessional();
+  }
+
+  /**
+   * Comprova si l'usuari té el rol d'administrador global.
+   */
+  isAdmin(): boolean {
+    return this.authService.isAdmin();
   }
 
   /**

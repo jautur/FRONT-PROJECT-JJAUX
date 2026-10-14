@@ -427,11 +427,10 @@ export class MainComponent implements OnInit {
 
   onNovaTasca(): void {
     if (!this.requireLogin('crear una tasca nova', '/client/crear-tasca')) return;
-    const user = this.authService.getCurrentUser();
-    if (user?.rol === 'client' || user?.rol === 'admin') {
+    if (this.authService.isClient()) {
       this.router.navigate(['/client/crear-tasca']);
     } else {
-      this.noticeMessage = 'Només els comptes amb rol de "Client" poden crear noves tasques.';
+      this.noticeMessage = 'Només els comptes amb rol de "Client" o "Ambdós" poden crear noves tasques.';
     }
   }
 
@@ -447,11 +446,10 @@ export class MainComponent implements OnInit {
 
   onFerOferta(taskId: string): void {
     if (!this.requireLogin(`fer una oferta per a la tasca ${taskId}`, '/professional/crear-oferta')) return;
-    const user = this.authService.getCurrentUser();
-    if (user?.rol === 'professional' || user?.rol === 'admin') {
+    if (this.authService.isProfessional()) {
       this.router.navigate(['/professional/crear-oferta'], { queryParams: { taskId } });
     } else {
-      this.noticeMessage = 'Només els comptes amb rol de "Professional" poden fer ofertes econòmiques.';
+      this.noticeMessage = 'Només els comptes amb rol de "Professional" o "Ambdós" poden fer ofertes econòmiques.';
     }
   }
 
@@ -462,8 +460,7 @@ export class MainComponent implements OnInit {
 
   onAcceptarOferta(offerId: string): void {
     if (!this.requireLogin(`acceptar l'oferta ${offerId}`, '/')) return;
-    const user = this.authService.getCurrentUser();
-    if (user?.rol === 'client' || user?.rol === 'admin') {
+    if (this.authService.isClient()) {
       this.ofertaService.accept(offerId).subscribe({
         next: () => {
           this.noticeMessage = `S'ha acceptat la proposta ${offerId} correctament a la base de dades.`;

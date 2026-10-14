@@ -9,13 +9,15 @@ import { TascaDetallComponent } from './pages/client/tasca-detall/tasca-detall.c
 import { AvisosComponent } from './pages/avisos/avisos.component';
 import { LesMevesTasquesComponent } from './pages/client/les-meves-tasques/les-meves-tasques.component';
 import { LesMevesOfertesComponent } from './pages/professional/les-meves-ofertes/les-meves-ofertes.component';
+import { AdminPanellComponent } from './pages/admin/panell/admin-panell.component';
 import { authGuard } from './core/guards/auth.guard';
+import { adminGuard } from './core/guards/admin.guard';
 
 /**
  * Configuració global de rutes de la plataforma JJAUX.
  * - '': Vista prèvia de tasques i ofertes públiques (Dashboard).
  * - 'login': Inici de sessió d'usuaris.
- * - 'registre': Registre de nous usuaris (clients o professionals).
+ * - 'registre': Registre de nous usuaris (clients, professionals o ambdós).
  * - 'perfil': Consulta i modificació de dades de l'usuari connectat.
  * - 'avisos': Safata d'entrada de notificacions personals.
  * - 'client/les-meves-tasques': Panell de tasques creades pel client connectat.
@@ -23,6 +25,7 @@ import { authGuard } from './core/guards/auth.guard';
  * - 'professional/les-meves-ofertes': Panell d'ofertes presentades pel professional connectat.
  * - 'professional/crear-oferta': Enviament de pressupostos per part de professionals.
  * - 'tasca-detall/:id': Vista detallada d'una tasca, acceptació/rebuig d'ofertes i finalització.
+ * - 'admin/panell': Panell de supervisió global amb llistat complet de tasques, ofertes i usuaris (només admin).
  */
 export const appRoutes: Routes = [
   { path: '', component: MainComponent },
@@ -35,5 +38,6 @@ export const appRoutes: Routes = [
   { path: 'professional/les-meves-ofertes', component: LesMevesOfertesComponent, canActivate: [authGuard] },
   { path: 'professional/crear-oferta', component: CrearOfertaComponent, canActivate: [authGuard] },
   { path: 'tasca-detall/:id', component: TascaDetallComponent, canActivate: [authGuard] },
+  { path: 'admin/panell', component: AdminPanellComponent, canActivate: [adminGuard] },
   { path: '**', redirectTo: '' }
 ];

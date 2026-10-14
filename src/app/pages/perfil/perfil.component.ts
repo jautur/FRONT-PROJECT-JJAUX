@@ -108,6 +108,9 @@ import { AuthService } from '../../core/services/auth.service';
             <div *ngIf="usuari?.rol === 'professional'">
               <p>Com a <strong>Professional</strong>, pots navegar per les tasques obertes, enviar ofertes econòmiques i gestionar els teus encàrrecs.</p>
             </div>
+            <div *ngIf="usuari?.rol === 'ambdos'">
+              <p>Com a <strong>Client & Professional</strong>, disposes d'un compte complet híbrid: pots publicar tasques pròpies com a client i presentar pressupostos com a professional.</p>
+            </div>
             <div *ngIf="usuari?.rol === 'admin'">
               <p>Com a <strong>Administrador</strong>, tens accés global de gestió d'usuaris, supervisió de tasques i configuració d'avisos.</p>
             </div>
@@ -177,6 +180,11 @@ import { AuthService } from '../../core/services/auth.service';
 
       .role-badge.professional {
         background: #16a34a;
+        color: white;
+      }
+
+      .role-badge.ambdos {
+        background: #8b5cf6;
         color: white;
       }
 

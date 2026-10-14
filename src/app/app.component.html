@@ -25,6 +25,13 @@
         <a routerLink="/professional/crear-oferta" routerLinkActive="active-link" class="nav-cta">+ Nova oferta</a>
       </ng-container>
 
+      <!-- Enllaç exclusiu per a Administradors -->
+      <ng-container *ngIf="authService.isLoggedIn() && isAdmin()">
+        <a routerLink="/admin/panell" routerLinkActive="active-link" class="nav-admin" title="Panell d'Administració Global">
+          🛡️ Panell Admin
+        </a>
+      </ng-container>
+
       <!-- Enllaços comuns per a usuaris autenticats -->
       <ng-container *ngIf="authService.isLoggedIn()">
         <!-- Botó de Notificacions amb comptador -->
@@ -38,7 +45,7 @@
           👤 {{ authService.getCurrentUser()?.nom }}
         </a>
 
-        <span class="user-role-badge">
+        <span class="user-role-badge" [ngClass]="authService.getCurrentUser()?.rol">
           {{ authService.getCurrentUser()?.rol }}
         </span>
 

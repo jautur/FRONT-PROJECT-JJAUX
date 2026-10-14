@@ -114,6 +114,21 @@
   background: rgba(59, 130, 246, 0.25);
 }
 
+.nav-admin {
+  background: rgba(147, 51, 234, 0.2);
+  border: 1px solid rgba(147, 51, 234, 0.4);
+  padding: 0.35rem 0.8rem;
+  border-radius: 6px;
+  color: #c084fc !important;
+  font-weight: 600;
+  font-size: 0.88rem;
+}
+
+.nav-admin:hover {
+  background: rgba(147, 51, 234, 0.35);
+  color: #ffffff !important;
+}
+
 .user-role-badge {
   font-size: 0.75rem;
   background: #1e293b;
@@ -123,6 +138,18 @@
   text-transform: uppercase;
   font-weight: 600;
   border: 1px solid #334155;
+}
+
+.user-role-badge.ambdos {
+  background: #3b0764;
+  color: #d8b4fe;
+  border-color: #7e22ce;
+}
+
+.user-role-badge.admin {
+  background: #4a044e;
+  color: #f5d0fe;
+  border-color: #a21caf;
 }
 
 .btn-logout {
