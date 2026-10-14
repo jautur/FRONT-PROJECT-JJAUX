@@ -126,43 +126,43 @@ import { AuthService } from '../../core/services/auth.service';
       }
 
       .perfil-header {
-        background: #111116;
-        color: var(--color-bone, #f5f4ef);
+        background: #ffffff;
+        color: #09090c;
         padding: 2.2rem;
         border-radius: 20px;
-        border: 1px solid #23232f;
+        border: 1px solid #e5e0d7;
         display: flex;
         align-items: center;
         gap: 1.75rem;
-        box-shadow: 0 16px 45px rgba(0, 0, 0, 0.6);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
       }
 
       .avatar-badge {
         width: 76px;
         height: 76px;
-        background: #181824;
-        color: var(--neon, #00ff66);
-        border: 2px solid var(--neon, #00ff66);
+        background: #09090c;
+        color: #ffffff;
+        border: 3px solid var(--neon, #ff1744);
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
         font-size: 2.2rem;
         font-weight: 900;
-        box-shadow: 0 0 16px rgba(0, 255, 102, 0.35);
+        box-shadow: 0 0 16px rgba(255, 23, 68, 0.35);
       }
 
       .header-info h1 {
         margin: 0;
         font-size: 2rem;
         font-weight: 900;
-        color: var(--color-bone, #f5f4ef);
+        color: #09090c;
         letter-spacing: -0.03em;
       }
 
       .header-info .email {
         margin: 0.35rem 0 0.65rem;
-        color: var(--color-bone-muted, #bab8ae);
+        color: #636058;
         font-size: 0.95rem;
         font-weight: 600;
       }
@@ -179,22 +179,22 @@ import { AuthService } from '../../core/services/auth.service';
       }
 
       .role-badge.client {
-        background: rgba(255, 255, 255, 0.08);
-        color: var(--color-bone, #f5f4ef);
-        border-color: #38384a;
+        background: #f0ece3;
+        color: #09090c;
+        border-color: #dcd6cb;
       }
 
       .role-badge.professional {
-        background: rgba(0, 255, 102, 0.12);
-        color: var(--neon, #00ff66);
-        border-color: rgba(0, 255, 102, 0.4);
+        background: rgba(255, 23, 68, 0.08);
+        color: var(--neon, #ff1744);
+        border-color: rgba(255, 23, 68, 0.3);
       }
 
       .role-badge.admin {
-        background: rgba(255, 255, 255, 0.15);
+        background: #09090c;
         color: #ffffff;
-        border-color: var(--neon, #00ff66);
-        box-shadow: 0 0 10px rgba(0, 255, 102, 0.3);
+        border-color: var(--neon, #ff1744);
+        box-shadow: 0 0 10px rgba(255, 23, 68, 0.3);
       }
 
       .perfil-grid {
@@ -216,23 +216,23 @@ import { AuthService } from '../../core/services/auth.service';
       }
 
       .card {
-        background: #111116;
+        background: #ffffff;
         padding: 2rem;
         border-radius: 18px;
-        border: 1px solid #23232f;
-        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.5);
+        border: 1px solid #e5e0d7;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
       }
 
       .card h2 {
         margin: 0 0 0.35rem;
         font-size: 1.35rem;
         font-weight: 900;
-        color: var(--color-bone, #f5f4ef);
+        color: #09090c;
       }
 
       .subtitle {
         margin: 0 0 1.4rem;
-        color: var(--color-bone-muted, #bab8ae);
+        color: #636058;
         font-size: 0.9rem;
         font-weight: 600;
       }
@@ -249,39 +249,39 @@ import { AuthService } from '../../core/services/auth.service';
         gap: 0.45rem;
         font-weight: 800;
         font-size: 0.85rem;
-        color: var(--color-bone, #f5f4ef);
+        color: #09090c;
         text-transform: uppercase;
         letter-spacing: 0.05em;
       }
 
       input, textarea {
-        background: #181822;
-        color: var(--color-bone, #f5f4ef);
-        border: 1px solid #2a2a3a;
+        background: #ffffff;
+        color: #09090c;
+        border: 1.5px solid #d6d0c4;
         border-radius: 10px;
         padding: 0.85rem 1rem;
         font-size: 0.95rem;
         font-weight: 600;
         font-family: inherit;
         outline: none;
-        transition: border-color 0.15s ease;
+        transition: border-color 0.15s ease, box-shadow 0.15s ease;
       }
 
       input:focus, textarea:focus {
-        border-color: var(--neon, #00ff66);
-        box-shadow: 0 0 14px rgba(0, 255, 102, 0.25);
+        border-color: var(--neon, #ff1744);
+        box-shadow: 0 0 12px rgba(255, 23, 68, 0.25);
       }
 
       .input-disabled {
-        background: #14141b;
-        color: var(--color-bone-dim, #737168);
-        border-color: #20202c;
+        background: #f5f2eb;
+        color: #8c887e;
+        border-color: #e5e0d7;
         cursor: not-allowed;
       }
 
       .hint {
         font-size: 0.78rem;
-        color: var(--color-bone-dim, #737168);
+        color: #7d796f;
         font-weight: 600;
       }
 
@@ -303,40 +303,42 @@ import { AuthService } from '../../core/services/auth.service';
       }
 
       .btn-primary {
-        background: var(--neon, #00ff66);
-        color: #08080a;
+        background: var(--neon, #ff1744);
+        color: #ffffff;
         margin-top: 0.6rem;
-        box-shadow: 0 0 16px rgba(0, 255, 102, 0.35);
+        box-shadow: 0 4px 16px rgba(255, 23, 68, 0.35);
       }
 
       .btn-primary:hover:not(:disabled) {
-        background: #ffffff;
-        box-shadow: 0 0 24px rgba(0, 255, 102, 0.6);
+        background: #09090c;
+        color: #ffffff;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
         transform: translateY(-2px);
       }
 
       .btn-secondary {
-        background: #1c1c28;
-        color: var(--color-bone, #f5f4ef);
-        border: 1px solid #36364a;
+        background: #f0ece3;
+        color: #09090c;
+        border: 1px solid #dcd6cb;
         margin-top: 0.6rem;
       }
 
       .btn-secondary:hover:not(:disabled) {
-        border-color: var(--neon, #00ff66);
-        color: var(--neon, #00ff66);
+        border-color: #09090c;
+        background: #09090c;
+        color: #ffffff;
       }
 
       .info-card h3 {
         margin: 0 0 0.5rem;
         font-size: 1.15rem;
         font-weight: 900;
-        color: var(--color-bone, #f5f4ef);
+        color: #09090c;
       }
 
       .info-card p {
         margin: 0;
-        color: var(--color-bone-muted, #bab8ae);
+        color: #57554e;
         line-height: 1.55;
         font-size: 0.92rem;
         font-weight: 600;
@@ -350,17 +352,15 @@ import { AuthService } from '../../core/services/auth.service';
       }
 
       .alert-success {
-        background: rgba(0, 255, 102, 0.1);
-        color: var(--neon, #00ff66);
-        border: 1px solid rgba(0, 255, 102, 0.4);
+        background: rgba(255, 23, 68, 0.08);
+        color: var(--neon, #ff1744);
+        border: 1px solid rgba(255, 23, 68, 0.25);
       }
 
       .alert-danger {
-        background: #1c1c24;
-        border: 1px solid rgba(255, 92, 92, 0.4);
-        color: #ff6b6b;
+        background: #fef2f2;
+        border: 1px solid #fecaca;
         color: #991b1b;
-        border: 1px solid #fca5a5;
       }
 
       @media (max-width: 800px) {

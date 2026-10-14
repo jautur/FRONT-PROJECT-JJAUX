@@ -439,9 +439,9 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
     }
     .admin-badge {
       display: inline-block;
-      background: rgba(0, 255, 102, 0.1);
-      color: #00ff66;
-      border: 1px solid rgba(0, 255, 102, 0.3);
+      background: rgba(255, 23, 68, 0.08);
+      color: #ff1744;
+      border: 1px solid rgba(255, 23, 68, 0.3);
       font-size: 0.72rem;
       font-weight: 900;
       letter-spacing: 0.12em;
@@ -451,32 +451,33 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
     }
     .title-group h2 {
       margin: 0 0 0.35rem 0;
-      color: #f5f4ef;
+      color: #09090c;
       font-size: 1.85rem;
       font-weight: 900;
       letter-spacing: -0.02em;
     }
     .subtitle {
       margin: 0;
-      color: #bab8ae;
+      color: #636058;
       font-size: 0.95rem;
       font-weight: 500;
     }
     .btn-refresh {
-      background: #111116;
-      border: 1px solid #2a2a38;
+      background: #ffffff;
+      border: 1px solid #d6d0c4;
       padding: 0.65rem 1.25rem;
       border-radius: 8px;
       font-weight: 800;
       font-size: 0.88rem;
-      color: #f5f4ef;
+      color: #09090c;
       cursor: pointer;
       transition: all 0.2s ease;
     }
     .btn-refresh:hover:not(:disabled) {
-      border-color: #00ff66;
-      color: #00ff66;
-      box-shadow: 0 0 12px rgba(0, 255, 102, 0.2);
+      border-color: #09090c;
+      background: #09090c;
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     }
     .btn-refresh:disabled {
       opacity: 0.5;
@@ -489,17 +490,19 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
       margin-bottom: 2rem;
     }
     .metric-card {
-      background: #111116;
-      border: 1px solid #1e1e28;
+      background: #ffffff;
+      border: 1px solid #e5e0d7;
       border-radius: 14px;
       padding: 1.35rem;
       display: flex;
       align-items: center;
       gap: 1.1rem;
-      transition: border-color 0.2s;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+      transition: all 0.2s;
     }
     .metric-card:hover {
-      border-color: rgba(0, 255, 102, 0.35);
+      border-color: #ff1744;
+      transform: translateY(-2px);
     }
     .metric-icon {
       font-size: 2.2rem;
@@ -511,18 +514,18 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
     .metric-value {
       font-size: 1.85rem;
       font-weight: 900;
-      color: #f5f4ef;
+      color: #09090c;
       line-height: 1.1;
     }
     .metric-label {
       font-size: 0.85rem;
-      color: #bab8ae;
+      color: #636058;
       font-weight: 700;
       margin-top: 0.25rem;
     }
     .metric-sub {
       font-size: 0.75rem;
-      color: #71717a;
+      color: #8c887e;
       margin-top: 0.2rem;
       font-weight: 600;
     }
@@ -530,31 +533,31 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
       display: flex;
       gap: 0.65rem;
       margin-bottom: 1.5rem;
-      border-bottom: 1px solid #1e1e28;
+      border-bottom: 1px solid #e5e0d7;
       padding-bottom: 0.75rem;
       flex-wrap: wrap;
     }
     .tab-btn {
-      background: #111116;
-      border: 1px solid #242432;
+      background: #ffffff;
+      border: 1px solid #d6d0c4;
       padding: 0.65rem 1.25rem;
       border-radius: 8px;
       font-size: 0.92rem;
       font-weight: 800;
-      color: #bab8ae;
+      color: #636058;
       cursor: pointer;
       transition: all 0.2s ease;
     }
     .tab-btn:hover {
-      border-color: #00ff66;
-      color: #f5f4ef;
+      border-color: #ff1744;
+      color: #09090c;
     }
     .tab-btn.active {
-      background: #00ff66;
-      border-color: #00ff66;
-      color: #08080a;
+      background: #ff1744;
+      border-color: #ff1744;
+      color: #ffffff;
       font-weight: 900;
-      box-shadow: 0 0 15px rgba(0, 255, 102, 0.35);
+      box-shadow: 0 4px 15px rgba(255, 23, 68, 0.35);
     }
     .filter-bar {
       display: flex;
@@ -566,37 +569,38 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
       flex: 1;
       min-width: 260px;
       padding: 0.75rem 1rem;
-      background: #111116;
-      border: 1px solid #242432;
+      background: #ffffff;
+      border: 1.5px solid #d6d0c4;
       border-radius: 8px;
       font-size: 0.9rem;
-      color: #f5f4ef;
+      color: #09090c;
       font-weight: 600;
     }
     .search-input:focus {
       outline: none;
-      border-color: #00ff66;
-      box-shadow: 0 0 10px rgba(0, 255, 102, 0.2);
+      border-color: #ff1744;
+      box-shadow: 0 0 10px rgba(255, 23, 68, 0.2);
     }
     .select-filter {
       padding: 0.75rem 1rem;
-      background: #111116;
-      border: 1px solid #242432;
+      background: #ffffff;
+      border: 1.5px solid #d6d0c4;
       border-radius: 8px;
       font-size: 0.9rem;
-      color: #f5f4ef;
+      color: #09090c;
       font-weight: 700;
       cursor: pointer;
     }
     .select-filter:focus {
       outline: none;
-      border-color: #00ff66;
+      border-color: #ff1744;
     }
     .table-wrapper {
-      background: #111116;
-      border: 1px solid #1e1e28;
+      background: #ffffff;
+      border: 1px solid #e5e0d7;
       border-radius: 12px;
       overflow-x: auto;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
     }
     .data-table {
       width: 100%;
@@ -605,45 +609,45 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
       font-size: 0.9rem;
     }
     .data-table th {
-      background: #161620;
-      color: #f5f4ef;
+      background: #faf8f4;
+      color: #09090c;
       padding: 0.9rem 1rem;
       font-weight: 800;
-      border-bottom: 1px solid #1e1e28;
+      border-bottom: 1px solid #e5e0d7;
       white-space: nowrap;
       letter-spacing: 0.03em;
     }
     .data-table td {
       padding: 0.9rem 1rem;
-      border-bottom: 1px solid #181824;
+      border-bottom: 1px solid #f0ece3;
       vertical-align: middle;
-      color: #f5f4ef;
+      color: #09090c;
     }
     .data-table tr:hover {
-      background: #171722;
+      background: #faf8f4;
     }
     .font-mono {
       font-family: monospace;
-      color: #00ff66;
+      color: #ff1744;
       font-weight: 800;
     }
     .table-titol {
       font-weight: 800;
-      color: #f5f4ef;
+      color: #09090c;
       margin-bottom: 0.2rem;
     }
     .table-desc {
       font-size: 0.8rem;
-      color: #bab8ae;
+      color: #636058;
       max-width: 280px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
     .tag-cat {
-      background: #181824;
-      border: 1px solid #242432;
-      color: #bab8ae;
+      background: #f0ece3;
+      border: 1px solid #dcd6cb;
+      color: #09090c;
       padding: 0.2rem 0.5rem;
       border-radius: 4px;
       font-size: 0.78rem;
@@ -657,51 +661,51 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
       display: inline-block;
     }
     .badge-oberta {
-      background: rgba(0, 255, 102, 0.12);
-      color: #00ff66;
-      border: 1px solid rgba(0, 255, 102, 0.3);
+      background: rgba(255, 23, 68, 0.08);
+      color: #ff1744;
+      border: 1px solid rgba(255, 23, 68, 0.25);
     }
     .badge-en-curs {
       background: rgba(245, 158, 11, 0.12);
-      color: #f59e0b;
+      color: #b45309;
       border: 1px solid rgba(245, 158, 11, 0.3);
     }
     .badge-finalitzada {
-      background: rgba(148, 163, 184, 0.12);
-      color: #94a3b8;
-      border: 1px solid rgba(148, 163, 184, 0.25);
+      background: rgba(148, 163, 184, 0.15);
+      color: #475569;
+      border: 1px solid rgba(148, 163, 184, 0.3);
     }
     .badge-pendent {
       background: rgba(245, 158, 11, 0.12);
-      color: #f59e0b;
+      color: #b45309;
       border: 1px solid rgba(245, 158, 11, 0.3);
     }
     .badge-acceptada {
-      background: rgba(0, 255, 102, 0.12);
-      color: #00ff66;
-      border: 1px solid rgba(0, 255, 102, 0.3);
+      background: rgba(255, 23, 68, 0.08);
+      color: #ff1744;
+      border: 1px solid rgba(255, 23, 68, 0.25);
     }
     .badge-rebutjada {
-      background: rgba(239, 68, 68, 0.12);
-      color: #ef4444;
+      background: rgba(239, 68, 68, 0.1);
+      color: #dc2626;
       border: 1px solid rgba(239, 68, 68, 0.3);
     }
     .price-cell {
       font-weight: 900;
-      color: #00ff66;
+      color: #ff1744;
       font-size: 0.95rem;
     }
     .note-cell {
       max-width: 220px;
       font-size: 0.82rem;
-      color: #bab8ae;
+      color: #636058;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
       font-style: italic;
     }
     .link-ref {
-      color: #00ff66;
+      color: #ff1744;
       text-decoration: underline;
       font-weight: 700;
     }
@@ -723,25 +727,26 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
       transition: all 0.15s;
     }
     .btn-info {
-      background: #181824;
-      color: #f5f4ef;
-      border-color: #2a2a3c;
+      background: #f0ece3;
+      color: #09090c;
+      border-color: #dcd6cb;
     }
     .btn-info:hover {
-      border-color: #00ff66;
-      color: #00ff66;
+      border-color: #ff1744;
+      color: #ff1744;
     }
     .btn-success {
-      background: rgba(0, 255, 102, 0.1);
-      color: #00ff66;
-      border-color: rgba(0, 255, 102, 0.3);
+      background: rgba(255, 23, 68, 0.08);
+      color: #ff1744;
+      border-color: rgba(255, 23, 68, 0.3);
     }
     .btn-success:hover {
-      background: rgba(0, 255, 102, 0.2);
+      background: #ff1744;
+      color: #ffffff;
     }
     .btn-warning {
       background: rgba(245, 158, 11, 0.1);
-      color: #f59e0b;
+      color: #b45309;
       border-color: rgba(245, 158, 11, 0.3);
     }
     .btn-warning:hover {
@@ -749,7 +754,7 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
     }
     .btn-danger {
       background: rgba(239, 68, 68, 0.1);
-      color: #ef4444;
+      color: #dc2626;
       border-color: rgba(239, 68, 68, 0.3);
     }
     .btn-danger:hover {
@@ -762,29 +767,29 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
       font-weight: 800;
     }
     .user-badge-tag.client {
-      background: rgba(59, 130, 246, 0.15);
-      color: #60a5fa;
-      border: 1px solid rgba(59, 130, 246, 0.3);
+      background: #eff6ff;
+      color: #1d4ed8;
+      border: 1px solid #bfdbfe;
     }
     .user-badge-tag.professional {
-      background: rgba(0, 255, 102, 0.12);
-      color: #00ff66;
-      border: 1px solid rgba(0, 255, 102, 0.3);
+      background: rgba(255, 23, 68, 0.08);
+      color: #ff1744;
+      border: 1px solid rgba(255, 23, 68, 0.25);
     }
     .user-badge-tag.ambdos {
-      background: rgba(168, 85, 247, 0.15);
-      color: #c084fc;
-      border: 1px solid rgba(168, 85, 247, 0.3);
+      background: #f5f3ff;
+      color: #6d28d9;
+      border: 1px solid #ddd6fe;
     }
     .user-badge-tag.admin {
-      background: rgba(236, 72, 153, 0.15);
-      color: #f472b6;
-      border: 1px solid rgba(236, 72, 153, 0.3);
+      background: #09090c;
+      color: #ffffff;
+      border: 1px solid #ff1744;
     }
     .bio-cell {
       max-width: 250px;
       font-size: 0.8rem;
-      color: #bab8ae;
+      color: #636058;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -792,34 +797,34 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
     .empty-box {
       text-align: center;
       padding: 2.5rem;
-      background: #111116;
+      background: #ffffff;
       border-radius: 12px;
-      border: 1px dashed #242432;
-      color: #bab8ae;
+      border: 1px dashed #d6d0c4;
+      color: #636058;
       font-weight: 700;
     }
     .alert-success {
-      background: rgba(0, 255, 102, 0.1);
-      color: #00ff66;
-      border: 1px solid rgba(0, 255, 102, 0.3);
+      background: rgba(255, 23, 68, 0.08);
+      color: #ff1744;
+      border: 1px solid rgba(255, 23, 68, 0.25);
       padding: 0.75rem 1rem;
       border-radius: 8px;
       margin-bottom: 1rem;
       font-weight: 700;
     }
     .alert-error {
-      background: rgba(239, 68, 68, 0.1);
-      color: #ef4444;
-      border: 1px solid rgba(239, 68, 68, 0.3);
+      background: #fef2f2;
+      color: #dc2626;
+      border: 1px solid #fecaca;
       padding: 0.75rem 1rem;
       border-radius: 8px;
       margin-bottom: 1rem;
       font-weight: 700;
     }
     .btn-password {
-      background: rgba(0, 255, 102, 0.1);
-      color: #00ff66;
-      border: 1px solid rgba(0, 255, 102, 0.3);
+      background: rgba(255, 23, 68, 0.08);
+      color: #ff1744;
+      border: 1px solid rgba(255, 23, 68, 0.3);
       padding: 0.35rem 0.65rem;
       border-radius: 6px;
       font-size: 0.8rem;
@@ -828,9 +833,9 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
       transition: all 0.2s;
     }
     .btn-password:hover {
-      background: #00ff66;
-      color: #08080a;
-      box-shadow: 0 0 10px rgba(0, 255, 102, 0.4);
+      background: #ff1744;
+      color: #ffffff;
+      box-shadow: 0 4px 10px rgba(255, 23, 68, 0.35);
     }
     .modal-backdrop {
       position: fixed;
@@ -838,7 +843,7 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
       left: 0;
       width: 100vw;
       height: 100vh;
-      background: rgba(0, 0, 0, 0.85);
+      background: rgba(9, 9, 12, 0.65);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -846,12 +851,12 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
       backdrop-filter: blur(4px);
     }
     .modal-card {
-      background: #111116;
+      background: #ffffff;
       width: 100%;
       max-width: 480px;
       border-radius: 14px;
-      border: 1px solid #242432;
-      box-shadow: 0 20px 35px rgba(0, 0, 0, 0.6);
+      border: 1px solid #e5e0d7;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
       overflow: hidden;
       display: flex;
       flex-direction: column;
@@ -863,8 +868,8 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
     }
     .modal-header {
       padding: 1.1rem 1.4rem;
-      background: #161620;
-      border-bottom: 1px solid #1e1e28;
+      background: #faf8f4;
+      border-bottom: 1px solid #e5e0d7;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -872,7 +877,7 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
     .modal-header h3 {
       margin: 0;
       font-size: 1.15rem;
-      color: #f5f4ef;
+      color: #09090c;
       font-weight: 800;
       display: flex;
       align-items: center;
@@ -882,13 +887,13 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
       background: none;
       border: none;
       font-size: 1.25rem;
-      color: #bab8ae;
+      color: #636058;
       cursor: pointer;
       padding: 0.2rem 0.5rem;
       border-radius: 4px;
     }
     .btn-close:hover {
-      color: #00ff66;
+      color: #ff1744;
     }
     .modal-body {
       padding: 1.4rem;
@@ -897,12 +902,12 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
       gap: 1.1rem;
     }
     .user-highlight {
-      background: #181824;
-      border: 1px solid #242432;
+      background: #faf8f4;
+      border: 1px solid #e5e0d7;
       padding: 0.75rem 1rem;
       border-radius: 8px;
       font-size: 0.9rem;
-      color: #f5f4ef;
+      color: #09090c;
       font-weight: 700;
     }
     .user-subinfo {
@@ -910,13 +915,13 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
       align-items: center;
       gap: 0.5rem;
       margin-top: 0.25rem;
-      color: #bab8ae;
+      color: #636058;
       font-weight: 500;
     }
     .alert-info-box {
-      background: rgba(0, 255, 102, 0.05);
-      border-left: 3px solid #00ff66;
-      color: #bab8ae;
+      background: rgba(255, 23, 68, 0.04);
+      border-left: 3px solid #ff1744;
+      color: #57554e;
       padding: 0.75rem;
       border-radius: 4px;
       font-size: 0.82rem;
@@ -930,7 +935,7 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
     .form-group label {
       font-weight: 800;
       font-size: 0.85rem;
-      color: #bab8ae;
+      color: #09090c;
     }
     .input-password-wrapper {
       position: relative;
@@ -951,23 +956,23 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
     .form-control {
       width: 100%;
       padding: 0.7rem 0.85rem;
-      background: #181822;
-      border: 1px solid #282836;
+      background: #ffffff;
+      border: 1.5px solid #d6d0c4;
       border-radius: 6px;
       font-size: 0.9rem;
-      color: #f5f4ef;
+      color: #09090c;
       box-sizing: border-box;
       outline: none;
       transition: border-color 0.2s;
     }
     .form-control:focus {
-      border-color: #00ff66;
-      box-shadow: 0 0 10px rgba(0, 255, 102, 0.2);
+      border-color: #ff1744;
+      box-shadow: 0 0 10px rgba(255, 23, 68, 0.2);
     }
     .modal-error {
-      background: rgba(239, 68, 68, 0.1);
-      color: #ef4444;
-      border: 1px solid rgba(239, 68, 68, 0.3);
+      background: #fef2f2;
+      color: #dc2626;
+      border: 1px solid #fecaca;
       padding: 0.6rem 0.8rem;
       border-radius: 6px;
       font-size: 0.82rem;
@@ -975,41 +980,44 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
     }
     .modal-footer {
       padding: 1rem 1.4rem;
-      background: #161620;
-      border-top: 1px solid #1e1e28;
+      background: #faf8f4;
+      border-top: 1px solid #e5e0d7;
       display: flex;
       justify-content: flex-end;
       gap: 0.75rem;
     }
     .btn-secondary {
       padding: 0.6rem 1.1rem;
-      background: #1e1e2a;
-      border: 1px solid #2c2c3e;
+      background: #f0ece3;
+      border: 1px solid #dcd6cb;
       border-radius: 6px;
-      color: #bab8ae;
+      color: #09090c;
       font-weight: 800;
       font-size: 0.85rem;
       cursor: pointer;
       transition: all 0.2s;
     }
     .btn-secondary:hover {
-      border-color: #bab8ae;
-      color: #f5f4ef;
+      border-color: #09090c;
+      background: #09090c;
+      color: #ffffff;
     }
     .btn-primary {
       padding: 0.6rem 1.25rem;
-      background: #00ff66;
-      border: 1px solid #00ff66;
+      background: #ff1744;
+      border: 1px solid #ff1744;
       border-radius: 6px;
-      color: #08080a;
+      color: #ffffff;
       font-weight: 900;
       font-size: 0.85rem;
       cursor: pointer;
       transition: all 0.2s;
+      box-shadow: 0 4px 12px rgba(255, 23, 68, 0.3);
     }
     .btn-primary:hover:not(:disabled) {
-      background: #00dd55;
-      box-shadow: 0 0 15px rgba(0, 255, 102, 0.4);
+      background: #09090c;
+      border-color: #09090c;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
     }
     .btn-primary:disabled {
       opacity: 0.5;

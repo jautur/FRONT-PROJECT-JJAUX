@@ -1,30 +1,37 @@
 /* ============================================================== */
-/* PALETA DE COLORS MODERNA: NEGRE, BLANC OS I NEÓ LLAMATIU        */
+/* PALETA DE COLORS MODERNA: BLANC BRUT #f7f3ed, NEGRE I NEÓ ROIG  */
 /* TIPOGRAFIA EN NEGRETA I DISSENY MINIMALISTA D'ALT IMPACTE      */
 /* ============================================================== */
 
 :root {
-  color-scheme: dark;
+  /* Fons de pàgina blanc brut */
+  --bg-page: #f7f3ed;
+  --bg-card: #ffffff;
+  --bg-surface: #faf8f4;
+  --border-subtle: #e5e0d7;
 
-  /* Paleta cromàtica principal */
-  --bg-black: #08080a;        /* Negre absolut per al fons */
-  --bg-card: #111116;         /* Negre carbó per a targetes */
-  --bg-surface: #181820;      /* Negre superfície secundària */
-  --border-dark: #23232f;     /* Vores fosques subtils */
-  --border-neon: rgba(0, 255, 102, 0.4);
+  /* Negres per a la barra superior i menú lateral */
+  --bg-black: #09090c;
+  --bg-sidebar: #0d0d12;
+  --border-dark: #23232f;
 
-  /* Blanc os (Bone White) */
-  --color-bone: #f5f4ef;       /* Blanc os lluminós per a textos i títols */
-  --color-bone-muted: #bab8ae; /* Blanc os atenuat per a subtítols */
-  --color-bone-dim: #737168;   /* Blanc os apagat per a metadades */
+  /* Colors de text per al fons blanc brut */
+  --color-text: #09090c;
+  --color-text-muted: #57554e;
+  --color-text-dim: #7d7a72;
 
-  /* ÚNIC COLOR NEÓ LLAMATIU (Verd Elèctric / Electric Neon Lime) */
-  --neon: #00ff66;
-  --neon-hover: #00e55b;
-  --neon-glow: 0 0 18px rgba(0, 255, 102, 0.45);
-  --neon-glow-lg: 0 0 32px rgba(0, 255, 102, 0.65);
-  --neon-bg: rgba(0, 255, 102, 0.12);
-  --neon-border: rgba(0, 255, 102, 0.5);
+  /* Blancs per a la barra i menú negres */
+  --color-bone: #f5f4ef;
+  --color-bone-muted: #bab8ae;
+  --color-bone-dim: #737168;
+
+  /* ÚNIC COLOR NEÓ LLAMATIU: NEÓ ROIG (Electric Neon Red) */
+  --neon: #ff1744;
+  --neon-hover: #d5002e;
+  --neon-glow: 0 0 18px rgba(255, 23, 68, 0.45);
+  --neon-glow-lg: 0 0 32px rgba(255, 23, 68, 0.65);
+  --neon-bg: rgba(255, 23, 68, 0.12);
+  --neon-border: rgba(255, 23, 68, 0.5);
 
   /* Tipografia en negreta per defecte */
   font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -38,8 +45,8 @@
 body {
   margin: 0;
   padding: 0;
-  background-color: var(--bg-black);
-  color: var(--color-bone);
+  background-color: var(--bg-page, #f7f3ed);
+  color: var(--color-text, #09090c);
   font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -48,7 +55,7 @@ body {
 
 /* Tipografia global en negreta */
 h1, h2, h3, h4, h5, h6 {
-  color: var(--color-bone);
+  color: var(--color-text, #09090c);
   font-weight: 800;
   letter-spacing: -0.03em;
   margin-top: 0;
@@ -61,26 +68,26 @@ h1 {
 
 b, strong {
   font-weight: 800;
-  color: var(--color-bone);
+  color: var(--color-text, #09090c);
 }
 
 p {
-  color: var(--color-bone-muted);
+  color: var(--color-text-muted, #57554e);
   line-height: 1.6;
 }
 
 a {
-  color: var(--neon);
+  color: var(--neon, #ff1744);
   text-decoration: none;
   font-weight: 700;
   transition: all 0.2s ease;
 }
 
 a:hover {
-  text-shadow: 0 0 10px rgba(0, 255, 102, 0.6);
+  text-shadow: 0 0 10px rgba(255, 23, 68, 0.5);
 }
 
-/* Botons globals amb estil d'impacte negre/blanc os/neó */
+/* Botons globals amb estil d'impacte */
 button, .btn {
   font-family: inherit;
   font-weight: 800;
@@ -90,12 +97,12 @@ button, .btn {
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Inputs i formularis en estil fosc i blanc os */
+/* Inputs i formularis en estil clar i net */
 input, select, textarea {
   font-family: inherit;
-  background-color: var(--bg-surface);
-  color: var(--color-bone);
-  border: 1px solid var(--border-dark);
+  background-color: #ffffff;
+  color: #09090c;
+  border: 1px solid #dcd7ce;
   border-radius: 8px;
   padding: 0.75rem 1rem;
   font-weight: 600;
@@ -104,22 +111,22 @@ input, select, textarea {
 }
 
 input:focus, select:focus, textarea:focus {
-  border-color: var(--neon);
-  box-shadow: 0 0 0 2px rgba(0, 255, 102, 0.2), var(--neon-glow);
+  border-color: var(--neon, #ff1744);
+  box-shadow: 0 0 0 3px rgba(255, 23, 68, 0.15), var(--neon-glow);
 }
 
-/* Scrollbars modernes en negre i neó */
+/* Scrollbars modernes */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: var(--bg-black);
+  background: #f7f3ed;
 }
 ::-webkit-scrollbar-thumb {
-  background: #23232f;
+  background: #d8d3c9;
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--neon);
+  background: var(--neon, #ff1744);
 }

@@ -203,14 +203,14 @@ import { AuthService } from '../../core/services/auth.service';
       .mouse-wheel {
         width: 4px;
         height: 8px;
-        background: #00ff66;
+        background: #ff1744;
         border-radius: 2px;
         position: absolute;
         top: 6px;
         left: 50%;
         transform: translateX(-50%);
         animation: wheelScroll 1.6s infinite ease-out;
-        box-shadow: 0 0 6px #00ff66;
+        box-shadow: 0 0 8px #ff1744;
       }
 
       @keyframes wheelScroll {
@@ -254,7 +254,7 @@ import { AuthService } from '../../core/services/auth.service';
         font-weight: 900;
         text-transform: uppercase;
         letter-spacing: 0.12em;
-        color: #00aa44;
+        color: #ff1744;
         margin-bottom: 0.35rem;
         display: block;
       }
@@ -268,9 +268,9 @@ import { AuthService } from '../../core/services/auth.service';
       }
 
       .btn-create-task {
-        background: #00ff66;
-        color: #08080a;
-        border: 1px solid #00dd55;
+        background: #ff1744;
+        color: #ffffff;
+        border: 1px solid #ff1744;
         border-radius: 8px;
         padding: 0.8rem 1.6rem;
         font-weight: 900;
@@ -278,14 +278,14 @@ import { AuthService } from '../../core/services/auth.service';
         cursor: pointer;
         text-transform: uppercase;
         letter-spacing: 0.05em;
-        box-shadow: 0 4px 16px rgba(0, 255, 102, 0.35);
+        box-shadow: 0 4px 16px rgba(255, 23, 68, 0.4);
         transition: all 0.2s ease;
       }
 
       .btn-create-task:hover {
-        background: #08080a;
-        color: #00ff66;
-        border-color: #08080a;
+        background: #09090c;
+        color: #ffffff;
+        border-color: #09090c;
         box-shadow: 0 6px 22px rgba(0, 0, 0, 0.25);
         transform: translateY(-2px);
       }
@@ -309,7 +309,7 @@ import { AuthService } from '../../core/services/auth.service';
       }
 
       .stat-card:hover {
-        border-color: #00ff66;
+        border-color: #ff1744;
         transform: translateY(-2px);
       }
 
@@ -371,18 +371,18 @@ import { AuthService } from '../../core/services/auth.service';
 
       .panel-header a {
         text-decoration: none;
-        color: #08080a;
+        color: #09090c;
         font-weight: 900;
         font-size: 0.85rem;
         text-transform: uppercase;
         letter-spacing: 0.05em;
-        border-bottom: 2px solid #00ff66;
+        border-bottom: 2px solid #ff1744;
         padding-bottom: 2px;
         transition: all 0.2s ease;
       }
 
       .panel-header a:hover {
-        color: #00aa44;
+        color: #ff1744;
       }
 
       .card {
@@ -398,7 +398,7 @@ import { AuthService } from '../../core/services/auth.service';
 
       .card:hover {
         background: #ffffff;
-        border-color: #00ff66;
+        border-color: #ff1744;
         transform: translateY(-2px);
         box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
       }
@@ -424,9 +424,9 @@ import { AuthService } from '../../core/services/auth.service';
       }
 
       .tag.alt {
-        background: rgba(0, 255, 102, 0.15);
-        color: #007730;
-        border: 1px solid rgba(0, 255, 102, 0.4);
+        background: rgba(255, 23, 68, 0.12);
+        color: #ff1744;
+        border: 1px solid rgba(255, 23, 68, 0.35);
       }
 
       .status {
@@ -440,9 +440,9 @@ import { AuthService } from '../../core/services/auth.service';
       }
 
       .status-task.oberta {
-        background: rgba(0, 255, 102, 0.18);
-        color: #007730;
-        border-color: rgba(0, 255, 102, 0.5);
+        background: rgba(255, 23, 68, 0.12);
+        color: #ff1744;
+        border-color: rgba(255, 23, 68, 0.35);
       }
 
       .status-task.en-curs {
@@ -464,9 +464,9 @@ import { AuthService } from '../../core/services/auth.service';
       }
 
       .status-offer.acceptada {
-        background: rgba(0, 255, 102, 0.18);
-        color: #007730;
-        border-color: rgba(0, 255, 102, 0.5);
+        background: rgba(255, 23, 68, 0.12);
+        color: #ff1744;
+        border-color: rgba(255, 23, 68, 0.35);
       }
 
       .status-offer.rebutjada {
@@ -521,9 +521,9 @@ import { AuthService } from '../../core/services/auth.service';
       }
 
       .card-footer button:hover {
-        background: #00ff66;
-        color: #08080a;
-        box-shadow: 0 0 14px rgba(0, 255, 102, 0.4);
+        background: #ff1744;
+        color: #ffffff;
+        box-shadow: 0 0 14px rgba(255, 23, 68, 0.4);
       }
 
       .card-footer .btn-secondary {
@@ -538,20 +538,20 @@ import { AuthService } from '../../core/services/auth.service';
       }
 
       .offer-card button {
-        background: #00ff66;
-        color: #08080a;
+        background: #ff1744;
+        color: #ffffff;
         font-weight: 900;
       }
 
       .offer-card button:hover {
         background: #09090c;
-        color: #00ff66;
+        color: #ff1744;
       }
 
       .notice-banner {
         background: #ffffff;
-        border: 1px solid rgba(0, 255, 102, 0.5);
-        border-left: 4px solid #00ff66;
+        border: 1px solid rgba(255, 23, 68, 0.4);
+        border-left: 4px solid #ff1744;
         color: #09090c;
         padding: 0.9rem 1.25rem;
         border-radius: 10px;

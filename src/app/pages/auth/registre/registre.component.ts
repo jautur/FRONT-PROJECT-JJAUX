@@ -102,25 +102,25 @@ import { AuthService, RegisterData } from '../../../core/services/auth.service';
     `
       .auth-card {
         width: min(520px, 100%);
-        background: #111116;
+        background: #ffffff;
         padding: 2.4rem;
         border-radius: 20px;
-        border: 1px solid #23232f;
-        box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7);
-        color: var(--color-bone, #f5f4ef);
+        border: 1px solid #e5e0d7;
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.06);
+        color: #09090c;
       }
 
       h1 {
         margin: 0 0 0.4rem;
         font-size: 1.85rem;
         font-weight: 900;
-        color: var(--color-bone, #f5f4ef);
+        color: #09090c;
         letter-spacing: -0.03em;
       }
 
       .subtitle {
         margin: 0 0 1.4rem;
-        color: var(--color-bone-muted, #bab8ae);
+        color: #57554e;
         font-size: 0.95rem;
         font-weight: 600;
       }
@@ -137,15 +137,15 @@ import { AuthService, RegisterData } from '../../../core/services/auth.service';
         gap: 0.4rem;
         font-weight: 800;
         font-size: 0.82rem;
-        color: var(--color-bone, #f5f4ef);
+        color: #09090c;
         text-transform: uppercase;
         letter-spacing: 0.05em;
       }
 
       input {
-        background: #181822;
-        color: var(--color-bone, #f5f4ef);
-        border: 1px solid #2a2a3a;
+        background: #ffffff;
+        color: #09090c;
+        border: 1px solid #dcd7ce;
         border-radius: 10px;
         padding: 0.85rem 1rem;
         font-size: 0.95rem;
@@ -155,18 +155,18 @@ import { AuthService, RegisterData } from '../../../core/services/auth.service';
       }
 
       input:focus {
-        border-color: var(--neon, #00ff66);
-        box-shadow: 0 0 14px rgba(0, 255, 102, 0.25);
+        border-color: #ff1744;
+        box-shadow: 0 0 0 3px rgba(255, 23, 68, 0.15), 0 0 14px rgba(255, 23, 68, 0.25);
       }
 
       .input-required {
-        border-color: var(--neon, #00ff66);
-        background: rgba(0, 255, 102, 0.04);
+        border-color: #ff1744;
+        background: rgba(255, 23, 68, 0.04);
       }
 
       .hint {
         font-size: 0.78rem;
-        color: var(--color-bone-dim, #737168);
+        color: #7d7a72;
         font-weight: 600;
       }
 
@@ -183,8 +183,8 @@ import { AuthService, RegisterData } from '../../../core/services/auth.service';
         align-items: center;
         text-align: center;
         padding: 0.95rem 0.6rem;
-        background: #15151e;
-        border: 2px solid #262636;
+        background: #faf8f4;
+        border: 2px solid #e5e0d7;
         border-radius: 12px;
         cursor: pointer;
         transition: all 0.2s ease;
@@ -193,24 +193,24 @@ import { AuthService, RegisterData } from '../../../core/services/auth.service';
       .role-btn strong {
         font-size: 0.95rem;
         font-weight: 900;
-        color: var(--color-bone, #f5f4ef);
+        color: #09090c;
       }
 
       .role-btn small {
         font-size: 0.75rem;
-        color: var(--color-bone-muted, #bab8ae);
+        color: #57554e;
         margin-top: 0.25rem;
         font-weight: 600;
       }
 
       .role-btn.active {
-        background: rgba(0, 255, 102, 0.08);
-        border-color: var(--neon, #00ff66);
-        box-shadow: 0 0 16px rgba(0, 255, 102, 0.25);
+        background: rgba(255, 23, 68, 0.08);
+        border-color: #ff1744;
+        box-shadow: 0 0 16px rgba(255, 23, 68, 0.25);
       }
 
       .role-btn.active strong {
-        color: var(--neon, #00ff66);
+        color: #ff1744;
       }
 
       .role-info-box {
@@ -219,25 +219,25 @@ import { AuthService, RegisterData } from '../../../core/services/auth.service';
         font-size: 0.88rem;
         line-height: 1.45;
         font-weight: 600;
-        background: #161622;
-        border: 1px solid #28283a;
-        color: var(--color-bone, #f5f4ef);
+        background: #faf8f4;
+        border: 1px solid #e5e0d7;
+        color: #09090c;
       }
 
       .role-info-box.client {
-        border-left: 4px solid var(--color-bone);
+        border-left: 4px solid #09090c;
       }
 
       .role-info-box.professional {
-        border-left: 4px solid var(--neon, #00ff66);
-        color: var(--color-bone, #f5f4ef);
+        border-left: 4px solid #ff1744;
+        color: #09090c;
       }
 
       .submit-btn {
         margin-top: 0.75rem;
         border: none;
-        background: var(--neon, #00ff66);
-        color: #08080a;
+        background: #ff1744;
+        color: #ffffff;
         padding: 0.95rem 1rem;
         border-radius: 10px;
         font-weight: 900;
@@ -245,13 +245,14 @@ import { AuthService, RegisterData } from '../../../core/services/auth.service';
         text-transform: uppercase;
         letter-spacing: 0.06em;
         cursor: pointer;
-        box-shadow: 0 0 16px rgba(0, 255, 102, 0.35);
+        box-shadow: 0 4px 16px rgba(255, 23, 68, 0.35);
         transition: all 0.2s ease;
       }
 
       .submit-btn:hover:not(:disabled) {
-        background: #ffffff;
-        box-shadow: 0 0 24px rgba(0, 255, 102, 0.6);
+        background: #09090c;
+        color: #ffffff;
+        box-shadow: 0 6px 22px rgba(0, 0, 0, 0.25);
         transform: translateY(-2px);
       }
 
@@ -261,27 +262,28 @@ import { AuthService, RegisterData } from '../../../core/services/auth.service';
       }
 
       .alert-danger {
-        background: #1c1c24;
-        border: 1px solid rgba(255, 92, 92, 0.4);
-        color: #ff6b6b;
+        background: #fee2e2;
+        border: 1px solid rgba(239, 68, 68, 0.4);
         color: #991b1b;
         padding: 0.75rem 1rem;
         border-radius: 10px;
         font-size: 0.9rem;
+        font-weight: 700;
         margin-bottom: 0.5rem;
       }
 
       .footer-hint {
         text-align: center;
         font-size: 0.88rem;
-        color: #64748b;
+        color: #57554e;
         margin: 0.5rem 0 0;
+        font-weight: 600;
       }
 
       .footer-hint a {
-        color: #2563eb;
+        color: #ff1744;
         text-decoration: none;
-        font-weight: 600;
+        font-weight: 800;
       }
     `
   ]

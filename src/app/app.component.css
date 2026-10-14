@@ -1,8 +1,8 @@
 :host {
   display: block;
   min-height: 100vh;
-  background-color: var(--bg-black, #08080a);
-  color: var(--color-bone, #f5f4ef);
+  background-color: var(--bg-page, #f7f3ed);
+  color: var(--color-text, #09090c);
   font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
 }
 
@@ -10,19 +10,11 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background-color: var(--bg-black, #08080a);
+  background-color: var(--bg-page, #f7f3ed);
 }
 
-.shell:not(.not-home-page) {
-  background-color: #f7f3ed;
-}
-
-/* ============================================================== */
-/* CORRECCIÓ DE L'ESPAIAT SUPERIOR PER A LES PÀGINES SECUNDÀRIES   */
-/* ============================================================== */
-/* A les pàgines que no són la portada d'inici, afegim padding    */
-/* superior net perquè el títol fix mai no solape el contingut     */
 .shell.not-home-page .content {
+  background-color: var(--bg-page, #f7f3ed);
   padding-top: 104px; /* 72px capçalera + 32px respiració visual */
   padding-bottom: 4rem;
   padding-left: 1.5rem;
@@ -84,8 +76,8 @@
 }
 
 .brand-title:hover {
-  color: var(--neon, #00ff66); /* Neó cridaner al passar el ratolí */
-  text-shadow: var(--neon-glow, 0 0 20px rgba(0, 255, 102, 0.6));
+  color: var(--neon, #ff1744); /* Neó roig al passar el ratolí */
+  text-shadow: var(--neon-glow, 0 0 20px rgba(255, 23, 68, 0.6));
   transform: scale(1.03);
 }
 
@@ -120,15 +112,15 @@
 }
 
 .btn-menu-toggle:hover {
-  background: rgba(0, 255, 102, 0.1);
-  border-color: var(--neon, #00ff66);
-  color: var(--neon, #00ff66);
-  box-shadow: 0 0 12px rgba(0, 255, 102, 0.25);
+  background: rgba(255, 23, 68, 0.12);
+  border-color: var(--neon, #ff1744);
+  color: var(--neon, #ff1744);
+  box-shadow: 0 0 12px rgba(255, 23, 68, 0.3);
 }
 
 .hamburger-icon {
   font-size: 1.1rem;
-  color: var(--neon, #00ff66);
+  color: var(--neon, #ff1744);
   line-height: 1;
 }
 
@@ -151,10 +143,10 @@
 }
 
 .quick-profile-btn:hover {
-  background: rgba(0, 255, 102, 0.1);
-  border-color: var(--neon, #00ff66);
-  color: var(--neon, #00ff66);
-  box-shadow: 0 0 12px rgba(0, 255, 102, 0.25);
+  background: rgba(255, 23, 68, 0.12);
+  border-color: var(--neon, #ff1744);
+  color: var(--neon, #ff1744);
+  box-shadow: 0 0 12px rgba(255, 23, 68, 0.3);
 }
 
 .profile-icon {
@@ -164,21 +156,22 @@
 
 .quick-login-btn {
   text-decoration: none;
-  background: var(--neon, #00ff66); /* Neó cridaner */
-  color: #08080a; /* Text negre d'alt contrast */
+  background: var(--neon, #ff1744); /* Neó roig cridaner */
+  color: #ffffff; /* Text blanc d'alt contrast */
   padding: 0.5rem 1.15rem;
   border-radius: 8px;
   font-size: 0.85rem;
   font-weight: 900;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  box-shadow: 0 0 14px rgba(0, 255, 102, 0.35);
+  box-shadow: 0 0 14px rgba(255, 23, 68, 0.35);
   transition: all 0.2s ease;
 }
 
 .quick-login-btn:hover {
   background: #ffffff;
-  box-shadow: 0 0 20px rgba(0, 255, 102, 0.6);
+  color: #09090c;
+  box-shadow: 0 0 20px rgba(255, 23, 68, 0.6);
 }
 
 /* ============================================================== */
@@ -221,8 +214,8 @@
 }
 
 .brand-badge {
-  background: var(--neon, #00ff66);
-  color: #08080a;
+  background: var(--neon, #ff1744);
+  color: #ffffff;
   font-weight: 900;
   padding: 0.25rem 0.55rem;
   border-radius: 6px;
@@ -250,8 +243,8 @@
 }
 
 .btn-close-sidebar:hover {
-  color: var(--neon, #00ff66);
-  border-color: var(--neon, #00ff66);
+  color: var(--neon, #ff1744);
+  border-color: var(--neon, #ff1744);
 }
 
 /* Fitxa de l'usuari connectat */
@@ -269,12 +262,12 @@
   height: 42px;
   border-radius: 50%;
   background: #1a1a24;
-  border: 2px solid var(--neon, #00ff66);
+  border: 2px solid var(--neon, #ff1744);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 1.2rem;
-  box-shadow: 0 0 10px rgba(0, 255, 102, 0.25);
+  box-shadow: 0 0 10px rgba(255, 23, 68, 0.35);
 }
 
 .user-meta {
@@ -311,16 +304,16 @@
 }
 
 .user-role-tag.professional {
-  background: rgba(0, 255, 102, 0.12);
-  color: var(--neon, #00ff66);
-  border-color: rgba(0, 255, 102, 0.35);
+  background: rgba(255, 23, 68, 0.15);
+  color: var(--neon, #ff1744);
+  border-color: rgba(255, 23, 68, 0.4);
 }
 
 .user-role-tag.admin {
   background: rgba(245, 244, 239, 0.15);
   color: #ffffff;
-  border-color: var(--neon, #00ff66);
-  box-shadow: 0 0 8px rgba(0, 255, 102, 0.3);
+  border-color: var(--neon, #ff1744);
+  box-shadow: 0 0 8px rgba(255, 23, 68, 0.35);
 }
 
 /* Llista de navegació lateral */
@@ -371,21 +364,21 @@
 }
 
 .sidebar-nav a.active-nav-item {
-  background: rgba(0, 255, 102, 0.1);
-  color: var(--neon, #00ff66);
-  border-color: rgba(0, 255, 102, 0.3);
-  box-shadow: inset 3px 0 0 var(--neon, #00ff66);
+  background: rgba(255, 23, 68, 0.12);
+  color: var(--neon, #ff1744);
+  border-color: rgba(255, 23, 68, 0.35);
+  box-shadow: inset 3px 0 0 var(--neon, #ff1744);
 }
 
 .nav-cta-item {
-  background: rgba(0, 255, 102, 0.08) !important;
-  color: var(--neon, #00ff66) !important;
-  border: 1px dashed rgba(0, 255, 102, 0.4) !important;
+  background: rgba(255, 23, 68, 0.1) !important;
+  color: var(--neon, #ff1744) !important;
+  border: 1px dashed rgba(255, 23, 68, 0.45) !important;
 }
 
 .nav-cta-item:hover {
-  background: rgba(0, 255, 102, 0.2) !important;
-  box-shadow: 0 0 15px rgba(0, 255, 102, 0.3);
+  background: rgba(255, 23, 68, 0.22) !important;
+  box-shadow: 0 0 15px rgba(255, 23, 68, 0.35);
 }
 
 .admin-nav-item {
@@ -394,8 +387,8 @@
 }
 
 .admin-nav-item:hover {
-  border-color: var(--neon, #00ff66) !important;
-  color: var(--neon, #00ff66) !important;
+  border-color: var(--neon, #ff1744) !important;
+  color: var(--neon, #ff1744) !important;
 }
 
 .btn-sidebar-logout {
@@ -410,8 +403,8 @@
 
 .badge-mini-count {
   margin-left: auto;
-  background: var(--neon, #00ff66);
-  color: #08080a;
+  background: var(--neon, #ff1744);
+  color: #ffffff;
   font-size: 0.72rem;
   font-weight: 900;
   padding: 0.15rem 0.45rem;

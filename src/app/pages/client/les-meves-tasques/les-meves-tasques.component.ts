@@ -151,60 +151,61 @@ type FiltreEstatTasca = 'totes' | 'oberta' | 'en_curs' | 'finalitzada';
     }
     .panell-header h2 {
       margin: 0 0 0.35rem 0;
-      color: #f5f4ef;
+      color: #09090c;
       font-size: 1.85rem;
       font-weight: 900;
       letter-spacing: -0.02em;
     }
     .subtitle {
       margin: 0;
-      color: #bab8ae;
+      color: #636058;
       font-size: 0.95rem;
       font-weight: 500;
     }
     .btn-crear {
-      background: #00ff66;
-      color: #08080a;
+      background: #ff1744;
+      color: #ffffff;
       padding: 0.75rem 1.4rem;
       border-radius: 8px;
       text-decoration: none;
       font-weight: 900;
       font-size: 0.9rem;
       transition: all 0.2s;
+      box-shadow: 0 4px 14px rgba(255, 23, 68, 0.35);
     }
     .btn-crear:hover {
-      background: #00dd55;
-      box-shadow: 0 0 15px rgba(0, 255, 102, 0.4);
+      background: #09090c;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
     }
     .filter-tabs {
       display: flex;
       gap: 0.65rem;
       margin-bottom: 1.5rem;
-      border-bottom: 1px solid #1e1e28;
+      border-bottom: 1px solid #e5e0d7;
       padding-bottom: 0.75rem;
       flex-wrap: wrap;
     }
     .tab-btn {
-      background: #111116;
-      border: 1px solid #242432;
+      background: #ffffff;
+      border: 1px solid #d6d0c4;
       padding: 0.5rem 1.15rem;
       border-radius: 9999px;
       font-size: 0.88rem;
       font-weight: 800;
-      color: #bab8ae;
+      color: #636058;
       cursor: pointer;
       transition: all 0.2s ease;
     }
     .tab-btn:hover {
-      border-color: #00ff66;
-      color: #f5f4ef;
+      border-color: #ff1744;
+      color: #09090c;
     }
     .tab-btn.active {
-      background: #00ff66;
-      border-color: #00ff66;
-      color: #08080a;
+      background: #ff1744;
+      border-color: #ff1744;
+      color: #ffffff;
       font-weight: 900;
-      box-shadow: 0 0 15px rgba(0, 255, 102, 0.35);
+      box-shadow: 0 4px 15px rgba(255, 23, 68, 0.35);
     }
     .tasques-grid {
       display: grid;
@@ -212,18 +213,19 @@ type FiltreEstatTasca = 'totes' | 'oberta' | 'en_curs' | 'finalitzada';
       gap: 1.35rem;
     }
     .tasca-card {
-      background: #111116;
-      border: 1px solid #1e1e28;
+      background: #ffffff;
+      border: 1px solid #e5e0d7;
       border-radius: 14px;
       padding: 1.35rem;
       display: flex;
       flex-direction: column;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
       transition: all 0.2s ease;
     }
     .tasca-card:hover {
       transform: translateY(-2px);
-      border-color: #2c2c3e;
-      box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+      border-color: #d6d0c4;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
     }
     .card-header {
       display: flex;
@@ -231,9 +233,9 @@ type FiltreEstatTasca = 'totes' | 'oberta' | 'en_curs' | 'finalitzada';
       margin-bottom: 0.85rem;
     }
     .badge-categoria {
-      background: #181824;
-      border: 1px solid #282836;
-      color: #bab8ae;
+      background: #f0ece3;
+      border: 1px solid #dcd6cb;
+      color: #09090c;
       padding: 0.25rem 0.65rem;
       border-radius: 6px;
       font-size: 0.78rem;
@@ -246,36 +248,36 @@ type FiltreEstatTasca = 'totes' | 'oberta' | 'en_curs' | 'finalitzada';
       font-weight: 800;
     }
     .estat-oberta {
-      background: rgba(0, 255, 102, 0.12);
-      color: #00ff66;
-      border: 1px solid rgba(0, 255, 102, 0.3);
+      background: rgba(255, 23, 68, 0.08);
+      color: #ff1744;
+      border: 1px solid rgba(255, 23, 68, 0.25);
     }
     .estat-en-curs {
       background: rgba(245, 158, 11, 0.12);
-      color: #f59e0b;
+      color: #b45309;
       border: 1px solid rgba(245, 158, 11, 0.3);
     }
     .estat-finalitzada {
-      background: rgba(148, 163, 184, 0.12);
-      color: #94a3b8;
-      border: 1px solid rgba(148, 163, 184, 0.25);
+      background: rgba(148, 163, 184, 0.15);
+      color: #475569;
+      border: 1px solid rgba(148, 163, 184, 0.3);
     }
     .tasca-titol {
       margin: 0 0 0.5rem 0;
       font-size: 1.2rem;
       font-weight: 800;
-      color: #f5f4ef;
+      color: #09090c;
     }
     .tasca-desc {
       margin: 0 0 1.25rem 0;
-      color: #bab8ae;
+      color: #636058;
       font-size: 0.9rem;
       line-height: 1.45;
       flex: 1;
     }
     .tasca-meta {
-      background: #181824;
-      border: 1px solid #242432;
+      background: #faf8f4;
+      border: 1px solid #e5e0d7;
       padding: 0.85rem 1rem;
       border-radius: 10px;
       margin-bottom: 1.2rem;
@@ -289,17 +291,17 @@ type FiltreEstatTasca = 'totes' | 'oberta' | 'en_curs' | 'finalitzada';
     }
     .meta-label {
       font-size: 0.75rem;
-      color: #71717a;
+      color: #8c887e;
       font-weight: 600;
     }
     .meta-value.budget {
       font-weight: 900;
-      color: #00ff66;
+      color: #ff1744;
       font-size: 1.05rem;
     }
     .meta-value.ofertes-badge {
       font-weight: 800;
-      color: #f5f4ef;
+      color: #09090c;
       font-size: 0.85rem;
     }
     .card-actions {
@@ -323,46 +325,48 @@ type FiltreEstatTasca = 'totes' | 'oberta' | 'en_curs' | 'finalitzada';
       transition: all 0.2s;
     }
     .btn-action.primary {
-      background: #00ff66;
-      color: #08080a;
+      background: #ff1744;
+      color: #ffffff;
       font-weight: 900;
     }
     .btn-action.primary:hover {
-      background: #00dd55;
-      box-shadow: 0 0 12px rgba(0, 255, 102, 0.35);
+      background: #09090c;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     }
     .btn-action.success {
-      background: rgba(0, 255, 102, 0.1);
-      color: #00ff66;
-      border-color: rgba(0, 255, 102, 0.3);
+      background: rgba(255, 23, 68, 0.08);
+      color: #ff1744;
+      border-color: rgba(255, 23, 68, 0.3);
     }
     .btn-action.success:hover {
-      background: rgba(0, 255, 102, 0.2);
+      background: #ff1744;
+      color: #ffffff;
     }
     .btn-action.danger {
       background: rgba(239, 68, 68, 0.1);
-      color: #ef4444;
+      color: #dc2626;
       border-color: rgba(239, 68, 68, 0.3);
       flex: 0 0 auto;
     }
     .btn-action.danger:hover {
-      background: rgba(239, 68, 68, 0.2);
+      background: #fee2e2;
     }
     .empty-state {
       text-align: center;
       padding: 3.5rem 1rem;
-      background: #111116;
+      background: #ffffff;
       border-radius: 12px;
-      border: 1px dashed #242432;
+      border: 1px dashed #d6d0c4;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
     }
     .empty-state h3 {
-      color: #f5f4ef;
+      color: #09090c;
       font-size: 1.25rem;
       font-weight: 800;
       margin-top: 0.75rem;
     }
     .empty-state p {
-      color: #bab8ae;
+      color: #636058;
       font-weight: 500;
       margin-bottom: 1.25rem;
     }
@@ -373,22 +377,22 @@ type FiltreEstatTasca = 'totes' | 'oberta' | 'en_curs' | 'finalitzada';
     .state-box {
       text-align: center;
       padding: 2.5rem;
-      color: #bab8ae;
+      color: #636058;
       font-weight: 700;
     }
     .alert-error {
-      background: rgba(239, 68, 68, 0.1);
-      color: #ef4444;
-      border: 1px solid rgba(239, 68, 68, 0.3);
+      background: #fef2f2;
+      color: #dc2626;
+      border: 1px solid #fecaca;
       padding: 0.75rem 1rem;
       border-radius: 8px;
       margin-bottom: 1rem;
       font-weight: 700;
     }
     .alert-success {
-      background: rgba(0, 255, 102, 0.1);
-      color: #00ff66;
-      border: 1px solid rgba(0, 255, 102, 0.3);
+      background: rgba(255, 23, 68, 0.08);
+      color: #ff1744;
+      border: 1px solid rgba(255, 23, 68, 0.25);
       padding: 0.75rem 1rem;
       border-radius: 8px;
       margin-bottom: 1rem;

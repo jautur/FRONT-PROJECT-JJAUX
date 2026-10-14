@@ -119,12 +119,12 @@ import { Oferta } from '../../../models/oferta.model';
       }
 
       .detall-header {
-        background: #111116;
-        border: 1px solid #1e1e28;
-        color: #f5f4ef;
+        background: #ffffff;
+        border: 1px solid #e5e0d7;
+        color: #09090c;
         padding: 2.2rem;
         border-radius: 20px;
-        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
       }
 
       .top-row {
@@ -135,9 +135,9 @@ import { Oferta } from '../../../models/oferta.model';
       }
 
       .category-tag {
-        background: rgba(0, 255, 102, 0.1);
-        color: #00ff66;
-        border: 1px solid rgba(0, 255, 102, 0.3);
+        background: rgba(255, 23, 68, 0.08);
+        color: #ff1744;
+        border: 1px solid rgba(255, 23, 68, 0.25);
         padding: 0.3rem 0.8rem;
         border-radius: 8px;
         font-weight: 800;
@@ -149,7 +149,7 @@ import { Oferta } from '../../../models/oferta.model';
         margin: 0 0 1rem;
         font-size: 2rem;
         font-weight: 900;
-        color: #f5f4ef;
+        color: #09090c;
         letter-spacing: -0.02em;
       }
 
@@ -158,41 +158,41 @@ import { Oferta } from '../../../models/oferta.model';
         gap: 1.5rem;
         flex-wrap: wrap;
         font-size: 0.95rem;
-        color: #bab8ae;
+        color: #636058;
         font-weight: 600;
       }
 
       .meta-row strong {
-        color: #00ff66;
+        color: #ff1744;
         font-weight: 900;
       }
 
       .meta-row code {
-        background: #181824;
-        border: 1px solid #282836;
-        color: #00ff66;
+        background: #f0ece3;
+        border: 1px solid #dcd6cb;
+        color: #09090c;
         padding: 0.2rem 0.5rem;
         border-radius: 6px;
         font-weight: 700;
       }
 
       .card {
-        background: #111116;
+        background: #ffffff;
         padding: 2rem;
         border-radius: 18px;
-        border: 1px solid #1e1e28;
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+        border: 1px solid #e5e0d7;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
       }
 
       .card h2 {
         margin: 0 0 0.8rem;
         font-size: 1.35rem;
         font-weight: 900;
-        color: #f5f4ef;
+        color: #09090c;
       }
 
       .description-text {
-        color: #bab8ae;
+        color: #4a4841;
         line-height: 1.6;
         font-size: 1rem;
         margin: 0;
@@ -202,13 +202,13 @@ import { Oferta } from '../../../models/oferta.model';
       .action-box, .complete-box {
         margin-top: 1.5rem;
         padding-top: 1.5rem;
-        border-top: 1px solid #1e1e28;
+        border-top: 1px solid #e5e0d7;
       }
 
       .complete-box p {
         margin: 0 0 0.75rem;
         font-weight: 800;
-        color: #f5f4ef;
+        color: #09090c;
       }
 
       .offers-section {
@@ -218,7 +218,7 @@ import { Oferta } from '../../../models/oferta.model';
       }
 
       .section-header h2 {
-        color: #f5f4ef;
+        color: #09090c;
         font-size: 1.4rem;
         font-weight: 900;
         margin: 0;
@@ -234,13 +234,14 @@ import { Oferta } from '../../../models/oferta.model';
         display: flex;
         flex-direction: column;
         gap: 0.85rem;
-        background: #111116;
-        border: 1px solid #1e1e28;
+        background: #ffffff;
+        border: 1px solid #e5e0d7;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
         transition: border-color 0.2s;
       }
 
       .offer-card:hover {
-        border-color: #2c2c3e;
+        border-color: #d6d0c4;
       }
 
       .offer-header {
@@ -253,12 +254,12 @@ import { Oferta } from '../../../models/oferta.model';
         margin: 0;
         font-size: 1.2rem;
         font-weight: 800;
-        color: #f5f4ef;
+        color: #09090c;
       }
 
       .offer-note {
         margin: 0;
-        color: #bab8ae;
+        color: #57554e;
         line-height: 1.5;
         font-size: 0.95rem;
         font-weight: 500;
@@ -270,17 +271,17 @@ import { Oferta } from '../../../models/oferta.model';
         align-items: center;
         margin-top: 0.5rem;
         padding-top: 0.85rem;
-        border-top: 1px solid #1e1e28;
+        border-top: 1px solid #e5e0d7;
       }
 
       .price-tag {
         font-size: 0.95rem;
-        color: #bab8ae;
+        color: #636058;
         font-weight: 700;
       }
 
       .price-tag strong {
-        color: #00ff66;
+        color: #ff1744;
         font-size: 1.25rem;
         font-weight: 900;
         margin-left: 0.25rem;
@@ -303,47 +304,48 @@ import { Oferta } from '../../../models/oferta.model';
       }
 
       .btn-primary {
-        background: #00ff66;
-        color: #08080a;
+        background: #ff1744;
+        color: #ffffff;
         font-weight: 900;
         display: inline-block;
+        box-shadow: 0 4px 14px rgba(255, 23, 68, 0.35);
       }
 
       .btn-primary:hover {
-        background: #00dd55;
-        box-shadow: 0 0 15px rgba(0, 255, 102, 0.4);
+        background: #09090c;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
       }
 
       .btn-accept {
-        background: #00ff66;
-        color: #08080a;
+        background: #ff1744;
+        color: #ffffff;
         font-weight: 900;
       }
 
       .btn-accept:hover {
-        background: #00dd55;
-        box-shadow: 0 0 12px rgba(0, 255, 102, 0.35);
+        background: #09090c;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
       }
 
       .btn-reject {
         background: rgba(239, 68, 68, 0.1);
-        color: #ef4444;
+        color: #dc2626;
         border: 1px solid rgba(239, 68, 68, 0.3);
       }
 
       .btn-reject:hover {
-        background: rgba(239, 68, 68, 0.2);
+        background: #fee2e2;
       }
 
       .btn-complete {
-        background: #00ff66;
-        color: #08080a;
+        background: #ff1744;
+        color: #ffffff;
         font-weight: 900;
       }
 
       .btn-complete:hover {
-        background: #00dd55;
-        box-shadow: 0 0 15px rgba(0, 255, 102, 0.4);
+        background: #09090c;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
       }
 
       .status-badge {
@@ -354,63 +356,65 @@ import { Oferta } from '../../../models/oferta.model';
       }
 
       .status-oberta {
-        background: rgba(0, 255, 102, 0.12);
-        color: #00ff66;
-        border: 1px solid rgba(0, 255, 102, 0.3);
+        background: rgba(255, 23, 68, 0.08);
+        color: #ff1744;
+        border: 1px solid rgba(255, 23, 68, 0.25);
       }
 
       .status-en-curs {
         background: rgba(245, 158, 11, 0.12);
-        color: #f59e0b;
+        color: #b45309;
         border: 1px solid rgba(245, 158, 11, 0.3);
       }
 
       .status-finalitzada {
-        background: rgba(148, 163, 184, 0.12);
-        color: #94a3b8;
-        border: 1px solid rgba(148, 163, 184, 0.25);
+        background: rgba(148, 163, 184, 0.15);
+        color: #475569;
+        border: 1px solid rgba(148, 163, 184, 0.3);
       }
 
       .status-pendent {
         background: rgba(245, 158, 11, 0.12);
-        color: #f59e0b;
+        color: #b45309;
         border: 1px solid rgba(245, 158, 11, 0.3);
       }
 
       .status-acceptada {
-        background: rgba(0, 255, 102, 0.12);
-        color: #00ff66;
-        border: 1px solid rgba(0, 255, 102, 0.3);
+        background: rgba(255, 23, 68, 0.08);
+        color: #ff1744;
+        border: 1px solid rgba(255, 23, 68, 0.25);
       }
 
       .status-rebutjada {
-        background: rgba(239, 68, 68, 0.12);
-        color: #ef4444;
+        background: rgba(239, 68, 68, 0.1);
+        color: #dc2626;
         border: 1px solid rgba(239, 68, 68, 0.3);
       }
 
       .alert-info {
-        background: rgba(0, 255, 102, 0.1);
-        color: #00ff66;
-        border: 1px solid rgba(0, 255, 102, 0.3);
+        background: rgba(255, 23, 68, 0.08);
+        color: #ff1744;
+        border: 1px solid rgba(255, 23, 68, 0.25);
         padding: 0.9rem 1.25rem;
         border-radius: 12px;
         font-weight: 700;
       }
 
       .empty-state {
-        background: #111116;
+        background: #ffffff;
         padding: 2.5rem;
         border-radius: 16px;
-        border: 1px dashed #242432;
+        border: 1px dashed #d6d0c4;
         text-align: center;
-        color: #bab8ae;
+        color: #636058;
         font-weight: 600;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.02);
       }
 
       .not-found {
         text-align: center;
         padding: 3rem;
+        color: #09090c;
       }
     `
   ]
