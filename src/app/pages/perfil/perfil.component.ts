@@ -122,202 +122,243 @@ import { AuthService } from '../../core/services/auth.service';
         width: min(1000px, 100%);
         display: flex;
         flex-direction: column;
-        gap: 1.5rem;
+        gap: 1.75rem;
       }
 
       .perfil-header {
-        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-        color: white;
-        padding: 2rem;
+        background: #111116;
+        color: var(--color-bone, #f5f4ef);
+        padding: 2.2rem;
         border-radius: 20px;
+        border: 1px solid #23232f;
         display: flex;
         align-items: center;
-        gap: 1.5rem;
-        box-shadow: 0 15px 30px rgba(15, 23, 42, 0.15);
+        gap: 1.75rem;
+        box-shadow: 0 16px 45px rgba(0, 0, 0, 0.6);
       }
 
       .avatar-badge {
-        width: 72px;
-        height: 72px;
-        background: #3b82f6;
-        color: white;
+        width: 76px;
+        height: 76px;
+        background: #181824;
+        color: var(--neon, #00ff66);
+        border: 2px solid var(--neon, #00ff66);
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 2rem;
-        font-weight: 700;
-        box-shadow: 0 8px 16px rgba(59, 130, 246, 0.35);
+        font-size: 2.2rem;
+        font-weight: 900;
+        box-shadow: 0 0 16px rgba(0, 255, 102, 0.35);
       }
 
       .header-info h1 {
         margin: 0;
-        font-size: 1.8rem;
+        font-size: 2rem;
+        font-weight: 900;
+        color: var(--color-bone, #f5f4ef);
+        letter-spacing: -0.03em;
       }
 
       .header-info .email {
-        margin: 0.25rem 0 0.5rem;
-        color: #94a3b8;
+        margin: 0.35rem 0 0.65rem;
+        color: var(--color-bone-muted, #bab8ae);
         font-size: 0.95rem;
+        font-weight: 600;
       }
 
       .role-badge {
         display: inline-block;
-        padding: 0.25rem 0.75rem;
-        border-radius: 999px;
+        padding: 0.3rem 0.85rem;
+        border-radius: 6px;
         font-size: 0.75rem;
-        font-weight: 700;
-        letter-spacing: 0.05em;
+        font-weight: 900;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        border: 1px solid transparent;
       }
 
       .role-badge.client {
-        background: #0284c7;
-        color: white;
+        background: rgba(255, 255, 255, 0.08);
+        color: var(--color-bone, #f5f4ef);
+        border-color: #38384a;
       }
 
       .role-badge.professional {
-        background: #16a34a;
-        color: white;
-      }
-
-      .role-badge.ambdos {
-        background: #8b5cf6;
-        color: white;
+        background: rgba(0, 255, 102, 0.12);
+        color: var(--neon, #00ff66);
+        border-color: rgba(0, 255, 102, 0.4);
       }
 
       .role-badge.admin {
-        background: #9333ea;
-        color: white;
+        background: rgba(255, 255, 255, 0.15);
+        color: #ffffff;
+        border-color: var(--neon, #00ff66);
+        box-shadow: 0 0 10px rgba(0, 255, 102, 0.3);
       }
 
       .perfil-grid {
         display: grid;
         grid-template-columns: 3fr 2fr;
-        gap: 1.5rem;
+        gap: 1.75rem;
+      }
+
+      @media (max-width: 850px) {
+        .perfil-grid {
+          grid-template-columns: 1fr;
+        }
       }
 
       .side-column {
         display: flex;
         flex-direction: column;
-        gap: 1.5rem;
+        gap: 1.75rem;
       }
 
       .card {
-        background: white;
-        padding: 1.75rem;
-        border-radius: 16px;
-        border: 1px solid #e2e8f0;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        background: #111116;
+        padding: 2rem;
+        border-radius: 18px;
+        border: 1px solid #23232f;
+        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.5);
       }
 
       .card h2 {
-        margin: 0 0 0.25rem;
-        font-size: 1.3rem;
-        color: #0f172a;
+        margin: 0 0 0.35rem;
+        font-size: 1.35rem;
+        font-weight: 900;
+        color: var(--color-bone, #f5f4ef);
       }
 
       .subtitle {
-        margin: 0 0 1.25rem;
-        color: #64748b;
+        margin: 0 0 1.4rem;
+        color: var(--color-bone-muted, #bab8ae);
         font-size: 0.9rem;
+        font-weight: 600;
       }
 
       form {
         display: flex;
         flex-direction: column;
-        gap: 1rem;
+        gap: 1.15rem;
       }
 
       label {
         display: flex;
         flex-direction: column;
-        gap: 0.4rem;
-        font-weight: 600;
-        font-size: 0.9rem;
-        color: #334155;
+        gap: 0.45rem;
+        font-weight: 800;
+        font-size: 0.85rem;
+        color: var(--color-bone, #f5f4ef);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
       }
 
       input, textarea {
-        border: 1px solid #cbd5e1;
+        background: #181822;
+        color: var(--color-bone, #f5f4ef);
+        border: 1px solid #2a2a3a;
         border-radius: 10px;
-        padding: 0.75rem 0.9rem;
+        padding: 0.85rem 1rem;
         font-size: 0.95rem;
+        font-weight: 600;
         font-family: inherit;
+        outline: none;
         transition: border-color 0.15s ease;
       }
 
       input:focus, textarea:focus {
-        outline: none;
-        border-color: #2563eb;
+        border-color: var(--neon, #00ff66);
+        box-shadow: 0 0 14px rgba(0, 255, 102, 0.25);
       }
 
       .input-disabled {
-        background: #f1f5f9;
-        color: #64748b;
+        background: #14141b;
+        color: var(--color-bone-dim, #737168);
+        border-color: #20202c;
         cursor: not-allowed;
       }
 
       .hint {
-        font-size: 0.75rem;
-        color: #94a3b8;
-        font-weight: 400;
+        font-size: 0.78rem;
+        color: var(--color-bone-dim, #737168);
+        font-weight: 600;
       }
 
       .btn {
-        padding: 0.8rem 1.2rem;
+        padding: 0.85rem 1.4rem;
         border: none;
         border-radius: 10px;
-        font-weight: 700;
+        font-weight: 900;
         font-size: 0.95rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
         cursor: pointer;
-        transition: opacity 0.15s ease;
+        transition: all 0.2s ease;
       }
 
       .btn:disabled {
-        opacity: 0.6;
+        opacity: 0.5;
         cursor: not-allowed;
       }
 
       .btn-primary {
-        background: #2563eb;
-        color: white;
-        margin-top: 0.5rem;
+        background: var(--neon, #00ff66);
+        color: #08080a;
+        margin-top: 0.6rem;
+        box-shadow: 0 0 16px rgba(0, 255, 102, 0.35);
+      }
+
+      .btn-primary:hover:not(:disabled) {
+        background: #ffffff;
+        box-shadow: 0 0 24px rgba(0, 255, 102, 0.6);
+        transform: translateY(-2px);
       }
 
       .btn-secondary {
-        background: #334155;
-        color: white;
-        margin-top: 0.5rem;
+        background: #1c1c28;
+        color: var(--color-bone, #f5f4ef);
+        border: 1px solid #36364a;
+        margin-top: 0.6rem;
+      }
+
+      .btn-secondary:hover:not(:disabled) {
+        border-color: var(--neon, #00ff66);
+        color: var(--neon, #00ff66);
       }
 
       .info-card h3 {
         margin: 0 0 0.5rem;
-        font-size: 1.1rem;
-        color: #1e293b;
+        font-size: 1.15rem;
+        font-weight: 900;
+        color: var(--color-bone, #f5f4ef);
       }
 
       .info-card p {
         margin: 0;
-        color: #475569;
-        line-height: 1.5;
-        font-size: 0.9rem;
+        color: var(--color-bone-muted, #bab8ae);
+        line-height: 1.55;
+        font-size: 0.92rem;
+        font-weight: 600;
       }
 
       .alert {
-        padding: 0.9rem 1.25rem;
+        padding: 0.95rem 1.35rem;
         border-radius: 12px;
-        font-weight: 500;
+        font-weight: 700;
         font-size: 0.95rem;
       }
 
       .alert-success {
-        background: #dcfce7;
-        color: #166534;
-        border: 1px solid #86efac;
+        background: rgba(0, 255, 102, 0.1);
+        color: var(--neon, #00ff66);
+        border: 1px solid rgba(0, 255, 102, 0.4);
       }
 
       .alert-danger {
-        background: #fee2e2;
+        background: #1c1c24;
+        border: 1px solid rgba(255, 92, 92, 0.4);
+        color: #ff6b6b;
         color: #991b1b;
         border: 1px solid #fca5a5;
       }

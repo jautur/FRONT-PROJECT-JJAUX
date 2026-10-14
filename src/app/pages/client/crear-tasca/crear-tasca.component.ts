@@ -84,6 +84,7 @@ import { AuthService } from '../../../core/services/auth.service';
     `
       .task-form-container {
         width: min(700px, 100%);
+        margin: 0 auto;
         display: flex;
         flex-direction: column;
         gap: 1.5rem;
@@ -91,100 +92,118 @@ import { AuthService } from '../../../core/services/auth.service';
 
       .form-header h1 {
         margin: 0 0 0.4rem;
-        font-size: 1.8rem;
-        color: #0f172a;
+        font-size: 2rem;
+        font-weight: 900;
+        color: #f5f4ef;
+        letter-spacing: -0.02em;
       }
 
       .subtitle {
         margin: 0;
-        color: #64748b;
+        color: #bab8ae;
         font-size: 0.95rem;
+        font-weight: 500;
       }
 
       .card {
-        background: white;
-        padding: 2rem;
+        background: #111116;
+        padding: 2.2rem;
         border-radius: 18px;
-        border: 1px solid #e2e8f0;
-        box-shadow: 0 10px 25px rgba(15, 23, 42, 0.05);
+        border: 1px solid #1e1e28;
+        box-shadow: 0 10px 35px rgba(0, 0, 0, 0.5);
         display: flex;
         flex-direction: column;
-        gap: 1.25rem;
+        gap: 1.35rem;
       }
 
       label {
         display: flex;
         flex-direction: column;
-        gap: 0.45rem;
-        font-weight: 600;
+        gap: 0.5rem;
+        font-weight: 800;
         font-size: 0.9rem;
-        color: #334155;
+        color: #f5f4ef;
       }
 
       input, select, textarea {
-        border: 1px solid #cbd5e1;
+        background: #181822;
+        border: 1px solid #282836;
         border-radius: 10px;
-        padding: 0.8rem 0.95rem;
+        padding: 0.85rem 1rem;
         font-size: 0.95rem;
+        color: #f5f4ef;
         font-family: inherit;
-        transition: border-color 0.15s ease;
+        font-weight: 600;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
       }
 
       input:focus, select:focus, textarea:focus {
         outline: none;
-        border-color: #2563eb;
+        border-color: #00ff66;
+        box-shadow: 0 0 12px rgba(0, 255, 102, 0.2);
       }
 
       .form-actions {
         display: flex;
         gap: 1rem;
         align-items: center;
-        margin-top: 0.5rem;
+        margin-top: 0.75rem;
       }
 
       .btn {
-        padding: 0.85rem 1.4rem;
+        padding: 0.85rem 1.6rem;
         border-radius: 10px;
-        font-weight: 700;
+        font-weight: 900;
         font-size: 0.95rem;
         text-decoration: none;
         cursor: pointer;
         border: none;
-        transition: opacity 0.15s ease;
+        transition: all 0.2s ease;
       }
 
       .btn-primary {
-        background: #2563eb;
-        color: white;
+        background: #00ff66;
+        color: #08080a;
+      }
+
+      .btn-primary:hover:not(:disabled) {
+        background: #00dd55;
+        box-shadow: 0 0 15px rgba(0, 255, 102, 0.4);
       }
 
       .btn-cancel {
-        background: #f1f5f9;
-        color: #475569;
+        background: #1e1e2a;
+        color: #bab8ae;
+        border: 1px solid #2c2c3e;
+      }
+
+      .btn-cancel:hover {
+        border-color: #bab8ae;
+        color: #f5f4ef;
       }
 
       .btn:disabled {
-        opacity: 0.6;
+        opacity: 0.5;
         cursor: not-allowed;
       }
 
       .alert {
         padding: 0.9rem 1.25rem;
         border-radius: 12px;
-        font-weight: 500;
+        font-weight: 700;
         font-size: 0.95rem;
       }
 
       .alert-success {
-        background: #dcfce7;
-        color: #166534;
-        border: 1px solid #86efac;
+        background: rgba(0, 255, 102, 0.1);
+        color: #00ff66;
+        border: 1px solid rgba(0, 255, 102, 0.3);
       }
 
       .alert-danger {
-        background: #fee2e2;
-        color: #991b1b;
-        border: 1px solid #fca5a5;
+        background: rgba(239, 68, 68, 0.1);
+        color: #ef4444;
+        border: 1px solid rgba(239, 68, 68, 0.3);
       }
     `
   ]

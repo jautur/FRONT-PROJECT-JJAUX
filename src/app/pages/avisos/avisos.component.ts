@@ -132,65 +132,74 @@ type FiltreAvisos = 'totes' | 'pendents' | 'llegides';
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      margin-bottom: 1.5rem;
+      margin-bottom: 2rem;
       gap: 1rem;
       flex-wrap: wrap;
     }
     .avisos-header h2 {
-      margin: 0 0 0.3rem 0;
-      color: #0f172a;
-      font-size: 1.5rem;
+      margin: 0 0 0.35rem 0;
+      color: #f5f4ef;
+      font-size: 1.85rem;
+      font-weight: 900;
+      letter-spacing: -0.02em;
     }
     .subtitle {
       margin: 0;
-      color: #64748b;
+      color: #bab8ae;
       font-size: 0.95rem;
+      font-weight: 500;
     }
     .filter-tabs {
       display: flex;
-      gap: 0.5rem;
-      margin-bottom: 1.25rem;
-      border-bottom: 1px solid #e2e8f0;
-      padding-bottom: 0.5rem;
+      gap: 0.65rem;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid #1e1e28;
+      padding-bottom: 0.75rem;
     }
     .tab-btn {
-      background: none;
-      border: 1px solid transparent;
-      padding: 0.45rem 1rem;
+      background: #111116;
+      border: 1px solid #242432;
+      padding: 0.5rem 1.15rem;
       border-radius: 9999px;
       font-size: 0.88rem;
-      font-weight: 500;
-      color: #64748b;
+      font-weight: 800;
+      color: #bab8ae;
       cursor: pointer;
-      transition: all 0.15s ease;
+      transition: all 0.2s ease;
     }
     .tab-btn:hover {
-      background: #f1f5f9;
-      color: #0f172a;
+      border-color: #00ff66;
+      color: #f5f4ef;
     }
     .tab-btn.active {
-      background: #0284c7;
-      color: #fff;
+      background: #00ff66;
+      border-color: #00ff66;
+      color: #08080a;
+      font-weight: 900;
+      box-shadow: 0 0 15px rgba(0, 255, 102, 0.35);
     }
     .avisos-list {
       display: flex;
       flex-direction: column;
-      gap: 0.75rem;
+      gap: 0.85rem;
     }
     .avis-card {
       display: flex;
       align-items: center;
-      gap: 1rem;
-      background: #ffffff;
-      border: 1px solid #e2e8f0;
-      border-radius: 10px;
-      padding: 1rem 1.25rem;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.03);
-      transition: border-color 0.15s;
+      gap: 1.1rem;
+      background: #111116;
+      border: 1px solid #1e1e28;
+      border-radius: 12px;
+      padding: 1.1rem 1.35rem;
+      transition: all 0.2s ease;
+    }
+    .avis-card:hover {
+      border-color: #2c2c3e;
+      background: #14141c;
     }
     .avis-card.no-llegit {
-      border-left: 4px solid #0284c7;
-      background: #f8fafc;
+      border-left: 4px solid #00ff66;
+      background: #13131b;
     }
     .avis-indicator {
       width: 14px;
@@ -201,9 +210,10 @@ type FiltreAvisos = 'totes' | 'pendents' | 'llegides';
     .dot {
       width: 10px;
       height: 10px;
-      background: #0284c7;
+      background: #00ff66;
       border-radius: 50%;
       display: inline-block;
+      box-shadow: 0 0 8px #00ff66;
     }
     .avis-body {
       flex: 1;
@@ -212,88 +222,113 @@ type FiltreAvisos = 'totes' | 'pendents' | 'llegides';
       display: flex;
       gap: 0.75rem;
       align-items: center;
-      margin-bottom: 0.35rem;
+      margin-bottom: 0.4rem;
     }
     .badge-status {
       font-size: 0.75rem;
-      padding: 0.15rem 0.5rem;
+      padding: 0.2rem 0.55rem;
       border-radius: 4px;
-      font-weight: 600;
+      font-weight: 800;
     }
     .badge-pendent {
-      background: #e0f2fe;
-      color: #0369a1;
+      background: rgba(0, 255, 102, 0.15);
+      color: #00ff66;
+      border: 1px solid rgba(0, 255, 102, 0.3);
     }
     .badge-llegit {
-      background: #f1f5f9;
-      color: #64748b;
+      background: #1c1c28;
+      color: #71717a;
+      border: 1px solid #282836;
     }
     .avis-date {
       font-size: 0.8rem;
-      color: #94a3b8;
+      color: #71717a;
+      font-weight: 600;
     }
     .avis-text {
       margin: 0;
-      color: #1e293b;
+      color: #f5f4ef;
       font-size: 0.95rem;
-      line-height: 1.4;
+      font-weight: 600;
+      line-height: 1.45;
     }
     .avis-actions {
       display: flex;
       gap: 0.5rem;
     }
     .btn-icon {
-      background: #f8fafc;
-      border: 1px solid #cbd5e1;
-      padding: 0.35rem 0.65rem;
+      background: #181822;
+      border: 1px solid #282836;
+      padding: 0.4rem 0.75rem;
       border-radius: 6px;
       font-size: 0.8rem;
+      font-weight: 800;
       cursor: pointer;
-      color: #334155;
+      color: #f5f4ef;
+      transition: all 0.2s;
     }
     .btn-icon:hover {
-      background: #e2e8f0;
+      border-color: #00ff66;
+      color: #00ff66;
     }
     .btn-icon.danger {
       color: #ef4444;
-      border-color: #fca5a5;
+      border-color: rgba(239, 68, 68, 0.3);
     }
     .btn-icon.danger:hover {
-      background: #fee2e2;
+      background: rgba(239, 68, 68, 0.15);
+      border-color: #ef4444;
     }
     .btn-action-alt {
-      background: #ffffff;
-      border: 1px solid #cbd5e1;
-      padding: 0.45rem 0.9rem;
-      border-radius: 6px;
+      background: #111116;
+      border: 1px solid #242432;
+      padding: 0.55rem 1rem;
+      border-radius: 8px;
       font-size: 0.85rem;
       cursor: pointer;
-      font-weight: 500;
-      color: #334155;
+      font-weight: 800;
+      color: #f5f4ef;
+      transition: all 0.2s;
     }
     .btn-action-alt:hover:not(:disabled) {
-      background: #f8fafc;
+      border-color: #00ff66;
+      color: #00ff66;
     }
     .btn-action-alt:disabled {
-      opacity: 0.5;
+      opacity: 0.4;
       cursor: not-allowed;
     }
     .btn-primary {
       display: inline-block;
-      background: #0284c7;
-      color: #fff;
-      padding: 0.5rem 1.25rem;
-      border-radius: 6px;
+      background: #00ff66;
+      color: #08080a;
+      font-weight: 900;
+      padding: 0.65rem 1.4rem;
+      border-radius: 8px;
       text-decoration: none;
       font-size: 0.9rem;
       margin-top: 1rem;
+      transition: all 0.2s;
+    }
+    .btn-primary:hover {
+      box-shadow: 0 0 15px rgba(0, 255, 102, 0.4);
     }
     .empty-state {
       text-align: center;
-      padding: 3rem 1rem;
-      background: #fff;
-      border-radius: 10px;
-      border: 1px dashed #cbd5e1;
+      padding: 3.5rem 1rem;
+      background: #111116;
+      border-radius: 12px;
+      border: 1px dashed #242432;
+    }
+    .empty-state h3 {
+      color: #f5f4ef;
+      font-size: 1.25rem;
+      font-weight: 800;
+      margin-top: 0.75rem;
+    }
+    .empty-state p {
+      color: #bab8ae;
+      font-weight: 500;
     }
     .empty-icon {
       font-size: 3rem;
@@ -301,22 +336,27 @@ type FiltreAvisos = 'totes' | 'pendents' | 'llegides';
     }
     .state-box {
       text-align: center;
-      padding: 2rem;
-      color: #64748b;
+      padding: 2.5rem;
+      color: #bab8ae;
+      font-weight: 700;
     }
     .alert-error {
-      background: #fee2e2;
-      color: #991b1b;
+      background: rgba(239, 68, 68, 0.1);
+      color: #ef4444;
+      border: 1px solid rgba(239, 68, 68, 0.3);
       padding: 0.75rem 1rem;
-      border-radius: 6px;
+      border-radius: 8px;
       margin-bottom: 1rem;
+      font-weight: 700;
     }
     .alert-success {
-      background: #dcfce7;
-      color: #166534;
+      background: rgba(0, 255, 102, 0.1);
+      color: #00ff66;
+      border: 1px solid rgba(0, 255, 102, 0.3);
       padding: 0.75rem 1rem;
-      border-radius: 6px;
+      border-radius: 8px;
       margin-bottom: 1rem;
+      font-weight: 700;
     }
   `]
 })

@@ -433,48 +433,53 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      margin-bottom: 1.75rem;
+      margin-bottom: 2rem;
       gap: 1rem;
       flex-wrap: wrap;
     }
     .admin-badge {
       display: inline-block;
-      background: #581c87;
-      color: #f5d0fe;
+      background: rgba(0, 255, 102, 0.1);
+      color: #00ff66;
+      border: 1px solid rgba(0, 255, 102, 0.3);
       font-size: 0.72rem;
-      font-weight: 800;
-      letter-spacing: 0.1em;
-      padding: 0.2rem 0.6rem;
+      font-weight: 900;
+      letter-spacing: 0.12em;
+      padding: 0.25rem 0.65rem;
       border-radius: 4px;
-      margin-bottom: 0.4rem;
+      margin-bottom: 0.5rem;
     }
     .title-group h2 {
       margin: 0 0 0.35rem 0;
-      color: #0f172a;
-      font-size: 1.65rem;
+      color: #f5f4ef;
+      font-size: 1.85rem;
+      font-weight: 900;
+      letter-spacing: -0.02em;
     }
     .subtitle {
       margin: 0;
-      color: #64748b;
+      color: #bab8ae;
       font-size: 0.95rem;
+      font-weight: 500;
     }
     .btn-refresh {
-      background: #ffffff;
-      border: 1px solid #cbd5e1;
-      padding: 0.55rem 1rem;
+      background: #111116;
+      border: 1px solid #2a2a38;
+      padding: 0.65rem 1.25rem;
       border-radius: 8px;
-      font-weight: 600;
+      font-weight: 800;
       font-size: 0.88rem;
-      color: #334155;
+      color: #f5f4ef;
       cursor: pointer;
-      transition: all 0.15s ease;
+      transition: all 0.2s ease;
     }
     .btn-refresh:hover:not(:disabled) {
-      background: #f8fafc;
-      border-color: #94a3b8;
+      border-color: #00ff66;
+      color: #00ff66;
+      box-shadow: 0 0 12px rgba(0, 255, 102, 0.2);
     }
     .btn-refresh:disabled {
-      opacity: 0.6;
+      opacity: 0.5;
       cursor: not-allowed;
     }
     .metrics-grid {
@@ -484,14 +489,17 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
       margin-bottom: 2rem;
     }
     .metric-card {
-      background: #ffffff;
-      border: 1px solid #e2e8f0;
+      background: #111116;
+      border: 1px solid #1e1e28;
       border-radius: 14px;
-      padding: 1.25rem;
+      padding: 1.35rem;
       display: flex;
       align-items: center;
       gap: 1.1rem;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+      transition: border-color 0.2s;
+    }
+    .metric-card:hover {
+      border-color: rgba(0, 255, 102, 0.35);
     }
     .metric-icon {
       font-size: 2.2rem;
@@ -501,48 +509,52 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
       flex-direction: column;
     }
     .metric-value {
-      font-size: 1.7rem;
-      font-weight: 800;
-      color: #0f172a;
+      font-size: 1.85rem;
+      font-weight: 900;
+      color: #f5f4ef;
       line-height: 1.1;
     }
     .metric-label {
       font-size: 0.85rem;
-      color: #64748b;
-      font-weight: 600;
-      margin-top: 0.2rem;
+      color: #bab8ae;
+      font-weight: 700;
+      margin-top: 0.25rem;
     }
     .metric-sub {
       font-size: 0.75rem;
-      color: #94a3b8;
-      margin-top: 0.15rem;
+      color: #71717a;
+      margin-top: 0.2rem;
+      font-weight: 600;
     }
     .nav-tabs {
       display: flex;
-      gap: 0.5rem;
+      gap: 0.65rem;
       margin-bottom: 1.5rem;
-      border-bottom: 2px solid #e2e8f0;
-      padding-bottom: 0.5rem;
+      border-bottom: 1px solid #1e1e28;
+      padding-bottom: 0.75rem;
       flex-wrap: wrap;
     }
     .tab-btn {
-      background: none;
-      border: none;
+      background: #111116;
+      border: 1px solid #242432;
       padding: 0.65rem 1.25rem;
       border-radius: 8px;
       font-size: 0.92rem;
-      font-weight: 600;
-      color: #64748b;
+      font-weight: 800;
+      color: #bab8ae;
       cursor: pointer;
-      transition: all 0.15s ease;
+      transition: all 0.2s ease;
     }
     .tab-btn:hover {
-      background: #f1f5f9;
-      color: #0f172a;
+      border-color: #00ff66;
+      color: #f5f4ef;
     }
     .tab-btn.active {
-      background: #0f172a;
-      color: #ffffff;
+      background: #00ff66;
+      border-color: #00ff66;
+      color: #08080a;
+      font-weight: 900;
+      box-shadow: 0 0 15px rgba(0, 255, 102, 0.35);
     }
     .filter-bar {
       display: flex;
@@ -553,29 +565,38 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
     .search-input {
       flex: 1;
       min-width: 260px;
-      padding: 0.65rem 1rem;
-      border: 1px solid #cbd5e1;
+      padding: 0.75rem 1rem;
+      background: #111116;
+      border: 1px solid #242432;
       border-radius: 8px;
       font-size: 0.9rem;
+      color: #f5f4ef;
+      font-weight: 600;
     }
     .search-input:focus {
       outline: none;
-      border-color: #2563eb;
+      border-color: #00ff66;
+      box-shadow: 0 0 10px rgba(0, 255, 102, 0.2);
     }
     .select-filter {
-      padding: 0.65rem 1rem;
-      border: 1px solid #cbd5e1;
+      padding: 0.75rem 1rem;
+      background: #111116;
+      border: 1px solid #242432;
       border-radius: 8px;
       font-size: 0.9rem;
-      background: #ffffff;
+      color: #f5f4ef;
+      font-weight: 700;
       cursor: pointer;
     }
+    .select-filter:focus {
+      outline: none;
+      border-color: #00ff66;
+    }
     .table-wrapper {
-      background: #ffffff;
-      border: 1px solid #e2e8f0;
+      background: #111116;
+      border: 1px solid #1e1e28;
       border-radius: 12px;
       overflow-x: auto;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.03);
     }
     .data-table {
       width: 100%;
@@ -584,170 +605,186 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
       font-size: 0.9rem;
     }
     .data-table th {
-      background: #f8fafc;
-      color: #475569;
-      padding: 0.85rem 1rem;
-      font-weight: 700;
-      border-bottom: 1px solid #e2e8f0;
+      background: #161620;
+      color: #f5f4ef;
+      padding: 0.9rem 1rem;
+      font-weight: 800;
+      border-bottom: 1px solid #1e1e28;
       white-space: nowrap;
+      letter-spacing: 0.03em;
     }
     .data-table td {
-      padding: 0.85rem 1rem;
-      border-bottom: 1px solid #f1f5f9;
+      padding: 0.9rem 1rem;
+      border-bottom: 1px solid #181824;
       vertical-align: middle;
+      color: #f5f4ef;
     }
     .data-table tr:hover {
-      background: #fbfcfe;
+      background: #171722;
     }
     .font-mono {
       font-family: monospace;
-      color: #334155;
+      color: #00ff66;
+      font-weight: 800;
     }
     .table-titol {
-      font-weight: 600;
-      color: #0f172a;
+      font-weight: 800;
+      color: #f5f4ef;
       margin-bottom: 0.2rem;
     }
     .table-desc {
       font-size: 0.8rem;
-      color: #64748b;
+      color: #bab8ae;
       max-width: 280px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
     .tag-cat {
-      background: #f1f5f9;
-      color: #475569;
+      background: #181824;
+      border: 1px solid #242432;
+      color: #bab8ae;
       padding: 0.2rem 0.5rem;
       border-radius: 4px;
       font-size: 0.78rem;
-      font-weight: 600;
+      font-weight: 700;
     }
     .badge-status {
-      padding: 0.2rem 0.55rem;
+      padding: 0.25rem 0.6rem;
       border-radius: 5px;
       font-size: 0.78rem;
-      font-weight: 700;
+      font-weight: 800;
       display: inline-block;
     }
     .badge-oberta {
-      background: #e0f2fe;
-      color: #0369a1;
+      background: rgba(0, 255, 102, 0.12);
+      color: #00ff66;
+      border: 1px solid rgba(0, 255, 102, 0.3);
     }
     .badge-en-curs {
-      background: #fef3c7;
-      color: #92400e;
+      background: rgba(245, 158, 11, 0.12);
+      color: #f59e0b;
+      border: 1px solid rgba(245, 158, 11, 0.3);
     }
     .badge-finalitzada {
-      background: #dcfce7;
-      color: #166534;
+      background: rgba(148, 163, 184, 0.12);
+      color: #94a3b8;
+      border: 1px solid rgba(148, 163, 184, 0.25);
     }
     .badge-pendent {
-      background: #fef3c7;
-      color: #92400e;
+      background: rgba(245, 158, 11, 0.12);
+      color: #f59e0b;
+      border: 1px solid rgba(245, 158, 11, 0.3);
     }
     .badge-acceptada {
-      background: #dcfce7;
-      color: #166534;
+      background: rgba(0, 255, 102, 0.12);
+      color: #00ff66;
+      border: 1px solid rgba(0, 255, 102, 0.3);
     }
     .badge-rebutjada {
-      background: #fee2e2;
-      color: #991b1b;
+      background: rgba(239, 68, 68, 0.12);
+      color: #ef4444;
+      border: 1px solid rgba(239, 68, 68, 0.3);
     }
     .price-cell {
-      font-weight: 700;
-      color: #0284c7;
+      font-weight: 900;
+      color: #00ff66;
       font-size: 0.95rem;
     }
     .note-cell {
       max-width: 220px;
       font-size: 0.82rem;
-      color: #64748b;
+      color: #bab8ae;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
       font-style: italic;
     }
     .link-ref {
-      color: #2563eb;
+      color: #00ff66;
       text-decoration: underline;
-      font-weight: 600;
+      font-weight: 700;
     }
     .action-buttons {
       display: flex;
-      gap: 0.35rem;
+      gap: 0.4rem;
       flex-wrap: wrap;
     }
     .btn-sm {
       padding: 0.35rem 0.65rem;
-      border-radius: 5px;
+      border-radius: 6px;
       font-size: 0.78rem;
-      font-weight: 600;
+      font-weight: 800;
       cursor: pointer;
       border: 1px solid transparent;
       text-decoration: none;
       display: inline-flex;
       align-items: center;
+      transition: all 0.15s;
     }
     .btn-info {
-      background: #f0f9ff;
-      color: #0369a1;
-      border-color: #bae6fd;
+      background: #181824;
+      color: #f5f4ef;
+      border-color: #2a2a3c;
     }
     .btn-info:hover {
-      background: #e0f2fe;
+      border-color: #00ff66;
+      color: #00ff66;
     }
     .btn-success {
-      background: #f0fdf4;
-      color: #166534;
-      border-color: #bbf7d0;
+      background: rgba(0, 255, 102, 0.1);
+      color: #00ff66;
+      border-color: rgba(0, 255, 102, 0.3);
     }
     .btn-success:hover {
-      background: #dcfce7;
+      background: rgba(0, 255, 102, 0.2);
     }
     .btn-warning {
-      background: #fffbeb;
-      color: #92400e;
-      border-color: #fde68a;
+      background: rgba(245, 158, 11, 0.1);
+      color: #f59e0b;
+      border-color: rgba(245, 158, 11, 0.3);
     }
     .btn-warning:hover {
-      background: #fef3c7;
+      background: rgba(245, 158, 11, 0.2);
     }
     .btn-danger {
-      background: #fef2f2;
-      color: #991b1b;
-      border-color: #fecaca;
+      background: rgba(239, 68, 68, 0.1);
+      color: #ef4444;
+      border-color: rgba(239, 68, 68, 0.3);
     }
     .btn-danger:hover {
-      background: #fee2e2;
+      background: rgba(239, 68, 68, 0.2);
     }
     .user-badge-tag {
       padding: 0.2rem 0.55rem;
       border-radius: 4px;
       font-size: 0.75rem;
-      font-weight: 700;
+      font-weight: 800;
     }
     .user-badge-tag.client {
-      background: #e0f2fe;
-      color: #0369a1;
+      background: rgba(59, 130, 246, 0.15);
+      color: #60a5fa;
+      border: 1px solid rgba(59, 130, 246, 0.3);
     }
     .user-badge-tag.professional {
-      background: #dcfce7;
-      color: #166534;
+      background: rgba(0, 255, 102, 0.12);
+      color: #00ff66;
+      border: 1px solid rgba(0, 255, 102, 0.3);
     }
     .user-badge-tag.ambdos {
-      background: #ede9fe;
-      color: #6d28d9;
+      background: rgba(168, 85, 247, 0.15);
+      color: #c084fc;
+      border: 1px solid rgba(168, 85, 247, 0.3);
     }
     .user-badge-tag.admin {
-      background: #fae8ff;
-      color: #86198f;
+      background: rgba(236, 72, 153, 0.15);
+      color: #f472b6;
+      border: 1px solid rgba(236, 72, 153, 0.3);
     }
     .bio-cell {
       max-width: 250px;
       font-size: 0.8rem;
-      color: #64748b;
+      color: #bab8ae;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -755,41 +792,45 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
     .empty-box {
       text-align: center;
       padding: 2.5rem;
-      background: #ffffff;
+      background: #111116;
       border-radius: 12px;
-      border: 1px dashed #cbd5e1;
-      color: #64748b;
+      border: 1px dashed #242432;
+      color: #bab8ae;
+      font-weight: 700;
     }
     .alert-success {
-      background: #dcfce7;
-      color: #166534;
+      background: rgba(0, 255, 102, 0.1);
+      color: #00ff66;
+      border: 1px solid rgba(0, 255, 102, 0.3);
       padding: 0.75rem 1rem;
       border-radius: 8px;
       margin-bottom: 1rem;
-      font-weight: 500;
+      font-weight: 700;
     }
     .alert-error {
-      background: #fee2e2;
-      color: #991b1b;
+      background: rgba(239, 68, 68, 0.1);
+      color: #ef4444;
+      border: 1px solid rgba(239, 68, 68, 0.3);
       padding: 0.75rem 1rem;
       border-radius: 8px;
       margin-bottom: 1rem;
-      font-weight: 500;
+      font-weight: 700;
     }
     .btn-password {
-      background: #f0fdf4;
-      color: #15803d;
-      border: 1px solid #bbf7d0;
+      background: rgba(0, 255, 102, 0.1);
+      color: #00ff66;
+      border: 1px solid rgba(0, 255, 102, 0.3);
       padding: 0.35rem 0.65rem;
       border-radius: 6px;
       font-size: 0.8rem;
       cursor: pointer;
-      font-weight: 600;
+      font-weight: 800;
       transition: all 0.2s;
     }
     .btn-password:hover {
-      background: #dcfce7;
-      border-color: #86efac;
+      background: #00ff66;
+      color: #08080a;
+      box-shadow: 0 0 10px rgba(0, 255, 102, 0.4);
     }
     .modal-backdrop {
       position: fixed;
@@ -797,19 +838,20 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
       left: 0;
       width: 100vw;
       height: 100vh;
-      background: rgba(15, 23, 42, 0.6);
+      background: rgba(0, 0, 0, 0.85);
       display: flex;
       align-items: center;
       justify-content: center;
       z-index: 1000;
-      backdrop-filter: blur(2px);
+      backdrop-filter: blur(4px);
     }
     .modal-card {
-      background: #ffffff;
+      background: #111116;
       width: 100%;
       max-width: 480px;
       border-radius: 14px;
-      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      border: 1px solid #242432;
+      box-shadow: 0 20px 35px rgba(0, 0, 0, 0.6);
       overflow: hidden;
       display: flex;
       flex-direction: column;
@@ -821,8 +863,8 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
     }
     .modal-header {
       padding: 1.1rem 1.4rem;
-      background: #f8fafc;
-      border-bottom: 1px solid #e2e8f0;
+      background: #161620;
+      border-bottom: 1px solid #1e1e28;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -830,7 +872,8 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
     .modal-header h3 {
       margin: 0;
       font-size: 1.15rem;
-      color: #0f172a;
+      color: #f5f4ef;
+      font-weight: 800;
       display: flex;
       align-items: center;
       gap: 0.4rem;
@@ -839,14 +882,13 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
       background: none;
       border: none;
       font-size: 1.25rem;
-      color: #94a3b8;
+      color: #bab8ae;
       cursor: pointer;
       padding: 0.2rem 0.5rem;
       border-radius: 4px;
     }
     .btn-close:hover {
-      color: #0f172a;
-      background: #e2e8f0;
+      color: #00ff66;
     }
     .modal-body {
       padding: 1.4rem;
@@ -855,22 +897,26 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
       gap: 1.1rem;
     }
     .user-highlight {
-      background: #f1f5f9;
+      background: #181824;
+      border: 1px solid #242432;
       padding: 0.75rem 1rem;
       border-radius: 8px;
       font-size: 0.9rem;
+      color: #f5f4ef;
+      font-weight: 700;
     }
     .user-subinfo {
       display: flex;
       align-items: center;
       gap: 0.5rem;
       margin-top: 0.25rem;
-      color: #64748b;
+      color: #bab8ae;
+      font-weight: 500;
     }
     .alert-info-box {
-      background: #eff6ff;
-      border-left: 4px solid #3b82f6;
-      color: #1e40af;
+      background: rgba(0, 255, 102, 0.05);
+      border-left: 3px solid #00ff66;
+      color: #bab8ae;
       padding: 0.75rem;
       border-radius: 4px;
       font-size: 0.82rem;
@@ -882,9 +928,9 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
       gap: 0.35rem;
     }
     .form-group label {
-      font-weight: 600;
+      font-weight: 800;
       font-size: 0.85rem;
-      color: #334155;
+      color: #bab8ae;
     }
     .input-password-wrapper {
       position: relative;
@@ -904,63 +950,69 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
     }
     .form-control {
       width: 100%;
-      padding: 0.6rem 0.75rem;
-      border: 1px solid #cbd5e1;
+      padding: 0.7rem 0.85rem;
+      background: #181822;
+      border: 1px solid #282836;
       border-radius: 6px;
       font-size: 0.9rem;
+      color: #f5f4ef;
       box-sizing: border-box;
       outline: none;
       transition: border-color 0.2s;
     }
     .form-control:focus {
-      border-color: #3b82f6;
-      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+      border-color: #00ff66;
+      box-shadow: 0 0 10px rgba(0, 255, 102, 0.2);
     }
     .modal-error {
-      background: #fef2f2;
-      color: #b91c1c;
+      background: rgba(239, 68, 68, 0.1);
+      color: #ef4444;
+      border: 1px solid rgba(239, 68, 68, 0.3);
       padding: 0.6rem 0.8rem;
       border-radius: 6px;
       font-size: 0.82rem;
-      font-weight: 500;
+      font-weight: 700;
     }
     .modal-footer {
       padding: 1rem 1.4rem;
-      background: #f8fafc;
-      border-top: 1px solid #e2e8f0;
+      background: #161620;
+      border-top: 1px solid #1e1e28;
       display: flex;
       justify-content: flex-end;
       gap: 0.75rem;
     }
     .btn-secondary {
-      padding: 0.55rem 1rem;
-      background: #ffffff;
-      border: 1px solid #cbd5e1;
+      padding: 0.6rem 1.1rem;
+      background: #1e1e2a;
+      border: 1px solid #2c2c3e;
       border-radius: 6px;
-      color: #475569;
-      font-weight: 600;
+      color: #bab8ae;
+      font-weight: 800;
       font-size: 0.85rem;
       cursor: pointer;
+      transition: all 0.2s;
     }
     .btn-secondary:hover {
-      background: #f1f5f9;
+      border-color: #bab8ae;
+      color: #f5f4ef;
     }
     .btn-primary {
-      padding: 0.55rem 1.1rem;
-      background: #2563eb;
-      border: 1px solid #1d4ed8;
+      padding: 0.6rem 1.25rem;
+      background: #00ff66;
+      border: 1px solid #00ff66;
       border-radius: 6px;
-      color: #ffffff;
-      font-weight: 600;
+      color: #08080a;
+      font-weight: 900;
       font-size: 0.85rem;
       cursor: pointer;
-      transition: background-color 0.2s;
+      transition: all 0.2s;
     }
     .btn-primary:hover:not(:disabled) {
-      background: #1d4ed8;
+      background: #00dd55;
+      box-shadow: 0 0 15px rgba(0, 255, 102, 0.4);
     }
     .btn-primary:disabled {
-      opacity: 0.65;
+      opacity: 0.5;
       cursor: not-allowed;
     }
   `]

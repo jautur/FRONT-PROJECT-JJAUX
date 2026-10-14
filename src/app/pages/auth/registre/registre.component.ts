@@ -102,61 +102,72 @@ import { AuthService, RegisterData } from '../../../core/services/auth.service';
     `
       .auth-card {
         width: min(520px, 100%);
-        background: white;
-        padding: 2.2rem;
+        background: #111116;
+        padding: 2.4rem;
         border-radius: 20px;
-        box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08);
+        border: 1px solid #23232f;
+        box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7);
+        color: var(--color-bone, #f5f4ef);
       }
 
       h1 {
         margin: 0 0 0.4rem;
-        font-size: 1.7rem;
-        color: #0f172a;
+        font-size: 1.85rem;
+        font-weight: 900;
+        color: var(--color-bone, #f5f4ef);
+        letter-spacing: -0.03em;
       }
 
       .subtitle {
-        margin: 0 0 1.25rem;
-        color: #64748b;
+        margin: 0 0 1.4rem;
+        color: var(--color-bone-muted, #bab8ae);
         font-size: 0.95rem;
+        font-weight: 600;
       }
 
       form {
         display: flex;
         flex-direction: column;
-        gap: 1.1rem;
+        gap: 1.15rem;
       }
 
       label {
         display: flex;
         flex-direction: column;
         gap: 0.4rem;
-        font-weight: 600;
-        font-size: 0.9rem;
-        color: #334155;
+        font-weight: 800;
+        font-size: 0.82rem;
+        color: var(--color-bone, #f5f4ef);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
       }
 
       input {
-        border: 1px solid #cbd5e1;
+        background: #181822;
+        color: var(--color-bone, #f5f4ef);
+        border: 1px solid #2a2a3a;
         border-radius: 10px;
-        padding: 0.8rem 0.95rem;
+        padding: 0.85rem 1rem;
         font-size: 0.95rem;
+        font-weight: 600;
+        outline: none;
         transition: border-color 0.15s ease;
       }
 
       input:focus {
-        outline: none;
-        border-color: #2563eb;
+        border-color: var(--neon, #00ff66);
+        box-shadow: 0 0 14px rgba(0, 255, 102, 0.25);
       }
 
       .input-required {
-        border-color: #0284c7;
-        background: #f0f9ff;
+        border-color: var(--neon, #00ff66);
+        background: rgba(0, 255, 102, 0.04);
       }
 
       .hint {
         font-size: 0.78rem;
-        color: #64748b;
-        font-weight: 400;
+        color: var(--color-bone-dim, #737168);
+        font-weight: 600;
       }
 
       .role-selector {
@@ -171,73 +182,88 @@ import { AuthService, RegisterData } from '../../../core/services/auth.service';
         flex-direction: column;
         align-items: center;
         text-align: center;
-        padding: 0.85rem 0.5rem;
-        background: #f8fafc;
-        border: 2px solid #e2e8f0;
+        padding: 0.95rem 0.6rem;
+        background: #15151e;
+        border: 2px solid #262636;
         border-radius: 12px;
         cursor: pointer;
-        transition: all 0.15s ease;
+        transition: all 0.2s ease;
       }
 
       .role-btn strong {
         font-size: 0.95rem;
-        color: #1e293b;
+        font-weight: 900;
+        color: var(--color-bone, #f5f4ef);
       }
 
       .role-btn small {
         font-size: 0.75rem;
-        color: #64748b;
+        color: var(--color-bone-muted, #bab8ae);
         margin-top: 0.25rem;
+        font-weight: 600;
       }
 
       .role-btn.active {
-        background: #eff6ff;
-        border-color: #2563eb;
+        background: rgba(0, 255, 102, 0.08);
+        border-color: var(--neon, #00ff66);
+        box-shadow: 0 0 16px rgba(0, 255, 102, 0.25);
       }
 
       .role-btn.active strong {
-        color: #2563eb;
+        color: var(--neon, #00ff66);
       }
 
       .role-info-box {
-        padding: 0.75rem 1rem;
+        padding: 0.85rem 1.1rem;
         border-radius: 10px;
-        font-size: 0.85rem;
+        font-size: 0.88rem;
         line-height: 1.45;
+        font-weight: 600;
+        background: #161622;
+        border: 1px solid #28283a;
+        color: var(--color-bone, #f5f4ef);
       }
 
       .role-info-box.client {
-        background: #f0f9ff;
-        border: 1px solid #bae6fd;
-        color: #0369a1;
+        border-left: 4px solid var(--color-bone);
       }
 
       .role-info-box.professional {
-        background: #f0fdf4;
-        border: 1px solid #bbf7d0;
-        color: #166534;
+        border-left: 4px solid var(--neon, #00ff66);
+        color: var(--color-bone, #f5f4ef);
       }
 
       .submit-btn {
-        margin-top: 0.6rem;
+        margin-top: 0.75rem;
         border: none;
-        background: #10b981;
-        color: white;
+        background: var(--neon, #00ff66);
+        color: #08080a;
         padding: 0.95rem 1rem;
         border-radius: 10px;
-        font-weight: 700;
+        font-weight: 900;
         font-size: 1rem;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
         cursor: pointer;
-        transition: background 0.15s ease;
+        box-shadow: 0 0 16px rgba(0, 255, 102, 0.35);
+        transition: all 0.2s ease;
+      }
+
+      .submit-btn:hover:not(:disabled) {
+        background: #ffffff;
+        box-shadow: 0 0 24px rgba(0, 255, 102, 0.6);
+        transform: translateY(-2px);
       }
 
       .submit-btn:disabled {
-        opacity: 0.6;
+        opacity: 0.5;
         cursor: not-allowed;
       }
 
       .alert-danger {
-        background: #fee2e2;
+        background: #1c1c24;
+        border: 1px solid rgba(255, 92, 92, 0.4);
+        color: #ff6b6b;
         color: #991b1b;
         padding: 0.75rem 1rem;
         border-radius: 10px;

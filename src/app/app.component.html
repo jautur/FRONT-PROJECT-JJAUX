@@ -1,4 +1,4 @@
-<div class="shell" [class.has-solid-header]="isScrolled" [class.sidebar-open]="menuObert && isScrolled">
+<div class="shell" [class.has-solid-header]="isScrolled" [class.sidebar-open]="menuObert && isScrolled" [class.not-home-page]="!isHomePage">
   <!-- Capçalera superior fixa amb el títol centrat -->
   <header class="topbar" [class.solid-header]="isScrolled">
     <!-- Botó per obrir/tancar el menú a l'esquerra (només visible quan s'ha lliscat) -->

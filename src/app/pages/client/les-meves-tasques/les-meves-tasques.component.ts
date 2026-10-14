@@ -145,127 +145,140 @@ type FiltreEstatTasca = 'totes' | 'oberta' | 'en_curs' | 'finalitzada';
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 1.5rem;
+      margin-bottom: 2rem;
       gap: 1rem;
       flex-wrap: wrap;
     }
     .panell-header h2 {
-      margin: 0 0 0.3rem 0;
-      color: #0f172a;
-      font-size: 1.5rem;
+      margin: 0 0 0.35rem 0;
+      color: #f5f4ef;
+      font-size: 1.85rem;
+      font-weight: 900;
+      letter-spacing: -0.02em;
     }
     .subtitle {
       margin: 0;
-      color: #64748b;
+      color: #bab8ae;
       font-size: 0.95rem;
+      font-weight: 500;
     }
     .btn-crear {
-      background: #0284c7;
-      color: #fff;
-      padding: 0.6rem 1.25rem;
+      background: #00ff66;
+      color: #08080a;
+      padding: 0.75rem 1.4rem;
       border-radius: 8px;
       text-decoration: none;
-      font-weight: 600;
+      font-weight: 900;
       font-size: 0.9rem;
-      transition: background 0.15s;
+      transition: all 0.2s;
     }
     .btn-crear:hover {
-      background: #0369a1;
+      background: #00dd55;
+      box-shadow: 0 0 15px rgba(0, 255, 102, 0.4);
     }
     .filter-tabs {
       display: flex;
-      gap: 0.5rem;
+      gap: 0.65rem;
       margin-bottom: 1.5rem;
-      border-bottom: 1px solid #e2e8f0;
-      padding-bottom: 0.5rem;
+      border-bottom: 1px solid #1e1e28;
+      padding-bottom: 0.75rem;
       flex-wrap: wrap;
     }
     .tab-btn {
-      background: none;
-      border: none;
-      padding: 0.45rem 1rem;
+      background: #111116;
+      border: 1px solid #242432;
+      padding: 0.5rem 1.15rem;
       border-radius: 9999px;
       font-size: 0.88rem;
-      font-weight: 500;
-      color: #64748b;
+      font-weight: 800;
+      color: #bab8ae;
       cursor: pointer;
-      transition: all 0.15s ease;
+      transition: all 0.2s ease;
     }
     .tab-btn:hover {
-      background: #f1f5f9;
-      color: #0f172a;
+      border-color: #00ff66;
+      color: #f5f4ef;
     }
     .tab-btn.active {
-      background: #0284c7;
-      color: #fff;
+      background: #00ff66;
+      border-color: #00ff66;
+      color: #08080a;
+      font-weight: 900;
+      box-shadow: 0 0 15px rgba(0, 255, 102, 0.35);
     }
     .tasques-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-      gap: 1.25rem;
+      gap: 1.35rem;
     }
     .tasca-card {
-      background: #ffffff;
-      border: 1px solid #e2e8f0;
-      border-radius: 12px;
-      padding: 1.25rem;
+      background: #111116;
+      border: 1px solid #1e1e28;
+      border-radius: 14px;
+      padding: 1.35rem;
       display: flex;
       flex-direction: column;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-      transition: transform 0.15s, box-shadow 0.15s;
+      transition: all 0.2s ease;
     }
     .tasca-card:hover {
       transform: translateY(-2px);
-      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+      border-color: #2c2c3e;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.4);
     }
     .card-header {
       display: flex;
       justify-content: space-between;
-      margin-bottom: 0.75rem;
+      margin-bottom: 0.85rem;
     }
     .badge-categoria {
-      background: #f1f5f9;
-      color: #475569;
-      padding: 0.2rem 0.6rem;
+      background: #181824;
+      border: 1px solid #282836;
+      color: #bab8ae;
+      padding: 0.25rem 0.65rem;
       border-radius: 6px;
       font-size: 0.78rem;
-      font-weight: 600;
+      font-weight: 700;
     }
     .badge-estat {
-      padding: 0.2rem 0.6rem;
+      padding: 0.25rem 0.65rem;
       border-radius: 6px;
       font-size: 0.78rem;
-      font-weight: 600;
+      font-weight: 800;
     }
     .estat-oberta {
-      background: #e0f2fe;
-      color: #0369a1;
+      background: rgba(0, 255, 102, 0.12);
+      color: #00ff66;
+      border: 1px solid rgba(0, 255, 102, 0.3);
     }
     .estat-en-curs {
-      background: #fef3c7;
-      color: #92400e;
+      background: rgba(245, 158, 11, 0.12);
+      color: #f59e0b;
+      border: 1px solid rgba(245, 158, 11, 0.3);
     }
     .estat-finalitzada {
-      background: #dcfce7;
-      color: #166534;
+      background: rgba(148, 163, 184, 0.12);
+      color: #94a3b8;
+      border: 1px solid rgba(148, 163, 184, 0.25);
     }
     .tasca-titol {
       margin: 0 0 0.5rem 0;
-      font-size: 1.15rem;
-      color: #0f172a;
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: #f5f4ef;
     }
     .tasca-desc {
-      margin: 0 0 1rem 0;
-      color: #64748b;
+      margin: 0 0 1.25rem 0;
+      color: #bab8ae;
       font-size: 0.9rem;
-      line-height: 1.4;
+      line-height: 1.45;
       flex: 1;
     }
     .tasca-meta {
-      background: #f8fafc;
-      padding: 0.75rem;
-      border-radius: 8px;
-      margin-bottom: 1rem;
+      background: #181824;
+      border: 1px solid #242432;
+      padding: 0.85rem 1rem;
+      border-radius: 10px;
+      margin-bottom: 1.2rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -276,16 +289,17 @@ type FiltreEstatTasca = 'totes' | 'oberta' | 'en_curs' | 'finalitzada';
     }
     .meta-label {
       font-size: 0.75rem;
-      color: #94a3b8;
+      color: #71717a;
+      font-weight: 600;
     }
     .meta-value.budget {
-      font-weight: 700;
-      color: #0f172a;
-      font-size: 1rem;
+      font-weight: 900;
+      color: #00ff66;
+      font-size: 1.05rem;
     }
     .meta-value.ofertes-badge {
-      font-weight: 600;
-      color: #0284c7;
+      font-weight: 800;
+      color: #f5f4ef;
       font-size: 0.85rem;
     }
     .card-actions {
@@ -295,10 +309,10 @@ type FiltreEstatTasca = 'totes' | 'oberta' | 'en_curs' | 'finalitzada';
     }
     .btn-action {
       flex: 1;
-      padding: 0.45rem 0.65rem;
-      border-radius: 6px;
+      padding: 0.6rem 0.85rem;
+      border-radius: 8px;
       font-size: 0.82rem;
-      font-weight: 500;
+      font-weight: 800;
       cursor: pointer;
       text-align: center;
       text-decoration: none;
@@ -306,37 +320,51 @@ type FiltreEstatTasca = 'totes' | 'oberta' | 'en_curs' | 'finalitzada';
       display: inline-flex;
       align-items: center;
       justify-content: center;
+      transition: all 0.2s;
     }
     .btn-action.primary {
-      background: #0284c7;
-      color: #fff;
+      background: #00ff66;
+      color: #08080a;
+      font-weight: 900;
     }
     .btn-action.primary:hover {
-      background: #0369a1;
+      background: #00dd55;
+      box-shadow: 0 0 12px rgba(0, 255, 102, 0.35);
     }
     .btn-action.success {
-      background: #f0fdf4;
-      color: #166534;
-      border-color: #bbf7d0;
+      background: rgba(0, 255, 102, 0.1);
+      color: #00ff66;
+      border-color: rgba(0, 255, 102, 0.3);
     }
     .btn-action.success:hover {
-      background: #dcfce7;
+      background: rgba(0, 255, 102, 0.2);
     }
     .btn-action.danger {
-      background: #fff;
+      background: rgba(239, 68, 68, 0.1);
       color: #ef4444;
-      border-color: #fecaca;
+      border-color: rgba(239, 68, 68, 0.3);
       flex: 0 0 auto;
     }
     .btn-action.danger:hover {
-      background: #fee2e2;
+      background: rgba(239, 68, 68, 0.2);
     }
     .empty-state {
       text-align: center;
-      padding: 3rem 1rem;
-      background: #fff;
+      padding: 3.5rem 1rem;
+      background: #111116;
       border-radius: 12px;
-      border: 1px dashed #cbd5e1;
+      border: 1px dashed #242432;
+    }
+    .empty-state h3 {
+      color: #f5f4ef;
+      font-size: 1.25rem;
+      font-weight: 800;
+      margin-top: 0.75rem;
+    }
+    .empty-state p {
+      color: #bab8ae;
+      font-weight: 500;
+      margin-bottom: 1.25rem;
     }
     .empty-icon {
       font-size: 3rem;
@@ -344,22 +372,27 @@ type FiltreEstatTasca = 'totes' | 'oberta' | 'en_curs' | 'finalitzada';
     }
     .state-box {
       text-align: center;
-      padding: 2rem;
-      color: #64748b;
+      padding: 2.5rem;
+      color: #bab8ae;
+      font-weight: 700;
     }
     .alert-error {
-      background: #fee2e2;
-      color: #991b1b;
+      background: rgba(239, 68, 68, 0.1);
+      color: #ef4444;
+      border: 1px solid rgba(239, 68, 68, 0.3);
       padding: 0.75rem 1rem;
-      border-radius: 6px;
+      border-radius: 8px;
       margin-bottom: 1rem;
+      font-weight: 700;
     }
     .alert-success {
-      background: #dcfce7;
-      color: #166534;
+      background: rgba(0, 255, 102, 0.1);
+      color: #00ff66;
+      border: 1px solid rgba(0, 255, 102, 0.3);
       padding: 0.75rem 1rem;
-      border-radius: 6px;
+      border-radius: 8px;
       margin-bottom: 1rem;
+      font-weight: 700;
     }
   `]
 })

@@ -112,17 +112,19 @@ import { Oferta } from '../../../models/oferta.model';
     `
       .detall-container {
         width: min(900px, 100%);
+        margin: 0 auto;
         display: flex;
         flex-direction: column;
         gap: 1.5rem;
       }
 
       .detall-header {
-        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-        color: white;
+        background: #111116;
+        border: 1px solid #1e1e28;
+        color: #f5f4ef;
         padding: 2.2rem;
         border-radius: 20px;
-        box-shadow: 0 15px 30px rgba(15, 23, 42, 0.15);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
       }
 
       .top-row {
@@ -133,17 +135,22 @@ import { Oferta } from '../../../models/oferta.model';
       }
 
       .category-tag {
-        background: rgba(56, 189, 248, 0.2);
-        color: #7dd3fc;
+        background: rgba(0, 255, 102, 0.1);
+        color: #00ff66;
+        border: 1px solid rgba(0, 255, 102, 0.3);
         padding: 0.3rem 0.8rem;
         border-radius: 8px;
-        font-weight: 700;
+        font-weight: 800;
         font-size: 0.8rem;
+        letter-spacing: 0.05em;
       }
 
       h1 {
         margin: 0 0 1rem;
-        font-size: 1.9rem;
+        font-size: 2rem;
+        font-weight: 900;
+        color: #f5f4ef;
+        letter-spacing: -0.02em;
       }
 
       .meta-row {
@@ -151,56 +158,70 @@ import { Oferta } from '../../../models/oferta.model';
         gap: 1.5rem;
         flex-wrap: wrap;
         font-size: 0.95rem;
-        color: #cbd5e1;
+        color: #bab8ae;
+        font-weight: 600;
       }
 
       .meta-row strong {
-        color: white;
+        color: #00ff66;
+        font-weight: 900;
       }
 
       .meta-row code {
-        background: rgba(255, 255, 255, 0.15);
-        padding: 0.15rem 0.4rem;
+        background: #181824;
+        border: 1px solid #282836;
+        color: #00ff66;
+        padding: 0.2rem 0.5rem;
         border-radius: 6px;
+        font-weight: 700;
       }
 
       .card {
-        background: white;
-        padding: 1.8rem;
+        background: #111116;
+        padding: 2rem;
         border-radius: 18px;
-        border: 1px solid #e2e8f0;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        border: 1px solid #1e1e28;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
       }
 
       .card h2 {
         margin: 0 0 0.8rem;
-        font-size: 1.3rem;
-        color: #0f172a;
+        font-size: 1.35rem;
+        font-weight: 900;
+        color: #f5f4ef;
       }
 
       .description-text {
-        color: #334155;
+        color: #bab8ae;
         line-height: 1.6;
         font-size: 1rem;
         margin: 0;
+        font-weight: 500;
       }
 
       .action-box, .complete-box {
-        margin-top: 1.25rem;
-        padding-top: 1.25rem;
-        border-top: 1px solid #e2e8f0;
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid #1e1e28;
       }
 
       .complete-box p {
-        margin: 0 0 0.5rem;
-        font-weight: 600;
-        color: #0f172a;
+        margin: 0 0 0.75rem;
+        font-weight: 800;
+        color: #f5f4ef;
       }
 
       .offers-section {
         display: flex;
         flex-direction: column;
         gap: 1rem;
+      }
+
+      .section-header h2 {
+        color: #f5f4ef;
+        font-size: 1.4rem;
+        font-weight: 900;
+        margin: 0;
       }
 
       .offers-grid {
@@ -212,7 +233,14 @@ import { Oferta } from '../../../models/oferta.model';
       .offer-card {
         display: flex;
         flex-direction: column;
-        gap: 0.75rem;
+        gap: 0.85rem;
+        background: #111116;
+        border: 1px solid #1e1e28;
+        transition: border-color 0.2s;
+      }
+
+      .offer-card:hover {
+        border-color: #2c2c3e;
       }
 
       .offer-header {
@@ -223,15 +251,17 @@ import { Oferta } from '../../../models/oferta.model';
 
       .offer-header h3 {
         margin: 0;
-        font-size: 1.15rem;
-        color: #1e293b;
+        font-size: 1.2rem;
+        font-weight: 800;
+        color: #f5f4ef;
       }
 
       .offer-note {
         margin: 0;
-        color: #475569;
+        color: #bab8ae;
         line-height: 1.5;
         font-size: 0.95rem;
+        font-weight: 500;
       }
 
       .offer-footer {
@@ -239,18 +269,21 @@ import { Oferta } from '../../../models/oferta.model';
         justify-content: space-between;
         align-items: center;
         margin-top: 0.5rem;
-        padding-top: 0.75rem;
-        border-top: 1px solid #f1f5f9;
+        padding-top: 0.85rem;
+        border-top: 1px solid #1e1e28;
       }
 
       .price-tag {
-        font-size: 1.05rem;
-        color: #0f172a;
+        font-size: 0.95rem;
+        color: #bab8ae;
+        font-weight: 700;
       }
 
       .price-tag strong {
-        color: #16a34a;
-        font-size: 1.2rem;
+        color: #00ff66;
+        font-size: 1.25rem;
+        font-weight: 900;
+        margin-left: 0.25rem;
       }
 
       .offer-actions {
@@ -259,89 +292,120 @@ import { Oferta } from '../../../models/oferta.model';
       }
 
       .btn {
-        padding: 0.6rem 1.1rem;
+        padding: 0.65rem 1.25rem;
         border-radius: 9px;
-        font-weight: 700;
+        font-weight: 800;
         font-size: 0.88rem;
         border: none;
         cursor: pointer;
         text-decoration: none;
-        transition: opacity 0.15s ease;
+        transition: all 0.2s ease;
       }
 
       .btn-primary {
-        background: #2563eb;
-        color: white;
+        background: #00ff66;
+        color: #08080a;
+        font-weight: 900;
         display: inline-block;
       }
 
+      .btn-primary:hover {
+        background: #00dd55;
+        box-shadow: 0 0 15px rgba(0, 255, 102, 0.4);
+      }
+
       .btn-accept {
-        background: #16a34a;
-        color: white;
+        background: #00ff66;
+        color: #08080a;
+        font-weight: 900;
+      }
+
+      .btn-accept:hover {
+        background: #00dd55;
+        box-shadow: 0 0 12px rgba(0, 255, 102, 0.35);
       }
 
       .btn-reject {
-        background: #dc2626;
-        color: white;
+        background: rgba(239, 68, 68, 0.1);
+        color: #ef4444;
+        border: 1px solid rgba(239, 68, 68, 0.3);
+      }
+
+      .btn-reject:hover {
+        background: rgba(239, 68, 68, 0.2);
       }
 
       .btn-complete {
-        background: #0284c7;
-        color: white;
+        background: #00ff66;
+        color: #08080a;
+        font-weight: 900;
+      }
+
+      .btn-complete:hover {
+        background: #00dd55;
+        box-shadow: 0 0 15px rgba(0, 255, 102, 0.4);
       }
 
       .status-badge {
         padding: 0.25rem 0.65rem;
-        border-radius: 999px;
+        border-radius: 6px;
         font-size: 0.75rem;
-        font-weight: 700;
+        font-weight: 800;
       }
 
       .status-oberta {
-        background: #dbeafe;
-        color: #1e40af;
+        background: rgba(0, 255, 102, 0.12);
+        color: #00ff66;
+        border: 1px solid rgba(0, 255, 102, 0.3);
       }
 
       .status-en-curs {
-        background: #fef3c7;
-        color: #92400e;
+        background: rgba(245, 158, 11, 0.12);
+        color: #f59e0b;
+        border: 1px solid rgba(245, 158, 11, 0.3);
       }
 
       .status-finalitzada {
-        background: #dcfce7;
-        color: #166534;
+        background: rgba(148, 163, 184, 0.12);
+        color: #94a3b8;
+        border: 1px solid rgba(148, 163, 184, 0.25);
       }
 
       .status-pendent {
-        background: #fef3c7;
-        color: #92400e;
+        background: rgba(245, 158, 11, 0.12);
+        color: #f59e0b;
+        border: 1px solid rgba(245, 158, 11, 0.3);
       }
 
       .status-acceptada {
-        background: #dcfce7;
-        color: #166534;
+        background: rgba(0, 255, 102, 0.12);
+        color: #00ff66;
+        border: 1px solid rgba(0, 255, 102, 0.3);
       }
 
       .status-rebutjada {
-        background: #fee2e2;
-        color: #991b1b;
+        background: rgba(239, 68, 68, 0.12);
+        color: #ef4444;
+        border: 1px solid rgba(239, 68, 68, 0.3);
       }
 
       .alert-info {
-        background: #e0f2fe;
-        color: #0369a1;
+        background: rgba(0, 255, 102, 0.1);
+        color: #00ff66;
+        border: 1px solid rgba(0, 255, 102, 0.3);
         padding: 0.9rem 1.25rem;
         border-radius: 12px;
-        font-weight: 500;
+        font-weight: 700;
       }
 
       .empty-state {
-        background: white;
-        padding: 2rem;
+        background: #111116;
+        padding: 2.5rem;
         border-radius: 16px;
-        border: 1px dashed #cbd5e1;
+        border: 1px dashed #242432;
         text-align: center;
-        color: #64748b;
+        color: #bab8ae;
+        font-weight: 600;
       }
 
       .not-found {

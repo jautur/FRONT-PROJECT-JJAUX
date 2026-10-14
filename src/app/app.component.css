@@ -1,19 +1,36 @@
 :host {
   display: block;
   min-height: 100vh;
-  background: #f8fafc;
-  color: #1e293b;
-  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background-color: var(--bg-black, #08080a);
+  color: var(--color-bone, #f5f4ef);
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
 }
 
 .shell {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  background-color: var(--bg-black, #08080a);
 }
 
 /* ============================================================== */
-/* CAPÇALERA SUPERIOR AMB EL TÍTOL STRICTAMENT CENTRAT EN MIG      */
+/* CORRECCIÓ DE L'ESPAIAT SUPERIOR PER A LES PÀGINES SECUNDÀRIES   */
+/* ============================================================== */
+/* A les pàgines que no són la portada d'inici, afegim padding    */
+/* superior net perquè el títol fix mai no solape el contingut     */
+.shell.not-home-page .content {
+  padding-top: 104px; /* 72px capçalera + 32px respiració visual */
+  padding-bottom: 4rem;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  box-sizing: border-box;
+}
+
+/* ============================================================== */
+/* CAPÇALERA SUPERIOR AMB EL TÍTOL CENTRAT EN MIG                 */
 /* ============================================================== */
 .topbar {
   position: fixed;
@@ -21,25 +38,26 @@
   left: 0;
   right: 0;
   width: 100%;
-  height: 72px;
+  height: 76px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 1.5rem;
+  padding: 0 2rem;
   box-sizing: border-box;
   z-index: 100;
   background: transparent;
-  transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.4s ease, border-color 0.4s ease;
+  transition: background-color 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
 }
 
-/* Quan es llisca cap avall: el fons passa a ser un color llis */
-.topbar.solid-header {
-  background: #0f172a; /* Color llis fosc d'alta elegància */
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+/* Quan es llisca cap avall (o pàgines secundàries): fons d'un color llis negre */
+.topbar.solid-header,
+.shell.not-home-page .topbar {
+  background-color: #09090c; /* Color llis negre absolut */
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.7);
+  border-bottom: 1px solid #1f1f28;
 }
 
-/* Títol centrat matemàticament al mig de la part superior */
+/* TÍTOL MATEMÀTICAMENT CENTRAT EN MIG A LA PART SUPERIOR */
 .brand-centered {
   position: absolute;
   left: 50%;
@@ -50,120 +68,136 @@
 }
 
 .brand-title {
-  font-size: 2.2rem;
-  font-weight: 900;
+  font-size: 2.3rem;
+  font-weight: 900; /* Estil de lletra en negreta potent */
   letter-spacing: 0.22em;
-  color: #ffffff;
+  color: var(--color-bone, #f5f4ef); /* Blanc os */
   text-decoration: none;
-  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.7);
-  transition: color 0.3s ease, transform 0.3s ease;
+  text-shadow: 0 2px 16px rgba(0, 0, 0, 0.9);
+  transition: all 0.3s ease;
   display: inline-block;
+  text-transform: uppercase;
 }
 
 .brand-title:hover {
+  color: var(--neon, #00ff66); /* Neó cridaner al passar el ratolí */
+  text-shadow: var(--neon-glow, 0 0 20px rgba(0, 255, 102, 0.6));
   transform: scale(1.03);
-  color: #38bdf8;
 }
 
-/* Costats esquerre i dret de la capçalera */
+/* Costats esquerre i dret de la barra per equilibrar el centrat */
 .topbar-left, .topbar-right {
   display: flex;
   align-items: center;
   z-index: 2;
-  min-width: 120px;
+  min-width: 140px;
 }
 
 .topbar-right {
   justify-content: flex-end;
 }
 
+/* Botó hamburguesa de menú a l'esquerra */
 .btn-menu-toggle {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: #f8fafc;
-  padding: 0.45rem 0.9rem;
+  gap: 0.6rem;
+  background: #14141b;
+  border: 1px solid #282836;
+  color: var(--color-bone, #f5f4ef);
+  padding: 0.5rem 1rem;
   border-radius: 8px;
   cursor: pointer;
-  font-weight: 600;
-  font-size: 0.9rem;
+  font-weight: 800;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
   transition: all 0.2s ease;
-  backdrop-filter: blur(4px);
 }
 
 .btn-menu-toggle:hover {
-  background: rgba(56, 189, 248, 0.2);
-  border-color: #38bdf8;
-  color: #38bdf8;
+  background: rgba(0, 255, 102, 0.1);
+  border-color: var(--neon, #00ff66);
+  color: var(--neon, #00ff66);
+  box-shadow: 0 0 12px rgba(0, 255, 102, 0.25);
 }
 
 .hamburger-icon {
-  font-size: 1.15rem;
+  font-size: 1.1rem;
+  color: var(--neon, #00ff66);
   line-height: 1;
 }
 
+/* Botons de drecera a la dreta de la capçalera */
 .quick-notif-btn {
-  position: relative;
   text-decoration: none;
-  color: #f8fafc;
-  background: rgba(255, 255, 255, 0.1);
-  padding: 0.45rem 0.85rem;
+  color: var(--color-bone, #f5f4ef);
+  background: #14141b;
+  border: 1px solid #282836;
+  padding: 0.5rem 0.9rem;
   border-radius: 8px;
   font-size: 0.95rem;
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  font-weight: 800;
   display: inline-flex;
   align-items: center;
+  transition: all 0.2s ease;
+}
+
+.quick-notif-btn:hover {
+  border-color: var(--neon, #00ff66);
+  color: var(--neon, #00ff66);
 }
 
 .badge-pill {
-  background: #ef4444;
-  color: white;
-  font-size: 0.7rem;
-  font-weight: 700;
+  background: var(--neon, #00ff66);
+  color: #08080a;
+  font-size: 0.72rem;
+  font-weight: 900;
   padding: 0.1rem 0.45rem;
   border-radius: 9999px;
-  margin-left: 0.35rem;
+  margin-left: 0.4rem;
 }
 
 .quick-login-btn {
   text-decoration: none;
-  background: #0284c7;
-  color: #ffffff;
-  padding: 0.45rem 1rem;
+  background: var(--neon, #00ff66); /* Neó cridaner */
+  color: #08080a; /* Text negre d'alt contrast */
+  padding: 0.5rem 1.15rem;
   border-radius: 8px;
-  font-size: 0.88rem;
-  font-weight: 600;
-  transition: background 0.2s;
+  font-size: 0.85rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  box-shadow: 0 0 14px rgba(0, 255, 102, 0.35);
+  transition: all 0.2s ease;
 }
 
 .quick-login-btn:hover {
-  background: #0369a1;
+  background: #ffffff;
+  box-shadow: 0 0 20px rgba(0, 255, 102, 0.6);
 }
 
 /* ============================================================== */
-/* MENÚ LATERAL A L'ESQUERRA (SIDEBAR)                            */
+/* MENÚ LATERAL ESQUERRE (SIDEBAR) AMB PALETA NEGRE/BLANC/NEÓ      */
 /* ============================================================== */
 .sidebar-left {
   position: fixed;
-  top: 72px; /* Just per sota de la barra de títol */
+  top: 76px;
   left: 0;
   bottom: 0;
-  width: 290px;
-  background: #0f172a;
-  color: #f8fafc;
-  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.3);
+  width: 300px;
+  background: #0b0b0f; /* Negre profund */
+  color: var(--color-bone, #f5f4ef);
+  box-shadow: 8px 0 30px rgba(0, 0, 0, 0.7);
   z-index: 95;
   display: flex;
   flex-direction: column;
   transform: translateX(-100%);
-  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  border-right: 1px solid #1e1e28;
   box-sizing: border-box;
 }
 
-/* Quan s'ha fet scroll: s'obre automàticament a l'esquerra */
 .sidebar-left.open {
   transform: translateX(0);
 }
@@ -173,79 +207,83 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid #1c1c26;
 }
 
 .sidebar-brand {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
+  gap: 0.65rem;
 }
 
 .brand-badge {
-  background: #0284c7;
-  color: white;
-  font-weight: 800;
-  padding: 0.3rem 0.55rem;
+  background: var(--neon, #00ff66);
+  color: #08080a;
+  font-weight: 900;
+  padding: 0.25rem 0.55rem;
   border-radius: 6px;
-  font-size: 0.85rem;
+  font-size: 0.82rem;
+  letter-spacing: 0.05em;
 }
 
 .brand-text {
-  font-weight: 800;
-  letter-spacing: 0.08em;
+  font-weight: 900;
+  letter-spacing: 0.12em;
   font-size: 1.15rem;
-  color: #f8fafc;
+  color: var(--color-bone, #f5f4ef);
 }
 
 .btn-close-sidebar {
-  background: none;
-  border: none;
-  color: #94a3b8;
-  font-size: 1.25rem;
+  background: #15151c;
+  border: 1px solid #282836;
+  color: var(--color-bone-muted, #bab8ae);
+  font-size: 1.1rem;
   cursor: pointer;
-  padding: 0.25rem 0.5rem;
-  border-radius: 4px;
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
+  font-weight: 800;
+  transition: all 0.2s ease;
 }
 
 .btn-close-sidebar:hover {
-  color: #ffffff;
-  background: rgba(255, 255, 255, 0.1);
+  color: var(--neon, #00ff66);
+  border-color: var(--neon, #00ff66);
 }
 
 /* Fitxa de l'usuari connectat */
 .sidebar-user {
-  padding: 1rem 1.4rem;
-  background: rgba(255, 255, 255, 0.03);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 1.1rem 1.4rem;
+  background: #111116;
+  border-bottom: 1px solid #1c1c26;
   display: flex;
   align-items: center;
   gap: 0.85rem;
 }
 
 .user-avatar-circle {
-  width: 40px;
-  height: 40px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
-  background: #1e293b;
-  border: 2px solid #38bdf8;
+  background: #1a1a24;
+  border: 2px solid var(--neon, #00ff66);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 1.2rem;
+  box-shadow: 0 0 10px rgba(0, 255, 102, 0.25);
 }
 
 .user-meta {
   display: flex;
   flex-direction: column;
-  gap: 0.2rem;
+  gap: 0.25rem;
   overflow: hidden;
 }
 
 .user-name {
-  font-weight: 700;
+  font-weight: 800;
   font-size: 0.95rem;
-  color: #ffffff;
+  color: var(--color-bone, #f5f4ef);
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
@@ -253,61 +291,68 @@
 
 .user-role-tag {
   font-size: 0.7rem;
-  font-weight: 800;
-  letter-spacing: 0.05em;
-  padding: 0.15rem 0.45rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  padding: 0.15rem 0.5rem;
   border-radius: 4px;
   display: inline-block;
   width: fit-content;
+  border: 1px solid transparent;
 }
 
 .user-role-tag.client {
-  background: #0369a1;
-  color: #e0f2fe;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--color-bone, #f5f4ef);
+  border-color: #3a3a4c;
 }
 
 .user-role-tag.professional {
-  background: #15803d;
-  color: #dcfce7;
+  background: rgba(0, 255, 102, 0.12);
+  color: var(--neon, #00ff66);
+  border-color: rgba(0, 255, 102, 0.35);
 }
 
 .user-role-tag.admin {
-  background: #7e22ce;
-  color: #fae8ff;
+  background: rgba(245, 244, 239, 0.15);
+  color: #ffffff;
+  border-color: var(--neon, #00ff66);
+  box-shadow: 0 0 8px rgba(0, 255, 102, 0.3);
 }
 
-/* Llistat de navegació */
+/* Llista de navegació lateral */
 .sidebar-nav {
   flex: 1;
   overflow-y: auto;
-  padding: 1rem 0.8rem;
+  padding: 1.2rem 0.9rem;
   display: flex;
   flex-direction: column;
-  gap: 0.3rem;
+  gap: 0.35rem;
 }
 
 .nav-group-title {
-  font-size: 0.72rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  color: #64748b;
-  padding: 0.75rem 0.75rem 0.35rem 0.75rem;
-  margin-top: 0.4rem;
+  font-size: 0.7rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  color: var(--color-bone-dim, #737168);
+  padding: 0.85rem 0.75rem 0.35rem 0.75rem;
+  margin-top: 0.35rem;
+  text-transform: uppercase;
 }
 
 .sidebar-nav a, .btn-sidebar-logout {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 0.65rem 0.85rem;
+  padding: 0.7rem 0.9rem;
   border-radius: 8px;
-  color: #cbd5e1;
+  color: var(--color-bone-muted, #bab8ae);
   text-decoration: none;
   font-size: 0.92rem;
-  font-weight: 500;
+  font-weight: 800; /* Negreta per a tota la navegació */
+  letter-spacing: -0.01em;
   transition: all 0.2s ease;
-  background: none;
-  border: none;
+  background: transparent;
+  border: 1px solid transparent;
   width: 100%;
   box-sizing: border-box;
   text-align: left;
@@ -315,55 +360,56 @@
 }
 
 .sidebar-nav a:hover, .btn-sidebar-logout:hover {
-  background: rgba(255, 255, 255, 0.08);
-  color: #ffffff;
-  transform: translateX(3px);
+  background: #15151e;
+  color: var(--color-bone, #f5f4ef);
+  border-color: #272736;
+  transform: translateX(4px);
 }
 
 .sidebar-nav a.active-nav-item {
-  background: rgba(14, 165, 233, 0.15);
-  color: #38bdf8;
-  font-weight: 700;
-  border-left: 3px solid #38bdf8;
+  background: rgba(0, 255, 102, 0.1);
+  color: var(--neon, #00ff66);
+  border-color: rgba(0, 255, 102, 0.3);
+  box-shadow: inset 3px 0 0 var(--neon, #00ff66);
 }
 
 .nav-cta-item {
-  background: rgba(2, 132, 199, 0.15) !important;
-  color: #38bdf8 !important;
-  font-weight: 600 !important;
-  border: 1px dashed rgba(56, 189, 248, 0.4);
+  background: rgba(0, 255, 102, 0.08) !important;
+  color: var(--neon, #00ff66) !important;
+  border: 1px dashed rgba(0, 255, 102, 0.4) !important;
 }
 
 .nav-cta-item:hover {
-  background: rgba(2, 132, 199, 0.28) !important;
+  background: rgba(0, 255, 102, 0.2) !important;
+  box-shadow: 0 0 15px rgba(0, 255, 102, 0.3);
 }
 
 .admin-nav-item {
-  background: rgba(168, 85, 247, 0.12) !important;
-  color: #d8b4fe !important;
-  font-weight: 600 !important;
+  border: 1px solid #3a3a4c !important;
+  color: var(--color-bone, #f5f4ef) !important;
 }
 
 .admin-nav-item:hover {
-  background: rgba(168, 85, 247, 0.25) !important;
+  border-color: var(--neon, #00ff66) !important;
+  color: var(--neon, #00ff66) !important;
 }
 
 .btn-sidebar-logout {
-  color: #f87171 !important;
-  margin-top: 0.5rem;
+  color: #ff5c5c !important;
+  margin-top: 0.6rem;
+  border-color: rgba(255, 92, 92, 0.2);
 }
 
 .btn-sidebar-logout:hover {
-  background: rgba(239, 68, 68, 0.15) !important;
-  color: #fca5a5 !important;
+  background: rgba(255, 92, 92, 0.12) !important;
 }
 
 .badge-mini-count {
   margin-left: auto;
-  background: #ef4444;
-  color: white;
+  background: var(--neon, #00ff66);
+  color: #08080a;
   font-size: 0.72rem;
-  font-weight: 800;
+  font-weight: 900;
   padding: 0.15rem 0.45rem;
   border-radius: 9999px;
 }
@@ -371,28 +417,26 @@
 /* Fons fosc per a mòbils */
 .sidebar-backdrop {
   position: fixed;
-  top: 72px;
+  top: 76px;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(15, 23, 42, 0.6);
+  background: rgba(0, 0, 0, 0.75);
   z-index: 92;
-  backdrop-filter: blur(2px);
+  backdrop-filter: blur(4px);
   display: none;
 }
 
-/* ============================================================== */
-/* CONTINGUT PRINCIPAL DE LA PÀGINA                                */
-/* ============================================================== */
+/* Contingut principal */
 .content {
   flex: 1;
-  transition: padding-left 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  width: 100%;
+  transition: padding-left 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Quan el menú està obert en pantalles d'escriptori, desplaça el contingut */
 @media (min-width: 1100px) {
   .shell.sidebar-open .content {
-    padding-left: 290px;
+    padding-left: 300px;
   }
 }
 
