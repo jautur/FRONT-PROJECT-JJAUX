@@ -324,14 +324,25 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
                 <td>{{ u.telefon || '-' }}</td>
                 <td class="bio-cell">{{ u.bio || '-' }}</td>
                 <td>
-                  <button
-                    type="button"
-                    class="btn-sm btn-password"
-                    (click)="obrirModalPassword(u)"
-                    title="Canviar contrasenya d'aquest usuari"
-                  >
-                    🔑 Nova contrasenya
-                  </button>
+                  <div class="action-buttons">
+                    <button
+                      type="button"
+                      class="btn-sm btn-password"
+                      (click)="obrirModalPassword(u)"
+                      title="Canviar contrasenya d'aquest usuari"
+                    >
+                      🔑 Nova contrasenya
+                    </button>
+                    <button
+                      *ngIf="u.id !== 'u-admin' && u.email !== 'admin@admin'"
+                      type="button"
+                      class="btn-sm btn-danger"
+                      (click)="eliminarUsuari(u)"
+                      title="Eliminar aquest usuari de la base de dades"
+                    >
+                      🗑️ Eliminar
+                    </button>
+                  </div>
                 </td>
               </tr>
             </tbody>
@@ -1266,6 +1277,36 @@ export class AdminPanellComponent implements OnInit {
       error: (err) => {
         this.savingPassword = false;
         this.errorModalPassword = typeof err?.error === 'string' ? err.error : 'Error en actualitzar la contrasenya.';
+      }
+    });
+  }
+
+  /**
+   * Acció d'administrador: elimina definitivament un usuari del sistema.
+   * Protegeix el compte d'administrador principal contra eliminació accidental.
+   * @param u Usuari seleccionat per a ser donat de baixa
+   */
+  eliminarUsuari(u: Usuari): void {
+    if (u.id === 'u-admin' || u.email?.toLowerCase() === 'admin@admin') {
+      alert("No es pot eliminar el compte d'administrador principal del sistema.");
+      return;
+    }
+
+    const confirmMsg = `ATENCIÓ: Vols eliminar definitivament l'usuari "${u.nom}" (${u.email})?\n\n` +
+      `Es cancel·larà el seu accés i s'esborraran els seus avisos associats.\n` +
+      `Aquesta acció no es pot desfer. Vols continuar?`;
+
+    if (!confirm(confirmMsg)) return;
+
+    this.usuariService.delete(u.id).subscribe({
+      next: () => {
+        this.usuaris = this.usuaris.filter(x => x.id !== u.id);
+        this.successMsg = `L'usuari "${u.nom}" (${u.email}) ha estat eliminat correctament.`;
+        setTimeout(() => this.successMsg = '', 4500);
+      },
+      error: () => {
+        this.errorMsg = `Error en eliminar l'usuari "${u.nom}". Comprova els permisos del servidor.`;
+        setTimeout(() => this.errorMsg = '', 4500);
       }
     });
   }
