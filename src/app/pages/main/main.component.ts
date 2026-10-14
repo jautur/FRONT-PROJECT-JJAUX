@@ -128,8 +128,8 @@ import { AuthService } from '../../core/services/auth.service';
         width: 100%;
         height: 100vh;
         min-height: 580px;
-        background-image: linear-gradient(rgba(8, 8, 12, 0.45), rgba(8, 8, 12, 0.72)),
-          url('https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=2000&q=80');
+        background-image: linear-gradient(rgba(8, 8, 12, 0.52), rgba(8, 8, 12, 0.78)),
+          url('https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=2000&q=80');
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
