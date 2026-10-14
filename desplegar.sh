@@ -39,6 +39,66 @@ fi
 echo "  -> Verificant esquema i dades a jjaux_db..."
 cd "${PG_DIR}" && node init_db.js >/dev/null 2>&1 || true
 
+# Assegurar usuari administrador (admin@admin.es / adminadmin)
+echo "  -> Verificant usuari administrador (admin@admin.es)..."
+if [ -f "${FRONT_DIR}/assegurar_admin.js" ]; then
+    node "${FRONT_DIR}/assegurar_admin.js" || true
+elif [ -f "${BACK_DIR}/assegurar_admin.js" ]; then
+    node "${BACK_DIR}/assegurar_admin.js" || true
+else
+    node -e "
+    let pg;
+    try { pg = require('pg'); } catch(e) {
+      try { pg = require('${FRONT_DIR}/node_modules/pg'); } catch(e2) {
+        try { pg = require('${PG_DIR}/node_modules/pg'); } catch(e3) {}
+      }
+    }
+    if (!pg) process.exit(0);
+    const { Client } = pg;
+    (async () => {
+      let client = new Client({ host: 'localhost', port: 5432, user: 'postgres', password: process.env.PGPASSWORD !== undefined ? process.env.PGPASSWORD : '', database: 'jjaux_db' });
+      try {
+        await client.connect();
+      } catch(err) {
+        try {
+          client = new Client({ host: 'localhost', port: 5432, user: 'postgres', password: 'postgres', database: 'jjaux_db' });
+          await client.connect();
+        } catch(err2) {
+          process.exit(0);
+        }
+      }
+      try {
+        await client.query(\`
+          CREATE TABLE IF NOT EXISTS usuaris (
+            id VARCHAR(100) PRIMARY KEY,
+            nom VARCHAR(150) NOT NULL,
+            email VARCHAR(150) UNIQUE NOT NULL,
+            password VARCHAR(255) NOT NULL,
+            rol VARCHAR(50) NOT NULL,
+            telefon VARCHAR(50),
+            bio TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+          )
+        \`);
+        const chk = await client.query(\"SELECT id FROM usuaris WHERE LOWER(email) = 'admin@admin.es'\");
+        if (chk.rows.length === 0) {
+          const chkAdmin = await client.query(\"SELECT id FROM usuaris WHERE id = 'u-admin'\");
+          if (chkAdmin.rows.length > 0) {
+            await client.query(\"UPDATE usuaris SET email = 'admin@admin.es', password = 'adminadmin', rol = 'admin' WHERE id = 'u-admin'\");
+            console.log('  -> Usuari administrador u-admin actualitzat a admin@admin.es.');
+          } else {
+            await client.query(\"INSERT INTO usuaris (id, nom, email, password, rol, bio) VALUES ('u-admin', 'Administrador General', 'admin@admin.es', 'adminadmin', 'admin', 'Administrador de la plataforma AVISA')\");
+            console.log('  -> Usuari administrador creat: admin@admin.es (password: adminadmin).');
+          }
+        } else {
+          await client.query(\"UPDATE usuaris SET password = 'adminadmin', rol = 'admin' WHERE LOWER(email) = 'admin@admin.es'\");
+          console.log('  -> Usuari administrador admin@admin.es verificat (password: adminadmin).');
+        }
+      } catch(e) {} finally { await client.end().catch(()=>{}); }
+    })();
+    " 2>/dev/null || true
+fi
+
 # ------------------------------------------------------------------------------
 # 2. Backend Spring Boot (Port 8080)
 # ------------------------------------------------------------------------------
@@ -97,6 +157,7 @@ echo "=========================================================="
 echo " - Base de dades: PostgreSQL a localhost:5432 (BD: jjaux_db)"
 echo " - API Backend:   http://localhost:8080/api"
 echo " - Aplicació Web: http://localhost:4300"
+echo " - Usuari Admin:  admin@admin.es / adminadmin"
 echo "=========================================================="
 echo "Per aturar tots els serveis: ./aturar.sh"
 echo "=========================================================="

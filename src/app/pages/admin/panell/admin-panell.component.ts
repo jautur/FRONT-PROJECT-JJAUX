@@ -409,7 +409,7 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
                       Nova contrasenya
                     </button>
                     <button
-                      *ngIf="u.id !== 'u-admin' && u.email !== 'admin@admin'"
+                      *ngIf="u.id !== 'u-admin' && u.email !== 'admin@admin' && u.email !== 'admin@admin.es'"
                       type="button"
                       class="btn-sm btn-danger"
                       (click)="eliminarUsuari(u)"
@@ -1450,7 +1450,7 @@ export class AdminPanellComponent implements OnInit {
    * @param u Usuari seleccionat per a ser donat de baixa
    */
   eliminarUsuari(u: Usuari): void {
-    if (u.id === 'u-admin' || u.email?.toLowerCase() === 'admin@admin') {
+    if (u.id === 'u-admin' || u.email?.toLowerCase() === 'admin@admin' || u.email?.toLowerCase() === 'admin@admin.es') {
       alert("No es pot eliminar el compte d'administrador principal del sistema.");
       return;
     }
