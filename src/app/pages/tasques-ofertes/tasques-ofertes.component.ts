@@ -65,7 +65,7 @@ interface CategoriaFiltre {
             [class.active]="tipusFiltre === 'tots'"
             (click)="tipusFiltre = 'tots'"
           >
-            Tots els elements ({{ tasquesFiltrades.length + ofertesFiltrades.length }})
+            Tots els anuncis ({{ tasquesFiltrades.length + ofertesFiltrades.length }})
           </button>
           <button
             type="button"
@@ -73,7 +73,7 @@ interface CategoriaFiltre {
             [class.active]="tipusFiltre === 'tasques'"
             (click)="tipusFiltre = 'tasques'"
           >
-            Només tasques ({{ tasquesFiltrades.length }})
+            Incidències de clients ({{ tasquesFiltrades.length }})
           </button>
           <button
             type="button"
@@ -81,7 +81,7 @@ interface CategoriaFiltre {
             [class.active]="tipusFiltre === 'ofertes'"
             (click)="tipusFiltre = 'ofertes'"
           >
-            Només ofertes ({{ ofertesFiltrades.length }})
+            Ofertes de professionals ({{ ofertesFiltrades.length }})
           </button>
         </div>
       </section>
@@ -173,17 +173,20 @@ interface CategoriaFiltre {
               </button>
             </div>
 
-            <!-- SECCIÓ DE TASQUES -->
+            <!-- SECCIÓ D'INCIDÈNCIES DE CLIENTS -->
             <section class="results-block" *ngIf="tipusFiltre !== 'ofertes' && tasquesFiltrades.length > 0">
               <div class="results-block-header">
-                <h2>Tasques publicades</h2>
-                <span class="count-tag">{{ tasquesFiltrades.length }} disponibles</span>
+                <h2>Incidències i peticions de treball</h2>
+                <span class="count-tag">{{ tasquesFiltrades.length }} obertes</span>
               </div>
 
               <div class="cards-grid">
                 <article class="market-card task-card" *ngFor="let task of tasquesFiltrades">
                   <div class="card-top-bar">
-                    <span class="cat-pill">{{ task.categoria || 'Altres Serveis' }}</span>
+                    <div class="pills-group">
+                      <span class="nature-pill client-nature">INCIDÈNCIA</span>
+                      <span class="cat-pill">{{ task.categoria || 'Altres Serveis' }}</span>
+                    </div>
                     <span class="status-pill status-task" [ngClass]="getTaskStatusClass(task.estat)">
                       {{ task.estat }}
                     </span>
@@ -202,7 +205,7 @@ interface CategoriaFiltre {
 
                   <div class="card-bottom-bar">
                     <div class="budget-wrap">
-                      <span class="budget-label">Pressupost:</span>
+                      <span class="budget-label">Pressupost límit:</span>
                       <strong class="budget-value">{{ task.budget }}</strong>
                     </div>
                     <div class="card-actions">
@@ -210,7 +213,7 @@ interface CategoriaFiltre {
                         Detall
                       </button>
                       <button type="button" class="btn-action-primary" (click)="onFerOferta(task.id)">
-                        Fer oferta
+                        Proposar pressupost
                       </button>
                     </div>
                   </div>
@@ -218,19 +221,19 @@ interface CategoriaFiltre {
               </div>
             </section>
 
-            <!-- SECCIÓ D'OFERTES -->
+            <!-- SECCIÓ D'OFERTES I PACKS DE SERVEIS PROFESSIONALS -->
             <section class="results-block" *ngIf="tipusFiltre !== 'tasques' && ofertesFiltrades.length > 0">
               <div class="results-block-header">
-                <h2>Ofertes i pressupostos</h2>
-                <span class="count-tag">{{ ofertesFiltrades.length }} presentades</span>
+                <h2>Ofertes i packs de servei professional</h2>
+                <span class="count-tag">{{ ofertesFiltrades.length }} disponibles</span>
               </div>
 
               <div class="cards-grid">
                 <article class="market-card offer-card" *ngFor="let offer of ofertesFiltrades">
                   <div class="card-top-bar">
                     <div class="pills-group">
+                      <span class="nature-pill pro-nature">OFERTA DE SERVEI</span>
                       <span class="cat-pill">{{ getOfertaCategoria(offer) }}</span>
-                      <span class="cat-pill alt">Tasca: {{ getTascaTitol(offer.tascaId) }}</span>
                     </div>
                     <span class="status-pill status-offer" [ngClass]="getOfferStatusClass(offer.estat)">
                       {{ offer.estat }}
@@ -249,16 +252,19 @@ interface CategoriaFiltre {
                       Veure ressenyes
                     </button>
                   </div>
-                  <p class="card-item-desc">{{ offer.note || 'Pressupost formal presentat pel professional.' }}</p>
+                  <p class="card-item-desc">{{ offer.note || 'Pack de servei professional ofertat al mercat.' }}</p>
 
                   <div class="card-bottom-bar">
                     <div class="budget-wrap">
-                      <span class="budget-label">Import ofertat:</span>
+                      <span class="budget-label">Tarifa del servei:</span>
                       <strong class="budget-value offer-price">{{ offer.price }}</strong>
                     </div>
                     <div class="card-actions">
-                      <button type="button" class="btn-action-primary" (click)="onAcceptarOferta(offer.id)">
-                        Acceptar oferta
+                      <button type="button" class="btn-action-primary btn-contractar" (click)="onContractarOferta(offer)">
+                        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px; vertical-align: -2px;">
+                          <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                        Contractar / M'interessa
                       </button>
                     </div>
                   </div>
@@ -698,6 +704,27 @@ interface CategoriaFiltre {
         background: rgba(255, 23, 68, 0.1);
         color: #ff1744;
         border-color: rgba(255, 23, 68, 0.3);
+      }
+
+      .nature-pill {
+        border-radius: 6px;
+        padding: 0.2rem 0.55rem;
+        font-size: 0.68rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+
+      .nature-pill.client-nature {
+        background: #09090c;
+        color: #f7f3ed;
+        border: 1px solid #2b2a36;
+      }
+
+      .nature-pill.pro-nature {
+        background: rgba(255, 23, 68, 0.12);
+        color: #ff1744;
+        border: 1px solid rgba(255, 23, 68, 0.35);
       }
 
       .status-pill {
@@ -1537,5 +1564,35 @@ export class TasquesOfertesComponent implements OnInit {
     } else {
       this.noticeMessage = 'Només el client autor de la tasca pot acceptar aquesta oferta.';
     }
+  }
+
+  /**
+   * Contractar una oferta d'un professional i convertir-la directament en TASCA ('OFERTA to TAREA').
+   */
+  onContractarOferta(offer: any): void {
+    const pro = offer.professional || 'aquest professional';
+    if (!this.requireLogin(`contractar l'oferta de ${pro}`, '/tasques-ofertes')) return;
+    const user = this.authService.getCurrentUser();
+    if (!this.authService.isClient()) {
+      this.noticeMessage = 'Només els comptes amb rol de "Client" o "Ambdós" poden contractar ofertes de professionals.';
+      return;
+    }
+
+    const preu = offer.price || '';
+    const confirmacio = confirm(
+      `Vols contractar el servei de ${pro} per ${preu}?\n\n` +
+      `Aquesta acció generarà automàticament una nova TASCA en curs al teu panell i notificarà al professional.`
+    );
+    if (!confirmacio) return;
+
+    this.ofertaService.contractar(offer.id, user ? user.nom : 'Client AVISA').subscribe({
+      next: (tascaCreada) => {
+        this.noticeMessage = `Enhorabona! Has contractat l'oferta de ${pro} (${preu}). S'ha generat la teva nova TASCA en curs!`;
+        this.carregarDades();
+      },
+      error: () => {
+        this.noticeMessage = 'No s’ha pogut completar la contractació de l’oferta. Si us plau, torna-ho a provar.';
+      }
+    });
   }
 }

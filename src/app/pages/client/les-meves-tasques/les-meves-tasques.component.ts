@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { TascaService } from '../../../services/tasca.service';
 import { OfertaService } from '../../../services/oferta.service';
+import { ResenyaService } from '../../../services/resenya.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { Tasca } from '../../../models/tasca.model';
 
@@ -17,23 +19,23 @@ type FiltreEstatTasca = 'totes' | 'oberta' | 'en_curs' | 'finalitzada';
  * - Visualitzar totes les tasques que ha publicat a la plataforma.
  * - Filtrar segons l'estat (obertes, en curs, finalitzades).
  * - Consultar quantes ofertes de professionals ha rebut cada tasca.
- * - Accedir a la revisió d'ofertes o donar per finalitzat el servei.
+ * - Accedir a la revisió d'ofertes o donar per finalitzat el servei amb valoració.
  * - Eliminar tasques publicades.
  */
 @Component({
   selector: 'app-les-meves-tasques',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink],
   template: `
     <div class="panell-container">
       <div class="panell-header">
         <div>
-          <h2>Les meves Tasques Publicades</h2>
-          <p class="subtitle">Gestiona les teves sol·licituds de servei i revisa els pressupostos rebuts.</p>
+          <h2>Les meves Tasques i Incidències</h2>
+          <p class="subtitle">Gestiona les teves sol·licituds de servei, revisa pressupostos i avalua els treballs conclosos.</p>
         </div>
         <div>
           <a routerLink="/client/crear-tasca" class="btn-crear">
-            + Publicar nova tasca
+            + Crear Incidència
           </a>
         </div>
       </div>
@@ -114,7 +116,7 @@ type FiltreEstatTasca = 'totes' | 'oberta' | 'en_curs' | 'finalitzada';
               *ngIf="t.estat !== 'Finalitzada'"
               type="button"
               class="btn-action success"
-              (click)="finalitzarTasca(t.id)"
+              (click)="obrirModalFinalitzar(t)"
             >
               <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;">
                 <polyline points="20 6 9 17 4 12"></polyline>
@@ -146,7 +148,76 @@ type FiltreEstatTasca = 'totes' | 'oberta' | 'en_curs' | 'finalitzada';
         </div>
         <h3>No s’ha trobat cap tasca en aquesta secció</h3>
         <p>Encara no has publicat cap sol·licitud o cap coincideix amb el filtre seleccionat.</p>
-        <a routerLink="/client/crear-tasca" class="btn-crear">Publica la teva primera tasca</a>
+        <a routerLink="/client/crear-tasca" class="btn-crear">Crea la teva primera incidència</a>
+      </div>
+
+      <!-- MODAL D'AVALUACIÓ I FINALITZACIÓ DE TASCA -->
+      <div class="modal-backdrop" *ngIf="modalFinalitzarObert" (click)="tancarModalFinalitzar()">
+        <div class="modal-dialog" (click)="$event.stopPropagation()">
+          <header class="modal-header">
+            <div>
+              <span class="modal-badge-tag">AVALUACIÓ DE SERVEI</span>
+              <h2>Finalitzar tasca i avaluar professional</h2>
+            </div>
+            <button type="button" class="btn-close-modal" (click)="tancarModalFinalitzar()" aria-label="Tancar">✕</button>
+          </header>
+
+          <div class="modal-body" *ngIf="tascaPerFinalitzar">
+            <div class="modal-task-summary">
+              <span class="badge-categoria">{{ tascaPerFinalitzar.categoria }}</span>
+              <h3>{{ tascaPerFinalitzar.titol }}</h3>
+              <p class="summary-pro">
+                Professional assignat: <strong>{{ professionalPerFinalitzar || 'Professional AVISA' }}</strong>
+              </p>
+            </div>
+
+            <div class="rating-input-group">
+              <label class="rating-title">Com valores la feina realitzada? (1 a 5 estrelles):</label>
+              <div class="stars-picker">
+                <button
+                  type="button"
+                  *ngFor="let star of [1, 2, 3, 4, 5]"
+                  class="star-btn"
+                  [class.active]="star <= puntuacioSeleccionada"
+                  (click)="puntuacioSeleccionada = star"
+                  title="{{ star }} estrelles"
+                >
+                  ★
+                </button>
+                <span class="star-rating-text">{{ getRatingLabel(puntuacioSeleccionada) }}</span>
+              </div>
+            </div>
+
+            <div class="comment-input-group">
+              <label for="ressenya-desc">Comentari i opinió sobre el servei:</label>
+              <textarea
+                id="ressenya-desc"
+                [(ngModel)]="ressenyaDescripcio"
+                rows="4"
+                placeholder="Explica què tal ha anat: puntualitat, qualitat dels acabats, neteja posterior i recomanació..."
+              ></textarea>
+            </div>
+
+            <div class="modal-actions-col">
+              <button
+                type="button"
+                class="btn-submit-review"
+                (click)="confirmarFinalitzacioAmbRessenya()"
+                [disabled]="enviantRessenya"
+              >
+                {{ enviantRessenya ? 'Enviant valoració...' : '★ Enviar Valoració i Finalitzar Tasca' }}
+              </button>
+              <button
+                type="button"
+                class="btn-skip-review"
+                (click)="finalitzarSenseRessenya()"
+                [disabled]="enviantRessenya"
+              >
+                Finalitzar directament sense deixar valoració
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   `,
@@ -413,6 +484,221 @@ type FiltreEstatTasca = 'totes' | 'oberta' | 'en_curs' | 'finalitzada';
       margin-bottom: 1rem;
       font-weight: 700;
     }
+
+    /* Modal d'Avaluació */
+    .modal-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(9, 9, 12, 0.78);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      padding: 1rem;
+      box-sizing: border-box;
+    }
+
+    .modal-dialog {
+      background: #ffffff;
+      border-radius: 20px;
+      width: min(560px, 100%);
+      max-height: 90vh;
+      overflow-y: auto;
+      border: 1px solid #e5e0d7;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .modal-header {
+      padding: 1.5rem 1.8rem;
+      border-bottom: 1px solid #e5e0d7;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      background: #faf8f4;
+      border-radius: 20px 20px 0 0;
+    }
+
+    .modal-badge-tag {
+      font-size: 0.68rem;
+      font-weight: 900;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #ff1744;
+      background: rgba(255, 23, 68, 0.08);
+      border: 1px solid rgba(255, 23, 68, 0.25);
+      padding: 0.2rem 0.55rem;
+      border-radius: 5px;
+      display: inline-block;
+      margin-bottom: 0.4rem;
+    }
+
+    .modal-header h2 {
+      margin: 0;
+      font-size: 1.35rem;
+      font-weight: 900;
+      color: #09090c;
+    }
+
+    .btn-close-modal {
+      background: #ece7dc;
+      border: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      font-size: 1rem;
+      font-weight: 900;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #09090c;
+      transition: all 0.2s ease;
+    }
+
+    .btn-close-modal:hover {
+      background: #ff1744;
+      color: #ffffff;
+    }
+
+    .modal-body {
+      padding: 1.8rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.4rem;
+    }
+
+    .modal-task-summary {
+      background: #f8f6f0;
+      border: 1px solid #e5e0d7;
+      padding: 1rem 1.25rem;
+      border-radius: 12px;
+    }
+
+    .modal-task-summary h3 {
+      margin: 0.4rem 0 0.25rem;
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: #09090c;
+    }
+
+    .summary-pro {
+      margin: 0;
+      font-size: 0.88rem;
+      color: #55524b;
+    }
+
+    .summary-pro strong {
+      color: #ff1744;
+    }
+
+    .rating-title,
+    .comment-input-group label {
+      display: block;
+      font-size: 0.88rem;
+      font-weight: 800;
+      color: #09090c;
+      margin-bottom: 0.5rem;
+    }
+
+    .stars-picker {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .star-btn {
+      background: transparent;
+      border: none;
+      font-size: 2.2rem;
+      color: #dcd7cc;
+      cursor: pointer;
+      line-height: 1;
+      padding: 0;
+      transition: transform 0.15s ease, color 0.15s ease;
+    }
+
+    .star-btn:hover {
+      transform: scale(1.15);
+    }
+
+    .star-btn.active {
+      color: #f59e0b;
+      text-shadow: 0 0 12px rgba(245, 158, 11, 0.4);
+    }
+
+    .star-rating-text {
+      margin-left: 0.75rem;
+      font-size: 0.88rem;
+      font-weight: 800;
+      color: #09090c;
+    }
+
+    .comment-input-group textarea {
+      width: 100%;
+      box-sizing: border-box;
+      background: #ffffff;
+      border: 1.5px solid #d6d0c4;
+      border-radius: 10px;
+      padding: 0.85rem 1rem;
+      font-family: inherit;
+      font-size: 0.92rem;
+      color: #09090c;
+      font-weight: 600;
+      resize: vertical;
+    }
+
+    .comment-input-group textarea:focus {
+      outline: none;
+      border-color: #ff1744;
+      box-shadow: 0 0 12px rgba(255, 23, 68, 0.2);
+    }
+
+    .modal-actions-col {
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+      margin-top: 0.5rem;
+    }
+
+    .btn-submit-review {
+      width: 100%;
+      background: #ff1744;
+      color: #ffffff;
+      border: none;
+      padding: 0.85rem 1.4rem;
+      border-radius: 10px;
+      font-weight: 900;
+      font-size: 0.95rem;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(255, 23, 68, 0.35);
+      transition: all 0.2s ease;
+    }
+
+    .btn-submit-review:hover:not(:disabled) {
+      background: #09090c;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+    }
+
+    .btn-skip-review {
+      background: transparent;
+      border: none;
+      color: #737066;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: underline;
+      padding: 0.4rem;
+    }
+
+    .btn-skip-review:hover:not(:disabled) {
+      color: #09090c;
+    }
   `]
 })
 export class LesMevesTasquesComponent implements OnInit {
@@ -428,10 +714,18 @@ export class LesMevesTasquesComponent implements OnInit {
   errorMsg = '';
   /** Missatge d'èxit */
   successMsg = '';
+  /** Estat del modal de finalització i avaluació */
+  modalFinalitzarObert = false;
+  tascaPerFinalitzar: Tasca | null = null;
+  professionalPerFinalitzar = '';
+  puntuacioSeleccionada = 5;
+  ressenyaDescripcio = '';
+  enviantRessenya = false;
 
   constructor(
     private readonly tascaService: TascaService,
     private readonly ofertaService: OfertaService,
+    private readonly resenyaService: ResenyaService,
     private readonly authService: AuthService,
     private readonly router: Router
   ) {}
@@ -533,22 +827,109 @@ export class LesMevesTasquesComponent implements OnInit {
   }
 
   /**
-   * Marca una tasca com a finalitzada.
-   * @param id Identificador de la tasca
+   * Obre el modal per avaluar el professional i finalitzar la tasca.
    */
-  finalitzarTasca(id: string): void {
-    if (!confirm('Vols marcar aquesta tasca com a completada definitivament?')) return;
+  obrirModalFinalitzar(t: Tasca): void {
+    this.tascaPerFinalitzar = t;
+    this.puntuacioSeleccionada = 5;
+    this.ressenyaDescripcio = '';
+    this.professionalPerFinalitzar = '';
+    this.modalFinalitzarObert = true;
+
+    // Obté el professional de l'oferta acceptada
+    this.ofertaService.getByTasca(t.id).subscribe({
+      next: (ofertes) => {
+        const acc = ofertes.find(o => o.estat === 'Acceptada') || ofertes[0];
+        if (acc) {
+          this.professionalPerFinalitzar = acc.professional;
+        }
+      }
+    });
+  }
+
+  tancarModalFinalitzar(): void {
+    this.modalFinalitzarObert = false;
+    this.tascaPerFinalitzar = null;
+    this.professionalPerFinalitzar = '';
+    this.enviantRessenya = false;
+  }
+
+  getRatingLabel(p: number): string {
+    switch (p) {
+      case 1: return '1.0 — Molt deficient';
+      case 2: return '2.0 — Regular';
+      case 3: return '3.0 — Correcte';
+      case 4: return '4.0 — Molt bo';
+      case 5: return '5.0 — Excel·lent!';
+      default: return `${p}.0`;
+    }
+  }
+
+  /**
+   * Envia la valoració del professional i marca la tasca com a Finalitzada.
+   */
+  confirmarFinalitzacioAmbRessenya(): void {
+    if (!this.tascaPerFinalitzar) return;
+    const t = this.tascaPerFinalitzar;
+    const user = this.authService.getCurrentUser();
+    this.enviantRessenya = true;
+
+    this.tascaService.complete(t.id).subscribe({
+      next: () => {
+        const treballadorNom = this.professionalPerFinalitzar || 'Professional AVISA';
+        const textDesc = this.ressenyaDescripcio.trim() || 'Feina completada amb èxit i total satisfacció.';
+
+        this.resenyaService.create({
+          clientId: user ? user.id : 'client',
+          treballadorId: treballadorNom,
+          tascaId: t.id,
+          puntuacio: this.puntuacioSeleccionada,
+          descripcio: textDesc
+        }).subscribe({
+          next: () => {
+            this.enviantRessenya = false;
+            this.tancarModalFinalitzar();
+            this.successMsg = 'Tasca finalitzada i valoració publicada amb èxit!';
+            const target = this.tasques.find(item => item.id === t.id);
+            if (target) target.estat = 'Finalitzada';
+            setTimeout(() => this.successMsg = '', 4000);
+          },
+          error: () => {
+            this.enviantRessenya = false;
+            this.tancarModalFinalitzar();
+            this.successMsg = 'Tasca finalitzada correctament.';
+            const target = this.tasques.find(item => item.id === t.id);
+            if (target) target.estat = 'Finalitzada';
+            setTimeout(() => this.successMsg = '', 4000);
+          }
+        });
+      },
+      error: () => {
+        this.enviantRessenya = false;
+        this.errorMsg = 'Error en finalitzar la tasca.';
+      }
+    });
+  }
+
+  /**
+   * Finalitza la tasca sense emetre cap valoració.
+   */
+  finalitzarSenseRessenya(): void {
+    if (!this.tascaPerFinalitzar) return;
+    const id = this.tascaPerFinalitzar.id;
+    this.enviantRessenya = true;
 
     this.tascaService.complete(id).subscribe({
       next: () => {
+        this.enviantRessenya = false;
+        this.tancarModalFinalitzar();
         this.successMsg = 'Tasca finalitzada correctament!';
         const target = this.tasques.find(t => t.id === id);
-        if (target) {
-          target.estat = 'Finalitzada';
-        }
+        if (target) target.estat = 'Finalitzada';
         setTimeout(() => this.successMsg = '', 3000);
       },
       error: () => {
+        this.enviantRessenya = false;
         this.errorMsg = 'Error en finalitzar la tasca.';
       }
     });

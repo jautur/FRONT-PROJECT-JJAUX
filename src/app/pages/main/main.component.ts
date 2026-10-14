@@ -35,9 +35,9 @@ import { Article } from '../../models/article.model';
         <div class="dashboard-header-bar">
           <div>
             <span class="eyebrow-tag">Plataforma AVISA</span>
-            <h2 class="dashboard-title">Tauler de Tasques i Ofertes</h2>
+            <h2 class="dashboard-title">Tauler d'Incidències i Ofertes</h2>
           </div>
-          <button type="button" class="btn-create-task" (click)="onNovaTasca()">+ Nova tasca</button>
+          <button type="button" class="btn-create-task" (click)="onNovaTasca()">+ Crear Incidència</button>
         </div>
 
         <div *ngIf="noticeMessage" class="notice-banner">
@@ -54,7 +54,7 @@ import { Article } from '../../models/article.model';
           <!-- SECCIÓ DE TASQUES RECENTS -->
           <section class="panel">
             <div class="panel-header">
-              <h2>Últimes tasques</h2>
+              <h2>Últimes incidències de clients</h2>
               <a routerLink="/tasques-ofertes" [queryParams]="{ tipus: 'tasques' }">
                 Veure totes ({{ tasks.length }})
               </a>
@@ -73,14 +73,14 @@ import { Article } from '../../models/article.model';
                 <span>Pressupost: {{ task.budget }}</span>
                 <div class="actions">
                   <button type="button" (click)="onDetallTasca(task.id)">Detall</button>
-                  <button type="button" class="btn-secondary" (click)="onFerOferta(task.id)">Fer oferta</button>
+                  <button type="button" class="btn-secondary" (click)="onFerOferta(task.id)">Proposar pressupost</button>
                 </div>
               </div>
             </article>
 
             <div class="preview-toggle-wrap">
               <button type="button" class="btn-preview-toggle" (click)="onNavegarTasquesOfertes('tasques')">
-                Explorar totes les tasques disponibles ({{ tasks.length }})
+                Explorar totes les incidències disponibles ({{ tasks.length }})
                 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 6px; vertical-align: middle;">
                   <line x1="5" y1="12" x2="19" y2="12"></line>
                   <polyline points="12 5 19 12 12 19"></polyline>
@@ -92,7 +92,7 @@ import { Article } from '../../models/article.model';
           <!-- SECCIÓ D'OFERTES RECENTS -->
           <section class="panel">
             <div class="panel-header">
-              <h2>Ofertes recents</h2>
+              <h2>Ofertes i serveis de professionals</h2>
               <a routerLink="/tasques-ofertes" [queryParams]="{ tipus: 'ofertes' }">
                 Veure totes ({{ offers.length }})
               </a>
@@ -112,11 +112,11 @@ import { Article } from '../../models/article.model';
                 <span class="stars-gold">★ {{ r.mitjana }}</span>
                 <span class="reviews-count">({{ r.total }} opinions)</span>
               </div>
-              <p class="meta" *ngIf="offer.task">Tasca: {{ offer.task }}</p>
+              <p class="meta" *ngIf="offer.task">Tasca / Servei: {{ offer.task }}</p>
               <p>{{ offer.note }}</p>
               <div class="card-footer">
-                <span>Oferta: {{ offer.price }}</span>
-                <button type="button" (click)="onAcceptarOferta(offer.id)">Acceptar</button>
+                <span>Preu: {{ offer.price }}</span>
+                <button type="button" (click)="onContractarOferta(offer)">Contractar / M'interessa</button>
               </div>
             </article>
 
@@ -232,60 +232,60 @@ import { Article } from '../../models/article.model';
           <div class="role-box client-role-box">
             <div class="role-box-header">
               <span class="role-badge client-badge">PER A CLIENTS I PARTICULARS</span>
-              <h3>Necessites resoldre una tasca o reforma?</h3>
-              <p>Publica qualsevol necessitat de manteniment o obra i rep pressupostos personalitzats.</p>
+              <h3>Necessites resoldre una incidència o reforma?</h3>
+              <p>Publica la teva petició gratuïtament i rep pressupostos personalitzats d'especialistes de la teva zona.</p>
             </div>
             <ul class="role-benefits-list">
               <li>
                 <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                   <polyline points="20 6 9 17 4 12"></polyline>
                 </svg>
-                <span>Publicació 100% gratuïta i sense compromís de contractació</span>
+                <span>Publicació 100% gratuïta d'incidències i sense compromís</span>
               </li>
               <li>
                 <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                   <polyline points="20 6 9 17 4 12"></polyline>
                 </svg>
-                <span>Compara ofertes, terminis i preus de diversos professionals</span>
+                <span>Compara pressupostos, terminis i valoracions de diversos professionals</span>
               </li>
               <li>
                 <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                   <polyline points="20 6 9 17 4 12"></polyline>
                 </svg>
-                <span>Accés al telèfon directe del professional en acceptar l'oferta</span>
+                <span>Contacta o contracta directament packs de servei amb preus clars</span>
               </li>
             </ul>
-            <button type="button" class="btn-role-action" (click)="onNovaTasca()">Publicar la meva tasca</button>
+            <button type="button" class="btn-role-action" (click)="onNovaTasca()">Crear Incidència (Gratuït)</button>
           </div>
 
           <div class="role-box pro-role-box">
             <div class="role-box-header">
               <span class="role-badge pro-badge">PER A PROFESSIONALS I AUTÒNOMS</span>
-              <h3>Busques feines noves i clients a la teva zona?</h3>
-              <p>Accedeix a la borsa diària de demandes reals sense intermediaris ni comissions abusives.</p>
+              <h3>Busques feines noves o vols oferir els teus serveis?</h3>
+              <p>Accedeix a la borsa diària d'incidències reals o publica packs d'ofertes sense comissions.</p>
             </div>
             <ul class="role-benefits-list">
               <li>
                 <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                   <polyline points="20 6 9 17 4 12"></polyline>
                 </svg>
-                <span>Consulta tasques obertes i envia pressupostos adaptats al teu marge</span>
+                <span>Envia pressupostos a incidències obertes amb el teu preu pactat</span>
               </li>
               <li>
                 <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                   <polyline points="20 6 9 17 4 12"></polyline>
                 </svg>
-                <span>Herència de capacitats: publica tasques pròpies i respon a altres usuaris</span>
+                <span>Publica ofertes de serveis de tarifa fixa perquè els clients et contractin directament</span>
               </li>
               <li>
                 <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                   <polyline points="20 6 9 17 4 12"></polyline>
                 </svg>
-                <span>Notificacions al mòbil immediates quan s'obre una feina a la teva especialitat</span>
+                <span>Acumula tasques finalitzades i ressenyes per augmentar la teva reputació i fiabilitat</span>
               </li>
             </ul>
             <div class="pro-role-actions">
-              <button type="button" class="btn-role-action pro-btn" (click)="onAnarRegistreProfessional()">Començar com a professional</button>
+              <button type="button" class="btn-role-action pro-btn" (click)="onPublicarOferta()">Publicar Oferta de Servei</button>
               <a routerLink="/comunitat-professionals" class="btn-community-link">
                 <span>Per què unir-te a la Comunitat AVISA? (Guia & Blog)</span>
                 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -422,7 +422,8 @@ import { Article } from '../../models/article.model';
               <h4>Navegació i Àrees</h4>
               <ul>
                 <li><a routerLink="/tasques-ofertes">Mercat de Tasques i Ofertes</a></li>
-                <li><a routerLink="/client/crear-tasca">Publicar tasca nova</a></li>
+                <li><a routerLink="/client/crear-tasca">Crear incidència nova</a></li>
+                <li><a routerLink="/professional/crear-oferta">Publicar oferta de servei</a></li>
                 <li><a routerLink="/comunitat-professionals">Comunitat de Professionals (Blog)</a></li>
                 <li><a routerLink="/registre" [queryParams]="{ rol: 'professional' }">Àrea Professionals</a></li>
                 <li><a routerLink="/registre" [queryParams]="{ rol: 'client' }">Registre de clients</a></li>
@@ -2083,6 +2084,38 @@ export class MainComponent implements OnInit {
 
   onVeureTotesOfertes(): void {
     this.onNavegarTasquesOfertes('ofertes');
+  }
+
+  onContractarOferta(offer: any): void {
+    if (!this.requireLogin(`contractar el servei de ${offer.professional}`, '/')) return;
+    if (this.authService.isClient()) {
+      const currentUserName = this.authService.getCurrentUser()?.nom || 'Client';
+      const confirmacio = confirm(
+        `Vols contractar el servei de ${offer.professional} per ${offer.price}?\n\nEs convertirà directament en una tasca en curs per coordinar el treball.`
+      );
+      if (!confirmacio) return;
+
+      this.ofertaService.contractar(offer.id, currentUserName).subscribe({
+        next: (tasca) => {
+          this.noticeMessage = `S'ha contractat el servei correctament! S'ha generat la tasca #${tasca.id} "${tasca.titol}" en estat En curs.`;
+          this.loadDashboard();
+        },
+        error: () => {
+          this.noticeMessage = `No s'ha pogut processar la contractació de l'oferta.`;
+        }
+      });
+    } else {
+      this.noticeMessage = 'Només els comptes amb rol de "Client" o "Ambdós" poden contractar ofertes de serveis.';
+    }
+  }
+
+  onPublicarOferta(): void {
+    if (!this.requireLogin('publicar una oferta de servei', '/professional/crear-oferta')) return;
+    if (this.authService.isProfessional()) {
+      this.router.navigate(['/professional/crear-oferta']);
+    } else {
+      this.noticeMessage = 'Només els comptes amb rol de "Professional" o "Ambdós" poden publicar ofertes de servei.';
+    }
   }
 
   onAcceptarOferta(offerId: string): void {

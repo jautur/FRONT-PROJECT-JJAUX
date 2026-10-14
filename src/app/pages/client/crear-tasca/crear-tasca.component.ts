@@ -17,9 +17,31 @@ import { AuthService } from '../../../core/services/auth.service';
   template: `
     <section class="task-form-container">
       <header class="form-header">
-        <h1>Publicar una nova tasca</h1>
-        <p class="subtitle">Descriu el teu projecte o necessitat per rebre pressupostos de professionals.</p>
+        <div class="role-badge-tag">PER A CLIENTS I PARTICULARS · NOVA INCIDÈNCIA</div>
+        <h1>Crear Incidència / Petició de Treball</h1>
+        <p class="subtitle">
+          Descriu la teva avaria, reforma o necessitat a la llar. Els professionals verificats de la comarca
+          rebran la notificació immediata i et proposaran pressupostos a mida.
+        </p>
       </header>
+
+      <!-- Banner de flux de treball explicatiu -->
+      <div class="workflow-info-strip">
+        <div class="wf-step">
+          <span class="step-num">1</span>
+          <span>Creació d'Incidència</span>
+        </div>
+        <span class="wf-arrow">→</span>
+        <div class="wf-step">
+          <span class="step-num">2</span>
+          <span>Pressupostos dels Professionals</span>
+        </div>
+        <span class="wf-arrow">→</span>
+        <div class="wf-step highlight">
+          <span class="step-num">3</span>
+          <span>Conversió a TASCA en curs (++)</span>
+        </div>
+      </div>
 
       <div *ngIf="errorMessage" class="alert alert-danger">
         {{ errorMessage }}
@@ -30,50 +52,56 @@ import { AuthService } from '../../../core/services/auth.service';
 
       <form (ngSubmit)="onSubmit()" class="card">
         <label>
-          Títol del projecte / tasca
+          Títol de la incidència o necessitat
           <input
             type="text"
             [(ngModel)]="formData.titol"
             name="titol"
             required
-            placeholder="Ex: Desenvolupament d'una botiga online en Shopify" />
+            placeholder="Ex: Reparació urgent de fuita d'aigua sota l'aigüera o canvi de banyera" />
         </label>
 
         <label>
-          Categoria del servei
+          Gremi o Especialitat requerida
           <select [(ngModel)]="formData.categoria" name="categoria" required>
-            <option value="" disabled>Selecciona una categoria</option>
-            <option value="Web">Desenvolupament Web & Apps</option>
-            <option value="Branding">Disseny Gràfic & Branding</option>
-            <option value="Multimèdia">Multimèdia, Vídeo & Àudio</option>
-            <option value="Informàtica">Sistemes, Xarxes & Suport IT</option>
+            <option value="" disabled>Selecciona el gremi professional</option>
+            <option value="Reformes i Obres">Reformes i Obres (Paleteria, banys, cuines)</option>
+            <option value="Lampisteria">Lampisteria i Fontaneria (Fuites, calderes, desbussos)</option>
+            <option value="Electricitat">Electricitat i Il·luminació (Quadres, butlletins oficials, LED)</option>
+            <option value="Climatització">Climatització i Calefacció (Aire condicionat, aerotèrmia)</option>
+            <option value="Pintura">Pintura i Decoració (Alisat de parets, pintura plàstica)</option>
+            <option value="Fusteria">Fusteria i Parquet (Portes de pas, armaris, terres)</option>
+            <option value="Neteja">Neteja i Manteniment (Final d'obra, desinfecció)</option>
+            <option value="Serralleria">Serralleria (Panys de seguretat, obertures 24h)</option>
+            <option value="Arquitectura">Arquitectura & Llicències (Cèdules, certificats, ITE)</option>
+            <option value="Informàtica">Informàtica, Web & Suport IT</option>
             <option value="Altres">Altres serveis professionals</option>
           </select>
         </label>
 
         <label>
-          Descripció detallada dels requeriments
+          Descripció detallada de l'avaria o feina
           <textarea
             [(ngModel)]="formData.descripcio"
             name="descripcio"
             rows="6"
             required
-            placeholder="Detalla què necessites, objectius, terminis o especificacions tècniques..."></textarea>
+            placeholder="Detalla què ha passat, quins materials calen, terminis d'execució o la teva disponibilitat..."></textarea>
         </label>
 
         <label>
-          Pressupost orientatiu (€)
+          Pressupost màxim orientatiu (€)
           <input
             type="text"
             [(ngModel)]="formData.budget"
             name="budget"
             required
-            placeholder="Ex: €450" />
+            placeholder="Ex: €350" />
         </label>
 
         <div class="form-actions">
           <button type="submit" class="btn btn-primary" [disabled]="submitting">
-            {{ submitting ? 'Publicant tasca...' : 'Publicar tasca' }}
+            {{ submitting ? 'Publicant incidència...' : 'Publicar Incidència' }}
           </button>
           <a routerLink="/" class="btn btn-cancel">Cancel·lar</a>
         </div>
@@ -88,6 +116,67 @@ import { AuthService } from '../../../core/services/auth.service';
         display: flex;
         flex-direction: column;
         gap: 1.5rem;
+      }
+
+      .role-badge-tag {
+        display: inline-block;
+        font-size: 0.72rem;
+        font-weight: 900;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: #ff1744;
+        background: rgba(255, 23, 68, 0.08);
+        border: 1px solid rgba(255, 23, 68, 0.25);
+        padding: 0.3rem 0.75rem;
+        border-radius: 6px;
+        margin-bottom: 0.6rem;
+      }
+
+      .workflow-info-strip {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        background: #ffffff;
+        border: 1px solid #e5e0d7;
+        border-radius: 12px;
+        padding: 0.75rem 1.25rem;
+        font-size: 0.82rem;
+        font-weight: 700;
+        color: #636058;
+        overflow-x: auto;
+      }
+
+      .wf-step {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        white-space: nowrap;
+      }
+
+      .wf-step.highlight {
+        color: #ff1744;
+      }
+
+      .step-num {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #09090c;
+        color: #ffffff;
+        font-size: 0.72rem;
+        font-weight: 900;
+      }
+
+      .wf-step.highlight .step-num {
+        background: #ff1744;
+      }
+
+      .wf-arrow {
+        color: #b0aba0;
+        font-weight: 900;
       }
 
       .form-header h1 {
@@ -260,9 +349,9 @@ export class CrearTascaComponent implements OnInit {
     this.tascaService.create(this.formData).subscribe({
       next: (created) => {
         this.submitting = false;
-        this.successMessage = 'Tasca publicada amb èxit! Redirigint al panell principal...';
+        this.successMessage = 'Incidència publicada amb èxit! Els professionals de la teva zona ja poden enviar-te pressupostos. Redirigint...';
         setTimeout(() => {
-          this.router.navigate(['/']);
+          this.router.navigate(['/tasques-ofertes'], { queryParams: { tipus: 'tasques' } });
         }, 1200);
       },
       error: () => {

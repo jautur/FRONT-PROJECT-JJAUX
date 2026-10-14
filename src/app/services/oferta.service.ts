@@ -2,17 +2,20 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Oferta } from '../models/oferta.model';
+import { Tasca } from '../models/tasca.model';
 import { environment } from '../../environments/environment';
 
 /**
  * DTO per a l'enviament d'una nova oferta per part d'un professional.
  */
 export interface CreateOfertaDto {
-  /** Identificador de la tasca a la qual s'aplica */
-  tascaId: string;
+  /** Identificador de la tasca a la qual s'aplica (o buit per a pack de servei autònom) */
+  tascaId?: string;
   /** Nom del professional emissor */
   professional: string;
-  /** Preu o import ofertat (ex: '€450') */
+  /** Categoria o gremi professional del servei ofertat */
+  categoria?: string;
+  /** Preu o import ofertat (ex: '€450' o '75€') */
   price: string;
   /** Explicació de la proposta o terminis */
   note?: string;
@@ -87,5 +90,15 @@ export class OfertaService {
    */
   reject(id: string): Observable<Oferta> {
     return this.http.post<Oferta>(`${this.apiUrl}/${id}/rebutjar`, {});
+  }
+
+  /**
+   * Contractar directament una oferta d'un professional i convertir-la en Tasca ('OFERTA to TAREA').
+   * @param id Identificador de l'oferta
+   * @param clientNom Nom de l'usuari client que contracta
+   * @returns Observable amb la nova Tasca generada en estat 'En curs'
+   */
+  contractar(id: string, clientNom: string): Observable<Tasca> {
+    return this.http.post<Tasca>(`${this.apiUrl}/${id}/contractar`, { clientNom });
   }
 }
