@@ -11,6 +11,7 @@ import { LesMevesTasquesComponent } from './pages/client/les-meves-tasques/les-m
 import { LesMevesOfertesComponent } from './pages/professional/les-meves-ofertes/les-meves-ofertes.component';
 import { TasquesOfertesComponent } from './pages/tasques-ofertes/tasques-ofertes.component';
 import { AdminPanellComponent } from './pages/admin/panell/admin-panell.component';
+import { ArticleDetallComponent } from './pages/article-detall/article-detall.component';
 import { authGuard } from './core/guards/auth.guard';
 import { adminGuard } from './core/guards/admin.guard';
 
@@ -43,5 +44,7 @@ export const appRoutes: Routes = [
   { path: 'professional/crear-oferta', component: CrearOfertaComponent, canActivate: [authGuard] },
   { path: 'tasca-detall/:id', component: TascaDetallComponent, canActivate: [authGuard] },
   { path: 'admin/panell', component: AdminPanellComponent, canActivate: [adminGuard] },
+  { path: 'article/:id', component: ArticleDetallComponent },
+  { path: 'blog/:id', redirectTo: 'article/:id' },
   { path: '**', redirectTo: '' }
 ];

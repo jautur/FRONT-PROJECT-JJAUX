@@ -6,6 +6,8 @@ import { OfertaService } from '../../services/oferta.service';
 import { ResenyaService } from '../../services/resenya.service';
 import { AuthService } from '../../core/services/auth.service';
 import { Resenya } from '../../models/resenya.model';
+import { ArticleService } from '../../services/article.service';
+import { Article } from '../../models/article.model';
 
 @Component({
   selector: 'app-main',
@@ -302,7 +304,7 @@ import { Resenya } from '../../models/resenya.model';
 
           <div class="blog-grid">
             <article class="blog-card" *ngFor="let article of articlesBlog">
-              <div class="blog-card-media">
+              <div class="blog-card-media" [routerLink]="['/article', article.id]" style="cursor: pointer;">
                 <img [src]="article.imatge" [alt]="article.titol" loading="lazy" />
                 <span class="blog-category-tag">{{ article.categoria }}</span>
               </div>
@@ -312,15 +314,15 @@ import { Resenya } from '../../models/resenya.model';
                   <span>•</span>
                   <span>{{ article.tempsLectura }}</span>
                 </div>
-                <h3>{{ article.titol }}</h3>
+                <h3 [routerLink]="['/article', article.id]" style="cursor: pointer;">{{ article.titol }}</h3>
                 <p>{{ article.resum }}</p>
-                <button type="button" class="btn-read-article" (click)="obrirArticle(article)">
+                <a [routerLink]="['/article', article.id]" class="btn-read-article">
                   <span>Llegir article complet</span>
                   <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                     <line x1="5" y1="12" x2="19" y2="12"></line>
                     <polyline points="12 5 19 12 12 19"></polyline>
                   </svg>
-                </button>
+                </a>
               </div>
             </article>
           </div>
@@ -435,49 +437,6 @@ import { Resenya } from '../../models/resenya.model';
             <p>© 2026 AVISA Platform. Tots els drets reservats. Connexió web i mòbil garantida.</p>
           </div>
         </footer>
-      </div>
-
-      <!-- ============================================================== -->
-      <!-- MODAL INTERACTIU DE LECTURA D'ARTICLES DE BLOG                 -->
-      <!-- ============================================================== -->
-      <div class="article-modal-backdrop" *ngIf="articleSeleccionat" (click)="tancarArticle()">
-        <div class="article-modal-card" (click)="$event.stopPropagation()">
-          <div class="article-modal-header">
-            <div>
-              <span class="modal-category-tag">{{ articleSeleccionat.categoria }}</span>
-              <h2>{{ articleSeleccionat.titol }}</h2>
-              <div class="modal-meta">
-                <span>{{ articleSeleccionat.data }}</span>
-                <span>•</span>
-                <span>{{ articleSeleccionat.tempsLectura }}</span>
-              </div>
-            </div>
-            <button type="button" class="btn-close-modal" (click)="tancarArticle()" aria-label="Tancar article" title="Tancar">
-              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="18" y1="6" x2="6" y2="18"></line>
-                <line x1="6" y1="6" x2="18" y2="18"></line>
-              </svg>
-            </button>
-          </div>
-
-          <div class="article-modal-body">
-            <img [src]="articleSeleccionat.imatge" [alt]="articleSeleccionat.titol" class="article-modal-img" />
-            <div class="article-full-text">
-              <p *ngFor="let paragraf of articleSeleccionat.contingutComplet.split('\n\n')">
-                {{ paragraf }}
-              </p>
-            </div>
-          </div>
-
-          <div class="article-modal-footer">
-            <button type="button" class="btn-modal-action" (click)="tancarArticle(); onNovaTasca()">
-              Publicar tasca relacionada
-            </button>
-            <button type="button" class="btn-modal-close" (click)="tancarArticle()">
-              Tancar lectura
-            </button>
-          </div>
-        </div>
       </div>
     </section>
   `,
@@ -1911,12 +1870,14 @@ export class MainComponent implements OnInit {
     private readonly ofertaService: OfertaService,
     private readonly resenyaService: ResenyaService,
     private readonly authService: AuthService,
+    private readonly articleService: ArticleService,
     private readonly router: Router
   ) {}
 
   ngOnInit(): void {
     this.loadDashboard();
     this.loadResenyes();
+    this.articlesBlog = this.articleService.getArticles();
   }
 
   loadDashboard(): void {
@@ -2007,42 +1968,8 @@ export class MainComponent implements OnInit {
     }) ?? [];
   }
 
-  /** Article del blog seleccionat per a lectura en modal */
-  articleSeleccionat: any = null;
-
-  /** Articles informatius optimitzats per a SEO i difusió de la plataforma */
-  articlesBlog = [
-    {
-      id: 1,
-      titol: 'Quant costa reformar un bany o una cuina? Guia de pressupostos i materials 2026',
-      resum: 'Desglossament pràctic de mà d\'obra, permisos d\'obra, instal·lacions de lampisteria i materials recomanats per planificar la teva reforma amb transparència.',
-      contingutComplet: `Quan planifiquem una reforma a la llar, la claredat en el pressupost és fonamental per evitar desviacions econòmiques imprevistes.\n\nA la plataforma AVISA, recomanem als clients desglossar sempre la feina en tres partides essencials: mà d'obra qualificada, materials bàsics d'instal·lació (canonades, cablejat homologat, ciment) i acabats decoratius (rajoles, aixetes, sanitaris).\n\nPublicar una tasca detallada a AVISA et permet rebre comparatives de múltiples professionals verificats de la teva localitat en poques hores, amb el preu final tancat i sense intermediaris que encareixin el servei. A més, a través de la nostra aplicació mòbil pots xatejar directament amb el professional assignat per acordar dates d'execució i aclarir dubtes sobre la marxa.`,
-      categoria: 'Reformes i Obres',
-      tempsLectura: '4 min de lectura',
-      data: '14 Octubre 2026',
-      imatge: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=800&q=80'
-    },
-    {
-      id: 2,
-      titol: 'Manteniment elèctric i climatització: com prevenir avaries greus a la llar',
-      resum: 'Consells d\'especialistes homologats per detectar sobreescalfaments al quadre elèctric, mantenir bombes de calor i reduir la despesa energètica anual.',
-      contingutComplet: `El manteniment preventiu de les instal·lacions elèctriques i de climatització és clau per evitar avaries costoses i riscos de seguretat.\n\nRevisar el diferencial periòdicament, assegurar-se que els circuits no pateixin sobrecàrregues i netejar els filtres dels sistemes d'aire condicionat i aerotèrmia abans de l'inici de cada temporada pot suposar un estalvi de fins al 30% en la factura de la llum.\n\nA AVISA comptem amb electricistes i tècnics de climatització autoritzats que poden realitzar diagnòstics ràpids a domicili. Des de l'app mòbil o la web pots publicar el teu avís de revisió i rebre resposta en qüestió de minuts.`,
-      categoria: 'Instal·lacions i Manteniment',
-      tempsLectura: '3 min de lectura',
-      data: '12 Octubre 2026',
-      imatge: 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=800&q=80'
-    },
-    {
-      id: 3,
-      titol: 'Com aconseguir més clients com a professional autònom a la teva zona',
-      resum: 'Estratègies per presentar pressupostos clars, aprofitar la valoració positiva de clients i gestionar la teva agenda laboral de forma independent.',
-      contingutComplet: `Com a professional dels oficis o serveis tècnics, el boca-orella continua sent valuós, però la digitalització local és avui el canal més potent per omplir la teva agenda de feines rendibles.\n\nEl model d'herència de rols d'AVISA permet als professionals no només publicar tasques pròpies com qualsevol client, sinó també accedir a la borsa completa de peticions obertes de la seva regió. Presentar una oferta amb un preu just, una descripció concreta del temps d'execució i mantenir actualitzat el número de telèfon multiplica per quatre les probabilitats d'acceptació.\n\nAmb l'aplicació mòbil d'AVISA reps una notificació immediata tan bon punt un client de la teva especialitat publica una necessitat nova, permetent-te ser el primer a donar resposta.`,
-      categoria: 'Consells Professionals',
-      tempsLectura: '5 min de lectura',
-      data: '10 Octubre 2026',
-      imatge: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=800&q=80'
-    }
-  ];
+  /** Articles informatius del blog gestionats a través d'ArticleService */
+  articlesBlog: Article[] = [];
 
   /** Retorna la vista prèvia aleatòria de 3 tasques per a la pàgina principal */
   get previewTasks() {
@@ -2146,11 +2073,9 @@ export class MainComponent implements OnInit {
   }
 
   obrirArticle(article: any): void {
-    this.articleSeleccionat = article;
-  }
-
-  tancarArticle(): void {
-    this.articleSeleccionat = null;
+    if (article?.id) {
+      this.router.navigate(['/article', article.id]);
+    }
   }
 
   onAnarRegistreClient(): void {
