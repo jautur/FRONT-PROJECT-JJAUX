@@ -6,9 +6,10 @@ import { AuthService, RegisterData } from '../../../core/services/auth.service';
 
 /**
  * Component de Registre d'usuaris (/registre).
- * Permet a nous usuaris crear un compte a la plataforma JJAUX escollint
- * si volen actuar com a Clients (publicar tasques), Professionals (enviar ofertes)
- * o Ambdós (funcionalitat híbrida completa: client i professional a la vegada).
+ * Implementa el model d'herència de JJAUX:
+ * - Client: requereix email i contrasenya; pot publicar peticions i feines.
+ * - Professional (fill del client): hereta tot el que fa el client, requereix a més
+ *   un número de telèfon obligatori i pot resoldre peticions (presentar ofertes).
  */
 @Component({
   selector: 'app-registre',
@@ -17,60 +18,78 @@ import { AuthService, RegisterData } from '../../../core/services/auth.service';
   template: `
     <section class="auth-card">
       <h1>Crear un compte</h1>
-      <p class="subtitle">Uneix-te a la comunitat JJAUX de clients i professionals.</p>
+      <p class="subtitle">Registra't a JJAUX com a client o com a professional.</p>
 
       <div *ngIf="errorMessage" class="alert alert-danger">
         {{ errorMessage }}
       </div>
 
       <form (ngSubmit)="onRegister()">
+        <!-- Selecció de Tipus de Compte (Herència) -->
         <label>
-          Nom complet o comercial
-          <input type="text" [(ngModel)]="formData.nom" name="nom" required placeholder="Ex: Joan Garcia" />
-        </label>
-
-        <label>
-          Correu electrònic
-          <input type="email" [(ngModel)]="formData.email" name="email" required placeholder="nom@exemple.cat" />
-        </label>
-
-        <label>
-          Tipus de compte (Rol)
+          Tipus de compte
           <div class="role-selector">
             <button
               type="button"
               class="role-btn"
               [class.active]="formData.rol === 'client'"
-              (click)="formData.rol = 'client'">
+              (click)="onSelectRole('client')">
               <strong>Client</strong>
-              <small>Publicar feines</small>
+              <small>Publicar feines i peticions</small>
             </button>
+
             <button
               type="button"
               class="role-btn"
               [class.active]="formData.rol === 'professional'"
-              (click)="formData.rol = 'professional'">
+              (click)="onSelectRole('professional')">
               <strong>Professional</strong>
-              <small>Oferir serveis</small>
-            </button>
-            <button
-              type="button"
-              class="role-btn"
-              [class.active]="formData.rol === 'ambdos'"
-              (click)="formData.rol = 'ambdos'">
-              <strong>Ambdós</strong>
-              <small>Client & Professional</small>
+              <small>Client + Resoldre peticions (requereix telèfon)</small>
             </button>
           </div>
         </label>
 
+        <!-- Informació pedagògica del rol seleccionat -->
+        <div class="role-info-box" [ngClass]="formData.rol">
+          <div *ngIf="formData.rol === 'client'">
+            ℹ️ Com a <strong>Client</strong>, podràs publicar peticions de feina i revisar pressupostos. Només requereix correu i contrasenya.
+          </div>
+          <div *ngIf="formData.rol === 'professional'">
+            ℹ️ Com a <strong>Professional</strong> (fill del client), podràs fer tot el que fa el client (publicar feines) i a més <strong>resoldre peticions</strong> d'altres usuaris. Requereix telèfon obligatori.
+          </div>
+        </div>
+
         <label>
-          Contrasenya
+          Nom complet o comercial *
+          <input type="text" [(ngModel)]="formData.nom" name="nom" required placeholder="Ex: Joan Garcia" />
+        </label>
+
+        <label>
+          Correu electrònic *
+          <input type="email" [(ngModel)]="formData.email" name="email" required placeholder="nom@exemple.cat" />
+        </label>
+
+        <!-- Telèfon obligatori per a professionals -->
+        <label *ngIf="formData.rol === 'professional'">
+          Telèfon de contacte (Obligatori per a professionals) *
+          <input
+            type="tel"
+            [(ngModel)]="formData.telefon"
+            name="telefon"
+            required
+            placeholder="Ex: +34 600 123 456"
+            class="input-required"
+          />
+          <small class="hint">Necessari perquè els clients et puguin contactar quan resolguis les seves peticions.</small>
+        </label>
+
+        <label>
+          Contrasenya *
           <input type="password" [(ngModel)]="formData.password" name="password" required minlength="6" placeholder="Mínim 6 caràcters" />
         </label>
 
         <button type="submit" class="submit-btn" [disabled]="loading">
-          {{ loading ? 'Creant compte...' : 'Registrar-me' }}
+          {{ loading ? 'Creant compte...' : 'Registrar-me com a ' + (formData.rol === 'professional' ? 'Professional' : 'Client') }}
         </button>
 
         <p class="footer-hint">
@@ -96,7 +115,7 @@ import { AuthService, RegisterData } from '../../../core/services/auth.service';
       }
 
       .subtitle {
-        margin: 0 0 1.5rem;
+        margin: 0 0 1.25rem;
         color: #64748b;
         font-size: 0.95rem;
       }
@@ -129,10 +148,21 @@ import { AuthService, RegisterData } from '../../../core/services/auth.service';
         border-color: #2563eb;
       }
 
+      .input-required {
+        border-color: #0284c7;
+        background: #f0f9ff;
+      }
+
+      .hint {
+        font-size: 0.78rem;
+        color: #64748b;
+        font-weight: 400;
+      }
+
       .role-selector {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 0.5rem;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem;
         margin-top: 0.2rem;
       }
 
@@ -141,7 +171,7 @@ import { AuthService, RegisterData } from '../../../core/services/auth.service';
         flex-direction: column;
         align-items: center;
         text-align: center;
-        padding: 0.75rem 0.35rem;
+        padding: 0.85rem 0.5rem;
         background: #f8fafc;
         border: 2px solid #e2e8f0;
         border-radius: 12px;
@@ -150,14 +180,14 @@ import { AuthService, RegisterData } from '../../../core/services/auth.service';
       }
 
       .role-btn strong {
-        font-size: 0.88rem;
+        font-size: 0.95rem;
         color: #1e293b;
       }
 
       .role-btn small {
-        font-size: 0.72rem;
+        font-size: 0.75rem;
         color: #64748b;
-        margin-top: 0.2rem;
+        margin-top: 0.25rem;
       }
 
       .role-btn.active {
@@ -167,6 +197,25 @@ import { AuthService, RegisterData } from '../../../core/services/auth.service';
 
       .role-btn.active strong {
         color: #2563eb;
+      }
+
+      .role-info-box {
+        padding: 0.75rem 1rem;
+        border-radius: 10px;
+        font-size: 0.85rem;
+        line-height: 1.45;
+      }
+
+      .role-info-box.client {
+        background: #f0f9ff;
+        border: 1px solid #bae6fd;
+        color: #0369a1;
+      }
+
+      .role-info-box.professional {
+        background: #f0fdf4;
+        border: 1px solid #bbf7d0;
+        color: #166534;
       }
 
       .submit-btn {
@@ -217,7 +266,8 @@ export class RegistreComponent {
     nom: '',
     email: '',
     rol: 'client',
-    password: ''
+    password: '',
+    telefon: ''
   };
 
   /** Estat de càrrega durant la petició */
@@ -232,17 +282,36 @@ export class RegistreComponent {
   ) {}
 
   /**
-   * Envia les dades de registre al backend per crear l'usuari a PostgreSQL.
+   * Canvia el rol seleccionat.
+   * @param rol 'client' o 'professional'
+   */
+  onSelectRole(rol: 'client' | 'professional'): void {
+    this.formData.rol = rol;
+    this.errorMessage = '';
+  }
+
+  /**
+   * Valida i envia les dades de registre al backend.
+   * Els clients necessiten correu i contrasenya.
+   * Els professionals necessiten a més obligatòriament el telèfon.
    */
   onRegister(): void {
     if (!this.formData.nom || !this.formData.email || !this.formData.password) {
-      this.errorMessage = 'Cal emplenar tots els camps obligatoris.';
+      this.errorMessage = 'Cal emplenar tots els camps obligatoris (nom, email i contrasenya).';
       return;
     }
 
     if (this.formData.password.length < 6) {
       this.errorMessage = 'La contrasenya ha de tenir com a mínim 6 caràcters.';
       return;
+    }
+
+    // Validació específica del fill (Professional): requereix telèfon
+    if (this.formData.rol === 'professional') {
+      if (!this.formData.telefon || !this.formData.telefon.trim()) {
+        this.errorMessage = 'Com a Professional, el telèfon de contacte és obligatori per poder resoldre peticions.';
+        return;
+      }
     }
 
     this.loading = true;

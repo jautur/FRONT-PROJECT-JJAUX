@@ -292,8 +292,7 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
           <select [(ngModel)]="filtreRolUsuari" class="select-filter">
             <option value="tots">Tots els rols</option>
             <option value="client">Client</option>
-            <option value="professional">Professional</option>
-            <option value="ambdos">Ambdós (Híbrid)</option>
+            <option value="professional">Professional (Client + Resolutor)</option>
             <option value="admin">Administrador</option>
           </select>
         </div>

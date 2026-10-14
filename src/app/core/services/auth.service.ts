@@ -14,17 +14,21 @@ export interface LoginCredentials {
 
 /**
  * Model per a les dades sol·licitades al registre d'un nou compte.
+ * - Client: requereix nom, email, password.
+ * - Professional (fill de client): requereix nom, email, password i telèfon obligatori.
  */
 export interface RegisterData {
   nom: string;
   email: string;
-  rol: RolUsuari;
+  rol: 'client' | 'professional';
   password?: string;
+  telefon?: string;
 }
 
 /**
  * Servei central d'Autenticació i Gestió de Sessió de l'aplicació JJAUX.
- * S'encarrega d'iniciar sessió, registrar usuaris (clients, professionals o ambdós),
+ * S'encarrega d'iniciar sessió, registrar usuaris amb model d'herència
+ * (el Professional hereta totes les capacitats del Client i afegeix resolució de peticions + telèfon),
  * mantenir l'estat local a localStorage i verificar permisos d'accés.
  */
 @Injectable({
@@ -70,25 +74,26 @@ export class AuthService {
   }
 
   /**
-   * Comprova si l'usuari connectat té permisos de client.
-   * Retorna true si el seu rol és 'client', 'ambdos' o 'admin'.
+   * Comprova si l'usuari connectat té permisos de client (publicar feines, gestionar les seves tasques).
+   * Segons el model d'herència ("el professional és el fill del client"):
+   * Tant el 'client' com el 'professional' (i l'admin) tenen permisos de client!
    */
   isClient(): boolean {
     const user = this.getCurrentUser();
     if (!user) return false;
     const r = user.rol?.toLowerCase();
-    return r === 'client' || r === 'ambdos' || r === 'admin';
+    return r === 'client' || r === 'professional' || r === 'admin';
   }
 
   /**
-   * Comprova si l'usuari connectat té permisos de professional.
-   * Retorna true si el seu rol és 'professional', 'ambdos' o 'admin'.
+   * Comprova si l'usuari connectat té permisos de professional (resoldre peticions, enviar ofertes).
+   * Retorna true per al rol 'professional' i l'administrador global.
    */
   isProfessional(): boolean {
     const user = this.getCurrentUser();
     if (!user) return false;
     const r = user.rol?.toLowerCase();
-    return r === 'professional' || r === 'ambdos' || r === 'admin';
+    return r === 'professional' || r === 'admin';
   }
 
   /**
@@ -97,14 +102,6 @@ export class AuthService {
   isAdmin(): boolean {
     const user = this.getCurrentUser();
     return user?.rol?.toLowerCase() === 'admin';
-  }
-
-  /**
-   * Comprova si l'usuari és híbrid (client i professional simultàniament).
-   */
-  isBoth(): boolean {
-    const user = this.getCurrentUser();
-    return user?.rol?.toLowerCase() === 'ambdos';
   }
 
   /**
@@ -121,7 +118,7 @@ export class AuthService {
 
   /**
    * Registra un nou compte d'usuari al sistema (/api/auth/register).
-   * @param data Dades del formulari de registre
+   * @param data Dades del formulari de registre (amb telèfon inclòs si és professional)
    * @returns Observable amb l'usuari creat
    */
   register(data: RegisterData): Observable<Usuari> {
@@ -149,8 +146,8 @@ export class AuthService {
 
   /**
    * Comprova si l'usuari connectat té un rol específic.
-   * @param rol Rol a verificar ('client' | 'professional' | 'ambdos' | 'admin')
-   * @returns true si coincideix, false en cas contrari
+   * @param rol Rol a verificar ('client' | 'professional' | 'admin')
+   * @returns true si coincideix exactament, false en cas contrari
    */
   hasRole(rol: RolUsuari): boolean {
     const user = this.getCurrentUser();

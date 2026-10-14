@@ -103,13 +103,10 @@ import { AuthService } from '../../core/services/auth.service';
           <article class="card info-card">
             <h3>Informació del Rol</h3>
             <div *ngIf="usuari?.rol === 'client'">
-              <p>Com a <strong>Client</strong>, pots publicar necessitats, rebre pressupostos de professionals qualificats i contractar serveis.</p>
+              <p>Com a <strong>Client</strong>, pots publicar peticions i feines, rebre pressupostos i contractar serveis. Només necessites correu i contrasenya.</p>
             </div>
             <div *ngIf="usuari?.rol === 'professional'">
-              <p>Com a <strong>Professional</strong>, pots navegar per les tasques obertes, enviar ofertes econòmiques i gestionar els teus encàrrecs.</p>
-            </div>
-            <div *ngIf="usuari?.rol === 'ambdos'">
-              <p>Com a <strong>Client & Professional</strong>, disposes d'un compte complet híbrid: pots publicar tasques pròpies com a client i presentar pressupostos com a professional.</p>
+              <p>Com a <strong>Professional</strong> (fill del client), disposes de totes les funcions del client (publicar feines) i a més disposes de telèfon per <strong>resoldre peticions</strong> i enviar pressupostos a altres usuaris.</p>
             </div>
             <div *ngIf="usuari?.rol === 'admin'">
               <p>Com a <strong>Administrador</strong>, tens accés global de gestió d'usuaris, supervisió de tasques i configuració d'avisos.</p>
@@ -414,6 +411,11 @@ export class PerfilComponent implements OnInit {
    */
   onSaveProfile(): void {
     if (!this.usuari) return;
+
+    if (this.usuari.rol === 'professional' && (!this.formData.telefon || !this.formData.telefon.trim())) {
+      this.errorMessage = 'Com a Professional, el telèfon de contacte és obligatori per resoldre peticions.';
+      return;
+    }
 
     this.saving = true;
     this.clearAlerts();

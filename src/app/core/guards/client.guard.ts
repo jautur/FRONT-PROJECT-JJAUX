@@ -4,7 +4,7 @@ import { AuthService } from '../services/auth.service';
 
 /**
  * Funció Guard funcional per a rutes exclusives de clients (/client/*).
- * Permet l'accés a usuaris amb rol 'client', 'ambdos' (client i professional) o 'admin'.
+ * Permet l'accés a usuaris amb rol 'client', 'professional' (fill de client) o 'admin'.
  */
 export const clientGuard: CanActivateFn = (
   route: ActivatedRouteSnapshot,
@@ -22,7 +22,7 @@ export const clientGuard: CanActivateFn = (
     return true;
   }
 
-  router.navigate(['/'], { queryParams: { error: 'Aquesta secció requereix un compte de client o híbrid.' } });
+  router.navigate(['/'], { queryParams: { error: 'Aquesta secció requereix un compte de client o professional.' } });
   return false;
 };
 
