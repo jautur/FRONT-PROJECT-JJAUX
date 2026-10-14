@@ -33,15 +33,21 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
   template: `
     <div class="admin-container">
       <!-- Capçalera del Panell -->
+      <!-- Capçalera del Panell -->
       <div class="admin-header">
         <div class="title-group">
           <div class="admin-badge">ADMINISTRACIÓ GLOBAL</div>
-          <h2>🛡️ Panell de Control i Supervisió JJAUX</h2>
+          <h2>Panell de Control i Supervisió JJAUX</h2>
           <p class="subtitle">Gestió centralitzada de tots els usuaris, tasques publicades i ofertes del sistema.</p>
         </div>
         <div class="refresh-group">
           <button type="button" class="btn-refresh" (click)="carregarDades()" [disabled]="loading">
-            🔄 {{ loading ? 'Actualitzant...' : 'Actualitzar dades' }}
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;">
+              <polyline points="23 4 23 10 17 10"></polyline>
+              <polyline points="1 20 1 14 7 14"></polyline>
+              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+            </svg>
+            {{ loading ? 'Actualitzant...' : 'Actualitzar dades' }}
           </button>
         </div>
       </div>
@@ -49,7 +55,14 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
       <!-- Mètriques globals -->
       <div class="metrics-grid">
         <div class="metric-card">
-          <span class="metric-icon">👥</span>
+          <span class="metric-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            </svg>
+          </span>
           <div class="metric-info">
             <span class="metric-value">{{ usuaris.length }}</span>
             <span class="metric-label">Usuaris Registrats</span>
@@ -57,7 +70,14 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
         </div>
 
         <div class="metric-card">
-          <span class="metric-icon">📋</span>
+          <span class="metric-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+              <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+              <line x1="9" y1="12" x2="15" y2="12"></line>
+              <line x1="9" y1="16" x2="15" y2="16"></line>
+            </svg>
+          </span>
           <div class="metric-info">
             <span class="metric-value">{{ tasques.length }}</span>
             <span class="metric-label">Tasques Totals</span>
@@ -66,7 +86,12 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
         </div>
 
         <div class="metric-card">
-          <span class="metric-icon">💼</span>
+          <span class="metric-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+              <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+            </svg>
+          </span>
           <div class="metric-info">
             <span class="metric-value">{{ ofertes.length }}</span>
             <span class="metric-label">Ofertes Presentades</span>
@@ -75,7 +100,12 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
         </div>
 
         <div class="metric-card">
-          <span class="metric-icon">🔔</span>
+          <span class="metric-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+            </svg>
+          </span>
           <div class="metric-info">
             <span class="metric-value">{{ totalAvisos }}</span>
             <span class="metric-label">Avisos de Sistema</span>
@@ -95,7 +125,7 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
           [class.active]="tabActiva === 'tasques'"
           (click)="canviarTab('tasques')"
         >
-          📋 Llistat Complet de Tasques ({{ tasques.length }})
+          Llistat Complet de Tasques ({{ tasques.length }})
         </button>
         <button
           type="button"
@@ -103,7 +133,7 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
           [class.active]="tabActiva === 'ofertes'"
           (click)="canviarTab('ofertes')"
         >
-          💼 Llistat Complet d'Ofertes ({{ ofertes.length }})
+          Llistat Complet d'Ofertes ({{ ofertes.length }})
         </button>
         <button
           type="button"
@@ -111,7 +141,7 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
           [class.active]="tabActiva === 'usuaris'"
           (click)="canviarTab('usuaris')"
         >
-          👥 Usuaris del Sistema ({{ usuaris.length }})
+          Usuaris del Sistema ({{ usuaris.length }})
         </button>
       </div>
 
@@ -123,7 +153,7 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
           <input
             type="text"
             [(ngModel)]="searchTasca"
-            placeholder="🔍 Cerca per títol, client o descripció..."
+            placeholder="Cerca per títol, client o descripció..."
             class="search-input"
           />
           <select [(ngModel)]="filtreEstatTasca" class="select-filter">
@@ -165,7 +195,11 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
                 <td>
                   <div class="action-buttons">
                     <a [routerLink]="['/tasca-detall', t.id]" class="btn-sm btn-info" title="Revisar detall i ofertes">
-                      👁️ Detall
+                      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                      </svg>
+                      Detall
                     </a>
                     <button
                       *ngIf="t.estat !== 'Finalitzada'"
@@ -174,15 +208,22 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
                       (click)="finalitzarTasca(t.id)"
                       title="Forçar finalització"
                     >
-                      ✓ Finalitzar
+                      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                      </svg>
+                      Finalitzar
                     </button>
                     <button
                       type="button"
                       class="btn-sm btn-danger"
                       (click)="eliminarTasca(t.id)"
                       title="Eliminar tasca de la base de dades"
+                      aria-label="Eliminar"
                     >
-                      🗑️
+                      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                      </svg>
                     </button>
                   </div>
                 </td>
@@ -204,7 +245,7 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
           <input
             type="text"
             [(ngModel)]="searchOferta"
-            placeholder="🔍 Cerca per professional, ref. tasca o nota..."
+            placeholder="Cerca per professional, ref. tasca o nota..."
             class="search-input"
           />
           <select [(ngModel)]="filtreEstatOferta" class="select-filter">
@@ -253,7 +294,10 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
                       (click)="acceptarOferta(o.id)"
                       title="Acceptar oferta"
                     >
-                      ✓ Acceptar
+                      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                      </svg>
+                      Acceptar
                     </button>
                     <button
                       *ngIf="o.estat !== 'Rebutjada'"
@@ -262,10 +306,18 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
                       (click)="rebutjarOferta(o.id)"
                       title="Rebutjar oferta"
                     >
-                      ✕ Rebutjar
+                      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                      </svg>
+                      Rebutjar
                     </button>
                     <a [routerLink]="['/tasca-detall', o.tascaId]" class="btn-sm btn-info" title="Anar a la tasca">
-                      👁️ Tasca
+                      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                      </svg>
+                      Tasca
                     </a>
                   </div>
                 </td>
@@ -287,7 +339,7 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
           <input
             type="text"
             [(ngModel)]="searchUsuari"
-            placeholder="🔍 Cerca per nom, email o telèfon..."
+            placeholder="Cerca per nom, email o telèfon..."
             class="search-input"
           />
           <select [(ngModel)]="filtreRolUsuari" class="select-filter">
@@ -331,7 +383,11 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
                       (click)="obrirModalPassword(u)"
                       title="Canviar contrasenya d'aquest usuari"
                     >
-                      🔑 Nova contrasenya
+                      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;">
+                        <circle cx="8" cy="8" r="5"></circle>
+                        <path d="M11.5 11.5 21 21m-4 0 2-2m-2-2 2-2"></path>
+                      </svg>
+                      Nova contrasenya
                     </button>
                     <button
                       *ngIf="u.id !== 'u-admin' && u.email !== 'admin@admin'"
@@ -340,7 +396,11 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
                       (click)="eliminarUsuari(u)"
                       title="Eliminar aquest usuari de la base de dades"
                     >
-                      🗑️ Eliminar
+                      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                      </svg>
+                      Eliminar
                     </button>
                   </div>
                 </td>
@@ -360,8 +420,13 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
       <div class="modal-backdrop" *ngIf="modalPasswordObert">
         <div class="modal-card">
           <div class="modal-header">
-            <h3>🔑 Assignar Nova Contrasenya</h3>
-            <button type="button" class="btn-close" (click)="tancarModalPassword()">✕</button>
+            <h3>Assignar Nova Contrasenya</h3>
+            <button type="button" class="btn-close" (click)="tancarModalPassword()" aria-label="Tancar">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
           </div>
 
           <div class="modal-body" *ngIf="usuariSeleccionat">
@@ -376,7 +441,7 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
             </div>
 
             <div class="alert-info-box">
-              🔒 <strong>Privilegi d'Administrador:</strong> Pots assignar directament una nova contrasenya sense conèixer ni veure la contrasenya anterior de l'usuari.
+              <strong>Privilegi d'Administrador:</strong> Pots assignar directament una nova contrasenya sense conèixer ni veure la contrasenya anterior de l'usuari.
             </div>
 
             <div class="form-group">
@@ -389,8 +454,15 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
                   placeholder="Mínim 6 caràcters..."
                   class="form-control"
                 />
-                <button type="button" class="btn-toggle-eye" (click)="mostrarPassword = !mostrarPassword" title="Mostrar/Amagar">
-                  {{ mostrarPassword ? '🙈' : '👁️' }}
+                <button type="button" class="btn-toggle-eye" (click)="mostrarPassword = !mostrarPassword" title="Mostrar/Amagar" aria-label="Mostrar o amagar contrasenya">
+                  <svg *ngIf="mostrarPassword" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                    <line x1="1" y1="1" x2="23" y2="23"></line>
+                  </svg>
+                  <svg *ngIf="!mostrarPassword" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                  </svg>
                 </button>
               </div>
             </div>
@@ -407,7 +479,7 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
             </div>
 
             <div class="modal-error" *ngIf="errorModalPassword">
-              ⚠️ {{ errorModalPassword }}
+              {{ errorModalPassword }}
             </div>
           </div>
 
@@ -416,7 +488,7 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
               Cancel·lar
             </button>
             <button type="button" class="btn-primary" (click)="guardarNovaPassword()" [disabled]="savingPassword">
-              {{ savingPassword ? 'Actualitzant...' : '💾 Desar Nova Contrasenya' }}
+              {{ savingPassword ? 'Actualitzant...' : 'Desar Nova Contrasenya' }}
             </button>
           </div>
         </div>

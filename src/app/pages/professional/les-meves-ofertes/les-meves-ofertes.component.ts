@@ -28,7 +28,7 @@ type FiltreEstatOferta = 'totes' | 'pendent' | 'acceptada' | 'rebutjada';
     <div class="panell-container">
       <div class="panell-header">
         <div>
-          <h2>💼 Els meus Pressupostos i Ofertes</h2>
+          <h2>Els meus Pressupostos i Ofertes</h2>
           <p class="subtitle">Fes seguiment de les teves propostes econòmiques enviades als clients.</p>
         </div>
         <div>
@@ -111,7 +111,11 @@ type FiltreEstatOferta = 'totes' | 'pendent' | 'acceptada' | 'rebutjada';
 
           <div class="card-actions">
             <a [routerLink]="['/tasca-detall', of.tascaId]" class="btn-action primary">
-              🔍 Veure tasca completa
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 5px;">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+              Veure tasca completa
             </a>
           </div>
         </div>
@@ -119,7 +123,12 @@ type FiltreEstatOferta = 'totes' | 'pendent' | 'acceptada' | 'rebutjada';
 
       <!-- Estat buit -->
       <div class="empty-state" *ngIf="!loading && ofertesFiltrades.length === 0">
-        <div class="empty-icon">💼</div>
+        <div class="empty-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+          </svg>
+        </div>
         <h3>No s’ha trobat cap oferta en aquest apartat</h3>
         <p>Encara no has presentat cap oferta o cap coincideix amb el filtre seleccionat.</p>
         <a routerLink="/" class="btn-crear">Explora tasques disponibles</a>

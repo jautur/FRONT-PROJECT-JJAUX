@@ -28,7 +28,7 @@ type FiltreEstatTasca = 'totes' | 'oberta' | 'en_curs' | 'finalitzada';
     <div class="panell-container">
       <div class="panell-header">
         <div>
-          <h2>📋 Les meves Tasques Publicades</h2>
+          <h2>Les meves Tasques Publicades</h2>
           <p class="subtitle">Gestiona les teves sol·licituds de servei i revisa els pressupostos rebuts.</p>
         </div>
         <div>
@@ -103,7 +103,11 @@ type FiltreEstatTasca = 'totes' | 'oberta' | 'en_curs' | 'finalitzada';
 
           <div class="card-actions">
             <a [routerLink]="['/tasca-detall', t.id]" class="btn-action primary">
-              🔍 Veure ofertes & detall
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 5px;">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+              Veure ofertes & detall
             </a>
 
             <button
@@ -112,7 +116,10 @@ type FiltreEstatTasca = 'totes' | 'oberta' | 'en_curs' | 'finalitzada';
               class="btn-action success"
               (click)="finalitzarTasca(t.id)"
             >
-              ✓ Finalitzar
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              Finalitzar
             </button>
 
             <button
@@ -120,7 +127,11 @@ type FiltreEstatTasca = 'totes' | 'oberta' | 'en_curs' | 'finalitzada';
               class="btn-action danger"
               (click)="eliminarTasca(t.id)"
             >
-              🗑 Eliminar
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              </svg>
+              Eliminar
             </button>
           </div>
         </div>
@@ -128,7 +139,11 @@ type FiltreEstatTasca = 'totes' | 'oberta' | 'en_curs' | 'finalitzada';
 
       <!-- Estat buit -->
       <div class="empty-state" *ngIf="!loading && tasquesFiltrades.length === 0">
-        <div class="empty-icon">📂</div>
+        <div class="empty-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+          </svg>
+        </div>
         <h3>No s’ha trobat cap tasca en aquesta secció</h3>
         <p>Encara no has publicat cap sol·licitud o cap coincideix amb el filtre seleccionat.</p>
         <a routerLink="/client/crear-tasca" class="btn-crear">Publica la teva primera tasca</a>

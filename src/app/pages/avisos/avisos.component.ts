@@ -26,12 +26,12 @@ type FiltreAvisos = 'totes' | 'pendents' | 'llegides';
     <div class="avisos-container">
       <div class="avisos-header">
         <div>
-          <h2>🔔 Safata d'Avisos i Notificacions</h2>
+          <h2>Safata d'Avisos i Notificacions</h2>
           <p class="subtitle">Estat de les teves tasques, ofertes i alertes en temps real.</p>
         </div>
         <div class="header-actions" *ngIf="avisos.length > 0">
           <button type="button" class="btn-action-alt" (click)="marcarTotesLlegides()" [disabled]="pendentsCount === 0">
-            ✓ Marcar totes com a llegides
+            Marcar totes com a llegides
           </button>
         </div>
       </div>
@@ -98,15 +98,22 @@ type FiltreAvisos = 'totes' | 'pendents' | 'llegides';
               title="Marcar com a llegit"
               (click)="marcarLlegit(a.id)"
             >
-              ✓ Llegit
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              Llegit
             </button>
             <button
               type="button"
               class="btn-icon danger"
               title="Eliminar notificació"
               (click)="eliminarAvis(a.id)"
+              aria-label="Eliminar"
             >
-              ✕
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
             </button>
           </div>
         </div>
@@ -114,7 +121,12 @@ type FiltreAvisos = 'totes' | 'pendents' | 'llegides';
 
       <!-- Llista buida -->
       <div class="empty-state" *ngIf="!loading && avisosFiltrats.length === 0">
-        <div class="empty-icon">📭</div>
+        <div class="empty-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 12h-6l-2 3h-4l-2-3H2"></path>
+            <path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path>
+          </svg>
+        </div>
         <h3>No tens cap notificació en aquest apartat</h3>
         <p *ngIf="filtreActiu !== 'totes'">Prova de canviar de filtre per veure altres notificacions.</p>
         <p *ngIf="filtreActiu === 'totes'">Quan rebis pressupostos o s'actualitzi una de les teves tasques, apareixeran aquí.</p>
