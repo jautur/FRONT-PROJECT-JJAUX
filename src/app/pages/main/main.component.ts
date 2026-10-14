@@ -62,13 +62,19 @@ import { AuthService } from '../../core/services/auth.service';
         </div>
 
         <div class="columns">
+          <!-- SECCIÓ DE VISTA PRÈVIA DE 3 TASQUES REENTS -->
           <section class="panel">
             <div class="panel-header">
-              <h2>Últimes tasques</h2>
-              <a href="javascript:void(0)" (click)="onVeureTotesTasques()">Veure totes</a>
+              <div class="panel-title-wrap">
+                <h2>Últimes tasques</h2>
+                <span class="preview-badge" *ngIf="!showAllTasks">Vista prèvia (3 tasques)</span>
+              </div>
+              <a href="javascript:void(0)" (click)="showAllTasks = !showAllTasks">
+                {{ showAllTasks ? 'Mostrar només 3' : 'Veure totes (' + tasks.length + ')' }}
+              </a>
             </div>
 
-            <article class="card" *ngFor="let task of tasks">
+            <article class="card" *ngFor="let task of previewTasks">
               <div class="card-top">
                 <span class="tag">{{ task.category }}</span>
                 <span class="status status-task" [ngClass]="getTaskStatusClass(task.status)">
@@ -85,11 +91,21 @@ import { AuthService } from '../../core/services/auth.service';
                 </div>
               </div>
             </article>
+
+            <div class="preview-toggle-wrap" *ngIf="tasks.length > 3">
+              <button type="button" class="btn-preview-toggle" (click)="showAllTasks = !showAllTasks">
+                {{ showAllTasks ? 'Reduir a 3 tasques' : 'Explorar totes les tasques disponibles (' + tasks.length + ')' }}
+              </button>
+            </div>
           </section>
 
+          <!-- SECCIÓ D'OFERTES RECENTS -->
           <section class="panel">
             <div class="panel-header">
-              <h2>Ofertes recents</h2>
+              <div class="panel-title-wrap">
+                <h2>Ofertes recents</h2>
+                <span class="preview-badge">En temps real</span>
+              </div>
               <a href="javascript:void(0)" (click)="onVeureTotesOfertes()">Veure totes</a>
             </div>
 
@@ -108,6 +124,324 @@ import { AuthService } from '../../core/services/auth.service';
               </div>
             </article>
           </section>
+        </div>
+
+        <!-- ============================================================== -->
+        <!-- SECCIÓ 1: QUÈ ÉS I PER A QUÈ SERVEIX AVISA (PROPÒSIT I SEO)     -->
+        <!-- ============================================================== -->
+        <section class="seo-feature-section" id="que-es-avisa">
+          <div class="section-badge-tag">LA PLATAFORMA DE SERVEIS PROFESSIONALS</div>
+          <h2 class="seo-section-title">Connectem persones amb necessitats i especialistes de confiança</h2>
+          <p class="seo-section-intro">
+            <strong>AVISA</strong> és la plataforma digital creada per fer ràpida, transparent i segura la gestió de qualsevol encàrrec o avaria. 
+            Tant si necessites una petita reparació urgent a la llar com un projecte complet de reforma, obra nova o manteniment d'instal·lacions, 
+            AVISA elimina els intermediaris innecessaris i et posa en contacte directe amb professionals verificats de la teva localitat.
+          </p>
+
+          <div class="feature-grid">
+            <div class="feature-card">
+              <div class="feature-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                </svg>
+              </div>
+              <h3>Publicació àgil i gratuïta</h3>
+              <p>
+                Descriu el que necessites en menys de 2 minuts, estableix el teu pressupost de referència i la feina es publicarà immediatament per a professionals de la teva zona.
+              </p>
+            </div>
+
+            <div class="feature-card">
+              <div class="feature-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                  <path d="m9 12 2 2 4-4"></path>
+                </svg>
+              </div>
+              <h3>Professionals verificats</h3>
+              <p>
+                Lampistes, electricistes, fusters, pintors, instal·ladors i paletes amb perfils revisats, telèfon directe de contacte i valoracions públiques per a la teva tranquil·litat.
+              </p>
+            </div>
+
+            <div class="feature-card">
+              <div class="feature-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="12" y1="8" x2="12" y2="12"></line>
+                  <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+              </div>
+              <h3>Sense comissions ocultes</h3>
+              <p>
+                Preus justos i pactats lliurement entre client i professional. Sense lletra petita ni recàrrecs que inflin el cost final de la teva feina.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============================================================== -->
+        <!-- SECCIÓ 2: EXPERIÈNCIA SINCRONITZADA AMB L'APP MÒBIL            -->
+        <!-- ============================================================== -->
+        <section class="app-sync-banner">
+          <div class="app-sync-content">
+            <span class="sync-tag">100% SINCRONITZAT AMB L'APP MÒBIL</span>
+            <h2>La mateixa potència des del navegador o des del mòbil</h2>
+            <p>
+              AVISA està dissenyada per funcionar exactament igual a la web que a l'aplicació mòbil nativa. 
+              Tots els teus avisos, tasques actives, ofertes rebudes i notificacions es sincronitzen instantàniament en temps real al teu telèfon.
+            </p>
+            <div class="sync-highlights">
+              <div class="highlight-item">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span>Avisos push immediats en rebre una oferta</span>
+              </div>
+              <div class="highlight-item">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span>Geolocalització de tasques a prop de la teva ubicació</span>
+              </div>
+              <div class="highlight-item">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span>Contacte directe per telèfon i missatgeria</span>
+              </div>
+            </div>
+            <div class="sync-actions">
+              <button type="button" class="btn-sync-action" (click)="onNovaTasca()">Provar a la web ara</button>
+              <button type="button" class="btn-sync-secondary" (click)="onAnarRegistreClient()">Crear compte gratuït</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============================================================== -->
+        <!-- SECCIÓ 3: BENEFICIS SEGONS EL TEU PERFIL (CLIENT I PRO)        -->
+        <!-- ============================================================== -->
+        <section class="roles-showcase-section">
+          <div class="role-box client-role-box">
+            <div class="role-box-header">
+              <span class="role-badge client-badge">PER A CLIENTS I PARTICULARS</span>
+              <h3>Necessites resoldre una tasca o reforma?</h3>
+              <p>Publica qualsevol necessitat de manteniment o obra i rep pressupostos personalitzats.</p>
+            </div>
+            <ul class="role-benefits-list">
+              <li>
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span>Publicació 100% gratuïta i sense compromís de contractació</span>
+              </li>
+              <li>
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span>Compara ofertes, terminis i preus de diversos professionals</span>
+              </li>
+              <li>
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span>Accés al telèfon directe del professional en acceptar l'oferta</span>
+              </li>
+            </ul>
+            <button type="button" class="btn-role-action" (click)="onNovaTasca()">Publicar la meva tasca</button>
+          </div>
+
+          <div class="role-box pro-role-box">
+            <div class="role-box-header">
+              <span class="role-badge pro-badge">PER A PROFESSIONALS I AUTÒNOMS</span>
+              <h3>Busques feines noves i clients a la teva zona?</h3>
+              <p>Accedeix a la borsa diària de demandes reals sense intermediaris ni comissions abusives.</p>
+            </div>
+            <ul class="role-benefits-list">
+              <li>
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span>Consulta tasques obertes i envia pressupostos adaptats al teu marge</span>
+              </li>
+              <li>
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span>Herència de capacitats: publica tasques pròpies i respon a altres usuaris</span>
+              </li>
+              <li>
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span>Notificacions al mòbil immediates quan s'obre una feina a la teva especialitat</span>
+              </li>
+            </ul>
+            <button type="button" class="btn-role-action pro-btn" (click)="onAnarRegistreProfessional()">Començar com a professional</button>
+          </div>
+        </section>
+
+        <!-- ============================================================== -->
+        <!-- SECCIÓ 4: BLOG I GUIA D'EXPERTS (OPTIMITZACIÓ SEO)             -->
+        <!-- ============================================================== -->
+        <section class="blog-seo-section" id="blog-avisa">
+          <div class="blog-header-group">
+            <div>
+              <span class="section-badge-tag">BLOG D'AVISA · CONSELLS I RECURSOS</span>
+              <h2 class="seo-section-title">Guies pràctiques per a la llar i claus per a professionals</h2>
+              <p class="seo-section-intro">
+                Articles actualitzats amb consells tècnics, estimacions de preus i bones pràctiques per treure el màxim rendiment a la plataforma.
+              </p>
+            </div>
+          </div>
+
+          <div class="blog-grid">
+            <article class="blog-card" *ngFor="let article of articlesBlog">
+              <div class="blog-card-media">
+                <img [src]="article.imatge" [alt]="article.titol" loading="lazy" />
+                <span class="blog-category-tag">{{ article.categoria }}</span>
+              </div>
+              <div class="blog-card-content">
+                <div class="blog-meta">
+                  <span>{{ article.data }}</span>
+                  <span>•</span>
+                  <span>{{ article.tempsLectura }}</span>
+                </div>
+                <h3>{{ article.titol }}</h3>
+                <p>{{ article.resum }}</p>
+                <button type="button" class="btn-read-article" (click)="obrirArticle(article)">
+                  <span>Llegir article complet</span>
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                    <polyline points="12 5 19 12 12 19"></polyline>
+                  </svg>
+                </button>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <!-- ============================================================== -->
+        <!-- SECCIÓ 5: BANNER DE PROPAGANDA / CONVERSIÓ (CTA)               -->
+        <!-- ============================================================== -->
+        <section class="cta-propaganda-banner">
+          <div class="cta-banner-content">
+            <span class="cta-tag">UN PAS ENDAVANT AMB AVISA</span>
+            <h2>Preparat per resoldre la teva propera feina o aconseguir clients?</h2>
+            <p>
+              Tant si ets un particular amb una tasca a resoldre com un professional autònom, 
+              AVISA és la comunitat que simplifica la teva activitat diària des de la web i el mòbil.
+            </p>
+            <div class="cta-buttons-row">
+              <button type="button" class="btn-cta-main" (click)="onNovaTasca()">
+                + Publicar una tasca gratuïta
+              </button>
+              <button type="button" class="btn-cta-secondary" (click)="onAnarRegistreProfessional()">
+                Registrar-se com a professional
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============================================================== -->
+        <!-- SECCIÓ 6: PEU DE PÀGINA (FOOTER SEO INSTITUCIONAL)             -->
+        <!-- ============================================================== -->
+        <footer class="main-footer">
+          <div class="footer-grid">
+            <div class="footer-col brand-col">
+              <div class="footer-brand">
+                <span class="footer-badge">AV</span>
+                <span class="footer-logo-text">AVISA</span>
+              </div>
+              <p class="footer-desc">
+                La plataforma de referència per a la publicació de tasques, serveis professionals, reformes i manteniment de la llar. 
+                Sincronització total entre plataforma web i aplicació mòbil nativa.
+              </p>
+              <span class="footer-status-pill">Plataforma operativa 24/7</span>
+            </div>
+
+            <div class="footer-col">
+              <h4>Serveis populars</h4>
+              <ul>
+                <li><span>Reformes integrals i paletes</span></li>
+                <li><span>Electricistes homologats</span></li>
+                <li><span>Lampisteria i desatascos</span></li>
+                <li><span>Pintura i restauració</span></li>
+                <li><span>Climatització i aerotèrmia</span></li>
+                <li><span>Fusteria i serralleria</span></li>
+              </ul>
+            </div>
+
+            <div class="footer-col">
+              <h4>Navegació i Àrees</h4>
+              <ul>
+                <li><a href="javascript:void(0)" (click)="onNovaTasca()">Publicar tasca nova</a></li>
+                <li><a href="javascript:void(0)" (click)="onAnarRegistreProfessional()">Àrea Professionals</a></li>
+                <li><a href="javascript:void(0)" (click)="onAnarRegistreClient()">Registre de clients</a></li>
+                <li><a href="#que-es-avisa">Què fa AVISA</a></li>
+                <li><a href="#blog-avisa">Blog i Consells SEO</a></li>
+              </ul>
+            </div>
+
+            <div class="footer-col">
+              <h4>Seguretat i Legal</h4>
+              <ul>
+                <li><span>Model d'herència de rols</span></li>
+                <li><span>Professionals verificats</span></li>
+                <li><span>Privacitat i protecció de dades</span></li>
+                <li><span>Condicions generals d'ús</span></li>
+                <li><span>Atenció i suport tècnic</span></li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="footer-bottom">
+            <p>© 2026 AVISA Platform. Tots els drets reservats. Connexió web i mòbil garantida.</p>
+          </div>
+        </footer>
+      </div>
+
+      <!-- ============================================================== -->
+      <!-- MODAL INTERACTIU DE LECTURA D'ARTICLES DE BLOG                 -->
+      <!-- ============================================================== -->
+      <div class="article-modal-backdrop" *ngIf="articleSeleccionat" (click)="tancarArticle()">
+        <div class="article-modal-card" (click)="$event.stopPropagation()">
+          <div class="article-modal-header">
+            <div>
+              <span class="modal-category-tag">{{ articleSeleccionat.categoria }}</span>
+              <h2>{{ articleSeleccionat.titol }}</h2>
+              <div class="modal-meta">
+                <span>{{ articleSeleccionat.data }}</span>
+                <span>•</span>
+                <span>{{ articleSeleccionat.tempsLectura }}</span>
+              </div>
+            </div>
+            <button type="button" class="btn-close-modal" (click)="tancarArticle()" aria-label="Tancar article" title="Tancar">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+
+          <div class="article-modal-body">
+            <img [src]="articleSeleccionat.imatge" [alt]="articleSeleccionat.titol" class="article-modal-img" />
+            <div class="article-full-text">
+              <p *ngFor="let paragraf of articleSeleccionat.contingutComplet.split('\n\n')">
+                {{ paragraf }}
+              </p>
+            </div>
+          </div>
+
+          <div class="article-modal-footer">
+            <button type="button" class="btn-modal-action" (click)="tancarArticle(); onNovaTasca()">
+              Publicar tasca relacionada
+            </button>
+            <button type="button" class="btn-modal-close" (click)="tancarArticle()">
+              Tancar lectura
+            </button>
+          </div>
         </div>
       </div>
     </section>
@@ -568,16 +902,831 @@ import { AuthService } from '../../core/services/auth.service';
         to { opacity: 1; transform: translateY(0); }
       }
 
+      /* ============================================================== */
+      /* VISTA PRÈVIA DE TASQUES I BADGES                               */
+      /* ============================================================== */
+      .panel-title-wrap {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+
+      .preview-badge {
+        font-size: 0.68rem;
+        font-weight: 900;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        background: rgba(255, 23, 68, 0.12);
+        color: #ff1744;
+        border: 1px solid rgba(255, 23, 68, 0.35);
+        padding: 0.2rem 0.55rem;
+        border-radius: 9999px;
+      }
+
+      .preview-toggle-wrap {
+        margin-top: 0.5rem;
+        text-align: center;
+      }
+
+      .btn-preview-toggle {
+        width: 100%;
+        background: #ffffff;
+        border: 1px dashed #d5cfc4;
+        color: #09090c;
+        padding: 0.75rem 1rem;
+        border-radius: 10px;
+        font-weight: 800;
+        font-size: 0.86rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .btn-preview-toggle:hover {
+        background: #fdfcf9;
+        border-color: #ff1744;
+        color: #ff1744;
+      }
+
+      /* ============================================================== */
+      /* SECCIÓ 1: QUÈ ÉS AVISA I PER A QUÈ SERVEIX (SEO)                */
+      /* ============================================================== */
+      .seo-feature-section {
+        background: #ffffff;
+        border: 1px solid #e5e0d7;
+        border-radius: 20px;
+        padding: 3rem 2.5rem;
+        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+        margin-top: 1rem;
+      }
+
+      .section-badge-tag {
+        display: inline-block;
+        font-size: 0.75rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        color: #ff1744;
+        margin-bottom: 0.6rem;
+      }
+
+      .seo-section-title {
+        font-size: clamp(1.8rem, 3.5vw, 2.4rem);
+        font-weight: 900;
+        color: #09090c;
+        margin: 0 0 1rem;
+        line-height: 1.2;
+        letter-spacing: -0.02em;
+      }
+
+      .seo-section-intro {
+        font-size: 1.05rem;
+        line-height: 1.65;
+        color: #55534c;
+        max-width: 900px;
+        margin: 0 0 2.5rem;
+      }
+
+      .feature-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.8rem;
+      }
+
+      .feature-card {
+        background: #faf8f4;
+        border: 1px solid #e7e2d9;
+        border-radius: 14px;
+        padding: 1.8rem 1.5rem;
+        transition: all 0.25s ease;
+      }
+
+      .feature-card:hover {
+        background: #ffffff;
+        border-color: #ff1744;
+        transform: translateY(-3px);
+        box-shadow: 0 10px 28px rgba(0, 0, 0, 0.07);
+      }
+
+      .feature-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 12px;
+        background: rgba(255, 23, 68, 0.1);
+        color: #ff1744;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1.2rem;
+      }
+
+      .feature-card h3 {
+        margin: 0 0 0.6rem;
+        font-size: 1.15rem;
+        font-weight: 900;
+        color: #09090c;
+      }
+
+      .feature-card p {
+        margin: 0;
+        font-size: 0.92rem;
+        line-height: 1.55;
+        color: #605e56;
+      }
+
+      /* ============================================================== */
+      /* SECCIÓ 2: BANNER SINCRONITZACIÓ AMB L'APP MÒBIL                */
+      /* ============================================================== */
+      .app-sync-banner {
+        background: #0c0c11;
+        border: 1px solid #1f1f2c;
+        border-radius: 20px;
+        padding: 3rem 2.8rem;
+        color: #f7f3ed;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+      }
+
+      .app-sync-banner::before {
+        content: '';
+        position: absolute;
+        top: -40px;
+        right: -40px;
+        width: 220px;
+        height: 220px;
+        background: radial-gradient(circle, rgba(255, 23, 68, 0.28) 0%, transparent 70%);
+        pointer-events: none;
+      }
+
+      .sync-tag {
+        font-size: 0.72rem;
+        font-weight: 900;
+        letter-spacing: 0.12em;
+        color: #ff1744;
+        background: rgba(255, 23, 68, 0.14);
+        border: 1px solid rgba(255, 23, 68, 0.35);
+        padding: 0.25rem 0.65rem;
+        border-radius: 9999px;
+        display: inline-block;
+        margin-bottom: 0.8rem;
+      }
+
+      .app-sync-content h2 {
+        font-size: clamp(1.6rem, 3.2vw, 2.2rem);
+        font-weight: 900;
+        margin: 0 0 0.8rem;
+        color: #f7f3ed;
+      }
+
+      .app-sync-content p {
+        font-size: 1rem;
+        line-height: 1.6;
+        color: #bab8ae;
+        max-width: 780px;
+        margin: 0 0 1.8rem;
+      }
+
+      .sync-highlights {
+        display: flex;
+        flex-direction: column;
+        gap: 0.85rem;
+        margin-bottom: 2.2rem;
+      }
+
+      .highlight-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: #f5f4ef;
+      }
+
+      .highlight-item svg {
+        color: #ff1744;
+        flex-shrink: 0;
+      }
+
+      .sync-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+
+      .btn-sync-action {
+        background: #ff1744;
+        color: #ffffff;
+        border: 1px solid #ff1744;
+        padding: 0.8rem 1.6rem;
+        border-radius: 8px;
+        font-weight: 900;
+        font-size: 0.92rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        cursor: pointer;
+        box-shadow: 0 0 16px rgba(255, 23, 68, 0.4);
+        transition: all 0.2s ease;
+      }
+
+      .btn-sync-action:hover {
+        background: #ffffff;
+        color: #0c0c11;
+        border-color: #ffffff;
+        transform: translateY(-2px);
+      }
+
+      .btn-sync-secondary {
+        background: #151520;
+        color: #f5f4ef;
+        border: 1px solid #2f2f42;
+        padding: 0.8rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 800;
+        font-size: 0.92rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .btn-sync-secondary:hover {
+        background: rgba(255, 23, 68, 0.12);
+        border-color: #ff1744;
+        color: #ff1744;
+      }
+
+      /* ============================================================== */
+      /* SECCIÓ 3: ROLES BENEFICIS                                      */
+      /* ============================================================== */
+      .roles-showcase-section {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2rem;
+      }
+
+      .role-box {
+        background: #ffffff;
+        border: 1px solid #e5e0d7;
+        border-radius: 18px;
+        padding: 2.2rem 2rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+        transition: all 0.25s ease;
+      }
+
+      .role-box:hover {
+        border-color: #ff1744;
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      }
+
+      .role-badge {
+        font-size: 0.72rem;
+        font-weight: 900;
+        letter-spacing: 0.1em;
+        padding: 0.25rem 0.6rem;
+        border-radius: 6px;
+        display: inline-block;
+        margin-bottom: 0.8rem;
+      }
+
+      .client-badge {
+        background: #eeeae0;
+        color: #2b2a26;
+        border: 1px solid #d9d3c5;
+      }
+
+      .pro-badge {
+        background: rgba(255, 23, 68, 0.12);
+        color: #ff1744;
+        border: 1px solid rgba(255, 23, 68, 0.35);
+      }
+
+      .role-box-header h3 {
+        font-size: 1.35rem;
+        font-weight: 900;
+        color: #09090c;
+        margin: 0 0 0.5rem;
+      }
+
+      .role-box-header p {
+        font-size: 0.95rem;
+        color: #65635b;
+        margin: 0 0 1.5rem;
+        line-height: 1.5;
+      }
+
+      .role-benefits-list {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 2rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.85rem;
+      }
+
+      .role-benefits-list li {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75rem;
+        font-size: 0.92rem;
+        color: #3b3a36;
+        line-height: 1.45;
+        font-weight: 600;
+      }
+
+      .role-benefits-list svg {
+        color: #ff1744;
+        flex-shrink: 0;
+        margin-top: 2px;
+      }
+
+      .btn-role-action {
+        width: 100%;
+        background: #09090c;
+        color: #ffffff;
+        border: none;
+        padding: 0.85rem 1.4rem;
+        border-radius: 8px;
+        font-weight: 900;
+        font-size: 0.92rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .btn-role-action:hover {
+        background: #ff1744;
+        color: #ffffff;
+        box-shadow: 0 4px 16px rgba(255, 23, 68, 0.35);
+      }
+
+      .pro-btn {
+        background: #ff1744;
+      }
+
+      .pro-btn:hover {
+        background: #09090c;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+      }
+
+      /* ============================================================== */
+      /* SECCIÓ 4: BLOG SEO I GUIA D'EXPERTS                            */
+      /* ============================================================== */
+      .blog-seo-section {
+        margin-top: 1rem;
+      }
+
+      .blog-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.8rem;
+        margin-top: 1.8rem;
+      }
+
+      .blog-card {
+        background: #ffffff;
+        border: 1px solid #e5e0d7;
+        border-radius: 16px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+        transition: all 0.25s ease;
+      }
+
+      .blog-card:hover {
+        border-color: #ff1744;
+        transform: translateY(-4px);
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.09);
+      }
+
+      .blog-card-media {
+        position: relative;
+        height: 190px;
+        overflow: hidden;
+      }
+
+      .blog-card-media img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.35s ease;
+      }
+
+      .blog-card:hover .blog-card-media img {
+        transform: scale(1.05);
+      }
+
+      .blog-category-tag {
+        position: absolute;
+        top: 1rem;
+        left: 1rem;
+        background: #09090c;
+        color: #f7f3ed;
+        font-size: 0.7rem;
+        font-weight: 900;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        padding: 0.25rem 0.6rem;
+        border-radius: 4px;
+        border: 1px solid rgba(255, 23, 68, 0.4);
+      }
+
+      .blog-card-content {
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+      }
+
+      .blog-meta {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.78rem;
+        color: #8c897f;
+        font-weight: 700;
+        margin-bottom: 0.6rem;
+      }
+
+      .blog-card-content h3 {
+        margin: 0 0 0.75rem;
+        font-size: 1.12rem;
+        font-weight: 900;
+        color: #09090c;
+        line-height: 1.35;
+      }
+
+      .blog-card-content p {
+        margin: 0 0 1.5rem;
+        font-size: 0.9rem;
+        color: #605d54;
+        line-height: 1.55;
+        flex: 1;
+      }
+
+      .btn-read-article {
+        background: transparent;
+        border: none;
+        color: #ff1744;
+        font-weight: 900;
+        font-size: 0.88rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .btn-read-article:hover {
+        color: #09090c;
+        transform: translateX(4px);
+      }
+
+      /* ============================================================== */
+      /* SECCIÓ 5: BANNER DE PROPAGANDA / CTA                           */
+      /* ============================================================== */
+      .cta-propaganda-banner {
+        background: linear-gradient(135deg, #09090c 0%, #15151e 100%);
+        border: 1px solid #ff1744;
+        border-radius: 20px;
+        padding: 3.5rem 2.5rem;
+        text-align: center;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(255, 23, 68, 0.15);
+        margin: 1.5rem 0 2rem;
+      }
+
+      .cta-tag {
+        font-size: 0.75rem;
+        font-weight: 900;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: #ff1744;
+        display: inline-block;
+        margin-bottom: 0.8rem;
+      }
+
+      .cta-banner-content h2 {
+        font-size: clamp(1.8rem, 3.8vw, 2.6rem);
+        font-weight: 900;
+        color: #f7f3ed;
+        margin: 0 auto 1rem;
+        max-width: 800px;
+        line-height: 1.25;
+      }
+
+      .cta-banner-content p {
+        font-size: 1.05rem;
+        color: #bab7ad;
+        max-width: 650px;
+        margin: 0 auto 2.2rem;
+        line-height: 1.6;
+      }
+
+      .cta-buttons-row {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 1.2rem;
+      }
+
+      .btn-cta-main {
+        background: #ff1744;
+        color: #ffffff;
+        border: 1px solid #ff1744;
+        padding: 0.95rem 2rem;
+        border-radius: 8px;
+        font-weight: 900;
+        font-size: 0.95rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        cursor: pointer;
+        box-shadow: 0 0 20px rgba(255, 23, 68, 0.5);
+        transition: all 0.2s ease;
+      }
+
+      .btn-cta-main:hover {
+        background: #ffffff;
+        color: #09090c;
+        border-color: #ffffff;
+        transform: translateY(-2px);
+      }
+
+      .btn-cta-secondary {
+        background: #161622;
+        color: #f7f3ed;
+        border: 1px solid #333348;
+        padding: 0.95rem 1.8rem;
+        border-radius: 8px;
+        font-weight: 800;
+        font-size: 0.95rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .btn-cta-secondary:hover {
+        background: rgba(255, 23, 68, 0.15);
+        border-color: #ff1744;
+        color: #ff1744;
+        transform: translateY(-2px);
+      }
+
+      /* ============================================================== */
+      /* SECCIÓ 6: FOOTER INSTITUCIONAL SEO                             */
+      /* ============================================================== */
+      .main-footer {
+        background: #0b0b0f;
+        border-top: 1px solid #1c1c28;
+        border-radius: 20px;
+        padding: 3.5rem 2.5rem 2rem;
+        color: #f7f3ed;
+        margin-top: 1rem;
+      }
+
+      .footer-grid {
+        display: grid;
+        grid-template-columns: 1.8fr 1fr 1fr 1fr;
+        gap: 2.5rem;
+        margin-bottom: 3rem;
+      }
+
+      .footer-brand {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        margin-bottom: 1rem;
+      }
+
+      .footer-badge {
+        background: #ff1744;
+        color: #ffffff;
+        font-weight: 900;
+        font-size: 0.85rem;
+        padding: 0.25rem 0.55rem;
+        border-radius: 6px;
+      }
+
+      .footer-logo-text {
+        font-family: var(--font-title, 'Boldonse', 'Climate Crisis', sans-serif);
+        font-size: 1.35rem;
+        font-weight: 900;
+        letter-spacing: 0.1em;
+        color: #f5f4ef;
+      }
+
+      .footer-desc {
+        font-size: 0.88rem;
+        line-height: 1.6;
+        color: #8c897f;
+        margin: 0 0 1.2rem;
+      }
+
+      .footer-status-pill {
+        display: inline-block;
+        font-size: 0.72rem;
+        font-weight: 900;
+        color: #00e676;
+        background: rgba(0, 230, 118, 0.1);
+        border: 1px solid rgba(0, 230, 118, 0.3);
+        padding: 0.25rem 0.65rem;
+        border-radius: 9999px;
+      }
+
+      .footer-col h4 {
+        margin: 0 0 1.2rem;
+        font-size: 0.95rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: #f5f4ef;
+      }
+
+      .footer-col ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.65rem;
+      }
+
+      .footer-col li span,
+      .footer-col li a {
+        font-size: 0.88rem;
+        color: #8c897f;
+        text-decoration: none;
+        transition: color 0.2s ease;
+      }
+
+      .footer-col li a:hover {
+        color: #ff1744;
+      }
+
+      .footer-bottom {
+        border-top: 1px solid #1c1c28;
+        padding-top: 1.8rem;
+        text-align: center;
+      }
+
+      .footer-bottom p {
+        margin: 0;
+        font-size: 0.82rem;
+        color: #65635a;
+      }
+
+      /* ============================================================== */
+      /* MODAL DE LECTURA D'ARTICLES DE BLOG                            */
+      /* ============================================================== */
+      .article-modal-backdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.78);
+        z-index: 300;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem;
+        backdrop-filter: blur(6px);
+      }
+
+      .article-modal-card {
+        background: #ffffff;
+        border-radius: 18px;
+        max-width: 720px;
+        width: 100%;
+        max-height: 88vh;
+        overflow-y: auto;
+        padding: 2.2rem;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        border: 1px solid #e2ddd3;
+        animation: fadeIn 0.25s ease;
+      }
+
+      .article-modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+        border-bottom: 1px solid #eeeae0;
+        padding-bottom: 1.2rem;
+      }
+
+      .modal-category-tag {
+        font-size: 0.72rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: #ff1744;
+        background: rgba(255, 23, 68, 0.1);
+        padding: 0.2rem 0.55rem;
+        border-radius: 4px;
+        display: inline-block;
+        margin-bottom: 0.5rem;
+      }
+
+      .article-modal-header h2 {
+        margin: 0 0 0.5rem;
+        font-size: 1.45rem;
+        font-weight: 900;
+        color: #09090c;
+        line-height: 1.3;
+      }
+
+      .modal-meta {
+        font-size: 0.82rem;
+        color: #8c897f;
+        display: flex;
+        gap: 0.5rem;
+      }
+
+      .btn-close-modal {
+        background: #f0ece3;
+        border: 1px solid #ded8cd;
+        border-radius: 8px;
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        color: #09090c;
+        transition: all 0.2s ease;
+      }
+
+      .btn-close-modal:hover {
+        background: #ff1744;
+        color: #ffffff;
+        border-color: #ff1744;
+      }
+
+      .article-modal-img {
+        width: 100%;
+        height: 280px;
+        object-fit: cover;
+        border-radius: 12px;
+        margin-bottom: 1.5rem;
+      }
+
+      .article-full-text p {
+        font-size: 0.98rem;
+        line-height: 1.7;
+        color: #403e38;
+        margin: 0 0 1.2rem;
+      }
+
+      .article-modal-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+        border-top: 1px solid #eeeae0;
+        padding-top: 1.5rem;
+        margin-top: 1.5rem;
+      }
+
+      .btn-modal-action {
+        background: #ff1744;
+        color: #ffffff;
+        border: none;
+        padding: 0.75rem 1.4rem;
+        border-radius: 8px;
+        font-weight: 900;
+        font-size: 0.9rem;
+        cursor: pointer;
+      }
+
+      .btn-modal-action:hover {
+        background: #09090c;
+      }
+
+      .btn-modal-close {
+        background: #f0ece3;
+        color: #3b3933;
+        border: 1px solid #ddd7cc;
+        padding: 0.75rem 1.4rem;
+        border-radius: 8px;
+        font-weight: 800;
+        font-size: 0.9rem;
+        cursor: pointer;
+      }
+
       @media (max-width: 900px) {
-        .columns,
-        .stats {
+        .feature-grid,
+        .roles-showcase-section,
+        .blog-grid,
+        .footer-grid {
           grid-template-columns: 1fr;
         }
 
-        .hero {
+        .cta-buttons-row,
+        .sync-actions {
           flex-direction: column;
-          align-items: flex-start;
-          gap: 1rem;
         }
       }
     `
@@ -622,6 +1771,51 @@ export class MainComponent implements OnInit {
       budget: task.budget,
       status: task.estat
     })) ?? [];
+  }
+
+  /** Controla si es mostren només les 3 primeres tasques o el llistat complet */
+  showAllTasks = false;
+
+  /** Article del blog seleccionat per a lectura en modal */
+  articleSeleccionat: any = null;
+
+  /** Articles informatius optimitzats per a SEO i difusió de la plataforma */
+  articlesBlog = [
+    {
+      id: 1,
+      titol: 'Quant costa reformar un bany o una cuina? Guia de pressupostos i materials 2026',
+      resum: 'Desglossament pràctic de mà d\'obra, permisos d\'obra, instal·lacions de lampisteria i materials recomanats per planificar la teva reforma amb transparència.',
+      contingutComplet: `Quan planifiquem una reforma a la llar, la claredat en el pressupost és fonamental per evitar desviacions econòmiques imprevistes.\n\nA la plataforma AVISA, recomanem als clients desglossar sempre la feina en tres partides essencials: mà d'obra qualificada, materials bàsics d'instal·lació (canonades, cablejat homologat, ciment) i acabats decoratius (rajoles, aixetes, sanitaris).\n\nPublicar una tasca detallada a AVISA et permet rebre comparatives de múltiples professionals verificats de la teva localitat en poques hores, amb el preu final tancat i sense intermediaris que encareixin el servei. A més, a través de la nostra aplicació mòbil pots xatejar directament amb el professional assignat per acordar dates d'execució i aclarir dubtes sobre la marxa.`,
+      categoria: 'Reformes i Obres',
+      tempsLectura: '4 min de lectura',
+      data: '14 Octubre 2026',
+      imatge: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=800&q=80'
+    },
+    {
+      id: 2,
+      titol: 'Manteniment elèctric i climatització: com prevenir avaries greus a la llar',
+      resum: 'Consells d\'especialistes homologats per detectar sobreescalfaments al quadre elèctric, mantenir bombes de calor i reduir la despesa energètica anual.',
+      contingutComplet: `El manteniment preventiu de les instal·lacions elèctriques i de climatització és clau per evitar avaries costoses i riscos de seguretat.\n\nRevisar el diferencial periòdicament, assegurar-se que els circuits no pateixin sobrecàrregues i netejar els filtres dels sistemes d'aire condicionat i aerotèrmia abans de l'inici de cada temporada pot suposar un estalvi de fins al 30% en la factura de la llum.\n\nA AVISA comptem amb electricistes i tècnics de climatització autoritzats que poden realitzar diagnòstics ràpids a domicili. Des de l'app mòbil o la web pots publicar el teu avís de revisió i rebre resposta en qüestió de minuts.`,
+      categoria: 'Instal·lacions i Manteniment',
+      tempsLectura: '3 min de lectura',
+      data: '12 Octubre 2026',
+      imatge: 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=800&q=80'
+    },
+    {
+      id: 3,
+      titol: 'Com aconseguir més clients com a professional autònom a la teva zona',
+      resum: 'Estratègies per presentar pressupostos clars, aprofitar la valoració positiva de clients i gestionar la teva agenda laboral de forma independent.',
+      contingutComplet: `Com a professional dels oficis o serveis tècnics, el boca-orella continua sent valuós, però la digitalització local és avui el canal més potent per omplir la teva agenda de feines rendibles.\n\nEl model d'herència de rols d'AVISA permet als professionals no només publicar tasques pròpies com qualsevol client, sinó també accedir a la borsa completa de peticions obertes de la seva regió. Presentar una oferta amb un preu just, una descripció concreta del temps d'execució i mantenir actualitzat el número de telèfon multiplica per quatre les probabilitats d'acceptació.\n\nAmb l'aplicació mòbil d'AVISA reps una notificació immediata tan bon punt un client de la teva especialitat publica una necessitat nova, permetent-te ser el primer a donar resposta.`,
+      categoria: 'Consells Professionals',
+      tempsLectura: '5 min de lectura',
+      data: '10 Octubre 2026',
+      imatge: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=800&q=80'
+    }
+  ];
+
+  /** Retorna la vista prèvia de 3 tasques o totes segons la selecció de l'usuari */
+  get previewTasks() {
+    return this.showAllTasks ? this.tasks : this.tasks.slice(0, 3);
   }
 
   get offers() {
@@ -718,6 +1912,22 @@ export class MainComponent implements OnInit {
       top: scrollTarget,
       behavior: 'smooth'
     });
+  }
+
+  obrirArticle(article: any): void {
+    this.articleSeleccionat = article;
+  }
+
+  tancarArticle(): void {
+    this.articleSeleccionat = null;
+  }
+
+  onAnarRegistreClient(): void {
+    this.router.navigate(['/registre'], { queryParams: { rol: 'client' } });
+  }
+
+  onAnarRegistreProfessional(): void {
+    this.router.navigate(['/registre'], { queryParams: { rol: 'professional' } });
   }
 }
 
