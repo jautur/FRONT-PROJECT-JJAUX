@@ -41,3 +41,4 @@ export interface CrearResenyaDTO {
   puntuacio: number;
   descripcio: string;
 }
+

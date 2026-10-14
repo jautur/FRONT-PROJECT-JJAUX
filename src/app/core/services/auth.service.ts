@@ -153,4 +153,18 @@ export class AuthService {
     const user = this.getCurrentUser();
     return user?.rol === rol;
   }
+
+  /**
+   * Canvia la contrasenya d'un usuari.
+   * L'administrador pot canviar la contrasenya de qualsevol usuari sense conèixer l'antiga.
+   * @param userId Identificador de l'usuari
+   * @param newPassword Nova contrasenya desitjada (mínim 6 caràcters)
+   * @returns Observable amb el missatge de confirmació del servidor
+   */
+  canviarContrasenya(userId: string, newPassword: string): Observable<string> {
+    return this.http.post(`${this.apiUrl}/canviar-contrasenya`, {
+      userId,
+      newPassword
+    }, { responseType: 'text' });
+  }
 }

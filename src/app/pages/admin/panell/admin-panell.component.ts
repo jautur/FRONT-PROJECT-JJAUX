@@ -9,6 +9,7 @@ import { AvisService } from '../../../services/avis.service';
 import { Tasca } from '../../../models/tasca.model';
 import { Oferta } from '../../../models/oferta.model';
 import { Usuari } from '../../../models/usuari.model';
+import { AuthService } from '../../../core/services/auth.service';
 
 /**
  * Pestanya activa al panell d'administració.
@@ -307,6 +308,7 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
                 <th>Rol</th>
                 <th>Telèfon</th>
                 <th>Biografia / Perfil</th>
+                <th>Accions Administrador</th>
               </tr>
             </thead>
             <tbody>
@@ -321,6 +323,16 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
                 </td>
                 <td>{{ u.telefon || '-' }}</td>
                 <td class="bio-cell">{{ u.bio || '-' }}</td>
+                <td>
+                  <button
+                    type="button"
+                    class="btn-sm btn-password"
+                    (click)="obrirModalPassword(u)"
+                    title="Canviar contrasenya d'aquest usuari"
+                  >
+                    🔑 Nova contrasenya
+                  </button>
+                </td>
               </tr>
             </tbody>
           </table>
@@ -330,6 +342,74 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
           Cap usuari coincideix amb els criteris de cerca.
         </div>
       </section>
+
+      <!-- ============================================================== -->
+      <!-- MODAL D'ADMINISTRADOR: ASSIGNAR NOVA CONTRASENYA SENSE ANTIGA -->
+      <!-- ============================================================== -->
+      <div class="modal-backdrop" *ngIf="modalPasswordObert">
+        <div class="modal-card">
+          <div class="modal-header">
+            <h3>🔑 Assignar Nova Contrasenya</h3>
+            <button type="button" class="btn-close" (click)="tancarModalPassword()">✕</button>
+          </div>
+
+          <div class="modal-body" *ngIf="usuariSeleccionat">
+            <div class="user-highlight">
+              <div>
+                <strong>Usuari:</strong> {{ usuariSeleccionat.nom }}
+              </div>
+              <div class="user-subinfo">
+                <span>{{ usuariSeleccionat.email }}</span>
+                <span class="user-badge-tag" [ngClass]="usuariSeleccionat.rol">{{ usuariSeleccionat.rol | uppercase }}</span>
+              </div>
+            </div>
+
+            <div class="alert-info-box">
+              🔒 <strong>Privilegi d'Administrador:</strong> Pots assignar directament una nova contrasenya sense conèixer ni veure la contrasenya anterior de l'usuari.
+            </div>
+
+            <div class="form-group">
+              <label for="adminNovaPass">Nova Contrasenya:</label>
+              <div class="input-password-wrapper">
+                <input
+                  id="adminNovaPass"
+                  [type]="mostrarPassword ? 'text' : 'password'"
+                  [(ngModel)]="novaContrasenya"
+                  placeholder="Mínim 6 caràcters..."
+                  class="form-control"
+                />
+                <button type="button" class="btn-toggle-eye" (click)="mostrarPassword = !mostrarPassword" title="Mostrar/Amagar">
+                  {{ mostrarPassword ? '🙈' : '👁️' }}
+                </button>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="adminConfirmaPass">Confirmar Nova Contrasenya:</label>
+              <input
+                id="adminConfirmaPass"
+                [type]="mostrarPassword ? 'text' : 'password'"
+                [(ngModel)]="confirmarContrasenya"
+                placeholder="Torna a escriure la nova contrasenya..."
+                class="form-control"
+              />
+            </div>
+
+            <div class="modal-error" *ngIf="errorModalPassword">
+              ⚠️ {{ errorModalPassword }}
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn-secondary" (click)="tancarModalPassword()" [disabled]="savingPassword">
+              Cancel·lar
+            </button>
+            <button type="button" class="btn-primary" (click)="guardarNovaPassword()" [disabled]="savingPassword">
+              {{ savingPassword ? 'Actualitzant...' : '💾 Desar Nova Contrasenya' }}
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   `,
   styles: [`
@@ -685,6 +765,193 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
       margin-bottom: 1rem;
       font-weight: 500;
     }
+    .btn-password {
+      background: #f0fdf4;
+      color: #15803d;
+      border: 1px solid #bbf7d0;
+      padding: 0.35rem 0.65rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    .btn-password:hover {
+      background: #dcfce7;
+      border-color: #86efac;
+    }
+    .modal-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(15, 23, 42, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      backdrop-filter: blur(2px);
+    }
+    .modal-card {
+      background: #ffffff;
+      width: 100%;
+      max-width: 480px;
+      border-radius: 14px;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      animation: modalFadeIn 0.2s ease-out;
+    }
+    @keyframes modalFadeIn {
+      from { opacity: 0; transform: translateY(-10px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .modal-header {
+      padding: 1.1rem 1.4rem;
+      background: #f8fafc;
+      border-bottom: 1px solid #e2e8f0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .modal-header h3 {
+      margin: 0;
+      font-size: 1.15rem;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .btn-close {
+      background: none;
+      border: none;
+      font-size: 1.25rem;
+      color: #94a3b8;
+      cursor: pointer;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+    }
+    .btn-close:hover {
+      color: #0f172a;
+      background: #e2e8f0;
+    }
+    .modal-body {
+      padding: 1.4rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.1rem;
+    }
+    .user-highlight {
+      background: #f1f5f9;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+    }
+    .user-subinfo {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 0.25rem;
+      color: #64748b;
+    }
+    .alert-info-box {
+      background: #eff6ff;
+      border-left: 4px solid #3b82f6;
+      color: #1e40af;
+      padding: 0.75rem;
+      border-radius: 4px;
+      font-size: 0.82rem;
+      line-height: 1.4;
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+    .form-group label {
+      font-weight: 600;
+      font-size: 0.85rem;
+      color: #334155;
+    }
+    .input-password-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .input-password-wrapper input {
+      padding-right: 2.5rem;
+    }
+    .btn-toggle-eye {
+      position: absolute;
+      right: 0.5rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    .form-control {
+      width: 100%;
+      padding: 0.6rem 0.75rem;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      box-sizing: border-box;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .form-control:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+    }
+    .modal-error {
+      background: #fef2f2;
+      color: #b91c1c;
+      padding: 0.6rem 0.8rem;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      font-weight: 500;
+    }
+    .modal-footer {
+      padding: 1rem 1.4rem;
+      background: #f8fafc;
+      border-top: 1px solid #e2e8f0;
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.75rem;
+    }
+    .btn-secondary {
+      padding: 0.55rem 1rem;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      color: #475569;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+    .btn-secondary:hover {
+      background: #f1f5f9;
+    }
+    .btn-primary {
+      padding: 0.55rem 1.1rem;
+      background: #2563eb;
+      border: 1px solid #1d4ed8;
+      border-radius: 6px;
+      color: #ffffff;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    .btn-primary:hover:not(:disabled) {
+      background: #1d4ed8;
+    }
+    .btn-primary:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+    }
   `]
 })
 export class AdminPanellComponent implements OnInit {
@@ -716,11 +983,21 @@ export class AdminPanellComponent implements OnInit {
   successMsg = '';
   errorMsg = '';
 
+  /** Estat del modal d'assignació de nova contrasenya (l'administrador no necessita la contrasenya antiga) */
+  modalPasswordObert = false;
+  usuariSeleccionat: Usuari | null = null;
+  novaContrasenya = '';
+  confirmarContrasenya = '';
+  mostrarPassword = false;
+  savingPassword = false;
+  errorModalPassword = '';
+
   constructor(
     private readonly tascaService: TascaService,
     private readonly ofertaService: OfertaService,
     private readonly usuariService: UsuariService,
-    private readonly avisService: AvisService
+    private readonly avisService: AvisService,
+    private readonly authService: AuthService
   ) {}
 
   /**
@@ -931,5 +1208,65 @@ export class AdminPanellComponent implements OnInit {
     if (e.includes('accept')) return 'badge-acceptada';
     if (e.includes('rebutj')) return 'badge-rebutjada';
     return '';
+  }
+
+  /**
+   * Obre el formulari modal perquè l'administrador assigne una nova contrasenya.
+   * Privilegi d'administrador: no cal conèixer ni veure la contrasenya antiga.
+   * @param u Usuari seleccionat
+   */
+  obrirModalPassword(u: Usuari): void {
+    this.usuariSeleccionat = u;
+    this.novaContrasenya = '';
+    this.confirmarContrasenya = '';
+    this.mostrarPassword = false;
+    this.errorModalPassword = '';
+    this.modalPasswordObert = true;
+  }
+
+  /**
+   * Tanca el formulari modal de contrasenya.
+   */
+  tancarModalPassword(): void {
+    this.modalPasswordObert = false;
+    this.usuariSeleccionat = null;
+    this.novaContrasenya = '';
+    this.confirmarContrasenya = '';
+    this.errorModalPassword = '';
+  }
+
+  /**
+   * Envia la nova contrasenya al backend per a actualitzar la base de dades directament.
+   */
+  guardarNovaPassword(): void {
+    if (!this.usuariSeleccionat) return;
+    this.errorModalPassword = '';
+
+    if (!this.novaContrasenya || this.novaContrasenya.trim().length < 6) {
+      this.errorModalPassword = 'La nova contrasenya ha de tenir com a mínim 6 caràcters.';
+      return;
+    }
+
+    if (this.novaContrasenya !== this.confirmarContrasenya) {
+      this.errorModalPassword = 'Les dues contrasenyes introduïdes no coincideixen.';
+      return;
+    }
+
+    this.savingPassword = true;
+    const userId = this.usuariSeleccionat.id;
+    const userNom = this.usuariSeleccionat.nom;
+
+    this.authService.canviarContrasenya(userId, this.novaContrasenya.trim()).subscribe({
+      next: () => {
+        this.savingPassword = false;
+        this.tancarModalPassword();
+        this.successMsg = `S'ha assignat la nova contrasenya a ${userNom} correctament!`;
+        setTimeout(() => this.successMsg = '', 4500);
+      },
+      error: (err) => {
+        this.savingPassword = false;
+        this.errorModalPassword = typeof err?.error === 'string' ? err.error : 'Error en actualitzar la contrasenya.';
+      }
+    });
   }
 }
