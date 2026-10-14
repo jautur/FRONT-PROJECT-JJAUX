@@ -75,6 +75,17 @@ import { Oferta } from '../../../models/oferta.model';
           </button>
         </div>
 
+        <!-- Botó per al professional assignat per donar per acabada la tasca -->
+        <div *ngIf="isAssignedProfessional && !isClientOwner && tasca.estat === 'En curs'" class="complete-box pro-complete-box">
+          <p>Has acabat la feina o servei per a aquest client?</p>
+          <button type="button" class="btn btn-complete-pro" (click)="onCompleteTaskByPro()">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 6px;">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            Donar tasca per Finalitzada
+          </button>
+        </div>
+
         <!-- Botó per a professionals si la incidència està oberta i sense professional -->
         <div *ngIf="isProfessional && !isTascaConvergida && tasca.estat === 'Oberta'" class="action-box">
           <a [routerLink]="['/professional/crear-oferta']" [queryParams]="{ taskId: tasca.id }" class="btn btn-primary">
@@ -106,9 +117,6 @@ import { Oferta } from '../../../models/oferta.model';
                   {{ offer.professional }}
                 </a>
               </h3>
-              <span class="status-badge" [ngClass]="getStatusClass(offer.estat)">
-                {{ offer.estat }}
-              </span>
             </div>
 
             <p class="offer-note">{{ offer.note }}</p>
@@ -116,13 +124,24 @@ import { Oferta } from '../../../models/oferta.model';
             <div class="offer-footer">
               <span class="price-tag">Pressupost: <strong>{{ offer.price }}</strong></span>
 
-              <!-- Accions disponibles per al Client propietari de la tasca -->
-              <div class="offer-actions" *ngIf="isClientOwner && offer.estat === 'Pendent'">
-                <button type="button" class="btn btn-accept" (click)="onAcceptOffer(offer.id)">
-                  Acceptar
+              <!-- Accions sobre l'oferta: les ofertes no tenen estat, sols s'accepten o es borren -->
+              <div class="offer-actions" *ngIf="tasca.estat !== 'Finalitzada'">
+                <button
+                  *ngIf="isClientOwner"
+                  type="button"
+                  class="btn btn-accept"
+                  (click)="onAcceptOffer(offer.id)"
+                >
+                  Acceptar oferta
                 </button>
-                <button type="button" class="btn btn-reject" (click)="onRejectOffer(offer.id)">
-                  Rebutjar
+                <button
+                  *ngIf="isClientOwner || isOfferOwner(offer)"
+                  type="button"
+                  class="btn btn-reject"
+                  (click)="onDeleteOffer(offer.id)"
+                  title="Borrar aquesta oferta"
+                >
+                  Borrar oferta
                 </button>
               </div>
             </div>
@@ -512,6 +531,32 @@ import { Oferta } from '../../../models/oferta.model';
       .btn-complete:hover {
         background: #09090c;
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      }
+
+      .btn-complete-pro {
+        background: #10b981;
+        color: #ffffff;
+        font-weight: 900;
+        padding: 0.75rem 1.4rem;
+        border-radius: 9px;
+        border: none;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.2s ease;
+        box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+      }
+
+      .btn-complete-pro:hover {
+        background: #059669;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 18px rgba(16, 185, 129, 0.45);
+      }
+
+      .pro-complete-box {
+        border-color: rgba(16, 185, 129, 0.4) !important;
+        background: rgba(16, 185, 129, 0.05) !important;
       }
 
       .status-badge {
@@ -933,6 +978,34 @@ export class TascaDetallComponent implements OnInit {
   }
 
   /**
+   * Comprova si l'usuari connectat és el professional assignat a aquesta tasca.
+   */
+  get isAssignedProfessional(): boolean {
+    const user = this.authService.getCurrentUser();
+    if (!user || !this.tasca) return false;
+    if (user.rol === 'admin') return true;
+    const proNom = (this.tasca.professionalNom || this.tasca.professional || '').toLowerCase().trim();
+    const proId = (this.tasca.professionalId || '').toLowerCase().trim();
+    const curNom = (user.nom || '').toLowerCase().trim();
+    const curId = (user.id || '').toLowerCase().trim();
+    return (!!proNom && (proNom === curNom || proNom === curId)) ||
+           (!!proId && (proId === curId || proId === curNom));
+  }
+
+  /**
+   * Comprova si l'usuari connectat és l'autor d'una oferta concreta.
+   */
+  isOfferOwner(offer: Oferta): boolean {
+    const user = this.authService.getCurrentUser();
+    if (!user) return false;
+    if (user.rol === 'admin') return true;
+    const pro = (offer.professional || '').toLowerCase().trim();
+    const curNom = (user.nom || '').toLowerCase().trim();
+    const curId = (user.id || '').toLowerCase().trim();
+    return pro === curNom || pro === curId;
+  }
+
+  /**
    * Comprova si l'usuari connectat té rol de Professional.
    */
   get isProfessional(): boolean {
@@ -954,15 +1027,49 @@ export class TascaDetallComponent implements OnInit {
   }
 
   /**
-   * Rebutja una oferta.
+   * Borra una oferta: les ofertes sols s'accepten o es borren.
    */
-  onRejectOffer(offerId: string): void {
-    this.ofertaService.reject(offerId).subscribe({
+  onDeleteOffer(offerId: string): void {
+    if (!confirm('Vols borrar aquesta oferta? Aquesta acció no es pot desfer.')) return;
+    this.ofertaService.delete(offerId).subscribe({
       next: () => {
-        this.noticeMessage = 'L’oferta ha estat rebutjada.';
+        this.noticeMessage = 'L’oferta s’ha esborrat correctament.';
+        this.ofertes = this.ofertes.filter(o => o.id !== offerId);
         if (this.tasca) {
           this.loadOffers(this.tasca.id);
         }
+      },
+      error: () => {
+        this.noticeMessage = 'No s’ha pogut borrar l’oferta.';
+      }
+    });
+  }
+
+  /**
+   * Àlies per compatibilitat: rebutjar esdevé borrar.
+   */
+  onRejectOffer(offerId: string): void {
+    this.onDeleteOffer(offerId);
+  }
+
+  /**
+   * El professional assignat finalitza la tasca un cop completada la feina.
+   */
+  onCompleteTaskByPro(): void {
+    if (!this.tasca) return;
+    const confirmacio = confirm(
+      `Vols confirmar la conclusió de la tasca "${this.tasca.titol}"?\n\n` +
+      `Aquesta acció marcarà el treball com a finalitzat i notificarà al client per a la seva valoració.`
+    );
+    if (!confirmacio) return;
+
+    this.tascaService.complete(this.tasca.id).subscribe({
+      next: (updated) => {
+        this.tasca = updated;
+        this.noticeMessage = 'Enhorabona! Has donat per finalitzada la tasca. S’ha notificat al client per a la seva valoració!';
+      },
+      error: () => {
+        this.noticeMessage = 'Error en finalitzar la tasca. Si us plau, torna-ho a provar.';
       }
     });
   }

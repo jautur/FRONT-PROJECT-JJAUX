@@ -95,7 +95,7 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
           <div class="metric-info">
             <span class="metric-value">{{ ofertes.length }}</span>
             <span class="metric-label">Ofertes Presentades</span>
-            <small class="metric-sub">{{ countOfertesAcceptades() }} acceptades</small>
+            <small class="metric-sub">{{ ofertes.length }} ofertes actives</small>
           </div>
         </div>
 
@@ -252,12 +252,6 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
             placeholder="Cerca per professional, ref. tasca o nota..."
             class="search-input"
           />
-          <select [(ngModel)]="filtreEstatOferta" class="select-filter">
-            <option value="tots">Tots els estats</option>
-            <option value="pendent">Pendents</option>
-            <option value="acceptada">Acceptades</option>
-            <option value="rebutjada">Rebutjades</option>
-          </select>
         </div>
 
         <div class="table-wrapper" *ngIf="ofertesFiltrades.length > 0">
@@ -269,7 +263,6 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
                 <th>Professional</th>
                 <th>Preu Proposat</th>
                 <th>Nota / Justificació</th>
-                <th>Estat</th>
                 <th>Accions Administrador</th>
               </tr>
             </thead>
@@ -277,9 +270,10 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
               <tr *ngFor="let o of ofertesFiltrades">
                 <td class="font-mono"><strong>{{ o.id }}</strong></td>
                 <td>
-                  <a [routerLink]="['/tasca-detall', o.tascaId]" class="link-ref">
+                  <a *ngIf="o.tascaId" [routerLink]="['/tasca-detall', o.tascaId]" class="link-ref">
                     {{ o.tascaId }}
                   </a>
+                  <span *ngIf="!o.tascaId">-</span>
                 </td>
                 <td>
                   <a [routerLink]="['/perfil', o.professionalNom || o.professional]" class="user-inline-link" title="Veure perfil de {{ o.professionalNom || o.professional }}">
@@ -289,14 +283,8 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
                 <td class="price-cell">{{ o.price }}</td>
                 <td class="note-cell">{{ o.note || '-' }}</td>
                 <td>
-                  <span class="badge-status" [ngClass]="getEstatOfertaClass(o.estat)">
-                    {{ o.estat }}
-                  </span>
-                </td>
-                <td>
                   <div class="action-buttons">
                     <button
-                      *ngIf="o.estat !== 'Acceptada'"
                       type="button"
                       class="btn-sm btn-success"
                       (click)="acceptarOferta(o.id)"
@@ -308,19 +296,18 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
                       Acceptar
                     </button>
                     <button
-                      *ngIf="o.estat !== 'Rebutjada'"
                       type="button"
-                      class="btn-sm btn-warning"
-                      (click)="rebutjarOferta(o.id)"
-                      title="Rebutjar oferta"
+                      class="btn-sm btn-danger"
+                      (click)="eliminarOferta(o.id)"
+                      title="Borrar oferta"
                     >
                       <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;">
-                        <line x1="18" y1="6" x2="6" y2="18"></line>
-                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
                       </svg>
-                      Rebutjar
+                      Borrar
                     </button>
-                    <a [routerLink]="['/tasca-detall', o.tascaId]" class="btn-sm btn-info" title="Anar a la tasca">
+                    <a *ngIf="o.tascaId" [routerLink]="['/tasca-detall', o.tascaId]" class="btn-sm btn-info" title="Anar a la tasca">
                       <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;">
                         <circle cx="11" cy="11" r="8"></circle>
                         <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
@@ -1146,7 +1133,6 @@ export class AdminPanellComponent implements OnInit {
   filtreEstatTasca = 'tots';
 
   searchOferta = '';
-  filtreEstatOferta = 'tots';
 
   searchUsuari = '';
   filtreRolUsuari = 'tots';
@@ -1250,18 +1236,13 @@ export class AdminPanellComponent implements OnInit {
   get ofertesFiltrades(): Oferta[] {
     return this.ofertes.filter(o => {
       const proName = o.professionalNom || o.professional || '';
-      const matchSearch =
+      return (
         !this.searchOferta ||
         proName.toLowerCase().includes(this.searchOferta.toLowerCase()) ||
         o.tascaId?.toLowerCase().includes(this.searchOferta.toLowerCase()) ||
         o.note?.toLowerCase().includes(this.searchOferta.toLowerCase()) ||
-        o.price?.toLowerCase().includes(this.searchOferta.toLowerCase());
-
-      const matchEstat =
-        this.filtreEstatOferta === 'tots' ||
-        o.estat?.toLowerCase().includes(this.filtreEstatOferta);
-
-      return matchSearch && matchEstat;
+        o.price?.toLowerCase().includes(this.searchOferta.toLowerCase())
+      );
     });
   }
 
@@ -1336,18 +1317,20 @@ export class AdminPanellComponent implements OnInit {
   }
 
   /**
-   * Acció d'administrador: rebutja una oferta concreta.
+   * Acció d'administrador: elimina/borra una oferta concreta.
+   * Les ofertes no tenen estat: s'accepten o es borren.
    * @param offerId Identificador de l'oferta
    */
-  rebutjarOferta(offerId: string): void {
-    this.ofertaService.reject(offerId).subscribe({
+  eliminarOferta(offerId: string): void {
+    if (!confirm(`Segur que vols eliminar/borrar definitivament l'oferta ${offerId}?`)) return;
+
+    this.ofertaService.delete(offerId).subscribe({
       next: () => {
-        this.successMsg = `Oferta ${offerId} rebutjada.`;
-        const o = this.ofertes.find(x => x.id === offerId);
-        if (o) o.estat = 'Rebutjada';
+        this.ofertes = this.ofertes.filter(x => x.id !== offerId);
+        this.successMsg = `Oferta ${offerId} borrada correctament.`;
         setTimeout(() => this.successMsg = '', 3500);
       },
-      error: () => this.errorMsg = 'Error en rebutjar l’oferta.'
+      error: () => this.errorMsg = 'Error en borrar l’oferta.'
     });
   }
 

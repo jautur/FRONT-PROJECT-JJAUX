@@ -8,16 +8,11 @@ import { Oferta } from '../../../models/oferta.model';
 import { Tasca } from '../../../models/tasca.model';
 
 /**
- * Filtre per a l'estat de les ofertes del professional.
- */
-type FiltreEstatOferta = 'totes' | 'pendent' | 'acceptada' | 'rebutjada';
-
-/**
  * Component del Panell de Gestió d'Ofertes del Professional (/professional/les-meves-ofertes).
  * Permet a un professional:
- * - Consultar tots els pressupostos que ha presentat per a diverses tasques.
- * - Filtrar segons l'estat de la seva oferta (pendent, acceptada, rebutjada).
- * - Comparar el seu preu proposat amb el pressupost estimat del client.
+ * - Consultar les tasques que té assignades en curs i finalitzar-les directament.
+ * - Consultar tots els pressupostos i ofertes que ha presentat.
+ * - Borrar ofertes que ja no li interessen mantenir actives.
  * - Navegar directament als detalls de la tasca per consultar requisits o actualitzacions.
  */
 @Component({
@@ -69,6 +64,18 @@ type FiltreEstatOferta = 'totes' | 'pendent' | 'acceptada' | 'rebutjada';
             <p class="tasca-desc" *ngIf="t.descripcio">{{ t.descripcio }}</p>
 
             <div class="card-actions">
+              <button
+                *ngIf="t.estat !== 'Finalitzada'"
+                type="button"
+                class="btn-action success"
+                (click)="finalitzarTascaComAProfessional(t)"
+                title="Donar la tasca per finalitzada com a professional"
+              >
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 5px;">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                Finalitzar tasca
+              </button>
               <a [routerLink]="['/tasca-detall', t.id]" class="btn-action primary">
                 Veure seguiment tasca
               </a>
@@ -79,56 +86,29 @@ type FiltreEstatOferta = 'totes' | 'pendent' | 'acceptada' | 'rebutjada';
 
       <div class="section-divider" *ngIf="tasquesAssignades.length > 0"></div>
 
-      <!-- Filtres d'oferta -->
-      <div class="filter-tabs">
-        <button
-          type="button"
-          class="tab-btn"
-          [class.active]="filtreActiu === 'totes'"
-          (click)="canviarFiltre('totes')"
-        >
-          Totes ({{ ofertes.length }})
-        </button>
-        <button
-          type="button"
-          class="tab-btn"
-          [class.active]="filtreActiu === 'pendent'"
-          (click)="canviarFiltre('pendent')"
-        >
-          Pendents ({{ countByEstat('pendent') }})
-        </button>
-        <button
-          type="button"
-          class="tab-btn"
-          [class.active]="filtreActiu === 'acceptada'"
-          (click)="canviarFiltre('acceptada')"
-        >
-          Acceptades ({{ countByEstat('acceptad') }})
-        </button>
-        <button
-          type="button"
-          class="tab-btn"
-          [class.active]="filtreActiu === 'rebutjada'"
-          (click)="canviarFiltre('rebutjada')"
-        >
-          Rebutjades ({{ countByEstat('rebutjad') }})
-        </button>
+      <!-- Capçalera secció d'ofertes (les ofertes no tenen estat, sols s'accepten o es borren) -->
+      <div class="propostes-section-header">
+        <div class="title-with-badge">
+          <span class="pro-assigned-pill" style="background: rgba(255, 23, 68, 0.08); color: #ff1744; border-color: rgba(255, 23, 68, 0.25);">PROPOSTES ACTIVES</span>
+          <h3>Les teves ofertes i propostes enviades ({{ ofertes.length }})</h3>
+        </div>
+        <span class="section-badge-hint">Les ofertes sols s'accepten o es borren</span>
       </div>
 
-      <!-- Missatges d'estat -->
+      <!-- Missatges d'estat i confirmació -->
       <div *ngIf="loading" class="state-box">Carregant les teves ofertes...</div>
+      <div *ngIf="successMsg" class="alert-success">{{ successMsg }}</div>
       <div *ngIf="errorMsg" class="alert-error">{{ errorMsg }}</div>
 
       <!-- Llista d'ofertes en targetes -->
-      <div class="ofertes-grid" *ngIf="!loading && ofertesFiltrades.length > 0">
-        <div *ngFor="let of of ofertesFiltrades" class="oferta-card">
+      <div class="ofertes-grid" *ngIf="!loading && ofertes.length > 0">
+        <div *ngFor="let of of ofertes" class="oferta-card">
           <div class="card-header">
-            <span class="tasca-ref">Ref: {{ of.tascaId }}</span>
-            <span class="badge-estat" [ngClass]="getEstatClass(of.estat)">{{ of.estat }}</span>
+            <span class="tasca-ref">Ref: {{ of.tascaId || of.incidenciaId || of.id }}</span>
           </div>
 
           <h3 class="tasca-titol">
-            {{ tasquesMap[of.tascaId]?.titol || 'Tasca ' + of.tascaId }}
+            {{ tasquesMap[of.tascaId]?.titol || 'Proposta de servei ' + of.id }}
           </h3>
 
           <p class="tasca-desc" *ngIf="tasquesMap[of.tascaId]">
@@ -151,28 +131,40 @@ type FiltreEstatOferta = 'totes' | 'pendent' | 'acceptada' | 'rebutjada';
           </p>
 
           <div class="card-actions">
-            <a [routerLink]="['/tasca-detall', of.tascaId]" class="btn-action primary">
+            <button
+              type="button"
+              class="btn-action danger"
+              (click)="eliminarOferta(of.id)"
+              title="Borrar aquesta oferta de forma definitiva"
+            >
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 5px;">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              </svg>
+              Borrar oferta
+            </button>
+            <a *ngIf="of.tascaId" [routerLink]="['/tasca-detall', of.tascaId]" class="btn-action primary">
               <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 5px;">
                 <circle cx="11" cy="11" r="8"></circle>
                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
               </svg>
-              Veure tasca completa
+              Veure tasca
             </a>
           </div>
         </div>
       </div>
 
       <!-- Estat buit -->
-      <div class="empty-state" *ngIf="!loading && ofertesFiltrades.length === 0">
+      <div class="empty-state" *ngIf="!loading && ofertes.length === 0">
         <div class="empty-icon" aria-hidden="true">
           <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
             <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
             <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
           </svg>
         </div>
-        <h3>No s’ha trobat cap oferta en aquest apartat</h3>
-        <p>Encara no has presentat cap oferta o cap coincideix amb el filtre seleccionat.</p>
-        <a routerLink="/" class="btn-crear">Explora tasques disponibles</a>
+        <h3>No tens cap oferta activa</h3>
+        <p>Encara no has presentat cap oferta o les que tenies han estat acceptades o borrades.</p>
+        <a routerLink="/" class="btn-crear">Explora tasques i incidències disponibles</a>
       </div>
     </div>
   `,
@@ -397,6 +389,53 @@ type FiltreEstatOferta = 'totes' | 'pendent' | 'acceptada' | 'rebutjada';
       background: #09090c;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     }
+    .btn-action.success {
+      background: #059669;
+      color: #ffffff;
+      font-weight: 900;
+      border: none;
+    }
+    .btn-action.success:hover {
+      background: #047857;
+      box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
+    }
+    .btn-action.danger {
+      background: #ffffff;
+      color: #dc2626;
+      border: 1px solid #fca5a5;
+      font-weight: 800;
+    }
+    .btn-action.danger:hover {
+      background: #fef2f2;
+      border-color: #dc2626;
+    }
+    .propostes-section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.25rem;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .estat-en-curs {
+      background: rgba(16, 185, 129, 0.12);
+      color: #059669;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+    .estat-finalitzada {
+      background: rgba(107, 114, 128, 0.15);
+      color: #374151;
+      border: 1px solid rgba(107, 114, 128, 0.3);
+    }
+    .alert-success {
+      background: #ecfdf5;
+      color: #065f46;
+      border: 1px solid #a7f3d0;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      font-weight: 700;
+    }
     .empty-state {
       text-align: center;
       padding: 3.5rem 1rem;
@@ -544,12 +583,12 @@ export class LesMevesOfertesComponent implements OnInit {
   ofertes: Oferta[] = [];
   /** Llista de tasques on el professional ha estat assignat i convergeix amb el client */
   tasquesAssignades: Tasca[] = [];
-  /** Filtre actiu seleccionat */
-  filtreActiu: FiltreEstatOferta = 'totes';
   /** Mapa per accedir ràpidament a les dades de la tasca [tascaId -> Tasca] */
   tasquesMap: Record<string, Tasca> = {};
   /** Estat de càrrega */
   loading = true;
+  /** Missatge d'èxit */
+  successMsg = '';
   /** Missatge d'error */
   errorMsg = '';
 
@@ -565,31 +604,6 @@ export class LesMevesOfertesComponent implements OnInit {
    */
   ngOnInit(): void {
     this.carregarOfertes();
-  }
-
-  /**
-   * Retorna les ofertes segons el filtre actiu.
-   */
-  get ofertesFiltrades(): Oferta[] {
-    if (this.filtreActiu === 'pendent') {
-      return this.ofertes.filter(o => o.estat?.toLowerCase().includes('pend'));
-    }
-    if (this.filtreActiu === 'acceptada') {
-      return this.ofertes.filter(o => o.estat?.toLowerCase().includes('accept'));
-    }
-    if (this.filtreActiu === 'rebutjada') {
-      return this.ofertes.filter(o => o.estat?.toLowerCase().includes('rebutj'));
-    }
-    return this.ofertes;
-  }
-
-  /**
-   * Calcula el recompte d'ofertes segons un criteri d'estat.
-   * @param fragment Text parcial de l'estat a comparar
-   * @returns Nombre d'ofertes coincidents
-   */
-  countByEstat(fragment: string): number {
-    return this.ofertes.filter(o => o.estat?.toLowerCase().includes(fragment.toLowerCase())).length;
   }
 
   /**
@@ -640,24 +654,47 @@ export class LesMevesOfertesComponent implements OnInit {
   }
 
   /**
-   * Modifica el filtre d'estat actiu.
-   * @param filtre Nou filtre a aplicar
+   * Permet al professional assignat donar per finalitzada una tasca en curs.
+   * El backend notificarà al client perquè pugui valorar la feina.
    */
-  canviarFiltre(filtre: FiltreEstatOferta): void {
-    this.filtreActiu = filtre;
+  finalitzarTascaComAProfessional(t: Tasca): void {
+    if (!confirm(`Segur que vols donar per finalitzada la feina de "${t.titol}"? El client rebrà un avís per a la valoració del servei.`)) {
+      return;
+    }
+
+    this.tascaService.complete(t.id).subscribe({
+      next: () => {
+        t.estat = 'Finalitzada';
+        this.successMsg = `Has marcat la tasca "${t.titol}" com a finalitzada correctament.`;
+        setTimeout(() => this.successMsg = '', 4500);
+      },
+      error: (err) => {
+        console.error('Error finalitzant la tasca:', err);
+        alert('No s\'ha pogut marcar la tasca com a finalitzada.');
+      }
+    });
   }
 
   /**
-   * Retorna la classe CSS estilitzada per a cada estat de l'oferta.
-   * @param estat Estat textual de l'oferta
-   * @returns Nom de la classe CSS
+   * Elimina/borra una oferta del professional.
+   * Les ofertes no tenen estat: sols s'accepten o es borren.
    */
-  getEstatClass(estat: string): string {
-    const e = estat?.toLowerCase() || '';
-    if (e.includes('pend')) return 'estat-pendent';
-    if (e.includes('accept')) return 'estat-acceptada';
-    if (e.includes('rebutj')) return 'estat-rebutjada';
-    return '';
+  eliminarOferta(id: string): void {
+    if (!confirm('Estàs segur que vols borrar aquesta oferta? Aquesta acció eliminarà la teua proposta definitivament.')) {
+      return;
+    }
+
+    this.ofertaService.delete(id).subscribe({
+      next: () => {
+        this.ofertes = this.ofertes.filter(o => o.id !== id);
+        this.successMsg = 'Oferta borrada amb èxit.';
+        setTimeout(() => this.successMsg = '', 3500);
+      },
+      error: (err) => {
+        console.error('Error eliminant l\'oferta:', err);
+        alert('No s\'ha pogut borrar l\'oferta.');
+      }
+    });
   }
 
   getTaskEstatClass(estat: string): string {

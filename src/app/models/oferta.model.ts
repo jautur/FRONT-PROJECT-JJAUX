@@ -28,8 +28,8 @@ export interface Oferta {
   /** Nota explicativa, detall tècnic o condicions del servei */
   note?: string;
 
-  /** Estat de la proposta ('Pendent', 'Acceptada', 'Rebutjada') */
-  estat: string;
+  /** Camp opcional d'estat (les ofertes no tenen estat, sols s'accepten o es borren) */
+  estat?: string;
 
   /** Data de creació */
   createdAt?: string;

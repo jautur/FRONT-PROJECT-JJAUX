@@ -246,9 +246,6 @@ interface CategoriaFiltre {
                       <span class="nature-pill pro-nature">OFERTA DE SERVEI</span>
                       <span class="cat-pill">{{ getOfertaCategoria(offer) }}</span>
                     </div>
-                    <span class="status-pill status-offer" [ngClass]="getOfferStatusClass(offer.estat)">
-                      {{ offer.estat }}
-                    </span>
                   </div>
 
                   <h3 class="card-item-title">
@@ -271,6 +268,9 @@ interface CategoriaFiltre {
                       <strong class="budget-value offer-price">{{ offer.price }}</strong>
                     </div>
                     <div class="card-actions">
+                      <button *ngIf="isOfferOwner(offer)" type="button" class="btn-action-delete-offer" (click)="onDeleteOferta(offer.id)" title="Borrar oferta">
+                        Borrar
+                      </button>
                       <button type="button" class="btn-action-primary btn-contractar" (click)="onContractarOferta(offer)">
                         <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px; vertical-align: -2px;">
                           <polyline points="20 6 9 17 4 12"></polyline>
@@ -1332,6 +1332,21 @@ interface CategoriaFiltre {
       .btn-view-full-profile:hover {
         background: #e5e7eb;
       }
+      .btn-action-delete-offer {
+        padding: 0.6rem 0.95rem;
+        background: rgba(239, 68, 68, 0.1);
+        color: #dc2626;
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        border-radius: 9px;
+        font-weight: 800;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      .btn-action-delete-offer:hover {
+        background: #fee2e2;
+        border-color: #dc2626;
+      }
     `
   ]
 })
@@ -1831,6 +1846,29 @@ export class TasquesOfertesComponent implements OnInit {
       },
       error: () => {
         this.noticeMessage = 'No s’ha pogut completar la contractació de l’oferta. Si us plau, torna-ho a provar.';
+      }
+    });
+  }
+
+  isOfferOwner(offer: any): boolean {
+    const user = this.authService.getCurrentUser();
+    if (!user) return false;
+    if (user.rol === 'admin') return true;
+    const pro = (offer.professional || '').toLowerCase().trim();
+    const curNom = (user.nom || '').toLowerCase().trim();
+    const curId = (user.id || '').toLowerCase().trim();
+    return pro === curNom || pro === curId;
+  }
+
+  onDeleteOferta(offerId: string): void {
+    if (!confirm('Vols borrar aquesta oferta? Aquesta acció no es pot desfer.')) return;
+    this.ofertaService.delete(offerId).subscribe({
+      next: () => {
+        this.noticeMessage = 'Oferta esborrada correctament.';
+        this.carregarDades();
+      },
+      error: () => {
+        this.noticeMessage = 'No s’ha pogut borrar l’oferta.';
       }
     });
   }

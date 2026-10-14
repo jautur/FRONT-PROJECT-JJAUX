@@ -84,12 +84,20 @@ export class OfertaService {
   }
 
   /**
-   * Rebutja una oferta descartada pel client.
+   * Elimina / borra una oferta de la plataforma.
+   * Les ofertes no es rebutgen: es borren o s'accepten.
    * @param id Identificador de l'oferta
-   * @returns Observable amb l'oferta rebutjada
    */
-  reject(id: string): Observable<Oferta> {
-    return this.http.post<Oferta>(`${this.apiUrl}/${id}/rebutjar`, {});
+  delete(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+
+  /**
+   * Rebutja/descarta una oferta: les ofertes sols s'accepten o es borren.
+   * @param id Identificador de l'oferta
+   */
+  reject(id: string): Observable<any> {
+    return this.delete(id);
   }
 
   /**
