@@ -5,12 +5,12 @@ import { AuthService } from './core/services/auth.service';
 import { AvisService } from './services/avis.service';
 
 /**
- * Component principal arrel de l'aplicació JJAUX.
+ * Component principal arrel de l'aplicació AVISA.
  * Controla:
- * 1. El títol 'JJAUX' centrat a la part superior.
+ * 1. El títol 'AVISA' centrat a la part superior.
  * 2. L'estat inicial transparent sobre imatge de fons.
  * 3. En fer scroll, canvi del fons del títol a color llis.
- * 4. Obertura automàtica del menú a l'esquerra amb els apartats necessaris.
+ * 4. Obertura i ocultació del menú a l'esquerra amb els apartats necessaris.
  */
 @Component({
   selector: 'app-root',
@@ -29,6 +29,12 @@ export class AppComponent implements OnInit {
   /** Estat del menú lateral esquerre */
   menuObert = false;
 
+  /** Registra si l'usuari ha ocultat voluntàriament el menú */
+  menuOcultatPerUsuari = false;
+
+  /** Estat anterior de scroll per obrir el menú només a la transició inicial */
+  private wasScrolled = false;
+
   /** Indica si estem a la pàgina principal d'inici */
   isHomePage = true;
 
@@ -43,8 +49,10 @@ export class AppComponent implements OnInit {
         if (!this.isHomePage) {
           // A les pàgines secundàries el fons sempre és llis per llegibilitat
           this.isScrolled = true;
+          this.wasScrolled = true;
           this.menuObert = false;
         } else {
+          this.menuOcultatPerUsuari = false;
           this.checkScroll();
         }
       }
@@ -66,6 +74,7 @@ export class AppComponent implements OnInit {
 
   /**
    * Comprova la posició de scroll per activar el fons llis i obrir el menú esquerre.
+   * Si l'usuari l'ha tancat manualment, no es tornarà a forçar obert en cada píxel de scroll.
    */
   private checkScroll(): void {
     if (!this.isHomePage) {
@@ -76,10 +85,16 @@ export class AppComponent implements OnInit {
     const scrollY = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
     if (scrollY > 70) {
       this.isScrolled = true;
-      this.menuObert = true;
+      // Només s'obre automàticament a la primera transició cap avall si l'usuari no l'ha tancat
+      if (!this.wasScrolled && !this.menuOcultatPerUsuari) {
+        this.menuObert = true;
+      }
+      this.wasScrolled = true;
     } else {
       this.isScrolled = false;
       this.menuObert = false;
+      this.menuOcultatPerUsuari = false;
+      this.wasScrolled = false;
     }
   }
 
@@ -88,13 +103,15 @@ export class AppComponent implements OnInit {
    */
   toggleMenu(): void {
     this.menuObert = !this.menuObert;
+    this.menuOcultatPerUsuari = !this.menuObert;
   }
 
   /**
-   * Tanca el menú lateral esquerre.
+   * Tanca / oculta el menú lateral esquerre.
    */
   tancarMenu(): void {
     this.menuObert = false;
+    this.menuOcultatPerUsuari = true;
   }
 
   isClient(): boolean {

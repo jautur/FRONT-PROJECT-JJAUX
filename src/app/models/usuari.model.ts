@@ -1,5 +1,5 @@
 /**
- * Rols d'usuari a la plataforma JJAUX amb model d'herència:
+ * Rols d'usuari a la plataforma AVISA amb model d'herència:
  * - 'client': Rol base. Requereix email i contrasenya. Pot publicar peticions i feines.
  * - 'professional': Fill del client. Hereta TOTES les funcions del client (publicar feines)
  *                   i a més requereix telèfon obligatori i pot resoldre peticions (enviar pressupostos).
@@ -8,7 +8,7 @@
 export type RolUsuari = 'client' | 'professional' | 'admin';
 
 /**
- * Model de dades de l'Usuari a la plataforma JJAUX.
+ * Model de dades de l'Usuari a la plataforma AVISA.
  * Representa el perfil de qualsevol usuari registrat (Client, Professional o Administrador),
  * tant per a les dades públiques com per a la gestió del propi perfil privat.
  */

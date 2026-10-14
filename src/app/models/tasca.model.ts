@@ -1,5 +1,5 @@
 /**
- * Model de dades de la Tasca a la plataforma JJAUX.
+ * Model de dades de la Tasca a la plataforma AVISA.
  * Representa una demanda o encàrrec publicat per un Client que pot rebre
  * ofertes econòmiques i propostes per part de diversos Professionals.
  */

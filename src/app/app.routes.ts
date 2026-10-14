@@ -14,7 +14,7 @@ import { authGuard } from './core/guards/auth.guard';
 import { adminGuard } from './core/guards/admin.guard';
 
 /**
- * Configuració global de rutes de la plataforma JJAUX.
+ * Configuració global de rutes de la plataforma AVISA.
  * - '': Vista prèvia de tasques i ofertes públiques (Dashboard).
  * - 'login': Inici de sessió d'usuaris.
  * - 'registre': Registre de nous usuaris (clients, professionals o ambdós).

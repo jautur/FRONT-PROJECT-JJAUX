@@ -1,5 +1,5 @@
 /**
- * Model que representa una notificació o avís del sistema per a la plataforma JJAUX.
+ * Model que representa una notificació o avís del sistema per a la plataforma AVISA.
  * S'utilitza per notificar als usuaris (clients i professionals) esdeveniments clau:
  * - Recepció d'un nou pressupost o oferta.
  * - Acceptació o rebuig d'un pressupost.

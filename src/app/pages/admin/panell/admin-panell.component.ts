@@ -37,7 +37,7 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
       <div class="admin-header">
         <div class="title-group">
           <div class="admin-badge">ADMINISTRACIÓ GLOBAL</div>
-          <h2>Panell de Control i Supervisió JJAUX</h2>
+          <h2>Panell de Control i Supervisió AVISA</h2>
           <p class="subtitle">Gestió centralitzada de tots els usuaris, tasques publicades i ofertes del sistema.</p>
         </div>
         <div class="refresh-group">

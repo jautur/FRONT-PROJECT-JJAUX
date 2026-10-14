@@ -26,7 +26,7 @@ export interface RegisterData {
 }
 
 /**
- * Servei central d'Autenticació i Gestió de Sessió de l'aplicació JJAUX.
+ * Servei central d'Autenticació i Gestió de Sessió de l'aplicació AVISA.
  * S'encarrega d'iniciar sessió, registrar usuaris amb model d'herència
  * (el Professional hereta totes les capacitats del Client i afegeix resolució de peticions + telèfon),
  * mantenir l'estat local a localStorage i verificar permisos d'accés.

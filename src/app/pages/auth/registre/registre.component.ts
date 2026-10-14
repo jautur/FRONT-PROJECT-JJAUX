@@ -6,7 +6,7 @@ import { AuthService, RegisterData } from '../../../core/services/auth.service';
 
 /**
  * Component de Registre d'usuaris (/registre).
- * Implementa el model d'herència de JJAUX:
+ * Implementa el model d'herència de AVISA:
  * - Client: requereix email i contrasenya; pot publicar peticions i feines.
  * - Professional (fill del client): hereta tot el que fa el client, requereix a més
  *   un número de telèfon obligatori i pot resoldre peticions (presentar ofertes).
@@ -18,7 +18,7 @@ import { AuthService, RegisterData } from '../../../core/services/auth.service';
   template: `
     <section class="auth-card">
       <h1>Crear un compte</h1>
-      <p class="subtitle">Registra't a JJAUX com a client o com a professional.</p>
+      <p class="subtitle">Registra't a AVISA com a client o com a professional.</p>
 
       <div *ngIf="errorMessage" class="alert alert-danger">
         {{ errorMessage }}

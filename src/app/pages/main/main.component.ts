@@ -15,7 +15,7 @@ import { AuthService } from '../../core/services/auth.service';
       <header class="fullscreen-cover">
         <!-- NOM DE LA WEB EN MIG DE LA PÀGINA I SLOGAN EN CURSIVA LLIGADA -->
         <div class="hero-center">
-          <h1 class="hero-brand">JJAUX</h1>
+          <h1 class="hero-brand">AVISA</h1>
           <p class="hero-slogan">Connectant necessitats i professionals</p>
         </div>
 
@@ -31,7 +31,7 @@ import { AuthService } from '../../core/services/auth.service';
       <div class="dashboard-body">
         <div class="dashboard-header-bar">
           <div>
-            <span class="eyebrow-tag">Plataforma JJAUX</span>
+            <span class="eyebrow-tag">Plataforma AVISA</span>
             <h2 class="dashboard-title">Tauler de Tasques i Ofertes</h2>
           </div>
           <button type="button" class="btn-create-task" (click)="onNovaTasca()">+ Nova tasca</button>

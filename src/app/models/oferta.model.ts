@@ -1,5 +1,5 @@
 /**
- * Model de dades d'una Oferta o pressupost a la plataforma JJAUX.
+ * Model de dades d'una Oferta o pressupost a la plataforma AVISA.
  * Representa la candidatura i proposta econòmica presentada per un Professional
  * en resposta a una tasca publicada per un Client.
  */
