@@ -38,6 +38,9 @@ export class AppComponent implements OnInit {
   /** Indica si estem a la pàgina principal d'inici */
   isHomePage = true;
 
+  /** Estat del desplegable de vista prèvia de perfil */
+  perfilDropdownObert = false;
+
   constructor(
     public readonly authService: AuthService,
     private readonly avisService: AvisService,
@@ -45,6 +48,7 @@ export class AppComponent implements OnInit {
   ) {
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
+        this.perfilDropdownObert = false;
         this.isHomePage = event.urlAfterRedirects === '/' || event.urlAfterRedirects === '';
         if (!this.isHomePage) {
           // A les pàgines secundàries el fons sempre és llis per llegibilitat
@@ -104,6 +108,9 @@ export class AppComponent implements OnInit {
   toggleMenu(): void {
     this.menuObert = !this.menuObert;
     this.menuOcultatPerUsuari = !this.menuObert;
+    if (this.menuObert) {
+      this.perfilDropdownObert = false;
+    }
   }
 
   /**
@@ -112,6 +119,37 @@ export class AppComponent implements OnInit {
   tancarMenu(): void {
     this.menuObert = false;
     this.menuOcultatPerUsuari = true;
+  }
+
+  /**
+   * Obre o tanca la vista prèvia desplegable de perfil.
+   */
+  togglePerfilDropdown(event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
+    this.perfilDropdownObert = !this.perfilDropdownObert;
+    if (this.perfilDropdownObert) {
+      this.menuObert = false;
+    }
+  }
+
+  /**
+   * Tanca la vista prèvia de perfil.
+   */
+  tancarPerfilDropdown(): void {
+    this.perfilDropdownObert = false;
+  }
+
+  /**
+   * Tanca el menú de perfil si es fa clic fora d'ell.
+   */
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.profile-dropdown-container')) {
+      this.perfilDropdownObert = false;
+    }
   }
 
   isClient(): boolean {
