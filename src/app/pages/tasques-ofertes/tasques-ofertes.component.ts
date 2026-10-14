@@ -179,7 +179,7 @@ interface CategoriaFiltre {
               <div class="cards-grid">
                 <article class="market-card task-card" *ngFor="let task of tasquesFiltrades">
                   <div class="card-top-bar">
-                    <span class="cat-pill">{{ task.categoria }}</span>
+                    <span class="cat-pill">{{ task.categoria || 'Altres Serveis' }}</span>
                     <span class="status-pill status-task" [ngClass]="getTaskStatusClass(task.estat)">
                       {{ task.estat }}
                     </span>
@@ -221,7 +221,10 @@ interface CategoriaFiltre {
               <div class="cards-grid">
                 <article class="market-card offer-card" *ngFor="let offer of ofertesFiltrades">
                   <div class="card-top-bar">
-                    <span class="cat-pill alt">{{ getTascaTitol(offer.tascaId) }}</span>
+                    <div class="pills-group">
+                      <span class="cat-pill">{{ getOfertaCategoria(offer) }}</span>
+                      <span class="cat-pill alt">Tasca: {{ getTascaTitol(offer.tascaId) }}</span>
+                    </div>
                     <span class="status-pill status-offer" [ngClass]="getOfferStatusClass(offer.estat)">
                       {{ offer.estat }}
                     </span>
@@ -559,32 +562,43 @@ interface CategoriaFiltre {
       }
 
       .cards-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        display: flex;
+        flex-direction: column;
         gap: 1.25rem;
+        width: 100%;
       }
 
       .market-card {
         background: #ffffff;
         border: 1px solid #e5e0d7;
         border-radius: 14px;
-        padding: 1.35rem;
+        padding: 1.5rem 1.85rem;
         display: flex;
         flex-direction: column;
-        gap: 0.85rem;
+        gap: 0.95rem;
         box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
         transition: all 0.22s ease;
+        width: 100%;
+        box-sizing: border-box;
       }
 
       .market-card:hover {
         border-color: #ff1744;
-        transform: translateY(-3px);
+        transform: translateY(-2px);
         box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
       }
 
       .card-top-bar {
         display: flex;
         justify-content: space-between;
+        align-items: center;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+      }
+
+      .pills-group {
+        display: flex;
+        flex-wrap: wrap;
         align-items: center;
         gap: 0.5rem;
       }
@@ -643,21 +657,17 @@ interface CategoriaFiltre {
 
       .card-item-title {
         margin: 0;
-        font-size: 1.1rem;
+        font-size: 1.15rem;
         font-weight: 900;
         color: #09090c;
-        line-height: 1.3;
+        line-height: 1.35;
       }
 
       .card-item-desc {
         margin: 0;
-        font-size: 0.88rem;
+        font-size: 0.92rem;
         color: #636159;
-        line-height: 1.5;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
+        line-height: 1.55;
       }
 
       .card-meta-line {
@@ -928,10 +938,31 @@ export class TasquesOfertesComponent implements OnInit {
     this.tipusFiltre = 'tots';
   }
 
+  getTascaCategoria(tascaId: string): string {
+    const task = this.dashboard?.tasks.find((t) => t.id === tascaId);
+    return task?.categoria?.trim() ? task.categoria.trim() : 'Altres Serveis';
+  }
+
+  getOfertaCategoria(offer: any): string {
+    if (offer.categoria && offer.categoria.trim()) {
+      return offer.categoria.trim();
+    }
+    return this.getTascaCategoria(offer.tascaId);
+  }
+
   comptarElementsPerCategoria(nomCat: string): number {
     const q = nomCat.toLowerCase();
-    const countTasks = this.dashboard?.tasks.filter((t) => t.categoria?.toLowerCase().includes(q) || q.includes(t.categoria?.toLowerCase() ?? '')).length ?? 0;
-    return countTasks;
+    const countTasks = (this.dashboard?.tasks ?? []).filter((t) => {
+      const cat = (t.categoria?.trim() || 'Altres Serveis').toLowerCase();
+      return cat.includes(q) || q.includes(cat);
+    }).length;
+
+    const countOffers = (this.dashboard?.offers ?? []).filter((o) => {
+      const cat = this.getOfertaCategoria(o).toLowerCase();
+      return cat.includes(q) || q.includes(cat);
+    }).length;
+
+    return countTasks + countOffers;
   }
 
   get tasquesFiltrades() {
@@ -940,20 +971,24 @@ export class TasquesOfertesComponent implements OnInit {
     // Filtre per cerca de text (nom/títol, client o descripció)
     if (this.searchQuery.trim()) {
       const q = this.searchQuery.toLowerCase().trim();
-      llista = llista.filter((t) =>
-        t.titol.toLowerCase().includes(q) ||
-        t.client.toLowerCase().includes(q) ||
-        t.categoria?.toLowerCase().includes(q) ||
-        t.descripcio?.toLowerCase().includes(q)
-      );
+      llista = llista.filter((t) => {
+        const cat = t.categoria?.trim() || 'Altres Serveis';
+        return (
+          t.titol.toLowerCase().includes(q) ||
+          t.client.toLowerCase().includes(q) ||
+          cat.toLowerCase().includes(q) ||
+          (t.descripcio && t.descripcio.toLowerCase().includes(q))
+        );
+      });
     }
 
     // Filtre per categoria
     if (this.categoriaSeleccionada !== 'totes') {
       const cat = this.categoriaSeleccionada.toLowerCase();
-      llista = llista.filter((t) =>
-        t.categoria?.toLowerCase().includes(cat) || cat.includes(t.categoria?.toLowerCase() ?? '')
-      );
+      llista = llista.filter((t) => {
+        const tCat = (t.categoria?.trim() || 'Altres Serveis').toLowerCase();
+        return tCat.includes(cat) || cat.includes(tCat);
+      });
     }
 
     return llista;
@@ -967,20 +1002,22 @@ export class TasquesOfertesComponent implements OnInit {
       const q = this.searchQuery.toLowerCase().trim();
       llista = llista.filter((o) => {
         const titolTasca = this.getTascaTitol(o.tascaId).toLowerCase();
+        const cat = this.getOfertaCategoria(o).toLowerCase();
         return (
           o.professional.toLowerCase().includes(q) ||
-          o.note?.toLowerCase().includes(q) ||
-          titolTasca.includes(q)
+          (o.note && o.note.toLowerCase().includes(q)) ||
+          titolTasca.includes(q) ||
+          cat.includes(q)
         );
       });
     }
 
-    // Si hi ha una categoria seleccionada diferent de 'totes', filtrem les ofertes de les tasques d'aquella categoria
+    // Si hi ha una categoria seleccionada diferent de 'totes', filtrem les ofertes d'aquella categoria
     if (this.categoriaSeleccionada !== 'totes') {
       const cat = this.categoriaSeleccionada.toLowerCase();
       llista = llista.filter((o) => {
-        const task = this.dashboard?.tasks.find((t) => t.id === o.tascaId);
-        return task?.categoria?.toLowerCase().includes(cat) || cat.includes(task?.categoria?.toLowerCase() ?? '');
+        const oCat = this.getOfertaCategoria(o).toLowerCase();
+        return oCat.includes(cat) || cat.includes(oCat);
       });
     }
 

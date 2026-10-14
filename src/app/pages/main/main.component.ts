@@ -96,12 +96,13 @@ import { AuthService } from '../../core/services/auth.service';
 
             <article class="card offer-card" *ngFor="let offer of previewOffers">
               <div class="card-top">
-                <span class="tag alt">{{ offer.task }}</span>
+                <span class="tag alt">{{ offer.category || 'Altres Serveis' }}</span>
                 <span class="status status-offer" [ngClass]="getOfferStatusClass(offer.status)">
                   {{ offer.status }}
                 </span>
               </div>
               <h3>{{ offer.professional }}</h3>
+              <p class="meta" *ngIf="offer.task">Tasca: {{ offer.task }}</p>
               <p>{{ offer.note }}</p>
               <div class="card-footer">
                 <span>Oferta: {{ offer.price }}</span>
@@ -1787,11 +1788,15 @@ export class MainComponent implements OnInit, OnDestroy {
     }, 7000);
   }
 
+  randomPreviewTasks: any[] = [];
+  randomPreviewOffers: any[] = [];
+
   loadDashboard(): void {
     this.dashboardService.getDashboard().subscribe({
       next: (dashboard) => {
         this.dashboard = dashboard;
         this.loading = false;
+        this.generarPrevisualitzacionsAleatories();
       },
       error: () => {
         this.error = 'No s’ha pogut carregar el dashboard del backend.';
@@ -1800,19 +1805,51 @@ export class MainComponent implements OnInit, OnDestroy {
     });
   }
 
+  /** Genera previsualitzacions aleatòries perquè no surtin sempre les mateixes 3 */
+  generarPrevisualitzacionsAleatories(): void {
+    const allTasks = [...this.tasks];
+    this.randomPreviewTasks = this.barrejarArray(allTasks).slice(0, 3);
+
+    const allOffers = [...this.offers];
+    this.randomPreviewOffers = this.barrejarArray(allOffers).slice(0, 3);
+  }
+
+  private barrejarArray<T>(array: T[]): T[] {
+    const copia = [...array];
+    for (let i = copia.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [copia[i], copia[j]] = [copia[j], copia[i]];
+    }
+    return copia;
+  }
+
   get tasks() {
     return this.dashboard?.tasks.map((task) => ({
       id: task.id,
       title: task.titol,
       client: task.client,
-      category: task.categoria,
+      category: task.categoria?.trim() ? task.categoria.trim() : 'Altres Serveis',
       budget: task.budget,
       status: task.estat
     })) ?? [];
   }
 
-  /** Controla si es mostren només les 3 primeres tasques o el llistat complet */
-  showAllTasks = false;
+  get offers() {
+    return this.dashboard?.offers.map((offer) => {
+      const associatedTask = this.dashboard?.tasks.find((task) => task.id === offer.tascaId);
+      const rawCat = (offer as any).categoria || associatedTask?.categoria;
+      const category = (rawCat && rawCat.trim()) ? rawCat.trim() : 'Altres Serveis';
+      return {
+        id: offer.id,
+        professional: offer.professional,
+        task: associatedTask?.titol ?? offer.tascaId,
+        category,
+        price: offer.price,
+        note: offer.note,
+        status: offer.estat
+      };
+    }) ?? [];
+  }
 
   /** Article del blog seleccionat per a lectura en modal */
   articleSeleccionat: any = null;
@@ -1851,25 +1888,14 @@ export class MainComponent implements OnInit, OnDestroy {
     }
   ];
 
-  /** Retorna la vista prèvia de 3 tasques per a la pàgina principal */
+  /** Retorna la vista prèvia aleatòria de 3 tasques per a la pàgina principal */
   get previewTasks() {
-    return this.tasks.slice(0, 3);
+    return this.randomPreviewTasks.length > 0 ? this.randomPreviewTasks : this.tasks.slice(0, 3);
   }
 
-  /** Retorna la vista prèvia de 3 ofertes per a la pàgina principal */
+  /** Retorna la vista prèvia aleatòria de 3 ofertes per a la pàgina principal */
   get previewOffers() {
-    return this.offers.slice(0, 3);
-  }
-
-  get offers() {
-    return this.dashboard?.offers.map((offer) => ({
-      id: offer.id,
-      professional: offer.professional,
-      task: this.dashboard?.tasks.find((task) => task.id === offer.tascaId)?.titol ?? offer.tascaId,
-      price: offer.price,
-      note: offer.note,
-      status: offer.estat
-    })) ?? [];
+    return this.randomPreviewOffers.length > 0 ? this.randomPreviewOffers : this.offers.slice(0, 3);
   }
 
   getTaskStatusClass(status: string): string {
