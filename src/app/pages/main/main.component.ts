@@ -1955,7 +1955,7 @@ export class MainComponent implements OnInit {
         (r.treballadorId && r.treballadorId.toLowerCase().trim() === q)
     );
     if (list.length === 0) {
-      return { mitjana: '4.9', total: 3 };
+      return null;
     }
     const avg = list.reduce((a, b) => a + b.puntuacio, 0) / list.length;
     return {
