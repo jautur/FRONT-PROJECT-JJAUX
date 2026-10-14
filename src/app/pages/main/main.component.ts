@@ -11,12 +11,12 @@ import { AuthService } from '../../core/services/auth.service';
   imports: [CommonModule],
   template: `
     <section class="main-page">
-      <!-- PORTADA INICIAL DE PANTALLA COMPLETA AMB INTROS ALEATÒRIES -->
+      <!-- PORTADA INICIAL DE PANTALLA COMPLETA AMB FOTO DINÀMICA I SLOGAN FIX -->
       <header class="fullscreen-cover" [style.background-image]="currentCoverBackground">
-        <!-- NOM DE LA WEB EN MIG DE LA PÀGINA I SLOGAN ALEATORI DINÀMIC -->
+        <!-- NOM DE LA WEB EN MIG DE LA PÀGINA I SLOGAN ORIGINAL FIX -->
         <div class="hero-center">
           <h1 class="hero-brand">AVISA</h1>
-          <p class="hero-slogan">{{ currentIntro.slogan }}</p>
+          <p class="hero-slogan">Connectant necessitats i professionals</p>
         </div>
 
         <div class="cover-scroll-hint" (click)="scrollToContent()" role="button" aria-label="Llisca cap avall" title="Llisca cap avall">
@@ -1739,35 +1739,22 @@ export class MainComponent implements OnInit, OnDestroy {
   error = '';
   noticeMessage = '';
 
-  /** Col·lecció d'intros aleatòries temàtiques sobre serveis i oficis */
-  readonly intros = [
-    {
-      image: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=2000&q=80',
-      slogan: 'Connectant necessitats i professionals de confiança'
-    },
-    {
-      image: 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=2000&q=80',
-      slogan: 'La solució directa per a les teves reparacions i avaries'
-    },
-    {
-      image: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=2000&q=80',
-      slogan: 'Especialistes qualificats a un sol clic de distància'
-    },
-    {
-      image: 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=2000&q=80',
-      slogan: 'Publica la teva feina, compara pressupostos i tria amb seguretat'
-    },
-    {
-      image: 'https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=2000&q=80',
-      slogan: 'Tracte humà directe, preus justos i sense comissions ocultes'
-    }
+  /** Col·lecció de fotografies professionals representatives dels oficis i tasques */
+  readonly photos = [
+    'https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=2000&q=80', // Construcció, reformes i arquitectura
+    'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=2000&q=80', // Electricitat i instal·lacions
+    'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=2000&q=80', // Serveis tècnics i manteniment
+    'https://images.unsplash.com/photo-1585704032915-c3400ca199e7?auto=format&fit=crop&w=2000&q=80', // Lampisteria i canonades
+    'https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=2000&q=80', // Obres i reformes d'espais
+    'https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=2000&q=80', // Fusteria i muntatge
+    'https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=2000&q=80'  // Neteja i posada a punt
   ];
 
-  /** Índex de la intro activa actual */
-  introIndex = 0;
+  /** Índex de la fotografia activa actual */
+  photoIndex = 0;
 
-  /** Identificador de l'interval de rotació suau */
-  private introTimer: any = null;
+  /** Identificador de l'interval de rotació suau de fotografies */
+  private photoTimer: any = null;
 
   constructor(
     private readonly dashboardService: DashboardService,
@@ -1776,37 +1763,33 @@ export class MainComponent implements OnInit, OnDestroy {
     private readonly router: Router
   ) {}
 
-  get currentIntro() {
-    return this.intros[this.introIndex] ?? this.intros[0];
-  }
-
   get currentCoverBackground(): string {
-    return `linear-gradient(rgba(8, 8, 12, 0.52), rgba(8, 8, 12, 0.78)), url('${this.currentIntro.image}')`;
+    return `linear-gradient(rgba(8, 8, 12, 0.52), rgba(8, 8, 12, 0.78)), url('${this.photos[this.photoIndex]}')`;
   }
 
   ngOnInit(): void {
-    // Tria una intro aleatòria al carregar la pàgina
-    this.introIndex = Math.floor(Math.random() * this.intros.length);
+    // Tria una foto aleatòria al carregar la pàgina
+    this.photoIndex = Math.floor(Math.random() * this.photos.length);
     this.loadDashboard();
-    this.iniciarRotacioIntros();
+    this.iniciarRotacioFotos();
   }
 
   ngOnDestroy(): void {
-    if (this.introTimer) {
-      clearInterval(this.introTimer);
+    if (this.photoTimer) {
+      clearInterval(this.photoTimer);
     }
   }
 
   /**
-   * Canvia la intro periòdicament de forma aleatòria cada 7 segons
+   * Canvia la fotografia periòdicament de forma aleatòria cada 7 segons
    */
-  private iniciarRotacioIntros(): void {
-    this.introTimer = setInterval(() => {
+  private iniciarRotacioFotos(): void {
+    this.photoTimer = setInterval(() => {
       let nextIndex: number;
       do {
-        nextIndex = Math.floor(Math.random() * this.intros.length);
-      } while (nextIndex === this.introIndex && this.intros.length > 1);
-      this.introIndex = nextIndex;
+        nextIndex = Math.floor(Math.random() * this.photos.length);
+      } while (nextIndex === this.photoIndex && this.photos.length > 1);
+      this.photoIndex = nextIndex;
     }, 7000);
   }
 
