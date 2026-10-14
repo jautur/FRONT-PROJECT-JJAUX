@@ -108,6 +108,9 @@ import { AuthService } from '../../core/services/auth.service';
         width: 100%;
         display: flex;
         flex-direction: column;
+        background-color: #f7f3ed;
+        color: #0c0c10;
+        min-height: 100vh;
       }
 
       .fullscreen-cover {
@@ -156,13 +159,14 @@ import { AuthService } from '../../core/services/auth.service';
       .mouse-wheel {
         width: 4px;
         height: 8px;
-        background: #38bdf8;
+        background: #00ff66;
         border-radius: 2px;
         position: absolute;
         top: 6px;
         left: 50%;
         transform: translateX(-50%);
         animation: wheelScroll 1.6s infinite ease-out;
+        box-shadow: 0 0 6px #00ff66;
       }
 
       @keyframes wheelScroll {
@@ -174,7 +178,7 @@ import { AuthService } from '../../core/services/auth.service';
         font-size: 0.85rem;
         letter-spacing: 0.12em;
         text-transform: uppercase;
-        font-weight: 600;
+        font-weight: 800;
         text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
       }
 
@@ -186,17 +190,18 @@ import { AuthService } from '../../core/services/auth.service';
         flex-direction: column;
         gap: 2.2rem;
         box-sizing: border-box;
+        background-color: #f7f3ed;
       }
 
       .dashboard-header-bar {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        background: #111116;
+        background: #ffffff;
         border-radius: 16px;
         padding: 1.6rem 2.2rem;
-        border: 1px solid #23232f;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        border: 1px solid #e5e0d7;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
       }
 
       .eyebrow-tag {
@@ -204,23 +209,23 @@ import { AuthService } from '../../core/services/auth.service';
         font-weight: 900;
         text-transform: uppercase;
         letter-spacing: 0.12em;
-        color: var(--neon, #00ff66);
+        color: #00aa44;
         margin-bottom: 0.35rem;
         display: block;
       }
 
       .dashboard-title {
         margin: 0;
-        font-size: 1.8rem;
-        color: var(--color-bone, #f5f4ef);
+        font-size: 1.85rem;
+        color: #09090c;
         font-weight: 900;
         letter-spacing: -0.03em;
       }
 
       .btn-create-task {
-        background: var(--neon, #00ff66);
+        background: #00ff66;
         color: #08080a;
-        border: none;
+        border: 1px solid #00dd55;
         border-radius: 8px;
         padding: 0.8rem 1.6rem;
         font-weight: 900;
@@ -228,13 +233,15 @@ import { AuthService } from '../../core/services/auth.service';
         cursor: pointer;
         text-transform: uppercase;
         letter-spacing: 0.05em;
-        box-shadow: 0 0 16px rgba(0, 255, 102, 0.35);
+        box-shadow: 0 4px 16px rgba(0, 255, 102, 0.35);
         transition: all 0.2s ease;
       }
 
       .btn-create-task:hover {
-        background: #ffffff;
-        box-shadow: 0 0 24px rgba(0, 255, 102, 0.6);
+        background: #08080a;
+        color: #00ff66;
+        border-color: #08080a;
+        box-shadow: 0 6px 22px rgba(0, 0, 0, 0.25);
         transform: translateY(-2px);
       }
 
@@ -245,23 +252,24 @@ import { AuthService } from '../../core/services/auth.service';
       }
 
       .stat-card {
-        background: #111116;
-        border: 1px solid #23232f;
+        background: #ffffff;
+        border: 1px solid #e5e0d7;
         border-radius: 16px;
         padding: 1.5rem 1.6rem;
         display: flex;
         flex-direction: column;
         gap: 0.5rem;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-        transition: border-color 0.2s ease;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+        transition: border-color 0.2s ease, transform 0.2s ease;
       }
 
       .stat-card:hover {
-        border-color: var(--neon, #00ff66);
+        border-color: #00ff66;
+        transform: translateY(-2px);
       }
 
       .label {
-        color: var(--color-bone-muted, #bab8ae);
+        color: #716f67;
         font-size: 0.85rem;
         font-weight: 800;
         text-transform: uppercase;
@@ -270,7 +278,7 @@ import { AuthService } from '../../core/services/auth.service';
 
       .stat-card strong {
         font-size: 2.4rem;
-        color: var(--color-bone, #f5f4ef);
+        color: #09090c;
         font-weight: 900;
         line-height: 1;
       }
@@ -291,47 +299,50 @@ import { AuthService } from '../../core/services/auth.service';
       }
 
       .panel {
-        background: #111116;
-        border: 1px solid #23232f;
+        background: #ffffff;
+        border: 1px solid #e5e0d7;
         border-radius: 18px;
         padding: 1.5rem;
         display: flex;
         flex-direction: column;
         gap: 1.25rem;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
       }
 
       .panel-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        border-bottom: 1px solid #1f1f2a;
+        border-bottom: 1px solid #eeeae1;
         padding-bottom: 0.85rem;
       }
 
       .panel-header h2 {
         margin: 0;
-        font-size: 1.3rem;
+        font-size: 1.35rem;
         font-weight: 900;
-        color: var(--color-bone, #f5f4ef);
+        color: #09090c;
       }
 
       .panel-header a {
         text-decoration: none;
-        color: var(--neon, #00ff66);
-        font-weight: 800;
+        color: #08080a;
+        font-weight: 900;
         font-size: 0.85rem;
         text-transform: uppercase;
         letter-spacing: 0.05em;
+        border-bottom: 2px solid #00ff66;
+        padding-bottom: 2px;
+        transition: all 0.2s ease;
       }
 
       .panel-header a:hover {
-        text-shadow: 0 0 10px rgba(0, 255, 102, 0.6);
+        color: #00aa44;
       }
 
       .card {
-        background: #171720;
-        border: 1px solid #282836;
+        background: #faf8f4;
+        border: 1px solid #e7e2d9;
         border-radius: 14px;
         padding: 1.25rem;
         display: flex;
@@ -341,9 +352,10 @@ import { AuthService } from '../../core/services/auth.service';
       }
 
       .card:hover {
-        border-color: rgba(0, 255, 102, 0.4);
+        background: #ffffff;
+        border-color: #00ff66;
         transform: translateY(-2px);
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
       }
 
       .card-top,
@@ -355,9 +367,9 @@ import { AuthService } from '../../core/services/auth.service';
       }
 
       .tag {
-        background: rgba(245, 244, 239, 0.08);
-        color: var(--color-bone, #f5f4ef);
-        border: 1px solid #363648;
+        background: #eee9e0;
+        color: #232220;
+        border: 1px solid #ded8cd;
         border-radius: 6px;
         padding: 0.25rem 0.6rem;
         font-size: 0.72rem;
@@ -367,9 +379,9 @@ import { AuthService } from '../../core/services/auth.service';
       }
 
       .tag.alt {
-        background: rgba(0, 255, 102, 0.08);
-        color: var(--neon, #00ff66);
-        border-color: rgba(0, 255, 102, 0.35);
+        background: rgba(0, 255, 102, 0.15);
+        color: #007730;
+        border: 1px solid rgba(0, 255, 102, 0.4);
       }
 
       .status {
@@ -383,64 +395,64 @@ import { AuthService } from '../../core/services/auth.service';
       }
 
       .status-task.oberta {
-        background: rgba(0, 255, 102, 0.12);
-        color: var(--neon, #00ff66);
-        border-color: rgba(0, 255, 102, 0.4);
+        background: rgba(0, 255, 102, 0.18);
+        color: #007730;
+        border-color: rgba(0, 255, 102, 0.5);
       }
 
       .status-task.en-curs {
-        background: rgba(245, 244, 239, 0.1);
-        color: #ffffff;
-        border-color: #555566;
+        background: #fef3c7;
+        color: #92400e;
+        border-color: #fde68a;
       }
 
       .status-task.finalitzada {
-        background: #1e1e28;
-        color: var(--color-bone-dim, #737168);
-        border-color: #323242;
+        background: #e2e8f0;
+        color: #475569;
+        border-color: #cbd5e1;
       }
 
       .status-offer.pendent {
-        background: rgba(245, 244, 239, 0.1);
-        color: var(--color-bone, #f5f4ef);
-        border-color: #444458;
+        background: #fef3c7;
+        color: #92400e;
+        border-color: #fde68a;
       }
 
       .status-offer.acceptada {
-        background: rgba(0, 255, 102, 0.12);
-        color: var(--neon, #00ff66);
-        border-color: rgba(0, 255, 102, 0.4);
+        background: rgba(0, 255, 102, 0.18);
+        color: #007730;
+        border-color: rgba(0, 255, 102, 0.5);
       }
 
       .status-offer.rebutjada {
-        background: rgba(255, 92, 92, 0.1);
-        color: #ff6b6b;
-        border-color: rgba(255, 92, 92, 0.3);
+        background: #fee2e2;
+        color: #991b1b;
+        border-color: #fecaca;
       }
 
       h3 {
         margin: 0;
         font-size: 1.15rem;
         font-weight: 800;
-        color: var(--color-bone, #f5f4ef);
+        color: #09090c;
       }
 
       p {
         margin: 0;
-        color: var(--color-bone-muted, #bab8ae);
+        color: #4c4b45;
         font-size: 0.92rem;
         font-weight: 600;
       }
 
       .meta {
         font-size: 0.85rem;
-        color: var(--color-bone-dim, #737168);
+        color: #716f67;
         font-weight: 700;
       }
 
       .card-footer span {
-        font-weight: 800;
-        color: var(--color-bone, #f5f4ef);
+        font-weight: 900;
+        color: #09090c;
         font-size: 0.95rem;
       }
 
@@ -450,8 +462,8 @@ import { AuthService } from '../../core/services/auth.service';
       }
 
       .card-footer button {
-        background: var(--neon, #00ff66);
-        color: #08080a;
+        background: #09090c;
+        color: #f7f3ed;
         font-weight: 900;
         font-size: 0.82rem;
         padding: 0.55rem 1rem;
@@ -464,57 +476,58 @@ import { AuthService } from '../../core/services/auth.service';
       }
 
       .card-footer button:hover {
-        background: #ffffff;
-        box-shadow: 0 0 12px rgba(0, 255, 102, 0.5);
+        background: #00ff66;
+        color: #08080a;
+        box-shadow: 0 0 14px rgba(0, 255, 102, 0.4);
       }
 
       .card-footer .btn-secondary {
-        background: #20202c !important;
-        color: var(--color-bone, #f5f4ef) !important;
-        border: 1px solid #36364a !important;
+        background: #eee9e0 !important;
+        color: #09090c !important;
+        border: 1px solid #ded8cd !important;
       }
 
       .card-footer .btn-secondary:hover {
-        border-color: var(--neon, #00ff66) !important;
-        color: var(--neon, #00ff66) !important;
-        background: #252534 !important;
+        border-color: #09090c !important;
+        background: #e3ded4 !important;
       }
 
       .offer-card button {
-        background: var(--neon, #00ff66);
+        background: #00ff66;
         color: #08080a;
         font-weight: 900;
       }
 
+      .offer-card button:hover {
+        background: #09090c;
+        color: #00ff66;
+      }
+
       .notice-banner {
-        background: #1c1c24;
-        border: 1px solid rgba(255, 92, 92, 0.4);
-        color: #ff6b6b;
-        padding: 0.9rem 1.2rem;
-        border-radius: 12px;
+        background: #ffffff;
+        border: 1px solid rgba(0, 255, 102, 0.5);
+        border-left: 4px solid #00ff66;
+        color: #09090c;
+        padding: 0.9rem 1.25rem;
+        border-radius: 10px;
         display: flex;
         justify-content: space-between;
         align-items: center;
         font-weight: 700;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
       }
 
       .btn-dismiss {
         background: transparent !important;
         border: none !important;
-        color: #991b1b !important;
+        color: #716f67 !important;
         cursor: pointer;
         font-size: 1.1rem;
         padding: 0 !important;
       }
 
-      .actions {
-        display: flex;
-        gap: 0.5rem;
-      }
-
-      .btn-secondary {
-        background: #0284c7 !important;
-        color: white !important;
+      .btn-dismiss:hover {
+        color: #09090c !important;
       }
 
       @keyframes fadeIn {

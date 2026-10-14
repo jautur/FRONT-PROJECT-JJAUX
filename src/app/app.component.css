@@ -13,6 +13,10 @@
   background-color: var(--bg-black, #08080a);
 }
 
+.shell:not(.not-home-page) {
+  background-color: #f7f3ed;
+}
+
 /* ============================================================== */
 /* CORRECCIÓ DE L'ESPAIAT SUPERIOR PER A LES PÀGINES SECUNDÀRIES   */
 /* ============================================================== */
