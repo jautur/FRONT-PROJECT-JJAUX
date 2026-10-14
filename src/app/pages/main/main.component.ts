@@ -166,14 +166,16 @@ import { AuthService } from '../../core/services/auth.service';
       }
 
       .hero-slogan {
-        margin: 0.85rem 0 0;
-        font-family: 'Dancing Script', cursive;
-        font-size: clamp(1.8rem, 4.5vw, 3rem);
-        font-weight: 600;
+        margin: 1.1rem 0 0;
+        font-family: var(--font-title, 'Boldonse', 'Climate Crisis', sans-serif);
+        font-size: clamp(1.05rem, 2.4vw, 1.6rem);
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.16em;
         color: #f7f3ed; /* Color blanc brut */
-        text-shadow: 0 3px 20px rgba(0, 0, 0, 0.95);
-        line-height: 1.3;
-        letter-spacing: 0.02em;
+        text-shadow: 0 4px 24px rgba(0, 0, 0, 0.95), 0 2px 8px rgba(0, 0, 0, 0.7);
+        line-height: 1.35;
+        max-width: 860px;
       }
 
       .cover-scroll-hint {
