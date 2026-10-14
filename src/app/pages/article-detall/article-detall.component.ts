@@ -900,3 +900,4 @@ export class ArticleDetallComponent implements OnInit {
     this.router.navigate(['/client/crear-tasca']);
   }
 }
+

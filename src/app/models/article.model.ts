@@ -31,3 +31,4 @@ export interface Article {
   sectorZona: string;
   categoriaServeiRecomanat: string;
 }
+

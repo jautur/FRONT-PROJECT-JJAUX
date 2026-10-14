@@ -284,7 +284,16 @@ import { Article } from '../../models/article.model';
                 <span>Notificacions al mòbil immediates quan s'obre una feina a la teva especialitat</span>
               </li>
             </ul>
-            <button type="button" class="btn-role-action pro-btn" (click)="onAnarRegistreProfessional()">Començar com a professional</button>
+            <div class="pro-role-actions">
+              <button type="button" class="btn-role-action pro-btn" (click)="onAnarRegistreProfessional()">Començar com a professional</button>
+              <a routerLink="/comunitat-professionals" class="btn-community-link">
+                <span>Per què unir-te a la Comunitat AVISA? (Guia & Blog)</span>
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                  <polyline points="12 5 19 12 12 19"></polyline>
+                </svg>
+              </a>
+            </div>
           </div>
         </section>
 
@@ -414,6 +423,7 @@ import { Article } from '../../models/article.model';
               <ul>
                 <li><a routerLink="/tasques-ofertes">Mercat de Tasques i Ofertes</a></li>
                 <li><a routerLink="/client/crear-tasca">Publicar tasca nova</a></li>
+                <li><a routerLink="/comunitat-professionals">Comunitat de Professionals (Blog)</a></li>
                 <li><a routerLink="/registre" [queryParams]="{ rol: 'professional' }">Àrea Professionals</a></li>
                 <li><a routerLink="/registre" [queryParams]="{ rol: 'client' }">Registre de clients</a></li>
                 <li><a href="#que-es-avisa">Què fa AVISA</a></li>
@@ -1263,6 +1273,37 @@ import { Article } from '../../models/article.model';
       .pro-btn:hover {
         background: #09090c;
         box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+      }
+
+      .pro-role-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        width: 100%;
+        margin-top: 0.5rem;
+      }
+
+      .btn-community-link {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1rem;
+        border-radius: 8px;
+        background: #f1ede4;
+        border: 1px solid #dfd8cc;
+        color: #ff1744;
+        font-weight: 700;
+        font-size: 0.88rem;
+        text-decoration: none;
+        transition: all 0.2s ease;
+      }
+
+      .btn-community-link:hover {
+        background: #09090c;
+        border-color: #09090c;
+        color: #ffffff;
+        transform: translateY(-2px);
       }
 
       /* ============================================================== */

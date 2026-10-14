@@ -12,6 +12,7 @@ import { LesMevesOfertesComponent } from './pages/professional/les-meves-ofertes
 import { TasquesOfertesComponent } from './pages/tasques-ofertes/tasques-ofertes.component';
 import { AdminPanellComponent } from './pages/admin/panell/admin-panell.component';
 import { ArticleDetallComponent } from './pages/article-detall/article-detall.component';
+import { ComunitatProfessionalsComponent } from './pages/professional/comunitat-professionals/comunitat-professionals.component';
 import { authGuard } from './core/guards/auth.guard';
 import { adminGuard } from './core/guards/admin.guard';
 
@@ -46,5 +47,7 @@ export const appRoutes: Routes = [
   { path: 'admin/panell', component: AdminPanellComponent, canActivate: [adminGuard] },
   { path: 'article/:id', component: ArticleDetallComponent },
   { path: 'blog/:id', redirectTo: 'article/:id' },
+  { path: 'comunitat-professionals', component: ComunitatProfessionalsComponent },
+  { path: 'professionals', redirectTo: 'comunitat-professionals' },
   { path: '**', redirectTo: '' }
 ];
