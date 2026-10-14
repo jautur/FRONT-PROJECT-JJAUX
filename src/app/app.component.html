@@ -24,8 +24,9 @@
     <!-- Espai dret d'equilibri visual -->
     <div class="topbar-right">
       <ng-container *ngIf="isScrolled">
-        <a *ngIf="authService.isLoggedIn()" routerLink="/avisos" class="quick-notif-btn" title="Avisos pendents">
-          🔔 <span class="badge-pill" *ngIf="avisosPendents > 0">{{ avisosPendents }}</span>
+        <a *ngIf="authService.isLoggedIn()" routerLink="/perfil" class="quick-profile-btn" title="El meu perfil">
+          <span class="profile-icon">👤</span>
+          <span class="profile-label">Perfil</span>
         </a>
         <a *ngIf="!authService.isLoggedIn()" routerLink="/login" class="quick-login-btn">
           Iniciar sessió

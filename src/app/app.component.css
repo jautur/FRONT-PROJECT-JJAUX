@@ -129,33 +129,33 @@
 }
 
 /* Botons de drecera a la dreta de la capçalera */
-.quick-notif-btn {
+.quick-profile-btn {
   text-decoration: none;
   color: var(--color-bone, #f5f4ef);
   background: #14141b;
   border: 1px solid #282836;
-  padding: 0.5rem 0.9rem;
+  padding: 0.5rem 1rem;
   border-radius: 8px;
-  font-size: 0.95rem;
+  font-size: 0.85rem;
   font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
   display: inline-flex;
   align-items: center;
+  gap: 0.6rem;
   transition: all 0.2s ease;
 }
 
-.quick-notif-btn:hover {
+.quick-profile-btn:hover {
+  background: rgba(0, 255, 102, 0.1);
   border-color: var(--neon, #00ff66);
   color: var(--neon, #00ff66);
+  box-shadow: 0 0 12px rgba(0, 255, 102, 0.25);
 }
 
-.badge-pill {
-  background: var(--neon, #00ff66);
-  color: #08080a;
-  font-size: 0.72rem;
-  font-weight: 900;
-  padding: 0.1rem 0.45rem;
-  border-radius: 9999px;
-  margin-left: 0.4rem;
+.profile-icon {
+  font-size: 1.1rem;
+  line-height: 1;
 }
 
 .quick-login-btn {
