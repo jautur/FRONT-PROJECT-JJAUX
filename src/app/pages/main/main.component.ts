@@ -125,9 +125,8 @@ import { AuthService } from '../../core/services/auth.service';
 
       .fullscreen-cover {
         width: 100%;
-        height: 78vh;
-        min-height: 480px;
-        max-height: 780px;
+        height: calc(100vh - 48px);
+        min-height: 560px;
         background-image: linear-gradient(rgba(8, 8, 12, 0.52), rgba(8, 8, 12, 0.78)),
           url('https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=2000&q=80');
         background-size: cover;
@@ -219,7 +218,7 @@ import { AuthService } from '../../core/services/auth.service';
       .dashboard-body {
         width: min(1200px, 100%);
         margin: 0 auto;
-        padding: 3.5rem 1.5rem 6rem 1.5rem;
+        padding: 1.75rem 1.5rem 6rem 1.5rem;
         display: flex;
         flex-direction: column;
         gap: 2.2rem;
@@ -714,7 +713,7 @@ export class MainComponent implements OnInit {
    * Fa lliscar la pantalla suaument cap a la secció de contingut
    */
   scrollToContent(): void {
-    const scrollTarget = window.innerHeight * 0.76;
+    const scrollTarget = window.innerHeight - 44;
     window.scrollTo({
       top: scrollTarget,
       behavior: 'smooth'
