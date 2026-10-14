@@ -12,3 +12,4 @@ export * from './oferta.model';
 export * from './proposta.model';
 export * from './avis.model';
 export * from './resenya.model';
+export * from './incidencia.model';

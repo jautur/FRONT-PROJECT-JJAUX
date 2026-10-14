@@ -2,7 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { forkJoin, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { TascaService } from '../../../services/tasca.service';
+import { IncidenciaService } from '../../../services/incidencia.service';
 import { OfertaService } from '../../../services/oferta.service';
 import { ResenyaService } from '../../../services/resenya.service';
 import { AuthService } from '../../../core/services/auth.service';
@@ -791,6 +794,7 @@ export class LesMevesTasquesComponent implements OnInit {
   enviantRessenya = false;
 
   constructor(
+    private readonly incidenciaService: IncidenciaService,
     private readonly tascaService: TascaService,
     private readonly ofertaService: OfertaService,
     private readonly resenyaService: ResenyaService,
@@ -851,7 +855,7 @@ export class LesMevesTasquesComponent implements OnInit {
   }
 
   /**
-   * Carrega les tasques associades al client actual des de l'API.
+   * Carrega les tasques i incidències associades al client actual des de l'API.
    */
   carregarTasques(): void {
     this.loading = true;
@@ -863,15 +867,37 @@ export class LesMevesTasquesComponent implements OnInit {
       return;
     }
 
-    this.tascaService.getByClient(user.nom).subscribe({
-      next: (data) => {
-        this.tasques = data;
+    forkJoin({
+      tasques: this.tascaService.getByClient(user.nom).pipe(catchError(() => of([]))),
+      incidencies: this.incidenciaService.getByClient(user.nom).pipe(catchError(() => of([])))
+    }).subscribe({
+      next: ({ tasques, incidencies }) => {
+        const incidenciesMapped: Tasca[] = incidencies.map((inc) => ({
+          id: inc.id,
+          titol: inc.titol,
+          descripcio: inc.descripcio,
+          categoria: inc.categoria,
+          clientId: inc.clientId,
+          client: inc.clientNom || inc.client || user.nom,
+          clientNom: inc.clientNom || inc.client || user.nom,
+          professional: undefined,
+          professionalNom: undefined,
+          budget: inc.budget,
+          estat: inc.estat,
+          tipus: 'incidencia',
+          createdAt: inc.createdAt
+        }));
+
+        const existingIds = new Set(tasques.map((t) => t.id));
+        const filteredInc = incidenciesMapped.filter((i) => !existingIds.has(i.id));
+
+        this.tasques = [...tasques, ...filteredInc];
         this.loading = false;
-        // Carrega el recompte d'ofertes per a cadascuna de les tasques
+        // Carrega el recompte d'ofertes per a cadascuna de les tasques / incidències
         this.carregarRecompteOfertes();
       },
       error: () => {
-        this.errorMsg = 'Error en carregar les teves tasques.';
+        this.errorMsg = 'Error en carregar les teves tasques i incidències.';
         this.loading = false;
       }
     });
@@ -1012,20 +1038,24 @@ export class LesMevesTasquesComponent implements OnInit {
   }
 
   /**
-   * Elimina una tasca de la base de dades.
-   * @param id Identificador de la tasca a suprimir
+   * Elimina una tasca o incidència de la base de dades.
+   * @param id Identificador de l'element a suprimir
    */
   eliminarTasca(id: string): void {
-    if (!confirm('Estàs segur d’eliminar aquesta tasca? Aquesta acció no es pot desfer.')) return;
+    if (!confirm('Estàs segur d’eliminar aquesta petició? Aquesta acció no es pot desfer.')) return;
 
-    this.tascaService.delete(id).subscribe({
+    const delete$ = id.startsWith('I-')
+      ? this.incidenciaService.delete(id)
+      : this.tascaService.delete(id);
+
+    delete$.subscribe({
       next: () => {
         this.tasques = this.tasques.filter(t => t.id !== id);
-        this.successMsg = 'Tasca eliminada amb èxit.';
+        this.successMsg = 'Element eliminat amb èxit.';
         setTimeout(() => this.successMsg = '', 3000);
       },
       error: () => {
-        this.errorMsg = 'Error en eliminar la tasca.';
+        this.errorMsg = 'Error en eliminar l’element.';
       }
     });
   }

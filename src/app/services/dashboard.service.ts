@@ -24,12 +24,15 @@ export interface DashboardOffer {
   estat: string;
 }
 
+import { Incidencia } from '../models/incidencia.model';
+
 export interface DashboardResponse {
   openTasks: number;
   activeOffers: number;
   completedProjects: number;
   tasks: DashboardTask[];
   offers: DashboardOffer[];
+  incidencies?: Incidencia[];
 }
 
 @Injectable({ providedIn: 'root' })

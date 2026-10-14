@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { TascaService, CreateTascaDto } from '../../../services/tasca.service';
+import { IncidenciaService } from '../../../services/incidencia.service';
+import { CrearIncidenciaDTO } from '../../../models/incidencia.model';
 import { AuthService } from '../../../core/services/auth.service';
 
 /**
@@ -318,6 +320,7 @@ export class CrearTascaComponent implements OnInit {
   errorMessage = '';
 
   constructor(
+    private readonly incidenciaService: IncidenciaService,
     private readonly tascaService: TascaService,
     private readonly authService: AuthService,
     private readonly router: Router
@@ -334,7 +337,7 @@ export class CrearTascaComponent implements OnInit {
   }
 
   /**
-   * Envia el formulari al servei per crear la tasca a PostgreSQL.
+   * Envia el formulari al servei per crear la incidència a PostgreSQL.
    */
   onSubmit(): void {
     if (!this.formData.titol || !this.formData.descripcio || !this.formData.categoria || !this.formData.budget) {
@@ -346,17 +349,28 @@ export class CrearTascaComponent implements OnInit {
     this.errorMessage = '';
     this.successMessage = '';
 
-    this.tascaService.create(this.formData).subscribe({
+    const user = this.authService.getCurrentUser();
+    const payload: CrearIncidenciaDTO = {
+      titol: this.formData.titol,
+      descripcio: this.formData.descripcio,
+      categoria: this.formData.categoria,
+      client: user?.nom || this.formData.client || 'Client AVISA',
+      clientId: user?.id,
+      budget: this.formData.budget,
+      estat: 'Oberta'
+    };
+
+    this.incidenciaService.create(payload).subscribe({
       next: (created) => {
         this.submitting = false;
         this.successMessage = 'Incidència publicada amb èxit! Els professionals de la teva zona ja poden enviar-te pressupostos. Redirigint...';
         setTimeout(() => {
-          this.router.navigate(['/tasques-ofertes'], { queryParams: { tipus: 'tasques' } });
+          this.router.navigate(['/tasques-ofertes'], { queryParams: { tipus: 'incidencies' } });
         }, 1200);
       },
       error: () => {
         this.submitting = false;
-        this.errorMessage = 'S’ha produït un error en desar la tasca a la base de dades.';
+        this.errorMessage = 'S’ha produït un error en desar la incidència a la base de dades.';
       }
     });
   }

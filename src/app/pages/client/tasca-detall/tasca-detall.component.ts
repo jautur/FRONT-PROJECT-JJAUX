@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TascaService } from '../../../services/tasca.service';
+import { IncidenciaService } from '../../../services/incidencia.service';
 import { OfertaService } from '../../../services/oferta.service';
 import { ResenyaService } from '../../../services/resenya.service';
 import { AuthService } from '../../../core/services/auth.service';
@@ -822,6 +823,7 @@ export class TascaDetallComponent implements OnInit {
     private readonly route: ActivatedRoute,
     private readonly router: Router,
     private readonly tascaService: TascaService,
+    private readonly incidenciaService: IncidenciaService,
     private readonly ofertaService: OfertaService,
     private readonly resenyaService: ResenyaService,
     private readonly authService: AuthService
@@ -880,8 +882,32 @@ export class TascaDetallComponent implements OnInit {
         this.loadOffers(id);
       },
       error: () => {
-        this.loading = false;
-        this.tasca = null;
+        // Fallback a consultar com a incidència directa
+        this.incidenciaService.getById(id).subscribe({
+          next: (inc) => {
+            this.tasca = {
+              id: inc.id,
+              titol: inc.titol,
+              descripcio: inc.descripcio,
+              categoria: inc.categoria,
+              clientId: inc.clientId,
+              client: inc.clientNom || inc.client || 'Client',
+              clientNom: inc.clientNom || inc.client || 'Client',
+              professional: undefined,
+              professionalNom: undefined,
+              budget: inc.budget,
+              estat: inc.estat,
+              tipus: 'incidencia',
+              createdAt: inc.createdAt
+            };
+            this.loading = false;
+            this.loadOffers(id);
+          },
+          error: () => {
+            this.loading = false;
+            this.tasca = null;
+          }
+        });
       }
     });
   }

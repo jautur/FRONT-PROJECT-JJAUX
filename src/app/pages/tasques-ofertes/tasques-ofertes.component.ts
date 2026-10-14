@@ -1543,19 +1543,34 @@ export class TasquesOfertesComponent implements OnInit {
 
   getTascaCategoria(tascaId: string): string {
     const task = this.dashboard?.tasks.find((t) => t.id === tascaId);
-    return task?.categoria?.trim() ? task.categoria.trim() : 'Altres Serveis';
+    if (task?.categoria?.trim()) return task.categoria.trim();
+    const inc = this.dashboard?.incidencies?.find((i) => i.id === tascaId);
+    if (inc?.categoria?.trim()) return inc.categoria.trim();
+    return 'Altres Serveis';
   }
 
   getOfertaCategoria(offer: any): string {
     if (offer.categoria && offer.categoria.trim()) {
       return offer.categoria.trim();
     }
-    return this.getTascaCategoria(offer.tascaId);
+    const targetId = offer.tascaId || offer.incidenciaId;
+    return this.getTascaCategoria(targetId);
   }
 
   comptarElementsPerCategoria(nomCat: string): number {
     const q = nomCat.toLowerCase();
+    const countIncidencies = (this.dashboard?.incidencies ?? []).filter((i) => {
+      const cat = (i.categoria?.trim() || 'Altres Serveis').toLowerCase();
+      return cat.includes(q) || q.includes(cat);
+    }).length;
+
     const countTasks = (this.dashboard?.tasks ?? []).filter((t) => {
+      // Evitem duplicar si és una incidència ja comptada a incidencies
+      if (t.tipus === 'incidencia' || !t.professional) {
+        if ((this.dashboard?.incidencies ?? []).some((inc) => inc.id === t.id)) {
+          return false;
+        }
+      }
       const cat = (t.categoria?.trim() || 'Altres Serveis').toLowerCase();
       return cat.includes(q) || q.includes(cat);
     }).length;
@@ -1565,16 +1580,51 @@ export class TasquesOfertesComponent implements OnInit {
       return cat.includes(q) || q.includes(cat);
     }).length;
 
-    return countTasks + countOffers;
+    return countIncidencies + countTasks + countOffers;
   }
 
   /**
    * Incidències obertes creades per clients:
-   * Sols tenen client, no tenen professional assignat encara.
+   * Provenen de la taula incidencies (sols tenen client, no tenen professional assignat encara).
    */
   get incidenciesFiltrades() {
-    let llista = (this.dashboard?.tasks ?? []).filter(
-      (t) => (t.tipus === 'incidencia' || !t.professional) && t.estat !== 'Finalitzada' && t.estat !== 'En curs' && t.tipus !== 'oferta'
+    const rawIncidencies = (this.dashboard?.incidencies ?? []).map((inc) => ({
+      id: inc.id,
+      titol: inc.titol,
+      descripcio: inc.descripcio,
+      categoria: inc.categoria,
+      client: inc.clientNom || (inc as any).client || '',
+      clientId: inc.clientId,
+      professional: undefined,
+      budget: inc.budget,
+      estat: inc.estat,
+      tipus: 'incidencia'
+    }));
+
+    const rawTasks = (this.dashboard?.tasks ?? [])
+      .filter(
+        (t) =>
+          (t.tipus === 'incidencia' || !t.professional) &&
+          t.estat !== 'Finalitzada' &&
+          t.estat !== 'En curs' &&
+          t.tipus !== 'oferta' &&
+          !rawIncidencies.some((i) => i.id === t.id)
+      )
+      .map((t) => ({
+        id: t.id,
+        titol: t.titol,
+        descripcio: t.descripcio,
+        categoria: t.categoria,
+        client: t.client,
+        clientId: (t as any).clientId,
+        professional: undefined,
+        budget: t.budget,
+        estat: t.estat,
+        tipus: 'incidencia'
+      }));
+
+    let llista = [...rawIncidencies, ...rawTasks].filter(
+      (t) => t.estat !== 'Finalitzada' && t.estat !== 'En curs'
     );
 
     if (this.searchQuery.trim()) {
@@ -1611,7 +1661,8 @@ export class TasquesOfertesComponent implements OnInit {
     if (this.searchQuery.trim()) {
       const q = this.searchQuery.toLowerCase().trim();
       llista = llista.filter((o) => {
-        const titolTasca = this.getTascaTitol(o.tascaId).toLowerCase();
+        const targetId = o.tascaId || (o as any).incidenciaId;
+        const titolTasca = this.getTascaTitol(targetId).toLowerCase();
         const cat = this.getOfertaCategoria(o).toLowerCase();
         return (
           o.professional.toLowerCase().includes(q) ||
@@ -1670,7 +1721,11 @@ export class TasquesOfertesComponent implements OnInit {
   }
 
   getTascaTitol(tascaId: string): string {
-    return this.dashboard?.tasks.find((t) => t.id === tascaId)?.titol ?? tascaId;
+    const task = this.dashboard?.tasks.find((t) => t.id === tascaId);
+    if (task) return task.titol;
+    const inc = this.dashboard?.incidencies?.find((i) => i.id === tascaId);
+    if (inc) return inc.titol;
+    return tascaId;
   }
 
   getTaskStatusClass(status: string): string {
