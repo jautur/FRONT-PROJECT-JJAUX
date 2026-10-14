@@ -239,8 +239,8 @@ import { AuthService } from '../../core/services/auth.service';
     .article-page-container {
       max-width: 960px;
       margin: 0 auto;
-      padding: 2rem 1.25rem 5rem;
-      color: #e2e8f0;
+      padding: 1rem 1rem 5rem;
+      color: #0c0c10;
       font-family: inherit;
     }
 
@@ -250,14 +250,14 @@ import { AuthService } from '../../core/services/auth.service';
       align-items: center;
       gap: 0.5rem;
       font-size: 0.85rem;
-      color: #94a3b8;
+      color: #716f67;
       margin-bottom: 1.25rem;
     }
     .breadcrumb-link {
       display: inline-flex;
       align-items: center;
       gap: 0.35rem;
-      color: #94a3b8;
+      color: #716f67;
       text-decoration: none;
       transition: color 0.2s;
     }
@@ -265,36 +265,47 @@ import { AuthService } from '../../core/services/auth.service';
       color: #ff1744;
     }
     .breadcrumb-separator {
-      color: #475569;
+      color: #a8a49c;
     }
     .breadcrumb-current {
-      color: #f8fafc;
-      font-weight: 600;
+      color: #0c0c10;
+      font-weight: 700;
     }
 
     /* Barra de tornada */
     .back-action-bar {
-      margin-bottom: 2rem;
+      margin-bottom: 1.75rem;
     }
     .btn-back {
       display: inline-flex;
       align-items: center;
       gap: 0.5rem;
-      padding: 0.5rem 1rem;
-      background: #14141b;
-      border: 1px solid #282836;
+      padding: 0.55rem 1.15rem;
+      background: #ffffff;
+      border: 1px solid #ded8cd;
       border-radius: 8px;
-      color: #f1f5f9;
+      color: #0c0c10;
       font-size: 0.9rem;
-      font-weight: 600;
+      font-weight: 700;
       text-decoration: none;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
       transition: all 0.2s ease;
     }
     .btn-back:hover {
-      background: rgba(255, 23, 68, 0.12);
+      background: #ffffff;
       border-color: #ff1744;
       color: #ff1744;
       transform: translateX(-3px);
+      box-shadow: 0 4px 14px rgba(255, 23, 68, 0.15);
+    }
+
+    /* Targeta d'article complet */
+    .article-full-view {
+      background: #ffffff;
+      border: 1px solid #e5e0d7;
+      border-radius: 20px;
+      padding: 3rem 2.75rem;
+      box-shadow: 0 6px 30px rgba(0, 0, 0, 0.04);
     }
 
     /* Capçalera de l'article */
@@ -306,7 +317,7 @@ import { AuthService } from '../../core/services/auth.service';
       flex-wrap: wrap;
       align-items: center;
       gap: 0.6rem;
-      margin-bottom: 1rem;
+      margin-bottom: 1.25rem;
     }
     .category-badge {
       display: inline-block;
@@ -314,7 +325,7 @@ import { AuthService } from '../../core/services/auth.service';
       background: #ff1744;
       color: #ffffff;
       font-size: 0.75rem;
-      font-weight: 800;
+      font-weight: 900;
       text-transform: uppercase;
       letter-spacing: 0.05em;
       border-radius: 6px;
@@ -322,28 +333,29 @@ import { AuthService } from '../../core/services/auth.service';
     .sector-badge {
       display: inline-flex;
       align-items: center;
-      gap: 0.35rem;
+      gap: 0.4rem;
       padding: 0.35rem 0.85rem;
-      background: #1e1e28;
-      border: 1px solid #333346;
-      color: #cbd5e1;
+      background: #f4f0e8;
+      border: 1px solid #ded8cd;
+      color: #232220;
       font-size: 0.75rem;
-      font-weight: 600;
+      font-weight: 700;
       border-radius: 6px;
     }
     .article-title {
-      font-size: 2.25rem;
-      line-height: 1.25;
+      font-size: 2.35rem;
+      line-height: 1.22;
       font-weight: 900;
-      color: #ffffff;
+      color: #09090c;
       margin: 0.5rem 0 1rem;
-      letter-spacing: -0.02em;
+      letter-spacing: -0.025em;
     }
     .article-subtitle {
       font-size: 1.15rem;
       line-height: 1.6;
-      color: #94a3b8;
+      color: #555249;
       margin: 0 0 1.75rem;
+      font-weight: 500;
     }
 
     /* Metadades de l'autor */
@@ -353,9 +365,9 @@ import { AuthService } from '../../core/services/auth.service';
       align-items: center;
       justify-content: space-between;
       gap: 1.25rem;
-      padding: 1rem 1.25rem;
-      background: #14141d;
-      border: 1px solid #282838;
+      padding: 1rem 1.35rem;
+      background: #faf8f4;
+      border: 1px solid #e8e3d8;
       border-radius: 12px;
     }
     .author-avatar {
@@ -372,20 +384,22 @@ import { AuthService } from '../../core/services/auth.service';
       min-width: 180px;
     }
     .author-name {
-      font-weight: 700;
+      font-weight: 800;
       font-size: 1rem;
-      color: #ffffff;
+      color: #09090c;
     }
     .author-role {
-      font-size: 0.8rem;
-      color: #94a3b8;
+      font-size: 0.82rem;
+      color: #716f67;
+      font-weight: 600;
     }
     .reading-meta {
       display: flex;
       align-items: center;
       gap: 1.25rem;
       font-size: 0.85rem;
-      color: #cbd5e1;
+      color: #716f67;
+      font-weight: 600;
     }
     .meta-item {
       display: inline-flex;
@@ -402,13 +416,13 @@ import { AuthService } from '../../core/services/auth.service';
       max-height: 480px;
       object-fit: cover;
       border-radius: 14px;
-      border: 1px solid #282836;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+      border: 1px solid #ded8cd;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
     }
     .article-img-caption {
-      font-size: 0.8rem;
-      color: #64748b;
-      margin-top: 0.5rem;
+      font-size: 0.82rem;
+      color: #716f67;
+      margin-top: 0.6rem;
       text-align: center;
       font-style: italic;
     }
@@ -418,10 +432,10 @@ import { AuthService } from '../../core/services/auth.service';
       display: flex;
       align-items: flex-start;
       gap: 1rem;
-      background: linear-gradient(135deg, rgba(255, 23, 68, 0.08) 0%, rgba(20, 20, 29, 0.95) 100%);
+      background: #fff8f8;
       border-left: 4px solid #ff1744;
-      border: 1px solid rgba(255, 23, 68, 0.25);
-      border-radius: 10px;
+      border: 1px solid #fecdd3;
+      border-radius: 12px;
       padding: 1.25rem 1.5rem;
       margin: 2.25rem 0;
     }
@@ -433,16 +447,18 @@ import { AuthService } from '../../core/services/auth.service';
     .summary-body strong {
       display: block;
       color: #ff1744;
-      font-size: 0.95rem;
+      font-size: 0.92rem;
+      font-weight: 900;
       margin-bottom: 0.35rem;
       text-transform: uppercase;
       letter-spacing: 0.05em;
     }
     .summary-body p {
       margin: 0;
-      font-size: 1rem;
-      line-height: 1.6;
-      color: #f1f5f9;
+      font-size: 1.02rem;
+      line-height: 1.65;
+      color: #09090c;
+      font-weight: 600;
     }
 
     /* Seccions */
@@ -450,33 +466,34 @@ import { AuthService } from '../../core/services/auth.service';
       margin-bottom: 3rem;
     }
     .section-title {
-      font-size: 1.5rem;
-      font-weight: 800;
-      color: #ffffff;
-      margin: 0 0 1rem;
-      letter-spacing: -0.01em;
-      border-bottom: 2px solid #262635;
-      padding-bottom: 0.6rem;
+      font-size: 1.55rem;
+      font-weight: 900;
+      color: #09090c;
+      margin: 0 0 1.15rem;
+      letter-spacing: -0.02em;
+      border-bottom: 2px solid #eee9e0;
+      padding-bottom: 0.65rem;
     }
     .section-paragraphs p {
       font-size: 1.05rem;
-      line-height: 1.8;
-      color: #cbd5e1;
+      line-height: 1.82;
+      color: #262522;
+      font-weight: 500;
       margin-bottom: 1.25rem;
     }
 
     /* Punts clau / Checklist */
     .key-points-box {
-      background: #14141c;
-      border: 1px solid #2b2b3b;
-      border-radius: 10px;
-      padding: 1.25rem 1.5rem;
-      margin: 1.5rem 0;
+      background: #faf8f4;
+      border: 1px solid #e5e0d7;
+      border-radius: 12px;
+      padding: 1.35rem 1.6rem;
+      margin: 1.75rem 0;
     }
     .key-points-title {
-      font-size: 1rem;
-      font-weight: 700;
-      color: #ffffff;
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #09090c;
       margin: 0 0 0.85rem;
     }
     .key-points-list {
@@ -485,81 +502,85 @@ import { AuthService } from '../../core/services/auth.service';
       margin: 0;
       display: flex;
       flex-direction: column;
-      gap: 0.6rem;
+      gap: 0.65rem;
     }
     .key-points-list li {
       display: flex;
       align-items: flex-start;
       gap: 0.75rem;
-      font-size: 0.95rem;
-      line-height: 1.5;
-      color: #e2e8f0;
+      font-size: 0.98rem;
+      line-height: 1.55;
+      color: #262522;
+      font-weight: 500;
     }
     .check-icon {
-      color: #10b981;
+      color: #059669;
       font-weight: 900;
-      font-size: 1.1rem;
+      font-size: 1.15rem;
       line-height: 1;
     }
 
     /* Taula de preus */
     .price-table-wrapper {
-      margin: 2rem 0;
+      margin: 2.25rem 0;
     }
     .table-title {
-      font-size: 1.1rem;
+      font-size: 1.15rem;
       font-weight: 800;
-      color: #ffffff;
+      color: #09090c;
       margin-bottom: 0.85rem;
     }
     .price-table-responsive {
       overflow-x: auto;
-      border-radius: 10px;
-      border: 1px solid #2a2a3a;
+      border-radius: 12px;
+      border: 1px solid #e2ddd3;
     }
     .price-table {
       width: 100%;
       border-collapse: collapse;
       text-align: left;
-      font-size: 0.92rem;
-      background: #121218;
+      font-size: 0.93rem;
+      background: #ffffff;
     }
     .price-table th {
-      background: #1b1b26;
-      color: #f8fafc;
-      padding: 0.9rem 1rem;
-      font-weight: 700;
-      border-bottom: 2px solid #333346;
+      background: #09090c;
+      color: #f7f3ed;
+      padding: 0.95rem 1.1rem;
+      font-weight: 800;
+      border-bottom: 2px solid #ff1744;
       white-space: nowrap;
     }
     .price-table td {
-      padding: 0.85rem 1rem;
-      border-bottom: 1px solid #222230;
+      padding: 0.9rem 1.1rem;
+      border-bottom: 1px solid #eee9e0;
       vertical-align: middle;
+      color: #262522;
     }
     .price-table tr:last-child td {
       border-bottom: none;
     }
     .col-concept {
-      color: #f1f5f9;
-      min-width: 200px;
+      color: #09090c;
+      font-weight: 700;
+      min-width: 220px;
     }
     .col-price {
       white-space: nowrap;
     }
     .price-tag {
       display: inline-block;
-      background: rgba(16, 185, 129, 0.15);
-      color: #10b981;
-      border: 1px solid rgba(16, 185, 129, 0.4);
-      padding: 0.25rem 0.6rem;
+      background: rgba(255, 23, 68, 0.08);
+      color: #ff1744;
+      border: 1px solid rgba(255, 23, 68, 0.25);
+      padding: 0.3rem 0.65rem;
       border-radius: 6px;
-      font-weight: 800;
-      font-size: 0.9rem;
+      font-weight: 900;
+      font-size: 0.92rem;
     }
     .col-advice {
-      color: #94a3b8;
-      font-size: 0.85rem;
+      color: #555249;
+      font-size: 0.88rem;
+      line-height: 1.45;
     }
 
     /* Consell destacat */
@@ -567,21 +588,23 @@ import { AuthService } from '../../core/services/auth.service';
       display: flex;
       align-items: flex-start;
       gap: 0.85rem;
-      background: #191924;
+      background: #fffbeb;
       border-left: 4px solid #f59e0b;
-      padding: 1rem 1.25rem;
-      border-radius: 8px;
-      margin: 1.5rem 0;
-      font-size: 0.95rem;
+      border: 1px solid #fde68a;
+      padding: 1.1rem 1.35rem;
+      border-radius: 10px;
+      margin: 1.75rem 0;
+      font-size: 0.96rem;
       line-height: 1.6;
-      color: #f1f5f9;
+      color: #78350f;
     }
     .tip-icon {
-      font-size: 1.3rem;
+      font-size: 1.35rem;
       flex-shrink: 0;
     }
     .tip-text strong {
-      color: #f59e0b;
+      color: #b45309;
+      font-weight: 800;
     }
 
     /* Tags */
@@ -590,14 +613,14 @@ import { AuthService } from '../../core/services/auth.service';
       flex-wrap: wrap;
       align-items: center;
       gap: 0.75rem;
-      padding: 1.25rem 0;
-      border-top: 1px solid #262635;
+      padding: 1.35rem 0;
+      border-top: 1px solid #eee9e0;
       margin-bottom: 3rem;
     }
     .tags-label {
-      font-size: 0.85rem;
-      color: #94a3b8;
-      font-weight: 600;
+      font-size: 0.88rem;
+      color: #716f67;
+      font-weight: 700;
     }
     .tags-list {
       display: flex;
@@ -605,24 +628,29 @@ import { AuthService } from '../../core/services/auth.service';
       gap: 0.5rem;
     }
     .tag-pill {
-      background: #181822;
-      border: 1px solid #2b2b3b;
-      color: #cbd5e1;
-      padding: 0.25rem 0.65rem;
+      background: #f4f0e8;
+      border: 1px solid #ded8cd;
+      color: #232220;
+      padding: 0.28rem 0.7rem;
       border-radius: 6px;
-      font-size: 0.78rem;
-      font-weight: 500;
+      font-size: 0.8rem;
+      font-weight: 700;
+      transition: all 0.2s ease;
+    }
+    .tag-pill:hover {
+      border-color: #ff1744;
+      color: #ff1744;
     }
 
     /* Banner CTA */
     .conversion-banner {
-      background: linear-gradient(135deg, #1b0a10 0%, #171722 100%);
-      border: 1px solid rgba(255, 23, 68, 0.4);
-      border-radius: 14px;
-      padding: 2.5rem 2rem;
+      background: #09090c;
+      border: 1px solid #1f1f28;
+      border-radius: 16px;
+      padding: 2.75rem 2.25rem;
       text-align: center;
-      margin-bottom: 4rem;
-      box-shadow: 0 10px 30px rgba(255, 23, 68, 0.12);
+      margin-bottom: 3.5rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
     }
     .banner-badge {
       display: inline-block;
@@ -637,16 +665,17 @@ import { AuthService } from '../../core/services/auth.service';
       margin-bottom: 1rem;
     }
     .conversion-banner h2 {
-      font-size: 1.75rem;
+      font-size: 1.8rem;
       color: #ffffff;
       font-weight: 900;
       margin: 0 0 0.85rem;
+      line-height: 1.3;
     }
     .conversion-banner p {
       font-size: 1.05rem;
-      color: #94a3b8;
+      color: #cbd5e1;
       max-width: 650px;
-      margin: 0 auto 1.75rem;
+      margin: 0 auto 1.85rem;
       line-height: 1.6;
     }
     .banner-buttons {
@@ -659,13 +688,13 @@ import { AuthService } from '../../core/services/auth.service';
       display: inline-flex;
       align-items: center;
       gap: 0.5rem;
-      padding: 0.75rem 1.6rem;
+      padding: 0.8rem 1.75rem;
       background: #ff1744;
       color: #ffffff;
       border: none;
       border-radius: 8px;
       font-size: 0.95rem;
-      font-weight: 800;
+      font-weight: 900;
       cursor: pointer;
       transition: all 0.2s ease;
       box-shadow: 0 4px 15px rgba(255, 23, 68, 0.35);
@@ -679,10 +708,10 @@ import { AuthService } from '../../core/services/auth.service';
       display: inline-flex;
       align-items: center;
       gap: 0.5rem;
-      padding: 0.75rem 1.6rem;
-      background: #14141d;
+      padding: 0.8rem 1.75rem;
+      background: #1e1e28;
       color: #f1f5f9;
-      border: 1px solid #36364a;
+      border: 1px solid #38384a;
       border-radius: 8px;
       font-size: 0.95rem;
       font-weight: 700;
@@ -690,32 +719,34 @@ import { AuthService } from '../../core/services/auth.service';
       transition: all 0.2s ease;
     }
     .btn-cta-secondary:hover {
-      background: #1f1f2e;
+      background: #2a2a3a;
       border-color: #ff1744;
       color: #ff1744;
     }
 
     /* Articles relacionats */
     .related-articles-section {
-      margin-top: 3rem;
+      margin-top: 3.5rem;
+      border-top: 1px solid #e5e0d7;
+      padding-top: 2.5rem;
     }
     .related-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 1.5rem;
+      margin-bottom: 1.75rem;
     }
     .related-header h3 {
-      font-size: 1.35rem;
-      font-weight: 800;
-      color: #ffffff;
+      font-size: 1.4rem;
+      font-weight: 900;
+      color: #09090c;
       margin: 0;
     }
     .link-all-articles {
       color: #ff1744;
       text-decoration: none;
-      font-size: 0.85rem;
-      font-weight: 700;
+      font-size: 0.88rem;
+      font-weight: 800;
     }
     .link-all-articles:hover {
       text-decoration: underline;
@@ -726,21 +757,22 @@ import { AuthService } from '../../core/services/auth.service';
       gap: 1.5rem;
     }
     .related-card {
-      background: #14141c;
-      border: 1px solid #282836;
-      border-radius: 12px;
+      background: #ffffff;
+      border: 1px solid #e5e0d7;
+      border-radius: 14px;
       overflow: hidden;
       text-decoration: none;
       color: inherit;
       cursor: pointer;
       display: flex;
       flex-direction: column;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
       transition: all 0.25s ease;
     }
     .related-card:hover {
       border-color: #ff1744;
       transform: translateY(-4px);
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
     }
     .related-media {
       position: relative;
@@ -755,14 +787,14 @@ import { AuthService } from '../../core/services/auth.service';
       position: absolute;
       top: 10px;
       left: 10px;
-      background: rgba(15, 15, 20, 0.85);
-      color: #ff1744;
+      background: #09090c;
+      color: #f7f3ed;
       font-size: 0.7rem;
-      font-weight: 800;
+      font-weight: 900;
       text-transform: uppercase;
-      padding: 0.25rem 0.5rem;
+      padding: 0.25rem 0.55rem;
       border-radius: 4px;
-      border: 1px solid rgba(255, 23, 68, 0.3);
+      border: 1px solid rgba(255, 23, 68, 0.4);
     }
     .related-body {
       padding: 1.25rem;
@@ -771,21 +803,22 @@ import { AuthService } from '../../core/services/auth.service';
       flex: 1;
     }
     .related-time {
-      font-size: 0.75rem;
-      color: #94a3b8;
+      font-size: 0.78rem;
+      color: #716f67;
+      font-weight: 700;
       margin-bottom: 0.5rem;
     }
     .related-body h4 {
-      font-size: 1.05rem;
+      font-size: 1.08rem;
       font-weight: 800;
-      color: #ffffff;
+      color: #09090c;
       line-height: 1.4;
       margin: 0 0 0.6rem;
     }
     .related-body p {
-      font-size: 0.85rem;
-      line-height: 1.5;
-      color: #94a3b8;
+      font-size: 0.88rem;
+      line-height: 1.55;
+      color: #555249;
       margin: 0 0 1rem;
       display: -webkit-box;
       -webkit-line-clamp: 2;
@@ -794,8 +827,8 @@ import { AuthService } from '../../core/services/auth.service';
     }
     .related-read-more {
       margin-top: auto;
-      font-size: 0.82rem;
-      font-weight: 700;
+      font-size: 0.85rem;
+      font-weight: 800;
       color: #ff1744;
     }
 
@@ -803,9 +836,10 @@ import { AuthService } from '../../core/services/auth.service';
     .article-not-found-card {
       text-align: center;
       padding: 4rem 1.5rem;
-      background: #14141c;
-      border: 1px solid #282836;
-      border-radius: 14px;
+      background: #ffffff;
+      border: 1px solid #e5e0d7;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
     }
     .not-found-icon {
       font-size: 3rem;
@@ -813,24 +847,29 @@ import { AuthService } from '../../core/services/auth.service';
     }
     .article-not-found-card h2 {
       font-size: 1.75rem;
-      color: #ffffff;
+      color: #09090c;
+      font-weight: 900;
       margin-bottom: 0.5rem;
     }
     .article-not-found-card p {
-      color: #94a3b8;
+      color: #555249;
       margin-bottom: 1.5rem;
     }
     .btn-back-home {
       display: inline-block;
-      padding: 0.65rem 1.5rem;
+      padding: 0.75rem 1.6rem;
       background: #ff1744;
       color: #ffffff;
       text-decoration: none;
-      font-weight: 700;
+      font-weight: 800;
       border-radius: 8px;
     }
 
     @media (max-width: 768px) {
+      .article-full-view {
+        padding: 1.75rem 1.25rem;
+        border-radius: 14px;
+      }
       .article-title {
         font-size: 1.75rem;
       }

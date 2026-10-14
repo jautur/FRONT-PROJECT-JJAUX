@@ -3,8 +3,9 @@ import { Article } from '../models/article.model';
 
 /**
  * Servei per a la gestió d'articles del Blog d'AVISA.
- * Analitza els sectors professionals clau de la zona (Catalunya, comarques de Girona i Barcelona)
- * i ofereix consells tècnics, preus orientatius i bones pràctiques.
+ * Analitza els sectors professionals clau de les comarques del sud de la província de València
+ * (La Costera, La Vall d'Albaida, La Safor, La Ribera Alta i La Ribera Baixa)
+ * i ofereix consells tècnics, preus orientatius i bones pràctiques locals.
  */
 @Injectable({
   providedIn: 'root'
@@ -14,14 +15,14 @@ export class ArticleService {
   private readonly articles: Article[] = [
     {
       id: 1,
-      slug: 'guia-reformes-bany-cuina-catalunya-2026',
-      titol: 'Quant costa reformar un bany o una cuina a la nostra zona? Guia de pressupostos i materials 2026',
-      subtitol: 'Desglossament de costos, elecció de materials duradors i permisos municipals per planificar la teva reforma sense sorpreses.',
-      resum: 'Desglossament pràctic de mà d\'obra, permisos d\'obra, instal·lacions de lampisteria i materials recomanats per planificar la teva reforma amb transparència.',
+      slug: 'guia-reformes-cases-poble-costera-vall-albaida-2026',
+      titol: 'Quant costa reformar una casa de poble o un pis a les comarques del sud de València? Guia de pressupostos 2026',
+      subtitol: 'Desglossament de costos, elecció de materials resistents a la humitat i permisos municipals a Xàtiva, Ontinyent, Gandia i Alzira.',
+      resum: 'Desglossament pràctic de mà d\'obra comarcal, llicències d\'obra menor, renovació d\'instal·lacions en cases tradicionals de poble i acabats recomanats a la Costera, la Vall d\'Albaida, la Safor i la Ribera.',
       categoria: 'Reformes i Obres',
       tempsLectura: '6 min de lectura',
       data: '14 Octubre 2026',
-      sectorZona: 'Sector Construcció i Reformes (Girona, Barcelona i Maresme)',
+      sectorZona: 'Sector Construcció i Reformes (La Costera, La Vall d\'Albaida, La Safor i La Ribera)',
       categoriaServeiRecomanat: 'Reformes i Obres',
       autor: {
         nom: 'Elena Pons',
@@ -29,52 +30,53 @@ export class ArticleService {
         avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=200&q=80'
       },
       imatge: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=1200&q=80',
-      imatgePeu: 'Reforma integral d\'un bany amb plat de dutxa de resina antilliscant i enrajolat ceràmic rectificat.',
-      tags: ['Reformes', 'Bany', 'Cuina', 'Pressupostos', 'Llicència d\'obra', 'Pladur'],
+      imatgePeu: 'Reforma d\'un bany amb plat de dutxa de resina mineral antilliscant i enrajolat ceràmic en una casa de poble tradicional.',
+      tags: ['Reformes', 'Cases de poble', 'Bany', 'Cuina', 'Pressupostos', 'Llicència d\'obra', 'Xàtiva', 'Ontinyent'],
       seccions: [
         {
-          subtitol: '1. Diagnòstic del parc d\'habitatges a la comarca',
+          subtitol: '1. Diagnòstic del parc d\'habitatges a les nostres comarques',
           paragrafs: [
-            'A les nostres comarques, una gran part dels edificis residencials van ser construïts entre 1970 i 2000. Això fa que molts habitatges comptin encara amb instal·lacions de canonades de coure o fins i tot plom, juntament amb banyeres de ferro colat que dificulten l\'accessibilitat de la gent gran i generen un consum excessiu d\'aigua.',
-            'L\'actualització d\'un bany o d\'una cuina no només revalora la propietat entre un 12% i un 18% en el mercat de compra i lloguer local, sinó que és l\'ocasió ideal per renovar les instal·lacions elèctriques i de fontaneria darrere de les parets abans que es produeixi una fuita o derivació.'
+            'A les comarques de la Costera, la Vall d\'Albaida, la Safor i la Ribera, trobem una gran concentració de **cases tradicionals de poble** de dues o tres altures (amb parets mestres de tàpia o maó massís, bigues de fusta i corral o pati interior), juntament amb blocs de pisos construïts entre 1970 i 2000 a ciutats com Xàtiva, Ontinyent, Alzira o Gandia.',
+            'En aquests immobles és molt habitual trobar canonades antigues de plom o ferro galvanitzat completament calcificades, a més de banyeres encastades d\'obra que dificulten l\'accessibilitat de la gent gran. La rehabilitació d\'un bany o una cuina no només revalora la vivenda més d\'un 15% al mercat comarcal, sinó que és el moment clau per sanejar les instal·lacions ocultes darrere de les parets.'
           ],
           puntsClau: [
-            'Substituir canonades velles per tubs multicapa o polietilè reticulat (PEX).',
-            'Substitució de la banyera per un plat de dutxa extraplà de resina mineral classe 3 antilliscant.',
-            'Aprofitament d\'envans de cartró-guix hidròfug (pladur verd) per encastar aixetes i cisternes.'
+            'Substituir canonades velles per tubs multicapa o polietilè reticulat (PEX) immunes a la calç.',
+            'Substitució de la banyera per plat de dutxa extraplà de resina mineral classe 3 antilliscant.',
+            'Reforç d\'envans amb cartró-guix hidròfug (pladur verd) per protegir de la humitat per capil·laritat típica de les plantes baixes.'
           ]
         },
         {
           subtitol: '2. Estimació de preus mitjans a la zona per a aquest 2026',
           paragrafs: [
-            'El cost d\'una reforma depèn principalment de la qualitat dels revestiments i de si cal modificar la distribució dels punts d\'aigua i desguàs. A continuació presentem un desglossament estimat segons les feines executades a la plataforma AVISA:'
+            'El cost d\'una reforma a les nostres comarques és més competitiu que a la capital provincial gràcies a la xarxa d\'oficis autònoms locals. Presentem les tarifes mitjanes registrades a AVISA per a la zona sud de València:'
           ],
           taulaPreus: [
-            { concepte: 'Canvi exprés de banyera per plat de dutxa (amb rajola fins a 1,20m)', preuAproximat: '850€ - 1.350€', consell: 'Es realitza normalment en 24-48 hores sense necessitat de llicència complexa.' },
-            { concepte: 'Reforma integral de bany estàndard (fins a 5 m²)', preuAproximat: '2.200€ - 3.800€', consell: 'Inclou demolició, fontaneria nova, plat de dutxa, mampara, sanitaris i ceràmica.' },
-            { concepte: 'Reforma integral de cuina mitjana (fins a 9 m²)', preuAproximat: '4.800€ - 9.200€', consell: 'Inclou fontaneria, punts de llum, enrajolat, mobles alts i baixos i taulell de silestone o porcellànic.' }
+            { concepte: 'Canvi exprés de banyera per plat de dutxa de resina (amb enrajolat parcial)', preuAproximat: '790€ - 1.250€', consell: 'S\'executa normalment en 24-48 hores per professionals de la comarca sense necessitat de llicència complexa.' },
+            { concepte: 'Reforma integral de bany estàndard (fins a 5 m²)', preuAproximat: '2.100€ - 3.600€', consell: 'Inclou demolició, fontaneria nova, plat de resina, mampara de vidre temperat, sanitaris i ceràmica.' },
+            { concepte: 'Reforma integral de cuina mitjana (fins a 9 m²)', preuAproximat: '4.500€ - 8.800€', consell: 'Inclou fontaneria, punts elèctrics, bancada de silestone o porcellànic i mobles a mida.' },
+            { concepte: 'Adequació de pati o corral interior amb paviment antilliscant', preuAproximat: '1.200€ - 2.400€', consell: 'Molt sol·licitat en cases de poble de la Costera i la Vall per aprofitar l\'espai exterior a l\'estiu.' }
           ],
-          destacatConsell: 'A AVISA recomanem demanar com a mínim 3 pressupostos a professionals diferents. Fixar el preu de la mà d\'obra amb el desglossament de materials evita el típic suplement d\'obra no previst.'
+          destacatConsell: 'A AVISA recomanem sol·licitar sempre pressupost a professionals locals de la teva comarca. Això estalvia despeses de desplaçament i assegura una resposta immediata davant qualsevol ajust posterior.'
         },
         {
-          subtitol: '3. Tràmits municipals: Cal permís d\'obra?',
+          subtitol: '3. Tràmits municipals als ajuntaments de la zona: Cal llicència d\'obra?',
           paragrafs: [
-            'A la majoria d\'ajuntaments de Catalunya (com Barcelona, Girona, Mataró, Terrassa o Figueres), les reformes de banys i cuines sense modificació d\'elements estructurals ni canvi de distribució d\'envans mestres es tramiten mitjançant una **Comunicació Prèvia d\'Obra Menor** o un **Assabentat d\'Obres** telemàtic.',
-            'Aquest tràmit sol tenir una taxa mínima o bonificada i et permet iniciar la feina l\'endemà mateix de presentar-la. Si contractes un contenidor per a runes a la via pública, el paleta s\'encarregarà de tramitar la reserva d\'estacionament corresponent.'
+            'Als ajuntaments de Xàtiva, Ontinyent, Gandia, Alzira, Canals o Oliva, les reformes interiors de banys i cuines sense afecció estructural es tramiten mitjançant una **Declaració Responsable d\'Obra Menor** a través de la seu electrònica municipal.',
+            'Aquest tràmit et permet començar la feina des del mateix moment en què presentes la sol·licitud i pagues l\'impost sobre construccions (ICIO), que sol rondar entre el 2% i el 4% del pressupost d\'execució material. Si cal col·locar un contenidor de runes al carrer, el paleta gestionarà la reserva de via pública amb la Policia Local.'
           ]
         }
       ]
     },
     {
       id: 2,
-      slug: 'climatitzacio-aerotermia-eficiencia-costa-interior',
-      titol: 'Climatització i aerotèrmia a la costa i l\'interior: Com reduir fins a un 50% la factura energètica',
-      subtitol: 'Claus tècniques per triar entre bomba de calor split o aerotèrmia centralitzada segons el clima de la teva comarca.',
-      resum: 'Consells d\'especialistes homologats per detectar sobreescalfaments al quadre elèctric, mantenir bombes de calor i reduir la despesa energètica anual.',
+      slug: 'climatitzacio-calor-extrema-costera-humitat-safor-aerotermia',
+      titol: 'Climatització davant la calor extrema de la Costera i la humitat de la Safor: Guia d\'estalvi energètic',
+      subtitol: 'Com suportar els 40°C d\'estiu a Xàtiva o la xafogor de Gandia sense que la factura de la llum es dispare amb bombes de calor i aerotèrmia.',
+      resum: 'Consells d\'especialistes homologats per a municipis amb màximes extremes com Xàtiva, Canals o Alzira i ambient salí a Gandia o Oliva: filtres, gas ecològic R-32 i aïllament tèrmic eficient.',
       categoria: 'Climatització',
       tempsLectura: '5 min de lectura',
       data: '12 Octubre 2026',
-      sectorZona: 'Sector Climatització i Energies Renovables',
+      sectorZona: 'Sector Climatització i Eficiència Energètica (Costera, Vall d\'Albaida, Safor i Ribera)',
       categoriaServeiRecomanat: 'Climatització',
       autor: {
         nom: 'Anna Prat',
@@ -82,45 +84,45 @@ export class ArticleService {
         avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=200&q=80'
       },
       imatge: 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=1200&q=80',
-      imatgePeu: 'Muntatge certificat d\'una unitat exterior de climatització d\'alta eficiència A+++ amb suport antivibratori.',
-      tags: ['Climatització', 'Aire Condicionat', 'Aerotèrmia', 'Estalvi Energètic', 'RITE', 'Bombes de Calor'],
+      imatgePeu: 'Muntatge d\'equip split inverter A+++ amb tractament anticorrosió Gold Fin per a zones costaneres i d\'interior.',
+      tags: ['Climatització', 'Aire Condicionat', 'Calor Extrema', 'Xàtiva', 'Gandia', 'Aerotèrmia', 'RITE'],
       seccions: [
         {
-          subtitol: '1. El repte del clima mediterrani: humitat costanera vs fred d\'interior',
+          subtitol: '1. El repte del clima al sud de València: calor canicular vs humitat marina',
           paragrafs: [
-            'El comportament tèrmic dels habitatges a la nostra zona varia de forma notable entre la línia de costa (amb estius xafogosos i humitats superiors al 75%) i les zones d\'interior o prelitoral (amb hiverns de temperatures properes als 0°C).',
-            'Per a la costa, la funció de deshumidificació eficient d\'un bon split inverter de classe A+++ és capaç de proporcionar confort tèrmic amb un consum inferior a 0,5 kW/h. En canvi, a l\'interior, l\'aerotèrmia reversible connectada a radiadors de baixa temperatura o terra radiant s\'ha consolidat com la millor alternativa per substituir el gasoil.'
+            'El comportament tèrmic a les nostres comarques és un dels més exigents de tota la península. A la Costera i la Ribera (amb **Xàtiva com a referent de màximes que superen amb freqüència els 40°C-42°C a l\'estiu**), els aparells han de funcionar a màxim rendiment durant onades de calor sostingudes amb nits tropicals per damunt dels 25°C.',
+            'D\'altra banda, a la Safor (Gandia, Oliva, Tavernes), l\'enemic principal és la **humitat relativa superior al 80%** combinada amb el salnitre marí, que pot rovellar les bateries d\'intercanvi de la unitat exterior en menys de 3 anys si no compten amb protecció anticorrosió *Gold Fin* o *Blue Fin*. A la Vall d\'Albaida (Ontinyent, Bocairent), en canvi, els hiverns són notablement més freds, fent que les bombes de calor o l\'aerotèrmia reversible siguin la millor opció tot l\'any.'
           ],
           puntsClau: [
-            'Optar sempre per equips amb gas refrigerant ecològic R-32, que ofereix major rendiment amb menys càrrega.',
-            'Important mantenir la distància de seguretat entre unitat interior i exterior per evitar pèrdues de rendiment.',
-            'Instal·lació de suports antivibratoris homologats per complir amb les ordenances municipals de soroll nocturn.'
+            'Escollir màquines amb ràtio d\'eficiència estacional SEER superior a 8,5 (classe A+++) per reduir fins a un 40% el consum elèctric a l\'estiu.',
+            'Protecció anticorrosiva a la unitat exterior en municipis de la Safor i la costa de la Ribera.',
+            'Instal·lació de suports antivibratoris homologats per evitar que el compressor ressoni als murs de càrrega tradicionals de les cases de poble.'
           ]
         },
         {
-          subtitol: '2. Manteniment preventiu: Per què netejar els filtres i revisar el circuit?',
+          subtitol: '2. Manteniment preventiu abans de l\'arribada de les onades de calor',
           paragrafs: [
-            'L\'acumulació de pols, pol·len i àcars als filtres d\'aire no només empitjora la qualitat de l\'aire respirat per a nens i persones al·lèrgiques, sinó que força el compressor a treballar un 25% més per aconseguir la mateixa temperatura.',
-            'A més, un circuit que hagi perdut una petita fracció de gas refrigerant consumirà el doble d\'electricitat i corre el risc de cremar el compressor. Una revisió anual amb manòmetres i prova d\'estanquitat evita avaries que superen els 600€.'
+            'Esperar a la primera onada de calor de juny per engegar l\'aire condicionat és un error freqüent. Els filtres bruts i una possible pèrdua de pressió de gas fan que el compressor treballe forçat, consumint el doble i podent avariar-se just quan els tècnics estan més saturats de faena.',
+            'Una revisió anual a la primavera amb neteja antibacteriana i mesurament de pressions per un tècnic amb carnet RITE garanteix un funcionament silenciós i eficient durant tot l\'estiu.'
           ],
           taulaPreus: [
-            { concepte: 'Manteniment anual d\'split (neteja de filtres, desinfecció i comprovació de gas)', preuAproximat: '60€ - 95€', consell: 'Es recomana fer a la primavera abans de l\'arribada de les onades de calor.' },
-            { concepte: 'Instal·lació d\'equip split 1x1 estàndard (fins a 4 metres de línia)', preuAproximat: '250€ - 380€ (sense màquina)', consell: 'Requereix instal·lador certificat amb carnet RITE per conservar la garantia del fabricant.' },
-            { concepte: 'Instal·lació integral de sistema d\'Aerotèrmia per a habitatge unifamiliar', preuAproximat: '6.500€ - 11.000€', consell: 'Amortitzable en 4-6 anys gràcies a l\'estalvi mensual de calefacció i aigua calenta.' }
+            { concepte: 'Manteniment complet d\'split (neteja de filtres, desinfecció d\'evaporador i comprovació de gas)', preuAproximat: '55€ - 85€', consell: 'Recomanat entre març i maig abans de l\'inici de les altes temperatures a la Costera i Ribera.' },
+            { concepte: 'Instal·lació bàsica d\'equip split 1x1 (fins a 4 metres de línia frigorífica)', preuAproximat: '220€ - 350€ (mà d\'obra)', consell: 'Requereix instal·lador certificat per conservar la garantia oficial del fabricant.' },
+            { concepte: 'Sistema d\'Aerotèrmia per a casa de poble o xalet unifamiliar', preuAproximat: '5.800€ - 9.800€', consell: 'Molt demandat a Ontinyent, l\'Olleria o xalets de Bixquert per substituir calderes de gasoil o biomassa.' }
           ]
         }
       ]
     },
     {
       id: 3,
-      slug: 'normativa-quadre-electric-butlletins-catalunya',
-      titol: 'Normativa elèctrica i butlletins a Catalunya: Quan és obligatori el Butlletí Blau o Blanc (CIE/BRIE)?',
-      subtitol: 'Tot el que has de saber per canviar de titular, contractar més potència, instal·lar plaques solars o carregar el cotxe elèctric.',
-      resum: 'Guia clara de les exigències de les companyies elèctriques a la zona, el funcionament dels diferencials superimmunitzats i els costos de certificació.',
+      slug: 'normativa-quadre-electric-butlletins-comunitat-valenciana',
+      titol: 'Butlletí elèctric (CIE) a la Comunitat Valenciana: Quan és obligatori i com protegir la teva llar davant tempestes',
+      subtitol: 'Tot el que has de saber per donar d\'alta la llum amb Iberdrola (i-DE), ampliar potència o protegir la instal·lació davant la DANA i tempestes d\'estiu.',
+      resum: 'Guia clara de les exigències de la Conselleria d\'Indústria per al Certificat d\'Instal·lació Elèctrica (CIE), diferencials superimmunitzats i protecció contra llamps a la zona sud de València.',
       categoria: 'Electricitat',
       tempsLectura: '5 min de lectura',
       data: '08 Octubre 2026',
-      sectorZona: 'Sector Instal·lacions Elèctriques i Seguretat Industrial',
+      sectorZona: 'Sector Instal·lacions Elèctriques i Seguretat Industrial (Comunitat Valenciana)',
       categoriaServeiRecomanat: 'Electricitat',
       autor: {
         nom: 'Marc Soler',
@@ -128,44 +130,44 @@ export class ArticleService {
         avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80'
       },
       imatge: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=1200&q=80',
-      imatgePeu: 'Renovació completa d\'un quadre general de protecció amb diferencials superimmunitzats i descarregador de sobretensions.',
-      tags: ['Electricitat', 'Butlletí Elèctric', 'BRIE', 'CIE', 'Sobretensions', 'Vehicle Elèctric'],
+      imatgePeu: 'Renovació d\'un quadre general de distribució elèctrica amb protector de sobretensions i diferencials superimmunitzats.',
+      tags: ['Electricitat', 'Butlletí Elèctric', 'CIE', 'Sobretensions', 'DANA', 'Iberdrola', 'Comunitat Valenciana'],
       seccions: [
         {
-          subtitol: '1. Diferències entre el BRIE (Butlletí Blau) i el CIE (Butlletí Blanc)',
+          subtitol: '1. Quan et demanarà la companyia distribuïdora (i-DE) el CIE?',
           paragrafs: [
-            'A Catalunya regeix una normativa específica de la Direcció General d\'Energia i Mines que cal conèixer quan es vol donar d\'alta un subministrament elèctric o modificar el contracte existent:',
-            '• **BRIE (Butlletí de Reconeixement d\'Instal·lacions Elèctriques)**: Conegut popularment com a *butlletí blau*. S\'utilitza per a modificacions senzilles, canvis de titular amb més de 20 anys d\'antiguitat o petits augments de potència que no superin la màxima admissible de la instal·lació.',
-            '• **CIE (Certificat d\'Instal·lació Elèctrica en Baixa Tensió)**: Conegut com a *butlletí blanc*. És obligatori en altes noves, obres de reforma integral, augments de potència substancials o quan la instal·lació té defectes greus de seguretat que obliguen a refer el quadre.'
+            'A la Comunitat Valenciana, la Direcció General d\'Energia i Mines de la Generalitat regula l\'emissió del **CIE (Certificat d\'Instal·lació Elèctrica en Baixa Tensió)**, el document oficial que acredita que la instal·lació és segura i compleix amb el Reglament Electrotècnic (REBT).',
+            'La distribuïdora elèctrica habitual a la nostra zona (i-DE / Grup Iberdrola) exigirà aquest certificat obligatòriament en els següents supòsits:',
+            '• **Altes noves o reactivació de comptadors** que porten més de 2 mesos donats de baixa.',
+            '• **Canvis de titularitat o modificacions de contracte** en immobles amb instal·lacions de més de 20 anys d\'antiguitat.',
+            '• **Augment de potència contractada** que supere la potència màxima admissible indicada a l\'últim butlletí.'
           ],
-          destacatConsell: 'Només un instal·lador certificat i donat d\'alta al RASIC (Registre d\'Agents de la Seguretat Industrial de Catalunya) pot signar aquests butlletins. A AVISA tots els nostres electricistes tenen la certificació vigent.'
+          destacatConsell: 'Només un instal·lador elèctric autoritzat i donat d\'alta al registre d\'Indústria de la Generalitat Valenciana (associat a entitats com ASELEC o FEMEVAL) pot signar i tramitar telemàticament el CIE oficial.'
         },
         {
-          subtitol: '2. Elements obligatoris en qualsevol quadre elèctric modern',
+          subtitol: '2. Sobretensions per tempestes d\'estiu i DANA: L\'element que salva els teus electrodomèstics',
           paragrafs: [
-            'Si el teu habitatge té més de 15 anys, és molt probable que no compleixi amb l\'actual Reglament Electrotècnic de Baixa Tensió (REBT). Els elements imprescindibles avui dia són:',
-            '1. **IGA (Interruptor General Automàtic)** adaptat a la potència màxima del cable d\'escomesa.',
-            '2. **Protector contra sobretensions permanents i transitòries**: Protegeix televisors, ordinadors, electrodomèstics i la placa de la caldera davant descàrregues de llamps o anomalies a la xarxa elèctrica de distribució.',
-            '3. **Diferencials Superimmunitzats (Tipus A o F)**: Imprescindibles si a casa tens ordinadors, cotxe elèctric o rentadores amb motor inverter. Eviten que el diferencial salti sol sense motiu aparent a qualsevol hora.'
+            'A les comarques del sud de València són freqüents les tempestes elèctriques violentes a l\'estiu i els episodis de gota freda / DANA a la tardor. Aquests fenòmens meteorològics generen pics sobtats de tensió a la xarxa que cremen plaques electròniques d\'aires condicionats, televisors, ordinadors i calderes.',
+            'La instal·lació d\'un **descarregador de sobretensions permanents i transitòries** al quadre general de la vivenda és la millor inversió per protegir tot l\'equipament domèstic.'
           ],
           taulaPreus: [
-            { concepte: 'Tramitació de BRIE telemàtic a Canal Empresa', preuAproximat: '90€ - 150€', consell: 'Inclou revisió prèvia de seguretat i registre oficial en 24 hores.' },
-            { concepte: 'Certificat CIE complet amb memòria tècnica de disseny', preuAproximat: '140€ - 220€', consell: 'Exigit per les companyies distribuïdores per a potències noves o canvis majors.' },
-            { concepte: 'Renovació completa de quadre elèctric segons REBT', preuAproximat: '350€ - 650€', consell: 'Inclou quadre nou, automàtics de primeres marques (Schneider, Hager) i protecció de sobretensions.' }
+            { concepte: 'Tramitació telemàtica de CIE (Butlletí Elèctric) per a habitatge', preuAproximat: '110€ - 170€', consell: 'Inclou revisió prèvia de seguretat a domicili i registre oficial a la Generalitat en 24-48h.' },
+            { concepte: 'Instal·lació de protector combinat de sobretensions transitòries i permanents', preuAproximat: '120€ - 190€', consell: 'Imprescindible per evitar danys per llamps o oscil·lacions de tensió a la xarxa de distribució.' },
+            { concepte: 'Renovació completa de quadre elèctric segons normativa REBT vigent', preuAproximat: '320€ - 580€', consell: 'Inclou caixa estanca o encastada, IGA, diferencials i nous circuits independents.' }
           ]
         }
       ]
     },
     {
       id: 4,
-      slug: 'aigua-dura-calc-mediterrani-descalcificadors-osmosi',
-      titol: 'L\'aigua dura a les nostres comarques: Com protegir calderes, aixetes i canonades de la calç',
-      subtitol: 'L\'impacte real de la duresa de l\'aigua a la teva factura i les millors solucions: descalcificadors volumètrics i osmosi sota l\'aigüera.',
-      resum: 'Descobreix per què l\'aigua de la zona té índexs de duresa elevats i com allargar la vida útil dels teus electrodomèstics estalviant fins a 400€ anuals en reparacions.',
+      slug: 'aigua-dura-calc-xuquer-serpis-descalcificadors-osmosi',
+      titol: 'L\'aigua dura del Xúquer, Serpis i Clariano: Com evitar que la calç arruïne calderes i aixetes a la teva comarca',
+      subtitol: 'Per què a municipis com Alzira, Xàtiva, Ontinyent o Gandia l\'aigua té més de 40 ºfH i quines solucions reals allarguen la vida dels electrodomèstics.',
+      resum: 'Descobreix per què l\'aigua de les conques fluvials del sud de València té índexs de calç molt elevats i com protegir la teva vivenda estalviant fins a 400€ a l\'any en reparacions.',
       categoria: 'Lampisteria',
       tempsLectura: '5 min de lectura',
       data: '05 Octubre 2026',
-      sectorZona: 'Sector Fontaneria, Sanejament i Tractament d\'Aigua',
+      sectorZona: 'Sector Fontaneria, Sanejament i Tractament d\'Aigua (Ribera, Costera, Vall i Safor)',
       categoriaServeiRecomanat: 'Lampisteria',
       autor: {
         nom: 'Pere Font',
@@ -173,46 +175,46 @@ export class ArticleService {
         avatar: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=200&q=80'
       },
       imatge: 'https://images.unsplash.com/photo-1585704032915-c3400ca199e7?auto=format&fit=crop&w=1200&q=80',
-      imatgePeu: 'Instal·lació neta d\'un equip de descalcificació per intercanvi iònic i sistema d\'osmosi compacta de 5 etapes.',
-      tags: ['Lampisteria', 'Calç', 'Descalcificador', 'Osmosi', 'Calderes', 'Aixetes'],
+      imatgePeu: 'Descalcificador volumètric automàtic i osmosi inversa sota aigüera instal·lats per aigua de xarxa amb alta concentració calcària.',
+      tags: ['Lampisteria', 'Calç', 'Xúquer', 'Descalcificador', 'Osmosi', 'Termos', 'Xàtiva', 'Alzira', 'Gandia'],
       seccions: [
         {
-          subtitol: '1. Per què la nostra aigua té tanta calç?',
+          subtitol: '1. Per què l\'aigua té tanta calç a les nostres comarques?',
           paragrafs: [
-            'La composició geològica de les conques fluvials del litoral català fa que l\'aigua de xarxa contingui concentracions molt elevades de carbonat de calci i magnesi. En molts municipis de la zona es registren valors superiors a 35-50 ºfH (graus francesos), el que es cataloga oficialment com a **aigua molt dura**.',
-            'L\'escalfament de l\'aigua a més de 55°C provoca la precipitació accelerada de la calç. Aquest sediment crea una capa aïllant al voltant de la resistència del termo elèctric o de l\'intercanviador de la caldera, forçant un consum de gas o llum fins a un 30% superior per escalfar el mateix volum d\'aigua.'
+            'La composició geològica calcària dels aqüífers i les conques dels rius Xúquer, Clariano i Serpis fa que l\'aigua de consum públic a la Ribera, la Costera, la Vall d\'Albaida i la Safor presente concentracions de duresa molt elevades, sovint **per damunt dels 40-55 ºfH (graus francesos)**, considerada aigua extremadament dura.',
+            'Quan l\'aigua s\'escalfa a més de 50°C al termo elèctric o a la caldera, el carbonat de calci precipita ràpidament formant una capa de pedra blanca. Aquest sediment embolcalla les resistències elèctriques i els intercanviadors, aïllant la calor i obligant a consumir fins a un 30% més de llum o gas per obtindre la mateixa temperatura.'
           ],
           puntsClau: [
-            'La calç bloqueja cartutxos ceràmics d\'aixetes termostàtiques i atomitzadors.',
-            'Fa malbé les resistències de rentadores i rentavaixelles en menys de 4 anys.',
-            'Resta eficàcia als detergents i gels de dutxa, ressecant la pell i els cabells.'
+            'A les nostres comarques, els termos elèctrics sense manteniment poden cremar la resistència en menys de 3 o 4 anys.',
+            'La calç bloqueja els atomitzadors d\'aixetes i mampares de dutxa, deixant taques blanques impossibles de llevar.',
+            'Resta eficàcia a detergents i sabons de rentadora, fent que calga utilitzar més quantitat de producte.'
           ]
         },
         {
-          subtitol: '2. Solucions reals: Descalcificador volumètric vs Osmosi inversa',
+          subtitol: '2. Solucions eficaces: Descalcificador volumètric per a tota la casa vs Osmosi inversa a la cuina',
           paragrafs: [
-            'Per resoldre el problema cal distingir entre l\'aigua que utilitzem per a neteja i higiene (tota la casa) i l\'aigua que bevem i fem servir per cuinar:',
-            '• **Descalcificador d\'intercanvi iònic**: S\'instal·la a l\'entrada general de l\'habitatge. Retira el calci i magnesi de tota la casa mitjançant resines regenerades amb sal pastilla. Protegeix el 100% de les canonades, sanitaris i calderes.',
-            '• **Osmosi inversa de 5 etapes compacta**: S\'instal·la sota l\'aigüera de la cuina. Elimina el 98% de sals, clor, microplàstics i possibles impureses químiques, produint una aigua de mineralització dèbil perfecta per beure, estalviant la compra de centenars d\'ampolles de plàstic a l\'any.'
+            'Per combatre la calç de forma duradora cal combinar dues solucions complementàries:',
+            '• **Descalcificador volumètric de baix consum de sal**: S\'instal·la a l\'escomesa general de la vivenda o unifamiliar. Protegeix el 100% de les canonades, calderes, rentadores i sanitaris eliminant els ions de calci i magnesi.',
+            '• **Equip d\'osmosi inversa de 5 etapes amb remineralitzador**: S\'instal·la sota l\'aigüera de la cuina. Elimina sals, clor i impureses, proporcionant una aigua de sabor excel·lent per beure i cuinar, evitant carregar garrafes de plàstic del supermercat.'
           ],
           taulaPreus: [
-            { concepte: 'Instal·lació de descalcificador volumètric compacte de baix consum', preuAproximat: '750€ - 1.250€', consell: 'Amortitzable ràpidament per l\'allargament de vida de la caldera i l\'estalvi en productes de neteja.' },
-            { concepte: 'Equip d\'osmosi inversa compacta amb aixeta de 1 o 3 vies', preuAproximat: '220€ - 390€', consell: 'Filtres de fàcil recanvi anual (cost recanvis: 35€/any).' },
-            { concepte: 'Reparació urgent de fuita en canonada general o canvi de vàlvula de pas', preuAproximat: '80€ - 160€', consell: 'Servei prioritari d\'urgència a través dels professionals verificats d\'AVISA.' }
+            { concepte: 'Instal·lació de descalcificador volumètric compacte per a habitatge', preuAproximat: '690€ - 1.150€', consell: 'Allarga la vida útil de tots els electrodomèstics d\'aigua i redueix el consum energètic.' },
+            { concepte: 'Instal·lació d\'equip d\'osmosi inversa compacta amb aixeta de servei', preuAproximat: '190€ - 350€', consell: 'Filtres de fàcil substitució anual amb un cost de recanvis inferior a 35€/any.' },
+            { concepte: 'Canvi d\'ànode de magnesi i neteja de calç en termo elèctric', preuAproximat: '75€ - 130€', consell: 'Recomanat cada 2 anys a la nostra comarca per evitar la perforació de la cuba.' }
           ]
         }
       ]
     },
     {
       id: 5,
-      slug: 'serralleria-seguretat-panys-antibumping-urgencies',
-      titol: 'Seguretat a la llar: Panys antibumping, escuts cuirassats i consells per a primers i segons habitatges',
-      subtitol: 'Com evitar les tècniques d\'obertura silenciosa més habituals i gestionar amb tranquil·litat qualsevol pèrdua de claus.',
-      resum: 'Guia de seguretat residencial per a la protecció d\'habitatges habituals i segones residències davant les tècniques modernes de robatori silenciós.',
+      slug: 'serralleria-seguretat-xalets-bixquert-garrofera-apartaments',
+      titol: 'Seguretat en xalets, casetes de camp i apartaments: Panys antibumping a Bixquert, la Garrofera o la platja de Gandia',
+      subtitol: 'Com blindar segones residències i vivendes aïllades contra l\'obertura silenciosa i consells de serralleria d\'urgència sense intermediaris abusius.',
+      resum: 'Guia de seguretat residencial per a casetes de camp i xalets a urbanitzacions de Xàtiva, Alzira, Ontinyent o la platja de Gandia amb bombins d\'alta gamma i escuts cuirassats.',
       categoria: 'Serralleria',
       tempsLectura: '4 min de lectura',
       data: '02 Octubre 2026',
-      sectorZona: 'Sector Serralleria Tècnica i Seguretat Física',
+      sectorZona: 'Sector Serralleria Tècnica i Seguretat Residencial (Sud de València)',
       categoriaServeiRecomanat: 'Serralleria',
       autor: {
         nom: 'David Morales',
@@ -220,45 +222,45 @@ export class ArticleService {
         avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=80'
       },
       imatge: 'https://images.unsplash.com/photo-1558002038-1055907df827?auto=format&fit=crop&w=1200&q=80',
-      imatgePeu: 'Bombí d\'alta seguretat amb certificació antibumping, pont d\'acer reforçat i escut cuirassat magnètic.',
-      tags: ['Serralleria', 'Seguretat', 'Antibumping', 'Obertura 24h', 'Portes Blindades', 'Bombins'],
+      imatgePeu: 'Bombí antibumping i antiextracció amb pont reforçat d\'acer i escut cuirassat magnètic protector.',
+      tags: ['Serralleria', 'Seguretat', 'Antibumping', 'Xalets', 'Bixquert', 'La Garrofera', 'Gandia', 'Urgències 24h'],
       seccions: [
         {
-          subtitol: '1. Com operen els lladres actualment? Bumping i impresioning',
+          subtitol: '1. El punt feble de xalets i segones residències a les nostres comarques',
           paragrafs: [
-            'Més del 70% de les portes d\'habitatges a la nostra zona disposen encara de bombins convencionals de serreta o de punts antics. Aquests cilindres poden ser oberts en menys de 60 segons sense fer gens de soroll mitjançant les tècniques de *bumping* o *impresioning*, sense deixar cap marca visible a la porta ni trencar el marc.',
-            'Aquesta circumstància és especialment crítica en blocs de pisos cèntrics i en zones de xalets o segones residències (molt freqüents al litoral i a les urbanitzacions de la rodalia) durant els mesos d\'hivern o caps de setmana.'
+            'A les zones d\'urbanitzacions i casetes de camp com **Bixquert (Xàtiva), la Garrofera o la Murta (Alzira), Santa Anna o l\'Ombria (Ontinyent)**, així com als apartaments de platja a **Gandia, Cullera, Tavernes o Oliva**, moltes vivendes queden buides durant els dies de setmana o durant la temporada d\'hivern.',
+            'Més del 65% d\'aquests habitatges tenen portes amb panys convencionals de serreta o cilindres bàsics instal·lats fa dècades. Els lladres utilitzen tècniques com el *bumping* o el *rossinyolament d\'impressió* per obrir en menys d\'un minut sense fer soroll ni trencar el marc de la porta.'
           ],
           puntsClau: [
-            'Comprova que el teu bombí disposi de targeta de propietat per al duplicat de claus controlat.',
-            'Un escut exterior cuirassat és imprescindible: impedeix l\'extracció mecànica amb mordassa o el trepat directe.',
-            'Revisa sempre que el tancament de la porta tingui com a mínim 3 punts de bloqueig perimetral.'
+            'Instal·lar bombins amb protecció patentada antibumping, antirotura i passadors d\'acer trempat anti-trepat.',
+            'Afegir un escut cuirassat exterior que impedisca l\'extracció directa del cilindre amb tenalles o mordassa.',
+            'Revisar tancaments de reixes de finestres i portes de garatge a vivendes aïllades de camp.'
           ]
         },
         {
-          subtitol: '2. Preus transparents en serralleria d\'urgència: evita els abusos',
+          subtitol: '2. Serrallers d\'urgència locals: com evitar abusos i intermediaris',
           paragrafs: [
-            'El sector de la serralleria d\'urgències ha patit durant anys la presència d\'enganxines publicitàries i anuncis opacs amb tarifes desorbitades en casos d\'oblit de claus un diumenge o a la nit.',
-            'A la plataforma AVISA tots els professionals estan plenament identificats amb preus pactats per endavant abans de desplaçar-se. Els serrallers d\'AVISA utilitzen tècniques de rossinyolament net sense danyar la fusta ni l\'estructura de la porta en cas d\'haver-te deixat les claus posades per dins.'
+            'Davant una pèrdua de claus o un pany bloquejat, és molt habitual buscar a Internet i caure en centraletes foranes que envien tècnics subcontractats des de València ciutat cobrant desplaçaments abusius que superen fàcilment els 300€.',
+            'A AVISA connectes exclusivament amb **serrallers professionals de la teva comarca** amb preus clars comunicats per avançat. Utilitzen tècniques d\'obertura neta que no fan malbé la fusta de la porta si les claus s\'han quedat posades per dins.'
           ],
           taulaPreus: [
-            { concepte: 'Obertura senzilla de porta de cop (claus a l\'interior, sense tancar amb clau)', preuAproximat: '65€ - 95€', consell: 'S\'obre de manera neta en menys de 10 minuts sense trencar el pany.' },
-            { concepte: 'Substitució per bombí d\'alta seguretat antibumping, antirotura i antiganzúa', preuAproximat: '140€ - 240€', consell: 'Inclou 5 claus patentades amb targeta de seguretat exclusiva.' },
-            { concepte: 'Instal·lació d\'escut de seguretat cuirassat amb tecnologia magnètica', preuAproximat: '110€ - 180€', consell: 'Impedeix que ningú pugui introduir cola, escuradents o eines al pany.' }
+            { concepte: 'Obertura d\'urgència de porta de cop (claus oblidades per dins, sense volta de clau)', preuAproximat: '60€ - 90€', consell: 'S\'executa en pocs minuts per rossinyolament sense danyar la porta ni el bombí.' },
+            { concepte: 'Instal·lació de bombí d\'alta seguretat antibumping amb targeta de propietat', preuAproximat: '135€ - 220€', consell: 'Inclou 5 claus incopiables sense la targeta de seguretat acreditativa.' },
+            { concepte: 'Muntatge d\'escut cuirassat protector magnètic d\'alta resistència', preuAproximat: '100€ - 170€', consell: 'Impedeix l\'accés directe a la ranura del pany i evita l\'ús d\'eines de torsió mecànica.' }
           ]
         }
       ]
     },
     {
       id: 6,
-      slug: 'fusteria-parquets-portes-aillament-habitabilitat',
-      titol: 'Aïllament acústic i tèrmic amb fusteria contemporània: Parquet laminat AC5 i portes massisses',
-      subtitol: 'Com millorar el confort a la llar, aïllar del soroll del carrer i guanyar espai amb portes corredisses encastades.',
-      resum: 'Descobreix com la bona fusteria transforma l\'aspecte estètic de l\'habitatge i millora l\'aïllament tèrmic i acústic reduint el soroll exterior.',
+      slug: 'fusteria-sols-aillament-cases-poble-costera-vall',
+      titol: 'Fusteria i aïllament en cases de poble: Com guanyar confort tèrmic amb parquet AC5 i portes massisses',
+      subtitol: 'Eliminar el fred del terra de terratzo antic i aïllar del soroll del carrer a les vivendes històriques d\'Ontinyent, Xàtiva o Bocairent.',
+      resum: 'Descobreix com la fusteria a mida i els sòls laminats d\'alta resistència milloren l\'aïllament tèrmic i acústic en habitatges tradicionals de les comarques d\'interior.',
       categoria: 'Fusteria',
       tempsLectura: '4 min de lectura',
       data: '28 Setembre 2026',
-      sectorZona: 'Sector Fusteria, Ebenisteria i Interiorisme',
+      sectorZona: 'Sector Fusteria Tradicional, Ebenisteria i Interiorisme (Costera i Vall d\'Albaida)',
       categoriaServeiRecomanat: 'Fusteria',
       autor: {
         nom: 'Joan Valls',
@@ -266,30 +268,30 @@ export class ArticleService {
         avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=200&q=80'
       },
       imatge: 'https://images.unsplash.com/photo-1538688525198-9b88f6f53126?auto=format&fit=crop&w=1200&q=80',
-      imatgePeu: 'Col·locació mil·limètrica de parquet laminat d\'alta resistència AC5 amb base aïllant d\'alta densitat.',
-      tags: ['Fusteria', 'Parquet', 'Portes', 'Aïllament Acústic', 'Armaris a mida', 'Pladur'],
+      imatgePeu: 'Col·locació de parquet laminat AC5 sobre manta aïllant antihumitat en una casa de poble restaurada.',
+      tags: ['Fusteria', 'Parquet AC5', 'Portes massisses', 'Cases de poble', 'Ontinyent', 'Xàtiva', 'Aïllament'],
       seccions: [
         {
-          subtitol: '1. El sòl i les portes com a barrera tèrmica i acústica',
+          subtitol: '1. El sòl com a barrera davant el fred a les cases tradicionals',
           paragrafs: [
-            'Molts habitatges amb paviment de terratzo antic transmeten fred als peus durant els mesos d\'hivern i amplifiquen el soroll de passes o cops cap al pis inferior. La col·locació d\'un bon sòl laminat flotant sobre una manta aïllant acústica de polietilè reticulat o cautxú redueix el soroll d\'impacte fins a 21 decibels.',
-            'De la mateixa manera, substituir les velles portes buides d\'aglomerat per portes de pas massisses lacades amb junta de goma isofònica al marc redueix dràsticament el soroll procedent de zones comunes o entre habitacions, millorant el descans nocturn.'
+            'A les vivendes històriques d\'Ontinyent, Bocairent, Albaida o el nucli antic de Xàtiva, els terres originals solen ser de terratzo o rajola antiga assentada directament sobre el terreny o forjats antics sense cambra d\'aire aïllada. Això transmet una sensació constant de fred als peus durant els mesos d\'hivern.',
+            'La instal·lació d\'un **sòl laminat d\'alta densitat (classificació AC5 o AC6)** sobre una manta aïllant de polietilè reticulat o cautxú amb barrera de vapor elimina la humitat per capil·laritat, aporta calidesa immediata a la trepitjada i redueix el soroll d\'impacte fins a 20 decibels.'
           ],
           puntsClau: [
-            'Classificació AC5 o AC6 per a resistència a rascades de mascotes i trànsit intens.',
-            'Tractament hidroresistent a les juntes per a col·locació amb seguretat a cuines i banys.',
-            'Guanya fins a 1,5 m² d\'espai útil a habitacions i banys instal·lant portes corredisses encastades en envans de pladur.'
+            'Classificació AC5 d\'alta resistència a rascades i tractament hidròfug a les ranures per a cuines i zones de pas.',
+            'Portes massisses lacades amb junta perimetral de goma isofònica per frenar corrents d\'aire entre habitacions.',
+            'Aprofitament dels sostres alts típics valencians per dissenyar armaris encastats de terra a sostre.'
           ]
         },
         {
-          subtitol: '2. Estimació de preus a la nostra comarca',
+          subtitol: '2. Estimació de preus amb fusters de la zona',
           paragrafs: [
-            'A AVISA treballem amb fusters i instal·ladors de sòls que ofereixen pressupostos clars de material i mà d\'obra amb garantia d\'ajust perfecte i rematades de sòcol:'
+            'Els fusters de la xarxa AVISA ofereixen pressupostos clars de material i col·locació mil·limètrica amb retall de marcs de portes i sòcols integrats:'
           ],
           taulaPreus: [
-            { concepte: 'Substitució de 5 portes de pas massisses lacades en blanc amb manetes noves', preuAproximat: '950€ - 1.450€', consell: 'Inclou desmuntatge de portes antigues, ajust, tapajuntes i tancament silenciós.' },
-            { concepte: 'Instal·lació de parquet laminat AC5 (per a pis de 70-90 m²)', preuAproximat: '1.600€ - 2.800€', consell: 'Inclou base aïllant, retall de marcs de portes i sòcol a joc.' },
-            { concepte: 'Armari encastat a mida de terra a sostre amb distribució interior', preuAproximat: '1.200€ - 2.400€', consell: 'Maximitza l\'espai d\'emmagatzematge en racons difícils o sota escales.' }
+            { concepte: 'Instal·lació de parquet laminat AC5 amb manta aïllant (pis de 70-90 m²)', preuAproximat: '1.450€ - 2.500€', consell: 'Inclou base antihumitat, rebaix de portes i col·locació de sòcol perimetral lacat.' },
+            { concepte: 'Substitució de 5 portes de pas per portes massisses lacades amb manetes', preuAproximat: '890€ - 1.380€', consell: 'Aïllament acústic i tancament magnètic suau molt superior a les antigues portes d\'aglomerat buit.' },
+            { concepte: 'Armari encastat a mida sota escala o aprofitant racons de sostre alt', preuAproximat: '1.100€ - 2.200€', consell: 'Adaptació artesanal a mida que multiplica l\'espai útil d\'emmagatzematge en cases de poble.' }
           ]
         }
       ]

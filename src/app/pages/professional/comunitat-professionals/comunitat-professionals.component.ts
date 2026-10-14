@@ -31,7 +31,7 @@ interface GuiaProfessional {
         <div class="hero-badge">COMUNITAT DE PROFESSIONALS AVISA</div>
         <h1 class="hero-title">Fes créixer el teu negoci local amb feina real, tracte directe i 0% de comissions</h1>
         <p class="hero-lead">
-          Descobreix per què fusters, lampistes, electricistes, pintors i paletes de la nostra comarca
+          Descobreix per què fusters, lampistes, electricistes, pintors i paletes de la Costera, la Vall d'Albaida, la Safor i la Ribera (Xàtiva, Ontinyent, Gandia, Alzira...)
           escullen AVISA per gestionar la seva feina sense intermediaris que es quedin amb el seu marge.
         </p>
 

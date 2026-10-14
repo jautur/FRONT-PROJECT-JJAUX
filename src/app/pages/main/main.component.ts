@@ -306,7 +306,7 @@ import { Article } from '../../models/article.model';
               <span class="section-badge-tag">BLOG D'AVISA · CONSELLS I RECURSOS</span>
               <h2 class="seo-section-title">Guies pràctiques per a la llar i claus per a professionals</h2>
               <p class="seo-section-intro">
-                Articles actualitzats amb consells tècnics, estimacions de preus i bones pràctiques per treure el màxim rendiment a la plataforma.
+                Articles especialitzats per a la Costera, la Vall d'Albaida, la Safor i la Ribera amb consells tècnics, preus orientatius locals i solucions adaptades a les nostres comarques.
               </p>
             </div>
           </div>
