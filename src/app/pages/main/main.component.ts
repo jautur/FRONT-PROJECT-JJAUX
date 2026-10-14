@@ -155,9 +155,10 @@ import { AuthService } from '../../core/services/auth.service';
 
       .hero-brand {
         margin: 0;
+        font-family: var(--font-title, 'Boldonse', 'Climate Crisis', sans-serif);
         font-size: clamp(3.6rem, 9vw, 6.8rem);
         font-weight: 900;
-        letter-spacing: 0.18em;
+        letter-spacing: 0.12em;
         text-transform: uppercase;
         color: #f7f3ed; /* Color blanc brut */
         text-shadow: 0 4px 30px rgba(0, 0, 0, 0.95), 0 2px 10px rgba(0, 0, 0, 0.7);

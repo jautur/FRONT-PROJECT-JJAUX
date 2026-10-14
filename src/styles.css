@@ -33,6 +33,9 @@
   --neon-bg: rgba(255, 23, 68, 0.12);
   --neon-border: rgba(255, 23, 68, 0.5);
 
+  /* Tipografia per a títols d'alt impacte */
+  --font-title: 'Boldonse', 'Climate Crisis', sans-serif;
+
   /* Tipografia en negreta per defecte */
   font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   letter-spacing: -0.015em;

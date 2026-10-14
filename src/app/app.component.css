@@ -64,9 +64,10 @@
 }
 
 .brand-title {
-  font-size: 2.3rem;
+  font-family: var(--font-title, 'Boldonse', 'Climate Crisis', sans-serif);
+  font-size: 2.1rem;
   font-weight: 900; /* Estil de lletra en negreta potent */
-  letter-spacing: 0.22em;
+  letter-spacing: 0.12em;
   color: var(--color-bone, #f5f4ef); /* Blanc os */
   text-decoration: none;
   text-shadow: 0 2px 16px rgba(0, 0, 0, 0.9);
@@ -237,8 +238,9 @@
 }
 
 .brand-text {
+  font-family: var(--font-title, 'Boldonse', 'Climate Crisis', sans-serif);
   font-weight: 900;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.1em;
   font-size: 1.15rem;
   color: var(--color-bone, #f5f4ef);
 }
