@@ -11,3 +11,4 @@ export * from './tasca.model';
 export * from './oferta.model';
 export * from './proposta.model';
 export * from './avis.model';
+export * from './resenya.model';
