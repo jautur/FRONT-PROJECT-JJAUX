@@ -1983,14 +1983,16 @@ export class MainComponent implements OnInit {
   }
 
   get tasks() {
-    return this.dashboard?.tasks.map((task) => ({
-      id: task.id,
-      title: task.titol,
-      client: task.client,
-      category: task.categoria?.trim() ? task.categoria.trim() : 'Altres Serveis',
-      budget: task.budget,
-      status: task.estat
-    })) ?? [];
+    return (this.dashboard?.tasks ?? [])
+      .filter((task) => (task.tipus === 'incidencia' || !task.professional) && task.estat === 'Oberta' && task.tipus !== 'oferta')
+      .map((task) => ({
+        id: task.id,
+        title: task.titol,
+        client: task.client,
+        category: task.categoria?.trim() ? task.categoria.trim() : 'Altres Serveis',
+        budget: task.budget,
+        status: task.estat
+      }));
   }
 
   get offers() {

@@ -28,15 +28,56 @@ type FiltreEstatOferta = 'totes' | 'pendent' | 'acceptada' | 'rebutjada';
     <div class="panell-container">
       <div class="panell-header">
         <div>
-          <h2>Els meus Pressupostos i Ofertes</h2>
-          <p class="subtitle">Fes seguiment de les teves propostes econòmiques enviades als clients.</p>
+          <h2>Els meus Pressupostos i Tasques</h2>
+          <p class="subtitle">Fes seguiment de les teves feines assignades i de les propostes enviades als clients.</p>
         </div>
         <div>
           <a routerLink="/professional/crear-oferta" class="btn-crear">
-            + Nova oferta
+            + Nova oferta / Servei
           </a>
         </div>
       </div>
+
+      <!-- SECCIÓ DE TASQUES ASSIGNADES EN CURS I FINALITZADES (ON CONVERGEIXEN CLIENT I PROFESSIONAL) -->
+      <section class="assigned-section" *ngIf="!loading && tasquesAssignades.length > 0">
+        <div class="section-title-bar">
+          <div class="title-with-badge">
+            <span class="pro-assigned-pill">TASQUES EN GESTIÓ</span>
+            <h3>Les meves feines actives & finalitzades ({{ tasquesAssignades.length }})</h3>
+          </div>
+          <span class="section-badge-hint">Client + Tu (Professional assignat)</span>
+        </div>
+
+        <div class="assigned-tasks-grid">
+          <div *ngFor="let t of tasquesAssignades" class="assigned-task-card">
+            <div class="card-header">
+              <span class="badge-nature">TASCA CONVERGIDA</span>
+              <span class="badge-estat" [ngClass]="getTaskEstatClass(t.estat)">{{ t.estat }}</span>
+            </div>
+
+            <h4 class="tasca-titol">{{ t.titol }}</h4>
+            <div class="assigned-meta">
+              <div class="assigned-meta-item">
+                <span class="lbl">Client:</span>
+                <strong><a [routerLink]="['/perfil', t.clientNom || t.client]" class="user-inline-link">{{ t.clientNom || t.client }}</a></strong>
+              </div>
+              <div class="assigned-meta-item">
+                <span class="lbl">Preu acordat:</span>
+                <span class="budget-highlight">{{ t.budget }}</span>
+              </div>
+            </div>
+            <p class="tasca-desc" *ngIf="t.descripcio">{{ t.descripcio }}</p>
+
+            <div class="card-actions">
+              <a [routerLink]="['/tasca-detall', t.id]" class="btn-action primary">
+                Veure seguiment tasca
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="section-divider" *ngIf="tasquesAssignades.length > 0"></div>
 
       <!-- Filtres d'oferta -->
       <div class="filter-tabs">
@@ -394,11 +435,115 @@ type FiltreEstatOferta = 'totes' | 'pendent' | 'acceptada' | 'rebutjada';
       margin-bottom: 1rem;
       font-weight: 700;
     }
+    .assigned-section {
+      background: #fdfbf7;
+      border: 1px solid #e7e2d6;
+      border-radius: 16px;
+      padding: 1.5rem 1.6rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+    }
+    .section-title-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.25rem;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .title-with-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .title-with-badge h3 {
+      margin: 0;
+      font-size: 1.25rem;
+      font-weight: 900;
+      color: #09090c;
+    }
+    .pro-assigned-pill {
+      background: #ecfdf5;
+      color: #065f46;
+      border: 1px solid #a7f3d0;
+      font-size: 0.7rem;
+      font-weight: 900;
+      padding: 0.2rem 0.55rem;
+      border-radius: 6px;
+      letter-spacing: 0.06em;
+    }
+    .section-badge-hint {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #78716c;
+      background: #ffffff;
+      border: 1px solid #e5e0d7;
+      padding: 0.25rem 0.65rem;
+      border-radius: 6px;
+    }
+    .assigned-tasks-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+      gap: 1.25rem;
+    }
+    .assigned-task-card {
+      background: #ffffff;
+      border: 1px solid #e2ddd3;
+      border-left: 4px solid #10b981;
+      border-radius: 12px;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.03);
+    }
+    .assigned-task-card .badge-nature {
+      background: #ecfdf5;
+      color: #065f46;
+      border: 1px solid #a7f3d0;
+      font-size: 0.68rem;
+      font-weight: 900;
+      padding: 0.18rem 0.5rem;
+      border-radius: 5px;
+    }
+    .assigned-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #faf8f4;
+      border: 1px solid #eeeae0;
+      padding: 0.5rem 0.75rem;
+      border-radius: 8px;
+      font-size: 0.84rem;
+    }
+    .assigned-meta-item .lbl {
+      color: #78716c;
+      margin-right: 0.35rem;
+    }
+    .budget-highlight {
+      color: #059669;
+      font-weight: 900;
+    }
+    .section-divider {
+      height: 1px;
+      background: #e5e0d7;
+      margin: 1.5rem 0 2rem;
+    }
+    .user-inline-link {
+      color: inherit;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+    .user-inline-link:hover {
+      color: #ff1744;
+    }
   `]
 })
 export class LesMevesOfertesComponent implements OnInit {
   /** Llista d'ofertes enviades pel professional */
   ofertes: Oferta[] = [];
+  /** Llista de tasques on el professional ha estat assignat i convergeix amb el client */
+  tasquesAssignades: Tasca[] = [];
   /** Filtre actiu seleccionat */
   filtreActiu: FiltreEstatOferta = 'totes';
   /** Mapa per accedir ràpidament a les dades de la tasca [tascaId -> Tasca] */
@@ -460,7 +605,15 @@ export class LesMevesOfertesComponent implements OnInit {
       return;
     }
 
-    // Carrega totes les tasques per a poder mostrar títol i dades del client
+    // Carrega les tasques on aquest professional ha estat assignat
+    this.tascaService.getByProfessional(user.nom).subscribe({
+      next: (tasks) => {
+        this.tasquesAssignades = tasks ?? [];
+      },
+      error: () => {}
+    });
+
+    // Carrega totes les tasques per a poder mostrar títol i dades del client a les ofertes
     this.tascaService.getAll().subscribe({
       next: (tasques) => {
         tasques.forEach(t => {
@@ -505,5 +658,12 @@ export class LesMevesOfertesComponent implements OnInit {
     if (e.includes('accept')) return 'estat-acceptada';
     if (e.includes('rebutj')) return 'estat-rebutjada';
     return '';
+  }
+
+  getTaskEstatClass(estat: string): string {
+    const e = estat?.toLowerCase() || '';
+    if (e.includes('curs')) return 'estat-en-curs';
+    if (e.includes('finalitzad')) return 'estat-finalitzada';
+    return 'estat-pendent';
   }
 }

@@ -9,8 +9,10 @@ export interface DashboardTask {
   descripcio: string;
   categoria: string;
   client: string;
+  professional?: string;
   budget: string;
   estat: string;
+  tipus?: string;
 }
 
 export interface DashboardOffer {

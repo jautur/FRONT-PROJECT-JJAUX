@@ -22,10 +22,15 @@ import { Oferta } from '../../../models/oferta.model';
   imports: [CommonModule, FormsModule, RouterLink],
   template: `
     <section class="detall-container" *ngIf="tasca">
-      <!-- Capçalera de la tasca -->
-      <header class="detall-header">
+      <!-- Capçalera de la tasca o incidència -->
+      <header class="detall-header" [class.converged-header]="isTascaConvergida">
         <div class="top-row">
-          <span class="category-tag">{{ tasca.categoria }}</span>
+          <div class="header-tags-group">
+            <span class="nature-tag" [ngClass]="isTascaConvergida ? 'is-tasca' : 'is-incidencia'">
+              {{ isTascaConvergida ? 'TASCA CONVERGIDA' : 'INCIDÈNCIA OBERTA' }}
+            </span>
+            <span class="category-tag">{{ tasca.categoria }}</span>
+          </div>
           <span class="status-badge" [ngClass]="getStatusClass(tasca.estat)">
             {{ tasca.estat }}
           </span>
@@ -33,7 +38,13 @@ import { Oferta } from '../../../models/oferta.model';
         <h1>{{ tasca.titol }}</h1>
         <div class="meta-row">
           <span>Client: <strong><a [routerLink]="['/perfil', tasca.client]" class="user-profile-link" title="Veure perfil de {{ tasca.client }}">{{ tasca.client }}</a></strong></span>
-          <span>Pressupost estimat: <strong>{{ tasca.budget }}</strong></span>
+          <span *ngIf="isTascaConvergida">
+            Professional assignat: <strong><a [routerLink]="['/perfil', assignedProfessional]" class="user-profile-link pro-link" title="Veure perfil de {{ assignedProfessional }}">{{ assignedProfessional }}</a></strong>
+          </span>
+          <span *ngIf="!isTascaConvergida">
+            Professional: <em>Sense assignar (cercant pressupostos)</em>
+          </span>
+          <span>{{ isTascaConvergida ? 'Preu acordat:' : 'Pressupost orientatiu:' }} <strong>{{ tasca.budget }}</strong></span>
           <span>Identificador: <code>{{ tasca.id }}</code></span>
         </div>
       </header>
@@ -43,18 +54,30 @@ import { Oferta } from '../../../models/oferta.model';
         <h2>Descripció del treball</h2>
         <p class="description-text">{{ tasca.descripcio }}</p>
 
+        <!-- Banner informatiu quan és una TASCA oficial en curs -->
+        <div *ngIf="isTascaConvergida" class="converged-info-banner">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+          </svg>
+          <div>
+            <strong>Tasca acordada:</strong>
+            <span> Client <strong>{{ tasca.client }}</strong> i Professional <strong>{{ assignedProfessional }}</strong> ja treballen plegats ({{ tasca.budget }}).</span>
+          </div>
+        </div>
+
         <!-- Botó per al client per tancar la tasca quan està en curs -->
         <div *ngIf="isClientOwner && tasca.estat === 'En curs'" class="complete-box">
           <p>La feina ja s'ha lliurat i està acabada?</p>
           <button type="button" class="btn btn-complete" (click)="onCompleteTask()">
-            Marcar tasca com a Finalitzada
+            Marcar tasca com a Finalitzada i Avaluar
           </button>
         </div>
 
-        <!-- Botó per a professionals si la tasca està oberta -->
-        <div *ngIf="isProfessional && tasca.estat === 'Oberta'" class="action-box">
+        <!-- Botó per a professionals si la incidència està oberta i sense professional -->
+        <div *ngIf="isProfessional && !isTascaConvergida && tasca.estat === 'Oberta'" class="action-box">
           <a [routerLink]="['/professional/crear-oferta']" [queryParams]="{ taskId: tasca.id }" class="btn btn-primary">
-            Presentar oferta per a aquesta tasca
+            Presentar oferta per a aquesta incidència
           </a>
         </div>
       </article>
@@ -202,11 +225,42 @@ import { Oferta } from '../../../models/oferta.model';
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
       }
 
+      .detall-header.converged-header {
+        border-left: 5px solid #10b981;
+      }
+
       .top-row {
         display: flex;
         justify-content: space-between;
         align-items: center;
         margin-bottom: 0.75rem;
+      }
+
+      .header-tags-group {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .nature-tag {
+        border-radius: 6px;
+        padding: 0.25rem 0.65rem;
+        font-size: 0.72rem;
+        font-weight: 900;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+
+      .nature-tag.is-tasca {
+        background: #ecfdf5;
+        color: #065f46;
+        border: 1px solid #a7f3d0;
+      }
+
+      .nature-tag.is-incidencia {
+        background: #09090c;
+        color: #ffffff;
+        border: 1px solid #2b2a36;
       }
 
       .category-tag {
@@ -218,6 +272,28 @@ import { Oferta } from '../../../models/oferta.model';
         font-weight: 800;
         font-size: 0.8rem;
         letter-spacing: 0.05em;
+      }
+
+      .pro-link {
+        color: #059669 !important;
+      }
+
+      .converged-info-banner {
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+        background: #ecfdf5;
+        border: 1px solid #a7f3d0;
+        border-radius: 10px;
+        padding: 0.85rem 1.15rem;
+        margin-top: 1.25rem;
+        color: #065f46;
+        font-size: 0.92rem;
+      }
+
+      .converged-info-banner svg {
+        flex-shrink: 0;
+        color: #10b981;
       }
 
       h1 {
@@ -752,8 +828,15 @@ export class TascaDetallComponent implements OnInit {
   ) {}
 
   get assignedProfessional(): string {
+    if (this.tasca?.professionalNom || this.tasca?.professional) {
+      return (this.tasca.professionalNom || this.tasca.professional)!;
+    }
     const acc = this.ofertes.find(o => o.estat === 'Acceptada') || this.ofertes[0];
     return acc ? acc.professional : 'Professional AVISA';
+  }
+
+  get isTascaConvergida(): boolean {
+    return this.tasca?.tipus === 'tasca' || !!(this.tasca?.professional || this.tasca?.professionalNom) || (this.tasca?.estat !== 'Oberta');
   }
 
   tancarModalFinalitzar(): void {

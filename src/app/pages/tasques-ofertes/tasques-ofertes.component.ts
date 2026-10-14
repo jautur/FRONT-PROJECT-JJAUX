@@ -32,8 +32,11 @@ interface CategoriaFiltre {
           </p>
         </div>
         <div class="market-header-actions">
-          <button type="button" class="btn-create-task" (click)="onNovaTasca()">
-            + Publicar nova tasca
+          <button type="button" class="btn-create-task" (click)="onNovaIncidencia()">
+            + Publicar Incidència
+          </button>
+          <button type="button" class="btn-create-offer" (click)="onNovaOferta()">
+            + Publicar Oferta / Servei
           </button>
         </div>
       </header>
@@ -65,15 +68,15 @@ interface CategoriaFiltre {
             [class.active]="tipusFiltre === 'tots'"
             (click)="tipusFiltre = 'tots'"
           >
-            Tots els anuncis ({{ tasquesFiltrades.length + ofertesFiltrades.length }})
+            Tots els anuncis ({{ totalElements }})
           </button>
           <button
             type="button"
             class="filter-pill"
-            [class.active]="tipusFiltre === 'tasques'"
-            (click)="tipusFiltre = 'tasques'"
+            [class.active]="tipusFiltre === 'incidencies'"
+            (click)="tipusFiltre = 'incidencies'"
           >
-            Incidències de clients ({{ tasquesFiltrades.length }})
+            Incidències de clients ({{ incidenciesFiltrades.length }})
           </button>
           <button
             type="button"
@@ -82,6 +85,14 @@ interface CategoriaFiltre {
             (click)="tipusFiltre = 'ofertes'"
           >
             Ofertes de professionals ({{ ofertesFiltrades.length }})
+          </button>
+          <button
+            type="button"
+            class="filter-pill"
+            [class.active]="tipusFiltre === 'tasques'"
+            (click)="tipusFiltre = 'tasques'"
+          >
+            Tasques en curs ({{ tasquesFiltrades.length }})
           </button>
         </div>
       </section>
@@ -158,7 +169,7 @@ interface CategoriaFiltre {
           <!-- Resultats de tasques i ofertes -->
           <div *ngIf="!loading && !error">
             <!-- Estat buit quan la cerca no troba res -->
-            <div *ngIf="tasquesFiltrades.length === 0 && ofertesFiltrades.length === 0" class="empty-state">
+            <div *ngIf="incidenciesFiltrades.length === 0 && ofertesFiltrades.length === 0 && tasquesFiltrades.length === 0" class="empty-state">
               <div class="empty-icon" aria-hidden="true">
                 <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                   <circle cx="11" cy="11" r="8"></circle>
@@ -166,22 +177,22 @@ interface CategoriaFiltre {
                   <line x1="8" y1="11" x2="14" y2="11"></line>
                 </svg>
               </div>
-              <h3>Cap tasca o oferta coincideix amb els teus filtres</h3>
+              <h3>Cap incidència, oferta o tasca coincideix amb els teus filtres</h3>
               <p>Prova amb una altra paraula clau o selecciona una altra categoria per trobar resultats.</p>
               <button type="button" class="btn-reset-filters" (click)="resetFiltres()">
                 Restablir filtres de cerca
               </button>
             </div>
 
-            <!-- SECCIÓ D'INCIDÈNCIES DE CLIENTS -->
-            <section class="results-block" *ngIf="tipusFiltre !== 'ofertes' && tasquesFiltrades.length > 0">
+            <!-- SECCIÓ D'INCIDÈNCIES DE CLIENTS (SOLS CLIENT, SENSE PROFESSIONAL ASSIGNAT) -->
+            <section class="results-block" *ngIf="(tipusFiltre === 'tots' || tipusFiltre === 'incidencies') && incidenciesFiltrades.length > 0">
               <div class="results-block-header">
-                <h2>Incidències i peticions de treball</h2>
-                <span class="count-tag">{{ tasquesFiltrades.length }} obertes</span>
+                <h2>Incidències i peticions de clients</h2>
+                <span class="count-tag">{{ incidenciesFiltrades.length }} obertes</span>
               </div>
 
               <div class="cards-grid">
-                <article class="market-card task-card" *ngFor="let task of tasquesFiltrades">
+                <article class="market-card task-card" *ngFor="let task of incidenciesFiltrades">
                   <div class="card-top-bar">
                     <div class="pills-group">
                       <span class="nature-pill client-nature">INCIDÈNCIA</span>
@@ -196,7 +207,7 @@ interface CategoriaFiltre {
                   <p class="card-item-desc">{{ task.descripcio || 'Sense descripció addicional' }}</p>
 
                   <div class="card-meta-line">
-                    <span class="meta-label">Client:</span>
+                    <span class="meta-label">Client que demana ajuda:</span>
                     <a [routerLink]="['/perfil', getClientIdentifier(task.client)]" class="user-profile-link" title="Veure el perfil i descripció de {{ task.client }}">
                       <span class="user-avatar-mini">{{ (task.client || 'C').charAt(0) }}</span>
                       <strong class="meta-value">{{ task.client }}</strong>
@@ -205,7 +216,7 @@ interface CategoriaFiltre {
 
                   <div class="card-bottom-bar">
                     <div class="budget-wrap">
-                      <span class="budget-label">Pressupost límit:</span>
+                      <span class="budget-label">Pressupost estimat client:</span>
                       <strong class="budget-value">{{ task.budget }}</strong>
                     </div>
                     <div class="card-actions">
@@ -221,8 +232,8 @@ interface CategoriaFiltre {
               </div>
             </section>
 
-            <!-- SECCIÓ D'OFERTES I PACKS DE SERVEIS PROFESSIONALS -->
-            <section class="results-block" *ngIf="tipusFiltre !== 'tasques' && ofertesFiltrades.length > 0">
+            <!-- SECCIÓ D'OFERTES I PACKS DE SERVEIS PROFESSIONALS (SOLS PROFESSIONAL) -->
+            <section class="results-block" *ngIf="(tipusFiltre === 'tots' || tipusFiltre === 'ofertes') && ofertesFiltrades.length > 0">
               <div class="results-block-header">
                 <h2>Ofertes i packs de servei professional</h2>
                 <span class="count-tag">{{ ofertesFiltrades.length }} disponibles</span>
@@ -265,6 +276,60 @@ interface CategoriaFiltre {
                           <polyline points="20 6 9 17 4 12"></polyline>
                         </svg>
                         Contractar / M'interessa
+                      </button>
+                    </div>
+                  </div>
+                </article>
+              </div>
+            </section>
+
+            <!-- SECCIÓ DE TASQUES ACORDADES (CONVERGEIXEN CLIENT I PROFESSIONAL OBLIGATORIS) -->
+            <section class="results-block" *ngIf="(tipusFiltre === 'tots' || tipusFiltre === 'tasques') && tasquesFiltrades.length > 0">
+              <div class="results-block-header">
+                <h2>Tasques en curs i concloses (Client + Professional)</h2>
+                <span class="count-tag count-tag-tasca">{{ tasquesFiltrades.length }} acordades</span>
+              </div>
+
+              <div class="cards-grid">
+                <article class="market-card task-card converged-card" *ngFor="let task of tasquesFiltrades">
+                  <div class="card-top-bar">
+                    <div class="pills-group">
+                      <span class="nature-pill task-nature">TASCA CONVERGIDA</span>
+                      <span class="cat-pill">{{ task.categoria || 'Altres Serveis' }}</span>
+                    </div>
+                    <span class="status-pill status-task" [ngClass]="getTaskStatusClass(task.estat)">
+                      {{ task.estat }}
+                    </span>
+                  </div>
+
+                  <h3 class="card-item-title">{{ task.titol }}</h3>
+                  <p class="card-item-desc">{{ task.descripcio || 'Feina pactada entre client i professional.' }}</p>
+
+                  <div class="card-meta-dual">
+                    <div class="card-meta-line">
+                      <span class="meta-label">Client:</span>
+                      <a [routerLink]="['/perfil', getClientIdentifier(task.client)]" class="user-profile-link" title="Veure el perfil de {{ task.client }}">
+                        <span class="user-avatar-mini">{{ (task.client || 'C').charAt(0) }}</span>
+                        <strong class="meta-value">{{ task.client }}</strong>
+                      </a>
+                    </div>
+                    <div class="card-meta-line" *ngIf="task.professional">
+                      <span class="meta-label">Professional assignat:</span>
+                      <a [routerLink]="['/perfil', getProfessionalIdentifier(task.professional)]" class="user-profile-link pro-profile-link" title="Veure el perfil de {{ task.professional }}">
+                        <span class="user-avatar-mini pro-avatar-mini">{{ (task.professional || 'P').charAt(0) }}</span>
+                        <strong class="meta-value pro-name-val">{{ task.professional }}</strong>
+                      </a>
+                    </div>
+                  </div>
+
+                  <div class="card-bottom-bar">
+                    <div class="budget-wrap">
+                      <span class="budget-label">Preu acordat:</span>
+                      <strong class="budget-value">{{ task.budget }}</strong>
+                    </div>
+                    <div class="card-actions">
+                      <button type="button" class="btn-action-detail" (click)="onDetallTasca(task.id)">
+                        Veure seguiment & detall
                       </button>
                     </div>
                   </div>
@@ -384,18 +449,23 @@ interface CategoriaFiltre {
         line-height: 1.5;
       }
 
+      .market-header-actions {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+
       .btn-create-task {
         background: #ff1744;
         color: #ffffff;
         border: 1px solid #ff1744;
-        padding: 0.85rem 1.6rem;
+        padding: 0.75rem 1.35rem;
         border-radius: 8px;
-        font-weight: 900;
-        font-size: 0.92rem;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
+        font-weight: 800;
+        font-size: 0.88rem;
         cursor: pointer;
-        box-shadow: 0 0 16px rgba(255, 23, 68, 0.4);
+        box-shadow: 0 0 14px rgba(255, 23, 68, 0.3);
         transition: all 0.2s ease;
         white-space: nowrap;
       }
@@ -403,6 +473,25 @@ interface CategoriaFiltre {
       .btn-create-task:hover {
         background: #09090c;
         border-color: #09090c;
+        transform: translateY(-2px);
+      }
+
+      .btn-create-offer {
+        background: #09090c;
+        color: #ffffff;
+        border: 1px solid #09090c;
+        padding: 0.75rem 1.35rem;
+        border-radius: 8px;
+        font-weight: 800;
+        font-size: 0.88rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+      }
+
+      .btn-create-offer:hover {
+        background: #ff1744;
+        border-color: #ff1744;
         transform: translateY(-2px);
       }
 
@@ -725,6 +814,43 @@ interface CategoriaFiltre {
         background: rgba(255, 23, 68, 0.12);
         color: #ff1744;
         border: 1px solid rgba(255, 23, 68, 0.35);
+      }
+
+      .nature-pill.task-nature {
+        background: rgba(16, 185, 129, 0.12);
+        color: #059669;
+        border: 1px solid rgba(16, 185, 129, 0.35);
+      }
+
+      .count-tag-tasca {
+        background: #ecfdf5 !important;
+        color: #065f46 !important;
+        border-color: #a7f3d0 !important;
+      }
+
+      .converged-card {
+        border-left: 4px solid #10b981;
+      }
+
+      .card-meta-dual {
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+        background: #faf8f4;
+        padding: 0.65rem 0.85rem;
+        border-radius: 8px;
+        border: 1px solid #eeeae0;
+      }
+
+      .pro-profile-link {
+        color: #059669;
+      }
+      .pro-avatar-mini {
+        background: #d1fae5 !important;
+        color: #065f46 !important;
+      }
+      .pro-name-val {
+        color: #059669 !important;
       }
 
       .status-pill {
@@ -1218,8 +1344,8 @@ export class TasquesOfertesComponent implements OnInit {
   /** Text de cerca per nom / paraula clau */
   searchQuery = '';
 
-  /** Filtre per tipus: 'tots' | 'tasques' | 'ofertes' */
-  tipusFiltre: 'tots' | 'tasques' | 'ofertes' = 'tots';
+  /** Filtre per tipus: 'tots' | 'incidencies' | 'ofertes' | 'tasques' */
+  tipusFiltre: 'tots' | 'incidencies' | 'ofertes' | 'tasques' = 'tots';
 
   /** Categoria seleccionada: 'totes' o el nom de la categoria */
   categoriaSeleccionada = 'totes';
@@ -1289,8 +1415,11 @@ export class TasquesOfertesComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
-      if (params['tipus'] && ['tots', 'tasques', 'ofertes'].includes(params['tipus'])) {
-        this.tipusFiltre = params['tipus'] as 'tots' | 'tasques' | 'ofertes';
+      if (params['tipus']) {
+        const t = params['tipus'];
+        if (t === 'tasques' || t === 'incidencies' || t === 'ofertes' || t === 'tots') {
+          this.tipusFiltre = t as 'tots' | 'incidencies' | 'ofertes' | 'tasques';
+        }
       }
       if (params['categoria']) {
         this.categoriaSeleccionada = params['categoria'];
@@ -1399,7 +1528,7 @@ export class TasquesOfertesComponent implements OnInit {
   }
 
   get totalElements(): number {
-    return (this.dashboard?.tasks.length ?? 0) + (this.dashboard?.offers.length ?? 0);
+    return this.incidenciesFiltrades.length + this.ofertesFiltrades.length + this.tasquesFiltrades.length;
   }
 
   seleccionarCategoria(nom: string): void {
@@ -1439,24 +1568,28 @@ export class TasquesOfertesComponent implements OnInit {
     return countTasks + countOffers;
   }
 
-  get tasquesFiltrades() {
-    let llista = this.dashboard?.tasks ?? [];
+  /**
+   * Incidències obertes creades per clients:
+   * Sols tenen client, no tenen professional assignat encara.
+   */
+  get incidenciesFiltrades() {
+    let llista = (this.dashboard?.tasks ?? []).filter(
+      (t) => (t.tipus === 'incidencia' || !t.professional) && t.estat !== 'Finalitzada' && t.estat !== 'En curs' && t.tipus !== 'oferta'
+    );
 
-    // Filtre per cerca de text (nom/títol, client o descripció)
     if (this.searchQuery.trim()) {
       const q = this.searchQuery.toLowerCase().trim();
       llista = llista.filter((t) => {
         const cat = t.categoria?.trim() || 'Altres Serveis';
         return (
           t.titol.toLowerCase().includes(q) ||
-          t.client.toLowerCase().includes(q) ||
+          (t.client && t.client.toLowerCase().includes(q)) ||
           cat.toLowerCase().includes(q) ||
           (t.descripcio && t.descripcio.toLowerCase().includes(q))
         );
       });
     }
 
-    // Filtre per categoria
     if (this.categoriaSeleccionada !== 'totes') {
       const cat = this.categoriaSeleccionada.toLowerCase();
       llista = llista.filter((t) => {
@@ -1468,10 +1601,13 @@ export class TasquesOfertesComponent implements OnInit {
     return llista;
   }
 
+  /**
+   * Ofertes i packs publicats per professionals:
+   * Sols tenen professional, no tenen client assignat encara.
+   */
   get ofertesFiltrades() {
     let llista = this.dashboard?.offers ?? [];
 
-    // Filtre per cerca de text (nom del professional, nota o títol de la tasca associada)
     if (this.searchQuery.trim()) {
       const q = this.searchQuery.toLowerCase().trim();
       llista = llista.filter((o) => {
@@ -1486,12 +1622,47 @@ export class TasquesOfertesComponent implements OnInit {
       });
     }
 
-    // Si hi ha una categoria seleccionada diferent de 'totes', filtrem les ofertes d'aquella categoria
     if (this.categoriaSeleccionada !== 'totes') {
       const cat = this.categoriaSeleccionada.toLowerCase();
       llista = llista.filter((o) => {
         const oCat = this.getOfertaCategoria(o).toLowerCase();
         return oCat.includes(cat) || cat.includes(oCat);
+      });
+    }
+
+    return llista;
+  }
+
+  /**
+   * Tasques acordades:
+   * On ja convergeixen Client I Professional obligatoris!
+   */
+  get tasquesFiltrades() {
+    let llista = (this.dashboard?.tasks ?? []).filter(
+      (t) => (t.tipus === 'tasca' || (!!t.professional && !!t.client)) && t.tipus !== 'oferta'
+    );
+
+    if (this.searchQuery.trim()) {
+      const q = this.searchQuery.toLowerCase().trim();
+      llista = llista.filter((t) => {
+        const cat = t.categoria?.trim() || 'Altres Serveis';
+        const pro = t.professional?.toLowerCase() || '';
+        const cli = t.client?.toLowerCase() || '';
+        return (
+          t.titol.toLowerCase().includes(q) ||
+          cli.includes(q) ||
+          pro.includes(q) ||
+          cat.toLowerCase().includes(q) ||
+          (t.descripcio && t.descripcio.toLowerCase().includes(q))
+        );
+      });
+    }
+
+    if (this.categoriaSeleccionada !== 'totes') {
+      const cat = this.categoriaSeleccionada.toLowerCase();
+      llista = llista.filter((t) => {
+        const tCat = (t.categoria?.trim() || 'Altres Serveis').toLowerCase();
+        return tCat.includes(cat) || cat.includes(tCat);
       });
     }
 
@@ -1526,13 +1697,26 @@ export class TasquesOfertesComponent implements OnInit {
     return true;
   }
 
-  onNovaTasca(): void {
-    if (!this.requireLogin('crear una tasca nova', '/client/crear-tasca')) return;
+  onNovaIncidencia(): void {
+    if (!this.requireLogin('publicar una incidència', '/client/crear-tasca')) return;
     if (this.authService.isClient()) {
       this.router.navigate(['/client/crear-tasca']);
     } else {
-      this.noticeMessage = 'Només els comptes amb rol de "Client" o "Ambdós" poden crear noves tasques.';
+      this.noticeMessage = 'Només els comptes amb rol de "Client" o "Ambdós" poden publicar incidències.';
     }
+  }
+
+  onNovaOferta(): void {
+    if (!this.requireLogin('publicar una oferta professional', '/professional/crear-oferta')) return;
+    if (this.authService.isProfessional()) {
+      this.router.navigate(['/professional/crear-oferta']);
+    } else {
+      this.noticeMessage = 'Només els comptes amb rol de "Professional" o "Ambdós" poden publicar ofertes de servei.';
+    }
+  }
+
+  onNovaTasca(): void {
+    this.onNovaIncidencia();
   }
 
   onDetallTasca(taskId: string): void {

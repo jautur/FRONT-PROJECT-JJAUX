@@ -1,30 +1,40 @@
 /**
- * Model de dades de la Tasca a la plataforma AVISA.
- * Representa una demanda o encàrrec publicat per un Client que pot rebre
- * ofertes econòmiques i propostes per part de diversos Professionals.
+ * Model de dades per a Incidències i Tasques a la plataforma AVISA.
+ * - Incidència: Demanda oberta per un Client (sols té client, no té professional).
+ * - Oferta: Servei proposat per un Professional (sols té professional).
+ * - Tasca: Treball en curs on ja convergeixen Client i Professional obligatoris.
  */
 export interface Tasca {
-  /** Identificador únic de la tasca (ex: 'T-101') */
+  /** Identificador únic (ex: 'T-101') */
   id: string;
 
-  /** Títol breu i descriptiu de la tasca */
+  /** Títol breu i descriptiu de la tasca o incidència */
   titol: string;
 
   /** Explicació detallada dels requeriments */
   descripcio: string;
 
-  /** Categoria professional (ex: 'Web', 'Branding', 'Multimèdia', etc.) */
+  /** Categoria professional (ex: 'Reformes i Obres', 'Lampisteria', etc.) */
   categoria?: string;
 
-  /** Nom de l'usuari client que ha publicat la tasca */
+  /** Nom del client (obligatori en incidències i tasques) */
   client?: string;
 
   /** Àlies per al nom del client */
   clientNom?: string;
 
-  /** Pressupost orientatiu o estimat pel client (ex: '€350') */
+  /** Nom del professional assignat (obligatori en tasques, null en incidències obertes) */
+  professional?: string;
+
+  /** Àlies per al nom del professional */
+  professionalNom?: string;
+
+  /** Pressupost estimat pel client o preu acordat de la tasca */
   budget?: string;
 
-  /** Estat del cicle de vida de la tasca ('Oberta', 'En curs', 'Finalitzada') */
+  /** Estat ('Oberta' per a incidència, 'En curs' o 'Finalitzada' per a tasca) */
   estat: string;
+
+  /** Distinció conceptual: 'incidencia' (sols client) o 'tasca' (client + professional) */
+  tipus?: 'incidencia' | 'tasca' | 'oferta' | string;
 }

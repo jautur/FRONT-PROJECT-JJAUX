@@ -72,6 +72,15 @@ export class TascaService {
   }
 
   /**
+   * Llista les tasques on el professional ha estat assignat (on convergeixen client i professional).
+   * @param professionalNom Nom del professional
+   * @returns Observable amb les tasques assignades a aquell professional
+   */
+  getByProfessional(professionalNom: string): Observable<Tasca[]> {
+    return this.http.get<Tasca[]>(`${this.apiUrl}/professional/${encodeURIComponent(professionalNom)}`);
+  }
+
+  /**
    * Crea i publica una nova tasca a la plataforma.
    * @param data Dades de la tasca a crear
    * @returns Observable amb la tasca creada a la base de dades

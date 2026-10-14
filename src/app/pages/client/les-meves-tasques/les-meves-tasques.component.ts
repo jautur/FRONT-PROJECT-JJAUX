@@ -56,7 +56,7 @@ type FiltreEstatTasca = 'totes' | 'oberta' | 'en_curs' | 'finalitzada';
           [class.active]="filtreActiu === 'oberta'"
           (click)="canviarFiltre('oberta')"
         >
-          Obertes ({{ countByEstat('oberta') }})
+          Incidències obertes ({{ countIncidencies() }})
         </button>
         <button
           type="button"
@@ -64,7 +64,7 @@ type FiltreEstatTasca = 'totes' | 'oberta' | 'en_curs' | 'finalitzada';
           [class.active]="filtreActiu === 'en_curs'"
           (click)="canviarFiltre('en_curs')"
         >
-          En curs ({{ countByEstat('en curs') }})
+          Tasques en curs ({{ countEnCurs() }})
         </button>
         <button
           type="button"
@@ -72,7 +72,7 @@ type FiltreEstatTasca = 'totes' | 'oberta' | 'en_curs' | 'finalitzada';
           [class.active]="filtreActiu === 'finalitzada'"
           (click)="canviarFiltre('finalitzada')"
         >
-          Finalitzades ({{ countByEstat('finalitzada') }})
+          Finalitzades ({{ countFinalitzades() }})
         </button>
       </div>
 
@@ -83,9 +83,14 @@ type FiltreEstatTasca = 'totes' | 'oberta' | 'en_curs' | 'finalitzada';
 
       <!-- Llista de tasques -->
       <div class="tasques-grid" *ngIf="!loading && tasquesFiltrades.length > 0">
-        <div *ngFor="let t of tasquesFiltrades" class="tasca-card">
+        <div *ngFor="let t of tasquesFiltrades" class="tasca-card" [class.converged-card]="isTascaConvergida(t)">
           <div class="card-header">
-            <span class="badge-categoria">{{ t.categoria }}</span>
+            <div class="header-nature-group">
+              <span class="badge-nature" [ngClass]="isTascaConvergida(t) ? 'is-tasca' : 'is-incidencia'">
+                {{ isTascaConvergida(t) ? 'TASCA' : 'INCIDÈNCIA' }}
+              </span>
+              <span class="badge-categoria">{{ t.categoria }}</span>
+            </div>
             <span class="badge-estat" [ngClass]="getEstatClass(t.estat)">{{ t.estat }}</span>
           </div>
 
@@ -93,11 +98,32 @@ type FiltreEstatTasca = 'totes' | 'oberta' | 'en_curs' | 'finalitzada';
           <p class="tasca-desc">{{ t.descripcio }}</p>
 
           <div class="tasca-meta">
+            <!-- Professional assignat si és tasca en curs o finalitzada -->
+            <div class="meta-item pro-assigned-item" *ngIf="isTascaConvergida(t)">
+              <span class="meta-label">Professional assignat:</span>
+              <span class="meta-value pro-assigned-val">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+                <a [routerLink]="['/perfil', t.professionalNom || t.professional]" class="user-inline-link">
+                  <strong>{{ t.professionalNom || t.professional }}</strong>
+                </a>
+              </span>
+            </div>
+
+            <!-- Sense professional si és incidència oberta -->
+            <div class="meta-item waiting-item" *ngIf="!isTascaConvergida(t)">
+              <span class="meta-label">Estat professional:</span>
+              <span class="meta-value waiting-badge">Sense professional assignat</span>
+            </div>
+
             <div class="meta-item">
-              <span class="meta-label">Pressupost límit:</span>
+              <span class="meta-label">{{ isTascaConvergida(t) ? 'Preu acordat:' : 'Pressupost orientatiu:' }}</span>
               <span class="meta-value budget">{{ t.budget }}</span>
             </div>
-            <div class="meta-item" *ngIf="ofertesCount[t.id] !== undefined">
+
+            <div class="meta-item" *ngIf="!isTascaConvergida(t) && ofertesCount[t.id] !== undefined">
               <span class="meta-label">Ofertes rebudes:</span>
               <span class="meta-value ofertes-badge">{{ ofertesCount[t.id] }} pressupost(s)</span>
             </div>
@@ -109,11 +135,11 @@ type FiltreEstatTasca = 'totes' | 'oberta' | 'en_curs' | 'finalitzada';
                 <circle cx="11" cy="11" r="8"></circle>
                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
               </svg>
-              Veure ofertes & detall
+              {{ isTascaConvergida(t) ? 'Veure seguiment & detall' : 'Revisar pressupostos (' + (ofertesCount[t.id] || 0) + ')' }}
             </a>
 
             <button
-              *ngIf="t.estat !== 'Finalitzada'"
+              *ngIf="isTascaConvergida(t) && t.estat !== 'Finalitzada'"
               type="button"
               class="btn-action success"
               (click)="obrirModalFinalitzar(t)"
@@ -121,7 +147,7 @@ type FiltreEstatTasca = 'totes' | 'oberta' | 'en_curs' | 'finalitzada';
               <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;">
                 <polyline points="20 6 9 17 4 12"></polyline>
               </svg>
-              Finalitzar
+              Finalitzar i Avaluar
             </button>
 
             <button
@@ -316,7 +342,49 @@ type FiltreEstatTasca = 'totes' | 'oberta' | 'en_curs' | 'finalitzada';
     .card-header {
       display: flex;
       justify-content: space-between;
+      align-items: center;
       margin-bottom: 0.85rem;
+    }
+    .header-nature-group {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+    }
+    .badge-nature {
+      border-radius: 6px;
+      padding: 0.2rem 0.55rem;
+      font-size: 0.72rem;
+      font-weight: 900;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    .badge-nature.is-tasca {
+      background: #ecfdf5;
+      color: #065f46;
+      border: 1px solid #a7f3d0;
+    }
+    .badge-nature.is-incidencia {
+      background: #09090c;
+      color: #ffffff;
+      border: 1px solid #2b2a36;
+    }
+    .converged-card {
+      border-left: 4px solid #10b981 !important;
+    }
+    .pro-assigned-item {
+      grid-column: 1 / -1;
+      background: #ecfdf5;
+      padding: 0.4rem 0.65rem;
+      border-radius: 6px;
+      border: 1px solid #d1fae5;
+    }
+    .pro-assigned-val strong {
+      color: #059669;
+    }
+    .waiting-badge {
+      font-size: 0.8rem;
+      color: #78716c;
+      font-style: italic;
     }
     .badge-categoria {
       background: #f0ece3;
@@ -738,19 +806,39 @@ export class LesMevesTasquesComponent implements OnInit {
   }
 
   /**
-   * Retorna les tasques filtrades segons l'estat seleccionat.
+   * Determina si l'element és una Tasca acordada (ja convergeixen client i professional)
+   * o si és una Incidència oberta (sols té client, cercant professional).
+   */
+  isTascaConvergida(t: Tasca): boolean {
+    return t.tipus === 'tasca' || !!(t.professional || t.professionalNom);
+  }
+
+  /**
+   * Retorna les tasques o incidències filtrades segons la pestanya seleccionada.
    */
   get tasquesFiltrades(): Tasca[] {
     if (this.filtreActiu === 'oberta') {
-      return this.tasques.filter(t => t.estat?.toLowerCase().includes('obert'));
+      return this.tasques.filter(t => !this.isTascaConvergida(t) && t.estat?.toLowerCase().includes('obert'));
     }
     if (this.filtreActiu === 'en_curs') {
-      return this.tasques.filter(t => t.estat?.toLowerCase().includes('curs'));
+      return this.tasques.filter(t => this.isTascaConvergida(t) && t.estat?.toLowerCase().includes('curs'));
     }
     if (this.filtreActiu === 'finalitzada') {
       return this.tasques.filter(t => t.estat?.toLowerCase().includes('finalitzad'));
     }
     return this.tasques;
+  }
+
+  countIncidencies(): number {
+    return this.tasques.filter(t => !this.isTascaConvergida(t) && t.estat?.toLowerCase().includes('obert')).length;
+  }
+
+  countEnCurs(): number {
+    return this.tasques.filter(t => this.isTascaConvergida(t) && t.estat?.toLowerCase().includes('curs')).length;
+  }
+
+  countFinalitzades(): number {
+    return this.tasques.filter(t => t.estat?.toLowerCase().includes('finalitzad')).length;
   }
 
   /**
@@ -833,18 +921,20 @@ export class LesMevesTasquesComponent implements OnInit {
     this.tascaPerFinalitzar = t;
     this.puntuacioSeleccionada = 5;
     this.ressenyaDescripcio = '';
-    this.professionalPerFinalitzar = '';
+    this.professionalPerFinalitzar = t.professionalNom || t.professional || '';
     this.modalFinalitzarObert = true;
 
-    // Obté el professional de l'oferta acceptada
-    this.ofertaService.getByTasca(t.id).subscribe({
-      next: (ofertes) => {
-        const acc = ofertes.find(o => o.estat === 'Acceptada') || ofertes[0];
-        if (acc) {
-          this.professionalPerFinalitzar = acc.professional;
+    // Si encara no està definit el professional a la tasca, consulta l'oferta acceptada
+    if (!this.professionalPerFinalitzar) {
+      this.ofertaService.getByTasca(t.id).subscribe({
+        next: (ofertes) => {
+          const acc = ofertes.find(o => o.estat === 'Acceptada') || ofertes[0];
+          if (acc) {
+            this.professionalPerFinalitzar = acc.professional;
+          }
         }
-      }
-    });
+      });
+    }
   }
 
   tancarModalFinalitzar(): void {
