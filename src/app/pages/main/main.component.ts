@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { DashboardResponse, DashboardService } from '../../services/dashboard.service';
 import { OfertaService } from '../../services/oferta.service';
@@ -11,8 +11,8 @@ import { AuthService } from '../../core/services/auth.service';
   imports: [CommonModule, RouterLink],
   template: `
     <section class="main-page">
-      <!-- PORTADA INICIAL DE PANTALLA COMPLETA AMB FOTO DINÀMICA I SLOGAN FIX -->
-      <header class="fullscreen-cover" [style.background-image]="currentCoverBackground">
+      <!-- PORTADA INICIAL DE PANTALLA COMPLETA AMB 1 SOLA FOTO FIXA DE FONS -->
+      <header class="fullscreen-cover">
         <!-- NOM DE LA WEB EN MIG DE LA PÀGINA I SLOGAN ORIGINAL FIX -->
         <div class="hero-center">
           <h1 class="hero-brand">AVISA</h1>
@@ -458,6 +458,8 @@ import { AuthService } from '../../core/services/auth.service';
         width: 100%;
         height: calc(100vh - 48px);
         min-height: 560px;
+        background-image: linear-gradient(rgba(8, 8, 12, 0.52), rgba(8, 8, 12, 0.78)),
+          url('https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=2000&q=80');
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
@@ -468,7 +470,6 @@ import { AuthService } from '../../core/services/auth.service';
         padding: 2rem 1.5rem;
         box-sizing: border-box;
         position: relative;
-        transition: background-image 0.9s ease-in-out;
       }
 
       .hero-center {
@@ -1728,28 +1729,14 @@ import { AuthService } from '../../core/services/auth.service';
     `
   ]
 })
-export class MainComponent implements OnInit, OnDestroy {
+export class MainComponent implements OnInit {
   dashboard?: DashboardResponse;
   loading = true;
   error = '';
   noticeMessage = '';
 
-  /** Col·lecció de fotografies professionals representatives dels oficis i tasques */
-  readonly photos = [
-    'https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=2000&q=80', // Construcció, reformes i arquitectura
-    'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=2000&q=80', // Electricitat i instal·lacions
-    'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=2000&q=80', // Serveis tècnics i manteniment
-    'https://images.unsplash.com/photo-1585704032915-c3400ca199e7?auto=format&fit=crop&w=2000&q=80', // Lampisteria i canonades
-    'https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=2000&q=80', // Obres i reformes d'espais
-    'https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=2000&q=80', // Fusteria i muntatge
-    'https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=2000&q=80'  // Neteja i posada a punt
-  ];
-
-  /** Índex de la fotografia activa actual */
-  photoIndex = 0;
-
-  /** Identificador de l'interval de rotació suau de fotografies */
-  private photoTimer: any = null;
+  randomPreviewTasks: any[] = [];
+  randomPreviewOffers: any[] = [];
 
   constructor(
     private readonly dashboardService: DashboardService,
@@ -1758,38 +1745,9 @@ export class MainComponent implements OnInit, OnDestroy {
     private readonly router: Router
   ) {}
 
-  get currentCoverBackground(): string {
-    return `linear-gradient(rgba(8, 8, 12, 0.52), rgba(8, 8, 12, 0.78)), url('${this.photos[this.photoIndex]}')`;
-  }
-
   ngOnInit(): void {
-    // Tria una foto aleatòria al carregar la pàgina
-    this.photoIndex = Math.floor(Math.random() * this.photos.length);
     this.loadDashboard();
-    this.iniciarRotacioFotos();
   }
-
-  ngOnDestroy(): void {
-    if (this.photoTimer) {
-      clearInterval(this.photoTimer);
-    }
-  }
-
-  /**
-   * Canvia la fotografia periòdicament de forma aleatòria cada 7 segons
-   */
-  private iniciarRotacioFotos(): void {
-    this.photoTimer = setInterval(() => {
-      let nextIndex: number;
-      do {
-        nextIndex = Math.floor(Math.random() * this.photos.length);
-      } while (nextIndex === this.photoIndex && this.photos.length > 1);
-      this.photoIndex = nextIndex;
-    }, 7000);
-  }
-
-  randomPreviewTasks: any[] = [];
-  randomPreviewOffers: any[] = [];
 
   loadDashboard(): void {
     this.dashboardService.getDashboard().subscribe({
