@@ -956,43 +956,29 @@ export class LesMevesTasquesComponent implements OnInit {
   }
 
   /**
-   * Envia la valoració del professional i marca la tasca com a Finalitzada.
+   * Envia la valoració del professional i marca la tasca com a Finalitzada (desat a la taula tasques).
    */
   confirmarFinalitzacioAmbRessenya(): void {
     if (!this.tascaPerFinalitzar) return;
     const t = this.tascaPerFinalitzar;
-    const user = this.authService.getCurrentUser();
     this.enviantRessenya = true;
+    const textDesc = this.ressenyaDescripcio.trim() || 'Feina completada amb èxit i total satisfacció.';
 
-    this.tascaService.complete(t.id).subscribe({
-      next: () => {
-        const treballadorNom = this.professionalPerFinalitzar || 'Professional AVISA';
-        const textDesc = this.ressenyaDescripcio.trim() || 'Feina completada amb èxit i total satisfacció.';
-
-        this.resenyaService.create({
-          clientId: user ? user.id : 'client',
-          treballadorId: treballadorNom,
-          tascaId: t.id,
-          puntuacio: this.puntuacioSeleccionada,
-          descripcio: textDesc
-        }).subscribe({
-          next: () => {
-            this.enviantRessenya = false;
-            this.tancarModalFinalitzar();
-            this.successMsg = 'Tasca finalitzada i valoració publicada amb èxit!';
-            const target = this.tasques.find(item => item.id === t.id);
-            if (target) target.estat = 'Finalitzada';
-            setTimeout(() => this.successMsg = '', 4000);
-          },
-          error: () => {
-            this.enviantRessenya = false;
-            this.tancarModalFinalitzar();
-            this.successMsg = 'Tasca finalitzada correctament.';
-            const target = this.tasques.find(item => item.id === t.id);
-            if (target) target.estat = 'Finalitzada';
-            setTimeout(() => this.successMsg = '', 4000);
-          }
-        });
+    this.tascaService.complete(t.id, {
+      valoracio: this.puntuacioSeleccionada,
+      opinio: textDesc
+    }).subscribe({
+      next: (updatedTask) => {
+        this.enviantRessenya = false;
+        this.tancarModalFinalitzar();
+        this.successMsg = 'Tasca finalitzada i valoració enregistrada amb èxit!';
+        const target = this.tasques.find(item => item.id === t.id);
+        if (target) {
+          target.estat = 'Finalitzada';
+          target.valoracio = this.puntuacioSeleccionada;
+          target.opinio = textDesc;
+        }
+        setTimeout(() => this.successMsg = '', 4000);
       },
       error: () => {
         this.enviantRessenya = false;

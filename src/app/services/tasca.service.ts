@@ -90,12 +90,13 @@ export class TascaService {
   }
 
   /**
-   * Marca una tasca com a finalitzada un cop acabat el servei.
+   * Marca una tasca com a finalitzada un cop acabat el servei, enregistrant opcionalment la valoració i opinió del client.
    * @param id Identificador de la tasca
+   * @param avaluacio Dades opcionals de valoració (1-5 estrelles) i opinió del client
    * @returns Observable amb la tasca actualitzada
    */
-  complete(id: string): Observable<Tasca> {
-    return this.http.post<Tasca>(`${this.apiUrl}/${id}/finalitzar`, {});
+  complete(id: string, avaluacio?: { valoracio?: number; opinio?: string }): Observable<Tasca> {
+    return this.http.post<Tasca>(`${this.apiUrl}/${id}/finalitzar`, avaluacio || {});
   }
 
   /**

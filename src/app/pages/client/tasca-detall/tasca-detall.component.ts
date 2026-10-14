@@ -952,38 +952,23 @@ export class TascaDetallComponent implements OnInit {
   }
 
   /**
-   * Confirma la finalització i envia la ressenya.
+   * Confirma la finalització i envia la ressenya (desant-la directament a la taula tasques).
    */
   confirmarFinalitzacioAmbRessenya(): void {
     if (!this.tasca) return;
     const t = this.tasca;
-    const user = this.authService.getCurrentUser();
     this.enviantRessenya = true;
+    const textDesc = this.ressenyaDescripcio.trim() || 'Feina completada amb èxit i total satisfacció.';
 
-    this.tascaService.complete(t.id).subscribe({
+    this.tascaService.complete(t.id, {
+      valoracio: this.puntuacioSeleccionada,
+      opinio: textDesc
+    }).subscribe({
       next: (updated) => {
         this.tasca = updated;
-        const treballadorNom = this.assignedProfessional;
-        const textDesc = this.ressenyaDescripcio.trim() || 'Feina completada amb èxit i total satisfacció.';
-
-        this.resenyaService.create({
-          clientId: user ? user.id : 'client',
-          treballadorId: treballadorNom,
-          tascaId: t.id,
-          puntuacio: this.puntuacioSeleccionada,
-          descripcio: textDesc
-        }).subscribe({
-          next: () => {
-            this.enviantRessenya = false;
-            this.tancarModalFinalitzar();
-            this.noticeMessage = 'Felicitats! La tasca ha estat marcada com a Finalitzada i la valoració s\'ha publicat.';
-          },
-          error: () => {
-            this.enviantRessenya = false;
-            this.tancarModalFinalitzar();
-            this.noticeMessage = 'Felicitats! La tasca ha estat marcada com a Finalitzada.';
-          }
-        });
+        this.enviantRessenya = false;
+        this.tancarModalFinalitzar();
+        this.noticeMessage = 'Felicitats! La tasca ha estat marcada com a Finalitzada i la valoració s\'ha publicat.';
       },
       error: () => {
         this.enviantRessenya = false;

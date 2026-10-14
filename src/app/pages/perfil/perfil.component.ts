@@ -5,8 +5,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Usuari } from '../../models/usuari.model';
 import { UsuariService } from '../../services/usuari.service';
 import { AuthService } from '../../core/services/auth.service';
-import { Resenya } from '../../models/resenya.model';
-import { ResenyaService } from '../../services/resenya.service';
+import { Tasca } from '../../models/tasca.model';
+import { TascaService } from '../../services/tasca.service';
 
 /**
  * Component de Perfil d'Usuari (/perfil).
@@ -14,7 +14,7 @@ import { ResenyaService } from '../../services/resenya.service';
  * 1. Consultar la seva informació actual (nom, correu, rol, telèfon, biografia).
  * 2. Editar i desar canvis a la base de dades PostgreSQL mitjançant UsuariService.
  * 3. Canviar la seva contrasenya d'accés de forma segura.
- * 4. Visualitzar l'estat del seu compte i els permisos segons el seu rol.
+ * 4. Visualitzar l'historial de tasques realitzades amb valoracions i opinions directes dels clients.
  */
 @Component({
   selector: 'app-perfil',
@@ -32,7 +32,7 @@ import { ResenyaService } from '../../services/resenya.service';
             <h1>{{ usuari?.nom || 'El meu perfil' }}</h1>
             <div class="pro-rating-badge-head" *ngIf="mitjanaPuntuacio">
               <span class="stars-gold">★ {{ mitjanaPuntuacio }}</span>
-              <span class="count-head">({{ ressenyes.length }} {{ ressenyes.length === 1 ? 'ressenya' : 'ressenyes' }})</span>
+              <span class="count-head">({{ totalValoracions }} {{ totalValoracions === 1 ? 'valoració' : 'valoracions' }})</span>
             </div>
           </div>
           <p class="email">{{ usuari?.email }}</p>
@@ -163,45 +163,61 @@ import { ResenyaService } from '../../services/resenya.service';
         </div>
       </div>
 
-      <!-- SECCIÓ DE RESSENYES I VALORACIONS (SI N'HI HA) -->
-      <section class="card reviews-profile-card" *ngIf="ressenyes.length > 0">
+      <!-- SECCIÓ DE TASQUES REALITZADES I VALORACIONS (directament de la taula TASQUES) -->
+      <section class="card reviews-profile-card" *ngIf="tasquesFinalitzades.length > 0">
         <div class="reviews-card-header">
           <div>
-            <h2>{{ usuari?.rol === 'professional' ? 'Valoracions i opinions rebudes' : 'Ressenyes i experiències' }}</h2>
+            <h2>{{ usuari?.rol === 'professional' ? 'Tasques realitzades i valoracions' : 'Historial de tasques finalitzades' }}</h2>
             <p class="subtitle">
               {{ usuari?.rol === 'professional' 
-                  ? 'Opinions reals i verificades de clients que han contractat els seus serveis a AVISA.' 
-                  : 'Historial de valoracions i experiències registrades a la plataforma.' }}
+                  ? 'Tasques completades a la plataforma AVISA amb la puntuació i opinió directa dels clients.' 
+                  : 'Historial de feines concloses amb èxit a la plataforma.' }}
             </p>
           </div>
           <div class="score-summary-pill" *ngIf="mitjanaPuntuacio">
             <span class="stars-gold">★ {{ mitjanaPuntuacio }}</span>
-            <span class="score-count">({{ ressenyes.length }} {{ ressenyes.length === 1 ? 'opinió' : 'opinions' }})</span>
+            <span class="score-count">({{ totalValoracions }} {{ totalValoracions === 1 ? 'valoració' : 'valoracions' }})</span>
           </div>
         </div>
 
         <div class="reviews-profile-list">
-          <article class="review-profile-item" *ngFor="let r of ressenyes">
+          <article class="review-profile-item" *ngFor="let t of tasquesFinalitzades">
             <div class="review-item-header">
               <div class="reviewer-meta">
                 <div class="reviewer-avatar">
-                  {{ (r.clientNom || 'C').charAt(0).toUpperCase() }}
+                  {{ (t.clientNom || t.client || 'C').charAt(0).toUpperCase() }}
                 </div>
                 <div>
-                  <strong class="reviewer-name">{{ r.clientNom || 'Client AVISA' }}</strong>
-                  <span class="review-date" *ngIf="r.createdAt">
-                    {{ r.createdAt | slice:0:10 }}
-                  </span>
+                  <strong class="reviewer-name">{{ t.clientNom || t.client || 'Client AVISA' }}</strong>
+                  <div class="task-info-chips">
+                    <span class="badge-cat" *ngIf="t.categoria">{{ t.categoria }}</span>
+                    <span class="badge-price" *ngIf="t.budget">{{ t.budget }}</span>
+                    <span class="badge-origen" *ngIf="t.origenId">Ref: {{ t.origenId }}</span>
+                  </div>
                 </div>
               </div>
-              <div class="review-stars-badge">
-                <span class="star-icon" *ngFor="let s of [1,2,3,4,5]">{{ s <= r.puntuacio ? '★' : '☆' }}</span>
-                <span class="star-number">{{ r.puntuacio }}/5</span>
+              <div class="review-stars-badge" *ngIf="t.valoracio">
+                <span class="star-icon" *ngFor="let s of [1,2,3,4,5]">{{ s <= t.valoracio ? '★' : '☆' }}</span>
+                <span class="star-number">{{ t.valoracio }}/5</span>
               </div>
             </div>
-            <p class="review-item-comment">“{{ r.descripcio }}”</p>
+
+            <div class="task-work-body">
+              <h4 class="task-work-title">{{ t.titol }}</h4>
+              <p class="task-work-desc" *ngIf="t.descripcio && t.descripcio !== t.opinio">{{ t.descripcio }}</p>
+              <div class="task-opinion-box" *ngIf="t.opinio">
+                <span class="opinion-quote-label">Opinió del client:</span>
+                <p class="review-item-comment">“{{ t.opinio }}”</p>
+              </div>
+            </div>
           </article>
         </div>
+      </section>
+
+      <!-- Sense tasques finalitzades encara -->
+      <section class="card reviews-profile-card empty-reviews" *ngIf="usuari?.rol === 'professional' && tasquesFinalitzades.length === 0">
+        <h3>Encara no té tasques finalitzades</h3>
+        <p class="subtitle">Aquest professional encara no ha conclòs cap tasca valorada a la plataforma AVISA.</p>
       </section>
     </section>
   `,
@@ -494,6 +510,83 @@ import { ResenyaService } from '../../services/resenya.service';
         font-style: italic;
       }
 
+      .task-info-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+        margin-top: 0.25rem;
+      }
+
+      .badge-cat {
+        background: #e0f2fe;
+        color: #0369a1;
+        font-size: 0.72rem;
+        font-weight: 700;
+        padding: 0.15rem 0.5rem;
+        border-radius: 6px;
+      }
+
+      .badge-price {
+        background: #ecfdf5;
+        color: #047857;
+        font-size: 0.72rem;
+        font-weight: 700;
+        padding: 0.15rem 0.5rem;
+        border-radius: 6px;
+      }
+
+      .badge-origen {
+        background: #f3f4f6;
+        color: #4b5563;
+        font-size: 0.72rem;
+        font-weight: 700;
+        padding: 0.15rem 0.5rem;
+        border-radius: 6px;
+      }
+
+      .task-work-body {
+        margin-top: 0.75rem;
+        padding-top: 0.75rem;
+        border-top: 1px dashed #e5e0d7;
+      }
+
+      .task-work-title {
+        margin: 0 0 0.35rem;
+        font-size: 1rem;
+        font-weight: 800;
+        color: #09090c;
+      }
+
+      .task-work-desc {
+        margin: 0 0 0.6rem;
+        font-size: 0.88rem;
+        color: #57554e;
+        line-height: 1.5;
+      }
+
+      .task-opinion-box {
+        background: #ffffff;
+        border-left: 3px solid #ff1744;
+        padding: 0.6rem 0.85rem;
+        border-radius: 0 8px 8px 0;
+        margin-top: 0.5rem;
+      }
+
+      .opinion-quote-label {
+        display: block;
+        font-size: 0.72rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        color: #ff1744;
+        margin-bottom: 0.2rem;
+        letter-spacing: 0.05em;
+      }
+
+      .empty-reviews {
+        text-align: center;
+        padding: 2rem;
+      }
+
       .perfil-grid {
         display: grid;
         grid-template-columns: 3fr 2fr;
@@ -701,8 +794,11 @@ export class PerfilComponent implements OnInit {
   /** Indica si s'està visualitzant el propi perfil (editable) o el d'un altre usuari (públic) */
   isOwnProfile = true;
 
-  /** Llistat de ressenyes associades a l'usuari */
-  ressenyes: Resenya[] = [];
+  /** Llistat de tasques finalitzades associades a l'usuari (les quals actuen com a valoracions públiques) */
+  tasquesFinalitzades: Tasca[] = [];
+
+  /** Nombre total de valoracions rebudes */
+  totalValoracions = 0;
 
   /** Puntuació mitjana de les valoracions (1 a 5) */
   mitjanaPuntuacio: string | null = null;
@@ -710,7 +806,7 @@ export class PerfilComponent implements OnInit {
   constructor(
     private readonly authService: AuthService,
     private readonly usuariService: UsuariService,
-    private readonly resenyaService: ResenyaService,
+    private readonly tascaService: TascaService,
     private readonly router: Router,
     private readonly route: ActivatedRoute
   ) {}
@@ -753,69 +849,48 @@ export class PerfilComponent implements OnInit {
             this.formData.bio = freshUser.bio || '';
             this.authService.setCurrentUser(freshUser);
           }
-          this.carregarRessenyes(freshUser);
+          this.carregarTasquesPerfil(freshUser);
         }
       },
       error: () => {
         if (this.isOwnProfile && this.usuari) {
-          this.carregarRessenyes(this.usuari);
+          this.carregarTasquesPerfil(this.usuari);
         }
       }
     });
   }
 
-  private carregarRessenyes(user: Usuari): void {
-    this.resenyaService.getByTreballador(user.id).subscribe({
-      next: (res) => {
-        if (res && res.length > 0) {
-          this.ressenyes = res;
-          this.calcularMitjana();
-        } else if (user.nom) {
-          this.resenyaService.getByTreballador(user.nom).subscribe({
-            next: (byName) => {
-              if (byName && byName.length > 0) {
-                this.ressenyes = byName;
-                this.calcularMitjana();
-              } else if (user.rol === 'client') {
-                this.resenyaService.getByClient(user.id).subscribe({
-                  next: (clientRes) => {
-                    this.ressenyes = clientRes ?? [];
-                    this.calcularMitjana();
-                  },
-                  error: () => {
-                    this.ressenyes = [];
-                    this.mitjanaPuntuacio = null;
-                  }
-                });
-              } else {
-                this.ressenyes = [];
-                this.mitjanaPuntuacio = null;
-              }
-            },
-            error: () => {
-              this.ressenyes = [];
-              this.mitjanaPuntuacio = null;
-            }
-          });
+  /**
+   * Carrega les tasques finalitzades de l'usuari (que contenen la valoració i opinió).
+   * Les mateixes tasques completades són les que es mostren com a valoracions públiques del professional!
+   */
+  private carregarTasquesPerfil(user: Usuari): void {
+    const ident = user.nom || user.id;
+    const fetchObs = (user.rol === 'professional')
+      ? this.tascaService.getByProfessional(ident)
+      : this.tascaService.getByClient(ident);
+
+    fetchObs.subscribe({
+      next: (tasks) => {
+        const all = tasks ?? [];
+        this.tasquesFinalitzades = all.filter(
+          t => t.estat === 'Finalitzada' || (t.valoracio != null && t.valoracio > 0)
+        );
+        const rated = this.tasquesFinalitzades.filter(t => t.valoracio != null && t.valoracio > 0);
+        this.totalValoracions = rated.length;
+        if (rated.length > 0) {
+          const sum = rated.reduce((acc, curr) => acc + (curr.valoracio || 0), 0);
+          this.mitjanaPuntuacio = (sum / rated.length).toFixed(1);
         } else {
-          this.ressenyes = [];
           this.mitjanaPuntuacio = null;
         }
       },
       error: () => {
-        this.ressenyes = [];
+        this.tasquesFinalitzades = [];
+        this.totalValoracions = 0;
         this.mitjanaPuntuacio = null;
       }
     });
-  }
-
-  private calcularMitjana(): void {
-    if (this.ressenyes.length === 0) {
-      this.mitjanaPuntuacio = null;
-      return;
-    }
-    const sum = this.ressenyes.reduce((acc, curr) => acc + curr.puntuacio, 0);
-    this.mitjanaPuntuacio = (sum / this.ressenyes.length).toFixed(1);
   }
 
   /**
