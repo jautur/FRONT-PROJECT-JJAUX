@@ -19,11 +19,10 @@ import { AuthService } from '../../core/services/auth.service';
           <p class="hero-slogan">Connectant necessitats i professionals</p>
         </div>
 
-        <div class="cover-scroll-hint">
-          <div class="mouse-icon">
-            <div class="mouse-wheel"></div>
-          </div>
-          <span class="hint-label">Llisca cap avall per a descobrir tasques i serveis</span>
+        <div class="cover-scroll-hint" (click)="scrollToContent()" role="button" aria-label="Llisca cap avall" title="Llisca cap avall">
+          <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
         </div>
       </header>
 
@@ -184,56 +183,37 @@ import { AuthService } from '../../core/services/auth.service';
         bottom: 1.25rem;
         left: 50%;
         transform: translateX(-50%);
-        display: flex;
-        flex-direction: column;
+        display: inline-flex;
         align-items: center;
-        gap: 0.5rem;
+        justify-content: center;
         color: #f7f3ed;
-        opacity: 0.9;
-        animation: bounceSlow 2.2s infinite ease-in-out;
+        opacity: 0.95;
+        cursor: pointer;
+        animation: bounceSlow 2s infinite ease-in-out;
         user-select: none;
         z-index: 2;
+        padding: 0.45rem;
+        border-radius: 50%;
+        background: rgba(11, 11, 15, 0.45);
+        border: 1px solid rgba(247, 243, 237, 0.28);
+        backdrop-filter: blur(4px);
+        transition: all 0.25s ease;
+      }
+
+      .cover-scroll-hint:hover {
+        color: var(--neon, #ff1744);
+        border-color: var(--neon, #ff1744);
+        box-shadow: 0 0 16px rgba(255, 23, 68, 0.5);
+        transform: translateX(-50%) scale(1.12);
       }
 
       @keyframes bounceSlow {
-        0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(10px); }
-      }
-
-      .mouse-icon {
-        width: 24px;
-        height: 40px;
-        border: 2px solid #ffffff;
-        border-radius: 12px;
-        position: relative;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
-      }
-
-      .mouse-wheel {
-        width: 4px;
-        height: 8px;
-        background: #ff1744;
-        border-radius: 2px;
-        position: absolute;
-        top: 6px;
-        left: 50%;
-        transform: translateX(-50%);
-        animation: wheelScroll 1.6s infinite ease-out;
-        box-shadow: 0 0 8px #ff1744;
-      }
-
-      @keyframes wheelScroll {
-        0% { transform: translate(-50%, 0); opacity: 1; }
-        100% { transform: translate(-50%, 14px); opacity: 0; }
-      }
-
-      .hint-label {
-        font-size: 0.85rem;
-        letter-spacing: 0.12em;
-        text-transform: uppercase;
-        font-weight: 800;
-        color: #f7f3ed;
-        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+        0%, 100% {
+          transform: translateX(-50%) translateY(0);
+        }
+        50% {
+          transform: translateX(-50%) translateY(8px);
+        }
       }
 
       .dashboard-body {
@@ -728,6 +708,17 @@ export class MainComponent implements OnInit {
     } else {
       this.noticeMessage = 'Només el client que ha publicat la tasca pot acceptar aquesta oferta.';
     }
+  }
+
+  /**
+   * Fa lliscar la pantalla suaument cap a la secció de contingut
+   */
+  scrollToContent(): void {
+    const scrollTarget = window.innerHeight * 0.76;
+    window.scrollTo({
+      top: scrollTarget,
+      behavior: 'smooth'
+    });
   }
 }
 
