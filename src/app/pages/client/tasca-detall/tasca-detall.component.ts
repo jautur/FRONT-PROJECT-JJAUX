@@ -30,7 +30,7 @@ import { Oferta } from '../../../models/oferta.model';
         </div>
         <h1>{{ tasca.titol }}</h1>
         <div class="meta-row">
-          <span>Client: <strong>{{ tasca.client }}</strong></span>
+          <span>Client: <strong><a [routerLink]="['/perfil', tasca.client]" class="user-profile-link" title="Veure perfil de {{ tasca.client }}">{{ tasca.client }}</a></strong></span>
           <span>Pressupost estimat: <strong>{{ tasca.budget }}</strong></span>
           <span>Identificador: <code>{{ tasca.id }}</code></span>
         </div>
@@ -75,7 +75,11 @@ import { Oferta } from '../../../models/oferta.model';
         <div class="offers-grid" *ngIf="ofertes.length > 0">
           <article class="card offer-card" *ngFor="let offer of ofertes">
             <div class="offer-header">
-              <h3>{{ offer.professional }}</h3>
+              <h3>
+                <a [routerLink]="['/perfil', offer.professional]" class="user-profile-link" title="Veure perfil de {{ offer.professional }}">
+                  {{ offer.professional }}
+                </a>
+              </h3>
               <span class="status-badge" [ngClass]="getStatusClass(offer.estat)">
                 {{ offer.estat }}
               </span>
@@ -165,6 +169,20 @@ import { Oferta } from '../../../models/oferta.model';
       .meta-row strong {
         color: #ff1744;
         font-weight: 900;
+      }
+
+      .user-profile-link {
+        color: inherit;
+        text-decoration: underline;
+        text-decoration-color: rgba(255, 23, 68, 0.4);
+        text-underline-offset: 3px;
+        transition: color 0.15s ease, text-decoration-color 0.15s ease;
+        cursor: pointer;
+      }
+
+      .user-profile-link:hover {
+        color: #ff1744 !important;
+        text-decoration-color: #ff1744;
       }
 
       .meta-row code {

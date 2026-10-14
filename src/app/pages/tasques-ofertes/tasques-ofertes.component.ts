@@ -194,7 +194,10 @@ interface CategoriaFiltre {
 
                   <div class="card-meta-line">
                     <span class="meta-label">Client:</span>
-                    <strong class="meta-value">{{ task.client }}</strong>
+                    <a [routerLink]="['/perfil', getClientIdentifier(task.client)]" class="user-profile-link" title="Veure el perfil i descripció de {{ task.client }}">
+                      <span class="user-avatar-mini">{{ (task.client || 'C').charAt(0) }}</span>
+                      <strong class="meta-value">{{ task.client }}</strong>
+                    </a>
                   </div>
 
                   <div class="card-bottom-bar">
@@ -234,7 +237,11 @@ interface CategoriaFiltre {
                     </span>
                   </div>
 
-                  <h3 class="card-item-title">{{ offer.professional }}</h3>
+                  <h3 class="card-item-title">
+                    <a [routerLink]="['/perfil', getProfessionalIdentifier(offer.professional)]" class="pro-title-link" title="Veure el perfil, descripció i ressenyes de {{ offer.professional }}">
+                      {{ offer.professional }}
+                    </a>
+                  </h3>
                   <div class="pro-rating-row" *ngIf="getProfessionalRating(offer.professional) as ratingInfo">
                     <span class="stars-gold">★ {{ ratingInfo.mitjana }}</span>
                     <span class="reviews-count">({{ ratingInfo.total }} valoracions)</span>
@@ -295,7 +302,9 @@ interface CategoriaFiltre {
                   <div class="reviewer-info">
                     <span class="reviewer-avatar">{{ (r.clientNom || 'C').charAt(0) }}</span>
                     <div>
-                      <strong class="reviewer-name">{{ r.clientNom || 'Client AVISA' }}</strong>
+                      <a [routerLink]="['/perfil', r.clientId || r.clientNom]" (click)="tancarModalRessenyes()" class="user-profile-link reviewer-link" title="Veure el perfil de {{ r.clientNom }}">
+                        <strong class="reviewer-name">{{ r.clientNom || 'Client AVISA' }}</strong>
+                      </a>
                       <span class="review-date" *ngIf="r.createdAt">{{ r.createdAt | slice:0:10 }}</span>
                     </div>
                   </div>
@@ -931,6 +940,51 @@ interface CategoriaFiltre {
         color: #111827;
       }
 
+      .user-profile-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        color: #111827;
+        text-decoration: none;
+        transition: color 0.15s ease;
+      }
+      .user-profile-link:hover {
+        color: #ff1744;
+      }
+      .user-profile-link:hover .meta-value {
+        color: #ff1744;
+        text-decoration: underline;
+      }
+      .pro-title-link {
+        color: #111827;
+        font-weight: 800;
+        text-decoration: none;
+        transition: color 0.15s ease;
+      }
+      .pro-title-link:hover {
+        color: #ff1744;
+        text-decoration: underline;
+      }
+      .reviewer-link {
+        text-decoration: none;
+      }
+      .reviewer-link:hover .reviewer-name {
+        color: #ff1744;
+        text-decoration: underline;
+      }
+      .user-avatar-mini {
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        background: #f0ece3;
+        color: #09090c;
+        font-size: 0.72rem;
+        font-weight: 800;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+
       /* Modal de Ressenyes */
       .modal-backdrop {
         position: fixed;
@@ -1276,6 +1330,22 @@ export class TasquesOfertesComponent implements OnInit {
         (u.nom && u.nom.toLowerCase().trim() === q) ||
         (u.id && u.id.toLowerCase().trim() === q)
     );
+  }
+
+  getClientIdentifier(clientNom: string): string {
+    if (!clientNom) return '';
+    const q = clientNom.toLowerCase().trim();
+    const user = this.allUsuaris.find(
+      (u) =>
+        (u.nom && u.nom.toLowerCase().trim() === q) ||
+        (u.id && u.id.toLowerCase().trim() === q)
+    );
+    return user ? user.id : clientNom;
+  }
+
+  getProfessionalIdentifier(proNom: string): string {
+    const user = this.getProfessionalUser(proNom);
+    return user ? user.id : proNom;
   }
 
   obrirModalRessenyes(proNom: string): void {

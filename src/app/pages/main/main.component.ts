@@ -66,7 +66,7 @@ import { Resenya } from '../../models/resenya.model';
                 </span>
               </div>
               <h3>{{ task.title }}</h3>
-              <p class="meta">Client: {{ task.client }}</p>
+              <p class="meta">Client: <a [routerLink]="['/perfil', task.client]" class="user-inline-link" title="Veure perfil de {{ task.client }}">{{ task.client }}</a></p>
               <div class="card-footer">
                 <span>Pressupost: {{ task.budget }}</span>
                 <div class="actions">
@@ -103,7 +103,9 @@ import { Resenya } from '../../models/resenya.model';
                   {{ offer.status }}
                 </span>
               </div>
-              <h3>{{ offer.professional }}</h3>
+              <h3>
+                <a [routerLink]="['/perfil', offer.professional]" class="user-inline-link pro-title-link" title="Veure perfil de {{ offer.professional }}">{{ offer.professional }}</a>
+              </h3>
               <div class="pro-preview-rating" *ngIf="getRatingInfo(offer.professional) as r">
                 <span class="stars-gold">★ {{ r.mitjana }}</span>
                 <span class="reviews-count">({{ r.total }} opinions)</span>
@@ -344,8 +346,10 @@ import { Resenya } from '../../models/resenya.model';
               <div class="review-home-footer">
                 <div class="review-client-icon">{{ (r.clientNom || 'C').charAt(0) }}</div>
                 <div class="review-client-meta">
-                  <strong class="client-name-bold">{{ r.clientNom || 'Client AVISA' }}</strong>
-                  <span class="pro-assigned-note">Servei de <strong>{{ r.treballadorNom }}</strong></span>
+                  <strong class="client-name-bold">
+                    <a [routerLink]="['/perfil', r.clientNom]" class="user-inline-link" title="Veure perfil de {{ r.clientNom }}">{{ r.clientNom || 'Client AVISA' }}</a>
+                  </strong>
+                  <span class="pro-assigned-note">Servei de <a [routerLink]="['/perfil', r.treballadorNom]" class="user-inline-link font-medium" title="Veure perfil de {{ r.treballadorNom }}">{{ r.treballadorNom }}</a></span>
                 </div>
               </div>
             </div>
@@ -1775,6 +1779,27 @@ import { Resenya } from '../../models/resenya.model';
       .pro-preview-rating .reviews-count {
         color: #6b7280;
         font-size: 0.78rem;
+      }
+
+      .user-inline-link {
+        color: inherit;
+        text-decoration: underline;
+        text-decoration-color: rgba(220, 38, 38, 0.45);
+        text-underline-offset: 3px;
+        transition: color 0.15s ease, text-decoration-color 0.15s ease;
+        cursor: pointer;
+      }
+      .user-inline-link:hover {
+        color: #dc2626 !important;
+        text-decoration-color: #dc2626;
+      }
+      .pro-title-link {
+        color: #111827;
+        text-decoration: none;
+      }
+      .pro-title-link:hover {
+        color: #dc2626 !important;
+        text-decoration: underline;
       }
 
       /* Reviews Section Home */

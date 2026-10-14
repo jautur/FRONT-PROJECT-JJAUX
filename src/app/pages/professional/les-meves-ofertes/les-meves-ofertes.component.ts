@@ -91,7 +91,7 @@ type FiltreEstatOferta = 'totes' | 'pendent' | 'acceptada' | 'rebutjada';
           </h3>
 
           <p class="tasca-desc" *ngIf="tasquesMap[of.tascaId]">
-            Client: <strong>{{ tasquesMap[of.tascaId].clientNom }}</strong> | Categoria: <em>{{ tasquesMap[of.tascaId].categoria }}</em>
+            Client: <strong><a [routerLink]="['/perfil', tasquesMap[of.tascaId].clientNom || tasquesMap[of.tascaId].client]" class="user-inline-link" title="Veure perfil de {{ tasquesMap[of.tascaId].clientNom || tasquesMap[of.tascaId].client }}">{{ tasquesMap[of.tascaId].clientNom || tasquesMap[of.tascaId].client }}</a></strong> | Categoria: <em>{{ tasquesMap[of.tascaId].categoria }}</em>
           </p>
 
           <div class="preu-box">
@@ -270,6 +270,18 @@ type FiltreEstatOferta = 'totes' | 'pendent' | 'acceptada' | 'rebutjada';
       color: #636058;
       font-size: 0.85rem;
       font-weight: 500;
+    }
+    .user-inline-link {
+      color: inherit;
+      text-decoration: underline;
+      text-decoration-color: rgba(255, 23, 68, 0.4);
+      text-underline-offset: 3px;
+      transition: color 0.15s ease, text-decoration-color 0.15s ease;
+      cursor: pointer;
+    }
+    .user-inline-link:hover {
+      color: #ff1744 !important;
+      text-decoration-color: #ff1744;
     }
     .preu-box {
       background: #faf8f4;

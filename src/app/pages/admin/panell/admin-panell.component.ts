@@ -184,7 +184,11 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
                   <div class="table-titol">{{ t.titol }}</div>
                   <div class="table-desc">{{ t.descripcio }}</div>
                 </td>
-                <td>{{ t.clientNom || t.client }}</td>
+                <td>
+                  <a [routerLink]="['/perfil', t.clientNom || t.client]" class="user-inline-link" title="Veure perfil de {{ t.clientNom || t.client }}">
+                    {{ t.clientNom || t.client }}
+                  </a>
+                </td>
                 <td><span class="tag-cat">{{ t.categoria }}</span></td>
                 <td><strong>{{ t.budget }}</strong></td>
                 <td>
@@ -277,7 +281,11 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
                     {{ o.tascaId }}
                   </a>
                 </td>
-                <td><strong>{{ o.professionalNom || o.professional }}</strong></td>
+                <td>
+                  <a [routerLink]="['/perfil', o.professionalNom || o.professional]" class="user-inline-link" title="Veure perfil de {{ o.professionalNom || o.professional }}">
+                    <strong>{{ o.professionalNom || o.professional }}</strong>
+                  </a>
+                </td>
                 <td class="price-cell">{{ o.price }}</td>
                 <td class="note-cell">{{ o.note || '-' }}</td>
                 <td>
@@ -366,7 +374,11 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
             <tbody>
               <tr *ngFor="let u of usuarisFiltrats">
                 <td class="font-mono"><strong>{{ u.id }}</strong></td>
-                <td><strong>{{ u.nom }}</strong></td>
+                <td>
+                  <a [routerLink]="['/perfil', u.id]" class="user-inline-link" title="Veure perfil de {{ u.nom }}">
+                    <strong>{{ u.nom }}</strong>
+                  </a>
+                </td>
                 <td>{{ u.email }}</td>
                 <td>
                   <span class="user-badge-tag" [ngClass]="u.rol">
@@ -377,6 +389,13 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
                 <td class="bio-cell">{{ u.bio || '-' }}</td>
                 <td>
                   <div class="action-buttons">
+                    <a [routerLink]="['/perfil', u.id]" class="btn-sm btn-info" title="Veure perfil de {{ u.nom }}">
+                      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;">
+                        <circle cx="12" cy="7" r="4"></circle>
+                        <path d="M5.5 21a6.5 6.5 0 0 1 13 0"></path>
+                      </svg>
+                      Perfil
+                    </a>
                     <button
                       type="button"
                       class="btn-sm btn-password"
@@ -775,6 +794,18 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
       overflow: hidden;
       text-overflow: ellipsis;
       font-style: italic;
+    }
+    .user-inline-link {
+      color: inherit;
+      text-decoration: underline;
+      text-decoration-color: rgba(255, 23, 68, 0.4);
+      text-underline-offset: 3px;
+      transition: color 0.15s ease, text-decoration-color 0.15s ease;
+      cursor: pointer;
+    }
+    .user-inline-link:hover {
+      color: #ff1744 !important;
+      text-decoration-color: #ff1744;
     }
     .link-ref {
       color: #ff1744;
