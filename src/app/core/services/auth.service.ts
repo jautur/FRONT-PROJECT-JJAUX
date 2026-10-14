@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
+import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { Usuari, RolUsuari } from '../../models/usuari.model';
 import { environment } from '../../../environments/environment';
 
@@ -41,6 +41,9 @@ export class AuthService {
   /** Clau utilitzada per desar l'usuari a localStorage */
   private readonly USER_KEY = 'jjaux_user';
 
+  private readonly currentUserSubject = new BehaviorSubject<Usuari | null>(this.getCurrentUser());
+  readonly currentUser$ = this.currentUserSubject.asObservable();
+
   constructor(private readonly http: HttpClient) {}
 
   /**
@@ -71,6 +74,7 @@ export class AuthService {
    */
   setCurrentUser(user: Usuari): void {
     localStorage.setItem(this.USER_KEY, JSON.stringify(user));
+    this.currentUserSubject.next(user);
   }
 
   /**
@@ -142,6 +146,7 @@ export class AuthService {
    */
   logout(): void {
     localStorage.removeItem(this.USER_KEY);
+    this.currentUserSubject.next(null);
   }
 
   /**

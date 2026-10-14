@@ -51,3 +51,4 @@ export class IncidenciaService {
     return this.http.delete<void>(`${this.apiUrl}/${encodeURIComponent(id)}`);
   }
 }
+

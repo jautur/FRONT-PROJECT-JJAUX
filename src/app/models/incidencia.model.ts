@@ -47,3 +47,4 @@ export interface CrearIncidenciaDTO {
   budget: string;
   estat?: string;
 }
+

@@ -1,6 +1,7 @@
-import { Component, HostListener, OnInit } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet, NavigationEnd } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { AuthService } from './core/services/auth.service';
 import { AvisService } from './services/avis.service';
 
@@ -11,6 +12,7 @@ import { AvisService } from './services/avis.service';
  * 2. L'estat inicial transparent sobre imatge de fons.
  * 3. En fer scroll, canvi del fons del títol a color llis.
  * 4. Obertura i ocultació del menú a l'esquerra amb els apartats necessaris.
+ * 5. Indicador i botó flotant d'avisos pendents a baix a la dreta.
  */
 @Component({
   selector: 'app-root',
@@ -19,9 +21,12 @@ import { AvisService } from './services/avis.service';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, OnDestroy {
   /** Nombre d'avisos pendents */
   avisosPendents = 0;
+
+  /** Indica si la pàgina actual és la de safata d'avisos */
+  isAvisosPage = false;
 
   /** Indica si la pàgina ha fet scroll avall */
   isScrolled = false;
@@ -41,6 +46,12 @@ export class AppComponent implements OnInit {
   /** Estat del desplegable de vista prèvia de perfil */
   perfilDropdownObert = false;
 
+  /** Interval de refresc automàtic dels avisos en segon pla */
+  private avisosInterval: any;
+
+  /** Subscripció als canvis d'autenticació */
+  private authSub?: Subscription;
+
   constructor(
     public readonly authService: AuthService,
     private readonly avisService: AvisService,
@@ -50,6 +61,8 @@ export class AppComponent implements OnInit {
       if (event instanceof NavigationEnd) {
         this.perfilDropdownObert = false;
         this.isHomePage = event.urlAfterRedirects === '/' || event.urlAfterRedirects === '';
+        this.isAvisosPage = event.urlAfterRedirects.startsWith('/avisos');
+        this.actualitzarAvisos();
         if (!this.isHomePage) {
           // A les pàgines secundàries el fons sempre és llis per llegibilitat
           this.isScrolled = true;
@@ -61,11 +74,37 @@ export class AppComponent implements OnInit {
         }
       }
     });
+
+    this.authSub = this.authService.currentUser$.subscribe(() => {
+      this.actualitzarAvisos();
+    });
   }
 
   ngOnInit(): void {
     this.actualitzarAvisos();
     this.checkScroll();
+
+    // Comprovació periòdica dels avisos cada 15 segons
+    this.avisosInterval = setInterval(() => {
+      this.actualitzarAvisos();
+    }, 15000);
+  }
+
+  ngOnDestroy(): void {
+    if (this.avisosInterval) {
+      clearInterval(this.avisosInterval);
+    }
+    if (this.authSub) {
+      this.authSub.unsubscribe();
+    }
+  }
+
+  /**
+   * Refresca els avisos quan l'usuari torna a la finestra del navegador.
+   */
+  @HostListener('window:focus', [])
+  onWindowFocus(): void {
+    this.actualitzarAvisos();
   }
 
   /**
@@ -166,10 +205,11 @@ export class AppComponent implements OnInit {
 
   actualitzarAvisos(): void {
     const user = this.authService.getCurrentUser();
-    if (user && user.id) {
-      this.avisService.getByUsuari(user.id).subscribe({
+    if (user && (user.id || user.nom)) {
+      const userKey = user.id || user.nom;
+      this.avisService.getByUsuari(userKey).subscribe({
         next: (avisos) => {
-          this.avisosPendents = avisos.filter(a => !a.llegit).length;
+          this.avisosPendents = (avisos ?? []).filter(a => !a.llegit).length;
         },
         error: () => {
           this.avisosPendents = 0;
