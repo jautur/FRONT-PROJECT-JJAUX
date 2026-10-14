@@ -1,10 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Usuari } from '../../models/usuari.model';
 import { UsuariService } from '../../services/usuari.service';
 import { AuthService } from '../../core/services/auth.service';
+import { Resenya } from '../../models/resenya.model';
+import { ResenyaService } from '../../services/resenya.service';
 
 /**
  * Component de Perfil d'Usuari (/perfil).
@@ -26,11 +28,22 @@ import { AuthService } from '../../core/services/auth.service';
           {{ userInitial }}
         </div>
         <div class="header-info">
-          <h1>{{ usuari?.nom || 'El meu perfil' }}</h1>
+          <div class="header-name-row">
+            <h1>{{ usuari?.nom || 'El meu perfil' }}</h1>
+            <div class="pro-rating-badge-head" *ngIf="mitjanaPuntuacio">
+              <span class="stars-gold">★ {{ mitjanaPuntuacio }}</span>
+              <span class="count-head">({{ ressenyes.length }} {{ ressenyes.length === 1 ? 'ressenya' : 'ressenyes' }})</span>
+            </div>
+          </div>
           <p class="email">{{ usuari?.email }}</p>
-          <span class="role-badge" [ngClass]="usuari?.rol">
-            {{ usuari?.rol | uppercase }}
-          </span>
+          <div class="badges-row">
+            <span class="role-badge" [ngClass]="usuari?.rol">
+              {{ usuari?.rol | uppercase }}
+            </span>
+            <span class="verified-badge" *ngIf="usuari?.rol === 'professional'">
+              ✓ Professional Verificat AVISA
+            </span>
+          </div>
         </div>
       </header>
 
@@ -42,7 +55,8 @@ import { AuthService } from '../../core/services/auth.service';
         {{ errorMessage }}
       </div>
 
-      <div class="perfil-grid">
+      <!-- Vista per al propi perfil (editable) -->
+      <div class="perfil-grid" *ngIf="isOwnProfile">
         <!-- Formulari d'edició de dades bàsiques -->
         <article class="card">
           <h2>Dades personals</h2>
@@ -114,6 +128,81 @@ import { AuthService } from '../../core/services/auth.service';
           </article>
         </div>
       </div>
+
+      <!-- Vista per a perfil públic d'un altre professional o usuari -->
+      <div class="perfil-grid" *ngIf="!isOwnProfile">
+        <article class="card">
+          <h2>Dades de contacte i presentació</h2>
+          <p class="subtitle">Informació oficial del professional registrat a la plataforma AVISA.</p>
+
+          <div class="public-info-list">
+            <div class="public-info-row" *ngIf="usuari?.telefon">
+              <span class="info-label">Telèfon directe:</span>
+              <strong class="info-value tel-value">{{ usuari?.telefon }}</strong>
+            </div>
+
+            <div class="public-info-row" *ngIf="usuari?.email">
+              <span class="info-label">Correu electrònic:</span>
+              <span class="info-value">{{ usuari?.email }}</span>
+            </div>
+
+            <div class="public-bio-box" *ngIf="usuari?.bio">
+              <span class="info-label">Biografia / Especialitat:</span>
+              <p class="bio-text">{{ usuari?.bio }}</p>
+            </div>
+          </div>
+        </article>
+
+        <div class="side-column">
+          <article class="card info-card">
+            <h3>Garantia AVISA</h3>
+            <p>
+              Tots els professionals de la plataforma compten amb compte registrat, telèfon verificat i valoracions auditades per part de clients reals en finalitzar cada encàrrec.
+            </p>
+          </article>
+        </div>
+      </div>
+
+      <!-- SECCIÓ DE RESSENYES I VALORACIONS (SI N'HI HA) -->
+      <section class="card reviews-profile-card" *ngIf="ressenyes.length > 0">
+        <div class="reviews-card-header">
+          <div>
+            <h2>{{ usuari?.rol === 'professional' ? 'Valoracions i opinions rebudes' : 'Ressenyes i experiències' }}</h2>
+            <p class="subtitle">
+              {{ usuari?.rol === 'professional' 
+                  ? 'Opinions reals i verificades de clients que han contractat els seus serveis a AVISA.' 
+                  : 'Historial de valoracions i experiències registrades a la plataforma.' }}
+            </p>
+          </div>
+          <div class="score-summary-pill" *ngIf="mitjanaPuntuacio">
+            <span class="stars-gold">★ {{ mitjanaPuntuacio }}</span>
+            <span class="score-count">({{ ressenyes.length }} {{ ressenyes.length === 1 ? 'opinió' : 'opinions' }})</span>
+          </div>
+        </div>
+
+        <div class="reviews-profile-list">
+          <article class="review-profile-item" *ngFor="let r of ressenyes">
+            <div class="review-item-header">
+              <div class="reviewer-meta">
+                <div class="reviewer-avatar">
+                  {{ (r.clientNom || 'C').charAt(0).toUpperCase() }}
+                </div>
+                <div>
+                  <strong class="reviewer-name">{{ r.clientNom || 'Client AVISA' }}</strong>
+                  <span class="review-date" *ngIf="r.createdAt">
+                    {{ r.createdAt | slice:0:10 }}
+                  </span>
+                </div>
+              </div>
+              <div class="review-stars-badge">
+                <span class="star-icon" *ngFor="let s of [1,2,3,4,5]">{{ s <= r.puntuacio ? '★' : '☆' }}</span>
+                <span class="star-number">{{ r.puntuacio }}/5</span>
+              </div>
+            </div>
+            <p class="review-item-comment">“{{ r.descripcio }}”</p>
+          </article>
+        </div>
+      </section>
     </section>
   `,
   styles: [
@@ -195,6 +284,214 @@ import { AuthService } from '../../core/services/auth.service';
         color: #ffffff;
         border-color: var(--neon, #ff1744);
         box-shadow: 0 0 10px rgba(255, 23, 68, 0.3);
+      }
+
+      .header-name-row {
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+        flex-wrap: wrap;
+      }
+
+      .pro-rating-badge-head {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        background: #fef3c7;
+        color: #92400e;
+        padding: 0.25rem 0.65rem;
+        border-radius: 9999px;
+        font-size: 0.82rem;
+        font-weight: 700;
+      }
+
+      .pro-rating-badge-head .stars-gold {
+        color: #d97706;
+      }
+
+      .count-head {
+        font-size: 0.75rem;
+        color: #78350f;
+        font-weight: 600;
+      }
+
+      .badges-row {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        margin-top: 0.35rem;
+      }
+
+      .verified-badge {
+        font-size: 0.75rem;
+        font-weight: 700;
+        background: #ecfdf5;
+        color: #065f46;
+        border: 1px solid #a7f3d0;
+        padding: 0.2rem 0.55rem;
+        border-radius: 9999px;
+      }
+
+      .public-info-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        margin-top: 1rem;
+      }
+
+      .public-info-row {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+
+      .info-label {
+        font-size: 0.82rem;
+        font-weight: 700;
+        color: #6b7280;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        min-width: 140px;
+      }
+
+      .info-value {
+        font-size: 0.95rem;
+        color: #111827;
+      }
+
+      .tel-value {
+        font-size: 1.05rem;
+        color: #ff1744;
+      }
+
+      .public-bio-box {
+        background: #fafaf9;
+        border: 1px solid #e7e5e4;
+        border-radius: 10px;
+        padding: 1rem;
+        margin-top: 0.5rem;
+      }
+
+      .bio-text {
+        margin: 0.4rem 0 0;
+        font-size: 0.92rem;
+        line-height: 1.5;
+        color: #374151;
+      }
+
+      /* Ressenyes Section */
+      .reviews-profile-card {
+        margin-top: 0.5rem;
+      }
+
+      .reviews-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1.5rem;
+        gap: 1rem;
+        flex-wrap: wrap;
+      }
+
+      .score-summary-pill {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        background: #fef3c7;
+        padding: 0.4rem 0.85rem;
+        border-radius: 9999px;
+      }
+
+      .score-summary-pill .stars-gold {
+        color: #d97706;
+        font-size: 1rem;
+        font-weight: 800;
+      }
+
+      .score-count {
+        font-size: 0.82rem;
+        color: #78350f;
+        font-weight: 600;
+      }
+
+      .reviews-profile-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .review-profile-item {
+        background: #fafaf9;
+        border: 1px solid #e7e5e4;
+        border-radius: 12px;
+        padding: 1.2rem 1.4rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+      }
+
+      .review-item-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.65rem;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+
+      .reviewer-meta {
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+      }
+
+      .reviewer-avatar {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: #e0e7ff;
+        color: #3730a3;
+        font-weight: 800;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .reviewer-name {
+        display: block;
+        font-size: 0.92rem;
+        color: #111827;
+      }
+
+      .review-date {
+        font-size: 0.76rem;
+        color: #9ca3af;
+      }
+
+      .review-stars-badge {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+      }
+
+      .review-stars-badge .star-icon {
+        color: #f59e0b;
+        font-size: 0.95rem;
+      }
+
+      .star-number {
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: #4b5563;
+        margin-left: 0.25rem;
+      }
+
+      .review-item-comment {
+        margin: 0;
+        font-size: 0.9rem;
+        line-height: 1.5;
+        color: #374151;
+        font-style: italic;
       }
 
       .perfil-grid {
@@ -401,10 +698,21 @@ export class PerfilComponent implements OnInit {
   successMessage = '';
   errorMessage = '';
 
+  /** Indica si s'està visualitzant el propi perfil (editable) o el d'un altre usuari (públic) */
+  isOwnProfile = true;
+
+  /** Llistat de ressenyes associades a l'usuari */
+  ressenyes: Resenya[] = [];
+
+  /** Puntuació mitjana de les valoracions (1 a 5) */
+  mitjanaPuntuacio: string | null = null;
+
   constructor(
     private readonly authService: AuthService,
     private readonly usuariService: UsuariService,
-    private readonly router: Router
+    private readonly resenyaService: ResenyaService,
+    private readonly router: Router,
+    private readonly route: ActivatedRoute
   ) {}
 
   /**
@@ -412,32 +720,102 @@ export class PerfilComponent implements OnInit {
    * Comprova l'autenticació i carrega les dades actuals des de PostgreSQL.
    */
   ngOnInit(): void {
-    const currentUser = this.authService.getCurrentUser();
-    if (!currentUser) {
-      this.router.navigate(['/login']);
-      return;
-    }
+    this.route.paramMap.subscribe((params) => {
+      const targetId = params.get('id');
+      const currentUser = this.authService.getCurrentUser();
 
-    this.usuari = currentUser;
-    this.formData.nom = currentUser.nom || '';
-    this.formData.telefon = currentUser.telefon || '';
-    this.formData.bio = currentUser.bio || '';
+      if (targetId && (!currentUser || currentUser.id !== targetId)) {
+        this.isOwnProfile = false;
+        this.carregarPerfilUsuari(targetId);
+      } else {
+        if (!currentUser) {
+          this.router.navigate(['/login']);
+          return;
+        }
+        this.isOwnProfile = true;
+        this.usuari = currentUser;
+        this.formData.nom = currentUser.nom || '';
+        this.formData.telefon = currentUser.telefon || '';
+        this.formData.bio = currentUser.bio || '';
+        this.carregarPerfilUsuari(currentUser.id);
+      }
+    });
+  }
 
-    // Consultem el backend per tenir la versió més recent des de la base de dades
-    this.usuariService.getById(currentUser.id).subscribe({
+  private carregarPerfilUsuari(userId: string): void {
+    this.usuariService.getById(userId).subscribe({
       next: (freshUser) => {
         if (freshUser) {
           this.usuari = freshUser;
-          this.formData.nom = freshUser.nom || '';
-          this.formData.telefon = freshUser.telefon || '';
-          this.formData.bio = freshUser.bio || '';
-          this.authService.setCurrentUser(freshUser);
+          if (this.isOwnProfile) {
+            this.formData.nom = freshUser.nom || '';
+            this.formData.telefon = freshUser.telefon || '';
+            this.formData.bio = freshUser.bio || '';
+            this.authService.setCurrentUser(freshUser);
+          }
+          this.carregarRessenyes(freshUser);
         }
       },
       error: () => {
-        // Mantenim les dades en memòria/localStorage si falla la connexió
+        if (this.isOwnProfile && this.usuari) {
+          this.carregarRessenyes(this.usuari);
+        }
       }
     });
+  }
+
+  private carregarRessenyes(user: Usuari): void {
+    this.resenyaService.getByTreballador(user.id).subscribe({
+      next: (res) => {
+        if (res && res.length > 0) {
+          this.ressenyes = res;
+          this.calcularMitjana();
+        } else if (user.nom) {
+          this.resenyaService.getByTreballador(user.nom).subscribe({
+            next: (byName) => {
+              if (byName && byName.length > 0) {
+                this.ressenyes = byName;
+                this.calcularMitjana();
+              } else if (user.rol === 'client') {
+                this.resenyaService.getByClient(user.id).subscribe({
+                  next: (clientRes) => {
+                    this.ressenyes = clientRes ?? [];
+                    this.calcularMitjana();
+                  },
+                  error: () => {
+                    this.ressenyes = [];
+                    this.mitjanaPuntuacio = null;
+                  }
+                });
+              } else {
+                this.ressenyes = [];
+                this.mitjanaPuntuacio = null;
+              }
+            },
+            error: () => {
+              this.ressenyes = [];
+              this.mitjanaPuntuacio = null;
+            }
+          });
+        } else {
+          this.ressenyes = [];
+          this.mitjanaPuntuacio = null;
+        }
+      },
+      error: () => {
+        this.ressenyes = [];
+        this.mitjanaPuntuacio = null;
+      }
+    });
+  }
+
+  private calcularMitjana(): void {
+    if (this.ressenyes.length === 0) {
+      this.mitjanaPuntuacio = null;
+      return;
+    }
+    const sum = this.ressenyes.reduce((acc, curr) => acc + curr.puntuacio, 0);
+    this.mitjanaPuntuacio = (sum / this.ressenyes.length).toFixed(1);
   }
 
   /**

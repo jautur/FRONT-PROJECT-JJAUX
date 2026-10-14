@@ -35,6 +35,7 @@ export const appRoutes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'registre', component: RegistreComponent },
   { path: 'perfil', component: PerfilComponent, canActivate: [authGuard] },
+  { path: 'perfil/:id', component: PerfilComponent },
   { path: 'avisos', component: AvisosComponent, canActivate: [authGuard] },
   { path: 'client/les-meves-tasques', component: LesMevesTasquesComponent, canActivate: [authGuard] },
   { path: 'client/crear-tasca', component: CrearTascaComponent, canActivate: [authGuard] },

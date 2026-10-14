@@ -313,6 +313,9 @@ interface CategoriaFiltre {
           </div>
 
           <footer class="modal-footer">
+            <button type="button" class="btn-view-full-profile" *ngIf="modalProfessionalNom && getProfessionalUser(modalProfessionalNom)?.id as proId" (click)="anarPerfilProfessional(proId)">
+              Veure perfil complet
+            </button>
             <button type="button" class="btn-primary-close" (click)="tancarModalRessenyes()">Tancar</button>
           </footer>
         </div>
@@ -1108,6 +1111,20 @@ interface CategoriaFiltre {
       .btn-primary-close:hover {
         background: #2563eb;
       }
+      .btn-view-full-profile {
+        background: #f0ece3;
+        color: #1f2937;
+        border: 1px solid #d1d5db;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-size: 0.88rem;
+        font-weight: 600;
+        cursor: pointer;
+        margin-right: 0.6rem;
+      }
+      .btn-view-full-profile:hover {
+        background: #e5e7eb;
+      }
     `
   ]
 })
@@ -1277,6 +1294,11 @@ export class TasquesOfertesComponent implements OnInit {
 
   tancarModalRessenyes(): void {
     this.modalProfessionalNom = null;
+  }
+
+  anarPerfilProfessional(userId: string): void {
+    this.tancarModalRessenyes();
+    this.router.navigate(['/perfil', userId]);
   }
 
   get totalElements(): number {
