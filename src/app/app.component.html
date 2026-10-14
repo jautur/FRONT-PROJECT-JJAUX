@@ -27,22 +27,26 @@
       <a routerLink="/" class="brand-title">AVISA</a>
     </div>
 
-    <!-- Espai dret d'equilibri visual -->
+    <!-- Espai dret d'equilibri visual amb icona d'usuari permanent -->
     <div class="topbar-right">
-      <ng-container *ngIf="isScrolled">
-        <a *ngIf="authService.isLoggedIn()" routerLink="/perfil" class="quick-profile-btn" title="El meu perfil">
-          <span class="profile-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-              <circle cx="12" cy="7" r="4"></circle>
-            </svg>
-          </span>
-          <span class="profile-label">Perfil</span>
-        </a>
-        <a *ngIf="!authService.isLoggedIn()" routerLink="/login" class="quick-login-btn">
-          Iniciar sessió
-        </a>
-      </ng-container>
+      <a *ngIf="authService.isLoggedIn()" routerLink="/perfil" class="quick-profile-btn" title="El meu perfil">
+        <span class="profile-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+        </span>
+        <span class="profile-label">Perfil</span>
+      </a>
+      <a *ngIf="!authService.isLoggedIn()" routerLink="/login" class="quick-profile-btn" title="El meu compte / Iniciar sessió">
+        <span class="profile-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+        </span>
+        <span class="profile-label">Perfil</span>
+      </a>
     </div>
   </header>
 

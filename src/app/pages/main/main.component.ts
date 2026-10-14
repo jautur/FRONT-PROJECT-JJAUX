@@ -126,8 +126,9 @@ import { AuthService } from '../../core/services/auth.service';
 
       .fullscreen-cover {
         width: 100%;
-        height: 100vh;
-        min-height: 580px;
+        height: 78vh;
+        min-height: 480px;
+        max-height: 780px;
         background-image: linear-gradient(rgba(8, 8, 12, 0.52), rgba(8, 8, 12, 0.78)),
           url('https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=2000&q=80');
         background-size: cover;
@@ -150,13 +151,13 @@ import { AuthService } from '../../core/services/auth.service';
         text-align: center;
         user-select: none;
         z-index: 2;
-        margin-top: -2.5rem;
+        margin-top: -1.2rem;
       }
 
       .hero-brand {
         margin: 0;
         font-family: var(--font-title, 'Boldonse', 'Climate Crisis', sans-serif);
-        font-size: clamp(3.6rem, 9vw, 6.8rem);
+        font-size: clamp(3.2rem, 8vw, 6.2rem);
         font-weight: 900;
         letter-spacing: 0.12em;
         text-transform: uppercase;
@@ -166,9 +167,9 @@ import { AuthService } from '../../core/services/auth.service';
       }
 
       .hero-slogan {
-        margin: 1.1rem 0 0;
+        margin: 1rem 0 0;
         font-family: var(--font-title, 'Boldonse', 'Climate Crisis', sans-serif);
-        font-size: clamp(1.05rem, 2.4vw, 1.6rem);
+        font-size: clamp(0.95rem, 2.2vw, 1.45rem);
         font-weight: 800;
         text-transform: uppercase;
         letter-spacing: 0.16em;
@@ -180,13 +181,13 @@ import { AuthService } from '../../core/services/auth.service';
 
       .cover-scroll-hint {
         position: absolute;
-        bottom: 2.8rem;
+        bottom: 1.25rem;
         left: 50%;
         transform: translateX(-50%);
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 0.75rem;
+        gap: 0.5rem;
         color: #f7f3ed;
         opacity: 0.9;
         animation: bounceSlow 2.2s infinite ease-in-out;
