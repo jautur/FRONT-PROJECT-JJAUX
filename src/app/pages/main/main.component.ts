@@ -47,13 +47,10 @@ import { AuthService } from '../../core/services/auth.service';
         </div>
 
         <div class="columns">
-          <!-- SECCIÓ DE VISTA PRÈVIA DE 3 TASQUES RECENTS -->
+          <!-- SECCIÓ DE TASQUES RECENTS -->
           <section class="panel">
             <div class="panel-header">
-              <div class="panel-title-wrap">
-                <h2>Últimes tasques</h2>
-                <span class="preview-badge">Vista prèvia (3 tasques)</span>
-              </div>
+              <h2>Últimes tasques</h2>
               <a href="javascript:void(0)" (click)="onNavegarTasquesOfertes('tasques')">
                 Veure totes ({{ tasks.length }})
               </a>
@@ -88,13 +85,10 @@ import { AuthService } from '../../core/services/auth.service';
             </div>
           </section>
 
-          <!-- SECCIÓ DE VISTA PRÈVIA D'OFERTES RECENTS -->
+          <!-- SECCIÓ D'OFERTES RECENTS -->
           <section class="panel">
             <div class="panel-header">
-              <div class="panel-title-wrap">
-                <h2>Ofertes recents</h2>
-                <span class="preview-badge">Vista prèvia ({{ previewOffers.length }} ofertes)</span>
-              </div>
+              <h2>Ofertes recents</h2>
               <a href="javascript:void(0)" (click)="onNavegarTasquesOfertes('ofertes')">
                 Veure totes ({{ offers.length }})
               </a>
