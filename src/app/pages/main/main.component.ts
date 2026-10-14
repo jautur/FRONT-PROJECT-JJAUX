@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { DashboardResponse, DashboardService } from '../../services/dashboard.service';
 import { OfertaService } from '../../services/oferta.service';
@@ -11,12 +11,12 @@ import { AuthService } from '../../core/services/auth.service';
   imports: [CommonModule],
   template: `
     <section class="main-page">
-      <!-- PORTADA INICIAL DE PANTALLA COMPLETA AMB IMATGE DE FONS -->
-      <header class="fullscreen-cover">
-        <!-- NOM DE LA WEB EN MIG DE LA PÀGINA I SLOGAN EN CURSIVA LLIGADA -->
+      <!-- PORTADA INICIAL DE PANTALLA COMPLETA AMB INTROS ALEATÒRIES -->
+      <header class="fullscreen-cover" [style.background-image]="currentCoverBackground">
+        <!-- NOM DE LA WEB EN MIG DE LA PÀGINA I SLOGAN ALEATORI DINÀMIC -->
         <div class="hero-center">
           <h1 class="hero-brand">AVISA</h1>
-          <p class="hero-slogan">Connectant necessitats i professionals</p>
+          <p class="hero-slogan">{{ currentIntro.slogan }}</p>
         </div>
 
         <div class="cover-scroll-hint" (click)="scrollToContent()" role="button" aria-label="Llisca cap avall" title="Llisca cap avall">
@@ -461,8 +461,6 @@ import { AuthService } from '../../core/services/auth.service';
         width: 100%;
         height: calc(100vh - 48px);
         min-height: 560px;
-        background-image: linear-gradient(rgba(8, 8, 12, 0.52), rgba(8, 8, 12, 0.78)),
-          url('https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=2000&q=80');
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
@@ -473,6 +471,7 @@ import { AuthService } from '../../core/services/auth.service';
         padding: 2rem 1.5rem;
         box-sizing: border-box;
         position: relative;
+        transition: background-image 0.9s ease-in-out;
       }
 
       .hero-center {
@@ -1732,11 +1731,41 @@ import { AuthService } from '../../core/services/auth.service';
     `
   ]
 })
-export class MainComponent implements OnInit {
+export class MainComponent implements OnInit, OnDestroy {
   dashboard?: DashboardResponse;
   loading = true;
   error = '';
   noticeMessage = '';
+
+  /** Col·lecció d'intros aleatòries temàtiques sobre serveis i oficis */
+  readonly intros = [
+    {
+      image: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=2000&q=80',
+      slogan: 'Connectant necessitats i professionals de confiança'
+    },
+    {
+      image: 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=2000&q=80',
+      slogan: 'La solució directa per a les teves reparacions i avaries'
+    },
+    {
+      image: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=2000&q=80',
+      slogan: 'Especialistes qualificats a un sol clic de distància'
+    },
+    {
+      image: 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=2000&q=80',
+      slogan: 'Publica la teva feina, compara pressupostos i tria amb seguretat'
+    },
+    {
+      image: 'https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=2000&q=80',
+      slogan: 'Tracte humà directe, preus justos i sense comissions ocultes'
+    }
+  ];
+
+  /** Índex de la intro activa actual */
+  introIndex = 0;
+
+  /** Identificador de l'interval de rotació suau */
+  private introTimer: any = null;
 
   constructor(
     private readonly dashboardService: DashboardService,
@@ -1745,8 +1774,38 @@ export class MainComponent implements OnInit {
     private readonly router: Router
   ) {}
 
+  get currentIntro() {
+    return this.intros[this.introIndex] ?? this.intros[0];
+  }
+
+  get currentCoverBackground(): string {
+    return `linear-gradient(rgba(8, 8, 12, 0.52), rgba(8, 8, 12, 0.78)), url('${this.currentIntro.image}')`;
+  }
+
   ngOnInit(): void {
+    // Tria una intro aleatòria al carregar la pàgina
+    this.introIndex = Math.floor(Math.random() * this.intros.length);
     this.loadDashboard();
+    this.iniciarRotacioIntros();
+  }
+
+  ngOnDestroy(): void {
+    if (this.introTimer) {
+      clearInterval(this.introTimer);
+    }
+  }
+
+  /**
+   * Canvia la intro periòdicament de forma aleatòria cada 7 segons
+   */
+  private iniciarRotacioIntros(): void {
+    this.introTimer = setInterval(() => {
+      let nextIndex: number;
+      do {
+        nextIndex = Math.floor(Math.random() * this.intros.length);
+      } while (nextIndex === this.introIndex && this.intros.length > 1);
+      this.introIndex = nextIndex;
+    }, 7000);
   }
 
   loadDashboard(): void {
