@@ -11,129 +11,225 @@ import { AuthService } from '../../core/services/auth.service';
   imports: [CommonModule],
   template: `
     <section class="main-page">
-      <header class="hero">
-        <div>
-          <p class="eyebrow">Plataforma JJAUX</p>
-          <h1>Flux principal de tasques i ofertes</h1>
+      <!-- PORTADA INICIAL DE PANTALLA COMPLETA AMB IMATGE DE FONS -->
+      <header class="fullscreen-cover">
+        <div class="cover-scroll-hint">
+          <div class="mouse-icon">
+            <div class="mouse-wheel"></div>
+          </div>
+          <span class="hint-label">Llisca cap avall per a descobrir tasques i serveis</span>
         </div>
-        <button type="button" (click)="onNovaTasca()">+ Nova tasca</button>
       </header>
 
-      <div *ngIf="noticeMessage" class="notice-banner">
-        <span>{{ noticeMessage }}</span>
-        <button type="button" class="btn-dismiss" (click)="noticeMessage = ''">✕</button>
-      </div>
-
-      <div class="stats">
-        <div class="stat-card">
-          <span class="label">Tasques obertes</span>
-          <strong>{{ dashboard?.openTasks ?? 0 }}</strong>
-        </div>
-        <div class="stat-card">
-          <span class="label">Ofertes actives</span>
-          <strong>{{ dashboard?.activeOffers ?? 0 }}</strong>
-        </div>
-        <div class="stat-card">
-          <span class="label">Projectes finalitzats</span>
-          <strong>{{ dashboard?.completedProjects ?? 0 }}</strong>
-        </div>
-      </div>
-
-      <div class="columns">
-        <section class="panel">
-          <div class="panel-header">
-            <h2>Últimes tasques</h2>
-            <a href="javascript:void(0)" (click)="onVeureTotesTasques()">Veure totes</a>
+      <!-- CONTINGUT PRINCIPAL DE LA PLATAFORMA (VISUALITZAT EN FER SCROLL) -->
+      <div class="dashboard-body">
+        <div class="dashboard-header-bar">
+          <div>
+            <span class="eyebrow-tag">Plataforma JJAUX</span>
+            <h2 class="dashboard-title">Tauler de Tasques i Ofertes</h2>
           </div>
+          <button type="button" class="btn-create-task" (click)="onNovaTasca()">+ Nova tasca</button>
+        </div>
 
-          <article class="card" *ngFor="let task of tasks">
-            <div class="card-top">
-              <span class="tag">{{ task.category }}</span>
-              <span class="status status-task" [ngClass]="getTaskStatusClass(task.status)">
-                {{ task.status }}
-              </span>
+        <div *ngIf="noticeMessage" class="notice-banner">
+          <span>{{ noticeMessage }}</span>
+          <button type="button" class="btn-dismiss" (click)="noticeMessage = ''">✕</button>
+        </div>
+
+        <div class="stats">
+          <div class="stat-card">
+            <span class="label">Tasques obertes</span>
+            <strong>{{ dashboard?.openTasks ?? 0 }}</strong>
+          </div>
+          <div class="stat-card">
+            <span class="label">Ofertes actives</span>
+            <strong>{{ dashboard?.activeOffers ?? 0 }}</strong>
+          </div>
+          <div class="stat-card">
+            <span class="label">Projectes finalitzats</span>
+            <strong>{{ dashboard?.completedProjects ?? 0 }}</strong>
+          </div>
+        </div>
+
+        <div class="columns">
+          <section class="panel">
+            <div class="panel-header">
+              <h2>Últimes tasques</h2>
+              <a href="javascript:void(0)" (click)="onVeureTotesTasques()">Veure totes</a>
             </div>
-            <h3>{{ task.title }}</h3>
-            <p class="meta">Client: {{ task.client }}</p>
-            <div class="card-footer">
-              <span>Pressupost: {{ task.budget }}</span>
-              <div class="actions">
-                <button type="button" (click)="onDetallTasca(task.id)">Detall</button>
-                <button type="button" class="btn-secondary" (click)="onFerOferta(task.id)">Fer oferta</button>
+
+            <article class="card" *ngFor="let task of tasks">
+              <div class="card-top">
+                <span class="tag">{{ task.category }}</span>
+                <span class="status status-task" [ngClass]="getTaskStatusClass(task.status)">
+                  {{ task.status }}
+                </span>
               </div>
-            </div>
-          </article>
-        </section>
+              <h3>{{ task.title }}</h3>
+              <p class="meta">Client: {{ task.client }}</p>
+              <div class="card-footer">
+                <span>Pressupost: {{ task.budget }}</span>
+                <div class="actions">
+                  <button type="button" (click)="onDetallTasca(task.id)">Detall</button>
+                  <button type="button" class="btn-secondary" (click)="onFerOferta(task.id)">Fer oferta</button>
+                </div>
+              </div>
+            </article>
+          </section>
 
-        <section class="panel">
-          <div class="panel-header">
-            <h2>Ofertes recents</h2>
-            <a href="javascript:void(0)" (click)="onVeureTotesOfertes()">Veure totes</a>
-          </div>
+          <section class="panel">
+            <div class="panel-header">
+              <h2>Ofertes recents</h2>
+              <a href="javascript:void(0)" (click)="onVeureTotesOfertes()">Veure totes</a>
+            </div>
 
-          <article class="card offer-card" *ngFor="let offer of offers">
-            <div class="card-top">
-              <span class="tag alt">{{ offer.task }}</span>
-              <span class="status status-offer" [ngClass]="getOfferStatusClass(offer.status)">
-                {{ offer.status }}
-              </span>
-            </div>
-            <h3>{{ offer.professional }}</h3>
-            <p>{{ offer.note }}</p>
-            <div class="card-footer">
-              <span>Oferta: {{ offer.price }}</span>
-              <button type="button" (click)="onAcceptarOferta(offer.id)">Acceptar</button>
-            </div>
-          </article>
-        </section>
+            <article class="card offer-card" *ngFor="let offer of offers">
+              <div class="card-top">
+                <span class="tag alt">{{ offer.task }}</span>
+                <span class="status status-offer" [ngClass]="getOfferStatusClass(offer.status)">
+                  {{ offer.status }}
+                </span>
+              </div>
+              <h3>{{ offer.professional }}</h3>
+              <p>{{ offer.note }}</p>
+              <div class="card-footer">
+                <span>Oferta: {{ offer.price }}</span>
+                <button type="button" (click)="onAcceptarOferta(offer.id)">Acceptar</button>
+              </div>
+            </article>
+          </section>
+        </div>
       </div>
     </section>
   `,
   styles: [
     `
       .main-page {
-        width: min(1200px, 100%);
+        width: 100%;
         display: flex;
         flex-direction: column;
-        gap: 1.5rem;
       }
 
-      .hero {
+      .fullscreen-cover {
+        width: 100%;
+        height: 100vh;
+        min-height: 550px;
+        background-image: linear-gradient(rgba(15, 23, 42, 0.45), rgba(15, 23, 42, 0.75)),
+          url('https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=2000&q=80');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-end;
+        padding-bottom: 3.5rem;
+        box-sizing: border-box;
+        position: relative;
+      }
+
+      .cover-scroll-hint {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.75rem;
+        color: #ffffff;
+        opacity: 0.9;
+        animation: bounceSlow 2.2s infinite ease-in-out;
+        user-select: none;
+      }
+
+      @keyframes bounceSlow {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(10px); }
+      }
+
+      .mouse-icon {
+        width: 24px;
+        height: 40px;
+        border: 2px solid #ffffff;
+        border-radius: 12px;
+        position: relative;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+      }
+
+      .mouse-wheel {
+        width: 4px;
+        height: 8px;
+        background: #38bdf8;
+        border-radius: 2px;
+        position: absolute;
+        top: 6px;
+        left: 50%;
+        transform: translateX(-50%);
+        animation: wheelScroll 1.6s infinite ease-out;
+      }
+
+      @keyframes wheelScroll {
+        0% { transform: translate(-50%, 0); opacity: 1; }
+        100% { transform: translate(-50%, 14px); opacity: 0; }
+      }
+
+      .hint-label {
+        font-size: 0.85rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        font-weight: 600;
+        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+      }
+
+      .dashboard-body {
+        width: min(1200px, 100%);
+        margin: 0 auto;
+        padding: 3rem 1.5rem 5rem 1.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+        box-sizing: border-box;
+      }
+
+      .dashboard-header-bar {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        background: linear-gradient(120deg, #111827 0%, #1f2937 100%);
-        color: white;
-        border-radius: 22px;
-        padding: 2rem 2.2rem;
-        box-shadow: 0 18px 35px rgba(15, 23, 42, 0.15);
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 1.5rem 2rem;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
       }
 
-      .eyebrow {
-        margin: 0 0 0.5rem;
+      .eyebrow-tag {
+        font-size: 0.75rem;
+        font-weight: 800;
         text-transform: uppercase;
-        letter-spacing: 0.12em;
-        font-size: 0.72rem;
-        color: #bfdbfe;
+        letter-spacing: 0.1em;
+        color: #0284c7;
+        margin-bottom: 0.25rem;
+        display: block;
       }
 
-      h1 {
+      .dashboard-title {
         margin: 0;
-        font-size: clamp(2rem, 4vw, 3rem);
+        font-size: 1.6rem;
+        color: #0f172a;
+        font-weight: 800;
       }
 
-      .hero button,
-      .card button {
+      .btn-create-task {
+        background: #0284c7;
+        color: #ffffff;
         border: none;
-        border-radius: 10px;
-        padding: 0.8rem 1.1rem;
+        border-radius: 8px;
+        padding: 0.75rem 1.4rem;
         font-weight: 700;
+        font-size: 0.95rem;
         cursor: pointer;
+        transition: background-color 0.2s;
       }
 
-      .hero button {
-        background: #38bdf8;
-        color: #082f49;
+      .btn-create-task:hover {
+        background: #0369a1;
       }
 
       .stats {

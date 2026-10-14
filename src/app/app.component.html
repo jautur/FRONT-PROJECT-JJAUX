@@ -1,60 +1,141 @@
-<div class="shell">
-  <header class="topbar">
-    <div class="brand">
-      <a routerLink="/" class="brand-link">JJAUX</a>
+<div class="shell" [class.has-solid-header]="isScrolled" [class.sidebar-open]="menuObert && isScrolled">
+  <!-- Capçalera superior fixa amb el títol centrat -->
+  <header class="topbar" [class.solid-header]="isScrolled">
+    <!-- Botó per obrir/tancar el menú a l'esquerra (només visible quan s'ha lliscat) -->
+    <div class="topbar-left">
+      <button
+        *ngIf="isScrolled"
+        type="button"
+        class="btn-menu-toggle"
+        (click)="toggleMenu()"
+        aria-label="Obre el menú de navegació"
+        title="Menú"
+      >
+        <span class="hamburger-icon">☰</span>
+        <span class="menu-label">Menú</span>
+      </button>
     </div>
 
-    <nav class="nav">
-      <a routerLink="/" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}">Inici</a>
+    <!-- TÍTOL CENTRAT EN MIG A LA PART SUPERIOR -->
+    <div class="brand-centered">
+      <a routerLink="/" class="brand-title">JJAUX</a>
+    </div>
 
-      <!-- Enllaços per a visitants no autenticats -->
-      <ng-container *ngIf="!authService.isLoggedIn()">
-        <a routerLink="/login" routerLinkActive="active-link">Login</a>
-        <a routerLink="/registre" routerLinkActive="active-link" class="nav-highlight">Registre</a>
-      </ng-container>
-
-      <!-- Enllaços específics per a clients -->
-      <ng-container *ngIf="authService.isLoggedIn() && isClient()">
-        <a routerLink="/client/les-meves-tasques" routerLinkActive="active-link">Les meves tasques</a>
-        <a routerLink="/client/crear-tasca" routerLinkActive="active-link" class="nav-cta">+ Publicar tasca</a>
-      </ng-container>
-
-      <!-- Enllaços específics per a professionals -->
-      <ng-container *ngIf="authService.isLoggedIn() && isProfessional()">
-        <a routerLink="/professional/les-meves-ofertes" routerLinkActive="active-link">Els meus pressupostos</a>
-        <a routerLink="/professional/crear-oferta" routerLinkActive="active-link" class="nav-cta">+ Nova oferta</a>
-      </ng-container>
-
-      <!-- Enllaç exclusiu per a Administradors -->
-      <ng-container *ngIf="authService.isLoggedIn() && isAdmin()">
-        <a routerLink="/admin/panell" routerLinkActive="active-link" class="nav-admin" title="Panell d'Administració Global">
-          🛡️ Panell Admin
+    <!-- Espai dret d'equilibri visual -->
+    <div class="topbar-right">
+      <ng-container *ngIf="isScrolled">
+        <a *ngIf="authService.isLoggedIn()" routerLink="/avisos" class="quick-notif-btn" title="Avisos pendents">
+          🔔 <span class="badge-pill" *ngIf="avisosPendents > 0">{{ avisosPendents }}</span>
+        </a>
+        <a *ngIf="!authService.isLoggedIn()" routerLink="/login" class="quick-login-btn">
+          Iniciar sessió
         </a>
       </ng-container>
-
-      <!-- Enllaços comuns per a usuaris autenticats -->
-      <ng-container *ngIf="authService.isLoggedIn()">
-        <!-- Botó de Notificacions amb comptador -->
-        <a routerLink="/avisos" routerLinkActive="active-link" class="nav-avisos" title="Safata d'Avisos">
-          🔔 Avisos
-          <span class="badge-notif" *ngIf="avisosPendents > 0">{{ avisosPendents }}</span>
-        </a>
-
-        <!-- Perfil d'usuari -->
-        <a routerLink="/perfil" routerLinkActive="active-link" class="nav-perfil">
-          👤 {{ authService.getCurrentUser()?.nom }}
-        </a>
-
-        <span class="user-role-badge" [ngClass]="authService.getCurrentUser()?.rol">
-          {{ authService.getCurrentUser()?.rol }}
-        </span>
-
-        <button type="button" class="btn-logout" (click)="logout()">Sortir</button>
-      </ng-container>
-    </nav>
+    </div>
   </header>
 
+  <!-- MENÚ LATERAL A L'ESQUERRA QUE S'OBRI EN FER SCROLL -->
+  <aside class="sidebar-left" [class.open]="menuObert && isScrolled">
+    <div class="sidebar-header">
+      <div class="sidebar-brand">
+        <span class="brand-badge">JJ</span>
+        <span class="brand-text">JJAUX</span>
+      </div>
+      <button type="button" class="btn-close-sidebar" (click)="tancarMenu()" title="Tancar menú">✕</button>
+    </div>
+
+    <!-- Fitxa d'usuari (si està connectat) -->
+    <div class="sidebar-user" *ngIf="authService.isLoggedIn()">
+      <div class="user-avatar-circle">👤</div>
+      <div class="user-meta">
+        <span class="user-name">{{ authService.getCurrentUser()?.nom }}</span>
+        <span class="user-role-tag" [ngClass]="authService.getCurrentUser()?.rol">
+          {{ authService.getCurrentUser()?.rol | uppercase }}
+        </span>
+      </div>
+    </div>
+
+    <!-- Llistat de seccions de la web -->
+    <nav class="sidebar-nav">
+      <div class="nav-group-title">NAVEGACIÓ</div>
+
+      <a routerLink="/" routerLinkActive="active-nav-item" [routerLinkActiveOptions]="{exact: true}" (click)="tancarMenu()">
+        <span class="nav-icon">🏠</span>
+        <span>Inici</span>
+      </a>
+
+      <!-- Secció per a clients i professionals -->
+      <ng-container *ngIf="authService.isLoggedIn() && isClient()">
+        <div class="nav-group-title">GESTIÓ DE FEINA</div>
+        <a routerLink="/client/les-meves-tasques" routerLinkActive="active-nav-item" (click)="tancarMenu()">
+          <span class="nav-icon">📋</span>
+          <span>Les meves tasques</span>
+        </a>
+        <a routerLink="/client/crear-tasca" routerLinkActive="active-nav-item" class="nav-cta-item" (click)="tancarMenu()">
+          <span class="nav-icon">➕</span>
+          <span>Publicar nova tasca</span>
+        </a>
+      </ng-container>
+
+      <!-- Secció per a professionals -->
+      <ng-container *ngIf="authService.isLoggedIn() && isProfessional()">
+        <div class="nav-group-title">SERVEIS PROFESSIONALS</div>
+        <a routerLink="/professional/les-meves-ofertes" routerLinkActive="active-nav-item" (click)="tancarMenu()">
+          <span class="nav-icon">💼</span>
+          <span>Els meus pressupostos</span>
+        </a>
+        <a routerLink="/professional/crear-oferta" routerLinkActive="active-nav-item" class="nav-cta-item" (click)="tancarMenu()">
+          <span class="nav-icon">📝</span>
+          <span>Presentar oferta</span>
+        </a>
+      </ng-container>
+
+      <!-- Secció Administració -->
+      <ng-container *ngIf="authService.isLoggedIn() && isAdmin()">
+        <div class="nav-group-title">ADMINISTRACIÓ</div>
+        <a routerLink="/admin/panell" routerLinkActive="active-nav-item" class="admin-nav-item" (click)="tancarMenu()">
+          <span class="nav-icon">🛡️</span>
+          <span>Panell de Control Global</span>
+        </a>
+      </ng-container>
+
+      <!-- Secció Compte / Sessions -->
+      <div class="nav-group-title">EL MEU COMPTE</div>
+      <ng-container *ngIf="authService.isLoggedIn()">
+        <a routerLink="/avisos" routerLinkActive="active-nav-item" (click)="tancarMenu()">
+          <span class="nav-icon">🔔</span>
+          <span>Notificacions / Avisos</span>
+          <span class="badge-mini-count" *ngIf="avisosPendents > 0">{{ avisosPendents }}</span>
+        </a>
+        <a routerLink="/perfil" routerLinkActive="active-nav-item" (click)="tancarMenu()">
+          <span class="nav-icon">⚙️</span>
+          <span>El meu perfil</span>
+        </a>
+        <button type="button" class="btn-sidebar-logout" (click)="logout(); tancarMenu()">
+          <span class="nav-icon">🚪</span>
+          <span>Tancar sessió</span>
+        </button>
+      </ng-container>
+
+      <ng-container *ngIf="!authService.isLoggedIn()">
+        <a routerLink="/login" routerLinkActive="active-nav-item" (click)="tancarMenu()">
+          <span class="nav-icon">🔐</span>
+          <span>Iniciar sessió</span>
+        </a>
+        <a routerLink="/registre" routerLinkActive="active-nav-item" class="nav-cta-item" (click)="tancarMenu()">
+          <span class="nav-icon">✨</span>
+          <span>Crear compte / Registre</span>
+        </a>
+      </ng-container>
+    </nav>
+  </aside>
+
+  <!-- Fons fosc semitransparent quan el menú està obert en pantalles mitjanes/petites -->
+  <div class="sidebar-backdrop" *ngIf="menuObert && isScrolled" (click)="tancarMenu()"></div>
+
+  <!-- Contingut de la pàgina -->
   <main class="content">
     <router-outlet />
   </main>
 </div>
+

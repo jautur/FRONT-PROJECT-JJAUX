@@ -1,13 +1,16 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive, RouterOutlet, NavigationEnd } from '@angular/router';
 import { AuthService } from './core/services/auth.service';
 import { AvisService } from './services/avis.service';
 
 /**
  * Component principal arrel de l'aplicació JJAUX.
- * Controla la barra de navegació superior dinàmica segons el rol de l'usuari (client, professional o admin),
- * el comptador d'avisos pendents i la sortida de sessió.
+ * Controla:
+ * 1. El títol 'JJAUX' centrat a la part superior.
+ * 2. L'estat inicial transparent sobre imatge de fons.
+ * 3. En fer scroll, canvi del fons del títol a color llis.
+ * 4. Obertura automàtica del menú a l'esquerra amb els apartats necessaris.
  */
 @Component({
   selector: 'app-root',
@@ -17,46 +20,95 @@ import { AvisService } from './services/avis.service';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
-  /** Nombre de notificacions pendents de llegir per a l'usuari actual */
+  /** Nombre d'avisos pendents */
   avisosPendents = 0;
+
+  /** Indica si la pàgina ha fet scroll avall */
+  isScrolled = false;
+
+  /** Estat del menú lateral esquerre */
+  menuObert = false;
+
+  /** Indica si estem a la pàgina principal d'inici */
+  isHomePage = true;
 
   constructor(
     public readonly authService: AuthService,
     private readonly avisService: AvisService,
     private readonly router: Router
-  ) {}
+  ) {
+    this.router.events.subscribe((event) => {
+      if (event instanceof NavigationEnd) {
+        this.isHomePage = event.urlAfterRedirects === '/' || event.urlAfterRedirects === '';
+        if (!this.isHomePage) {
+          // A les pàgines secundàries el fons sempre és llis per llegibilitat
+          this.isScrolled = true;
+          this.menuObert = false;
+        } else {
+          this.checkScroll();
+        }
+      }
+    });
+  }
 
-  /**
-   * Inicialització: carrega el recompte d'avisos pendents si l'usuari està connectat.
-   */
   ngOnInit(): void {
     this.actualitzarAvisos();
+    this.checkScroll();
   }
 
   /**
-   * Comprova si l'usuari actual té permisos de client (rol client, ambdós o admin).
+   * Escolta l'esdeveniment de scroll de la finestra.
    */
+  @HostListener('window:scroll', [])
+  onWindowScroll(): void {
+    this.checkScroll();
+  }
+
+  /**
+   * Comprova la posició de scroll per activar el fons llis i obrir el menú esquerre.
+   */
+  private checkScroll(): void {
+    if (!this.isHomePage) {
+      this.isScrolled = true;
+      return;
+    }
+
+    const scrollY = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+    if (scrollY > 70) {
+      this.isScrolled = true;
+      this.menuObert = true;
+    } else {
+      this.isScrolled = false;
+      this.menuObert = false;
+    }
+  }
+
+  /**
+   * Obre o tanca manualment el menú lateral esquerre.
+   */
+  toggleMenu(): void {
+    this.menuObert = !this.menuObert;
+  }
+
+  /**
+   * Tanca el menú lateral esquerre.
+   */
+  tancarMenu(): void {
+    this.menuObert = false;
+  }
+
   isClient(): boolean {
     return this.authService.isClient();
   }
 
-  /**
-   * Comprova si l'usuari actual té permisos de professional (rol professional, ambdós o admin).
-   */
   isProfessional(): boolean {
     return this.authService.isProfessional();
   }
 
-  /**
-   * Comprova si l'usuari té el rol d'administrador global.
-   */
   isAdmin(): boolean {
     return this.authService.isAdmin();
   }
 
-  /**
-   * Consulta a l'API el nombre d'avisos pendents per mostrar la xifra al badge de la campana.
-   */
   actualitzarAvisos(): void {
     const user = this.authService.getCurrentUser();
     if (user && user.id) {
@@ -73,9 +125,6 @@ export class AppComponent implements OnInit {
     }
   }
 
-  /**
-   * Tanca la sessió de l'usuari i redirigeix a la pàgina de login.
-   */
   logout(): void {
     this.authService.logout();
     this.avisosPendents = 0;
