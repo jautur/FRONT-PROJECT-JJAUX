@@ -182,6 +182,18 @@ async function main() {
         data DATE DEFAULT CURRENT_DATE,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
+
+      CREATE TABLE IF NOT EXISTS resenyes (
+        id VARCHAR(100) PRIMARY KEY,
+        client_id VARCHAR(100),
+        client_nom VARCHAR(150),
+        treballador_id VARCHAR(100),
+        treballador_nom VARCHAR(150),
+        tasca_id VARCHAR(100),
+        puntuacio INTEGER NOT NULL,
+        descripcio TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
     `);
 
     // 2. Buidar totes les taules d'activitat
