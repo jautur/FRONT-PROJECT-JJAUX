@@ -13,3 +13,5 @@ export * from './proposta.service';
 export * from './avis.service';
 export * from './resenya.service';
 export * from './incidencia.service';
+export * from './interes.service';
+export * from './pressupost.service';

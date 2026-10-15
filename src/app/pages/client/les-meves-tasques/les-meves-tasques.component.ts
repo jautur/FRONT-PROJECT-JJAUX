@@ -150,19 +150,6 @@ type FiltreEstatTasca = 'totes' | 'oberta' | 'en_curs' | 'finalitzada';
               {{ isTascaConvergida(t) ? 'Veure seguiment & detall' : 'Revisar pressupostos (' + (ofertesCount[t.id] || 0) + ')' }}
             </a>
 
-            <!-- Si està en curs: botó per finalitzar i avaluar -->
-            <button
-              *ngIf="isTascaConvergida(t) && t.estat !== 'Finalitzada'"
-              type="button"
-              class="btn-action success"
-              (click)="obrirModalFinalitzar(t)"
-            >
-              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;">
-                <polyline points="20 6 9 17 4 12"></polyline>
-              </svg>
-              Finalitzar i Avaluar
-            </button>
-
             <!-- Si ja està finalitzada però encara no s'ha avaluat -->
             <button
               *ngIf="isTascaConvergida(t) && t.estat === 'Finalitzada' && !t.valoracio"
@@ -172,17 +159,6 @@ type FiltreEstatTasca = 'totes' | 'oberta' | 'en_curs' | 'finalitzada';
               title="Avaluar el servei rebut per a aquesta tasca"
             >
               ★ Avaluar tasca
-            </button>
-
-            <!-- Si ja està finalitzada i té valoració: modificar-la -->
-            <button
-              *ngIf="isTascaConvergida(t) && t.estat === 'Finalitzada' && t.valoracio"
-              type="button"
-              class="btn-action edit-rate-btn"
-              (click)="obrirModalFinalitzar(t)"
-              title="Modificar valoració existent"
-            >
-              ★ Modificar avaluació ({{ t.valoracio }}/5)
             </button>
 
             <button
@@ -1138,16 +1114,14 @@ export class LesMevesTasquesComponent implements OnInit {
     this.enviantRessenya = true;
     const textDesc = this.ressenyaDescripcio.trim() || 'Feina completada amb èxit i total satisfacció.';
 
-    this.tascaService.complete(t.id, {
+    this.tascaService.avaluar(t.id, {
       valoracio: this.puntuacioSeleccionada,
       opinio: textDesc
     }).subscribe({
       next: (updatedTask) => {
         this.enviantRessenya = false;
         this.tancarModalFinalitzar();
-        this.successMsg = t.estat === 'Finalitzada'
-          ? 'Valoració enregistrada amb èxit!'
-          : 'Tasca finalitzada i valoració enregistrada amb èxit!';
+        this.successMsg = 'Valoració enregistrada amb èxit!';
         const target = this.tasques.find(item => item.id === t.id);
         if (target) {
           target.estat = 'Finalitzada';
@@ -1156,9 +1130,29 @@ export class LesMevesTasquesComponent implements OnInit {
         }
         setTimeout(() => this.successMsg = '', 4000);
       },
-      error: () => {
-        this.enviantRessenya = false;
-        this.errorMsg = 'Error en desar la valoració.';
+      error: (err) => {
+        // Fallback per compatibilitat amb complete
+        this.tascaService.complete(t.id, {
+          valoracio: this.puntuacioSeleccionada,
+          opinio: textDesc
+        }).subscribe({
+          next: () => {
+            this.enviantRessenya = false;
+            this.tancarModalFinalitzar();
+            this.successMsg = 'Valoració enregistrada amb èxit!';
+            const target = this.tasques.find(item => item.id === t.id);
+            if (target) {
+              target.estat = 'Finalitzada';
+              target.valoracio = this.puntuacioSeleccionada;
+              target.opinio = textDesc;
+            }
+            setTimeout(() => this.successMsg = '', 4000);
+          },
+          error: (e) => {
+            this.enviantRessenya = false;
+            this.errorMsg = e?.error || 'Error en desar la valoració. Recorda que només es pot avaluar un cop acabada la tasca.';
+          }
+        });
       }
     });
   }

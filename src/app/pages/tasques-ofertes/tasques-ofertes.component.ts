@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { DashboardResponse, DashboardService } from '../../services/dashboard.service';
 import { OfertaService } from '../../services/oferta.service';
+import { InteresService } from '../../services/interes.service';
 import { ResenyaService } from '../../services/resenya.service';
 import { UsuariService } from '../../services/usuari.service';
 import { AuthService } from '../../core/services/auth.service';
@@ -268,11 +269,14 @@ interface CategoriaFiltre {
                       <button *ngIf="isOfferOwner(offer)" type="button" class="btn-action-delete-offer" (click)="onDeleteOferta(offer.id)" title="Borrar oferta">
                         Borrar
                       </button>
+                      <button type="button" class="btn-action-detail btn-interes" (click)="onMostrarInteres(offer)" title="Mostrar interés en aquesta oferta">
+                        Mostrar interés
+                      </button>
                       <button type="button" class="btn-action-primary btn-contractar" (click)="onContractarOferta(offer)">
                         <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px; vertical-align: -2px;">
                           <polyline points="20 6 9 17 4 12"></polyline>
                         </svg>
-                        Contractar / M'interessa
+                        Contractar
                       </button>
                     </div>
                   </div>
@@ -1532,6 +1536,7 @@ export class TasquesOfertesComponent implements OnInit {
   constructor(
     private readonly dashboardService: DashboardService,
     private readonly ofertaService: OfertaService,
+    private readonly interesService: InteresService,
     private readonly resenyaService: ResenyaService,
     private readonly usuariService: UsuariService,
     private readonly authService: AuthService,
@@ -2007,6 +2012,37 @@ export class TasquesOfertesComponent implements OnInit {
     } else {
       this.noticeMessage = 'Només el client autor de la tasca pot acceptar aquesta oferta.';
     }
+  }
+
+  /**
+   * Manifestar interés en una oferta de servei d'un professional.
+   * Crea un registre d'interés i notifica al professional sense eliminar l'oferta.
+   */
+  onMostrarInteres(offer: any): void {
+    const pro = offer.professional || 'aquest professional';
+    if (!this.requireLogin(`mostrar interés en l'oferta de ${pro}`, '/tasques-ofertes')) return;
+    const user = this.authService.getCurrentUser();
+    if (!this.authService.isClient()) {
+      this.noticeMessage = 'Només els comptes amb rol de "Client" o "Ambdós" poden mostrar interés en les ofertes dels professionals.';
+      return;
+    }
+
+    const missatge = prompt(`Vols indicar algun missatge o consulta per a ${pro}? (opcional):`);
+    if (missatge === null) return; // L'usuari ha cancel·lat
+
+    this.interesService.create({
+      publicacioId: offer.id,
+      clientId: user?.id,
+      clientNom: user ? user.nom : 'Client AVISA',
+      missatge: missatge.trim() || undefined
+    }).subscribe({
+      next: () => {
+        this.noticeMessage = `Has mostrat interés en l'oferta de ${pro} correctament! El professional ha rebut el teu avís.`;
+      },
+      error: () => {
+        this.noticeMessage = "No s'ha pogut registrar el teu interés en aquesta oferta.";
+      }
+    });
   }
 
   /**

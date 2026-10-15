@@ -13,3 +13,5 @@ export * from './proposta.model';
 export * from './avis.model';
 export * from './resenya.model';
 export * from './incidencia.model';
+export * from './interes.model';
+export * from './pressupost.model';

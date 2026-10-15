@@ -5,10 +5,12 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TascaService } from '../../../services/tasca.service';
 import { IncidenciaService } from '../../../services/incidencia.service';
 import { OfertaService } from '../../../services/oferta.service';
+import { PressupostService } from '../../../services/pressupost.service';
 import { ResenyaService } from '../../../services/resenya.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { Tasca } from '../../../models/tasca.model';
 import { Oferta } from '../../../models/oferta.model';
+import { Pressupost } from '../../../models/pressupost.model';
 
 /**
  * Component de Detall de Tasca i Gestió d'Ofertes (/tasca-detall/:id).
@@ -67,15 +69,14 @@ import { Oferta } from '../../../models/oferta.model';
           </div>
         </div>
 
-        <!-- Botó per al client per tancar la tasca quan està en curs -->
-        <div *ngIf="isClientOwner && tasca.estat === 'En curs'" class="complete-box">
-          <p>La feina ja s'ha lliurat i està acabada?</p>
-          <button type="button" class="btn btn-complete" (click)="onCompleteTask()">
-            Marcar tasca com a Finalitzada i Avaluar
-          </button>
+        <!-- Avís per al client mentre la feina està en curs -->
+        <div *ngIf="isClientOwner && tasca.estat === 'En curs'" class="complete-box" style="background: rgba(59, 130, 246, 0.06); border-color: rgba(59, 130, 246, 0.25);">
+          <p style="color: #1e40af; font-weight: 700;">
+            Treball en curs: El professional <strong>{{ assignedProfessional }}</strong> està realitzant el servei. Un cop finalitzada la feina, podràs avaluar-la aquí.
+          </p>
         </div>
 
-        <!-- Botó per al client quan la tasca ja està finalitzada però encara no té valoració -->
+        <!-- Botó per al client quan la tasca ja està finalitzada pel professional però encara no té valoració -->
         <div *ngIf="isClientOwner && tasca.estat === 'Finalitzada' && !tasca.valoracio" class="evaluate-box">
           <div class="evaluate-box-content">
             <span class="evaluate-icon">★</span>
@@ -89,25 +90,16 @@ import { Oferta } from '../../../models/oferta.model';
           </button>
         </div>
 
-        <!-- Mostra la valoració registrada a la tasca finalitzada -->
+        <!-- Mostra la valoració registrada a la tasca finalitzada (només una vegada) -->
         <div *ngIf="tasca.estat === 'Finalitzada' && tasca.valoracio" class="review-display-card">
           <div class="review-display-header">
-            <span class="review-display-badge">VALORACIÓ DEL CLIENT</span>
+            <span class="review-display-badge">VALORACIÓ DEL CLIENT (FINALITZADA)</span>
             <div class="stars-display">
               <span *ngFor="let s of [1, 2, 3, 4, 5]" class="star-glyph" [class.filled]="s <= (tasca.valoracio || 0)">★</span>
               <span class="score-text">{{ tasca.valoracio }}/5</span>
             </div>
           </div>
           <p class="review-display-opinion" *ngIf="tasca.opinio">"{{ tasca.opinio }}"</p>
-          <div *ngIf="isClientOwner" class="review-edit-row">
-            <button type="button" class="btn-sm btn-edit-review" (click)="onCompleteTask()">
-              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;">
-                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-              </svg>
-              Modificar valoració
-            </button>
-          </div>
         </div>
 
         <!-- Botó per al professional assignat per donar per acabada la tasca -->
@@ -1116,6 +1108,7 @@ export class TascaDetallComponent implements OnInit {
     private readonly tascaService: TascaService,
     private readonly incidenciaService: IncidenciaService,
     private readonly ofertaService: OfertaService,
+    private readonly pressupostService: PressupostService,
     private readonly resenyaService: ResenyaService,
     private readonly authService: AuthService
   ) {}
@@ -1204,12 +1197,35 @@ export class TascaDetallComponent implements OnInit {
   }
 
   /**
-   * Carrega les ofertes associades a aquesta tasca.
+   * Carrega les ofertes i pressupostos associats a aquesta tasca o incidència.
    */
   private loadOffers(taskId: string): void {
     this.ofertaService.getByTasca(taskId).subscribe({
       next: (offers) => {
-        this.ofertes = offers;
+        this.ofertes = offers || [];
+        // Comprovem també la taula de pressupostos si és una incidència
+        this.pressupostService.getByIncidencia(taskId).subscribe({
+          next: (pressupostos) => {
+            if (pressupostos && pressupostos.length > 0) {
+              const mapped = pressupostos.map(p => ({
+                id: p.id,
+                tascaId: p.incidenciaId,
+                professional: p.professionalNom,
+                price: p.preu,
+                note: (p.descripcio || '') + (p.duracioEstimada ? ` (Termini estimat: ${p.duracioEstimada})` : ''),
+                estat: 'Pendent'
+              }));
+              // Evita duplicats si ja estaven sincronitzats
+              const existingIds = new Set(this.ofertes.map(o => o.id));
+              mapped.forEach(m => {
+                if (!existingIds.has(m.id)) {
+                  this.ofertes.push(m);
+                }
+              });
+            }
+          },
+          error: () => {}
+        });
       }
     });
   }
@@ -1259,40 +1275,70 @@ export class TascaDetallComponent implements OnInit {
   }
 
   /**
-   * Accepta una oferta seleccionada.
+   * Accepta un pressupost o oferta seleccionada pel client.
+   * Transaccionalment crea la tasca en curs i elimina la incidència de les publicacions.
    */
   onAcceptOffer(offerId: string): void {
-    this.ofertaService.accept(offerId).subscribe({
-      next: () => {
-        this.noticeMessage = 'Oferta acceptada amb èxit! La tasca ha passat a estat "En curs".';
-        if (this.tasca) {
+    if (!confirm('Vols acceptar aquest pressupost? Aquesta acció acordarà el servei i generarà la tasca oficial.')) {
+      return;
+    }
+    this.pressupostService.accept(offerId).subscribe({
+      next: (tascaCreada) => {
+        this.noticeMessage = 'Pressupost acceptat correctament! La incidència ha passat a ser una Tasca oficial en curs.';
+        if (tascaCreada && tascaCreada.id) {
+          setTimeout(() => {
+            this.router.navigate(['/tasca-detall', tascaCreada.id]);
+          }, 1200);
+        } else if (this.tasca) {
           this.loadTask(this.tasca.id);
-        }
-      }
-    });
-  }
-
-  /**
-   * Borra una oferta: les ofertes sols s'accepten o es borren.
-   */
-  onDeleteOffer(offerId: string): void {
-    if (!confirm('Vols borrar aquesta oferta? Aquesta acció no es pot desfer.')) return;
-    this.ofertaService.delete(offerId).subscribe({
-      next: () => {
-        this.noticeMessage = 'L’oferta s’ha esborrat correctament.';
-        this.ofertes = this.ofertes.filter(o => o.id !== offerId);
-        if (this.tasca) {
-          this.loadOffers(this.tasca.id);
         }
       },
       error: () => {
-        this.noticeMessage = 'No s’ha pogut borrar l’oferta.';
+        // Fallback per compatibilitat amb ofertes
+        this.ofertaService.accept(offerId).subscribe({
+          next: () => {
+            this.noticeMessage = 'Oferta acceptada amb èxit! La tasca ha passat a estat "En curs".';
+            if (this.tasca) {
+              this.loadTask(this.tasca.id);
+            }
+          },
+          error: () => {
+            this.noticeMessage = 'No s’ha pogut acceptar el pressupost. Comprova si la incidència ja havia estat contractada.';
+          }
+        });
       }
     });
   }
 
   /**
-   * Àlies per compatibilitat: rebutjar esdevé borrar.
+   * Borra / descarta una oferta o pressupost.
+   */
+  onDeleteOffer(offerId: string): void {
+    if (!confirm('Vols descartar aquesta proposta? Aquesta acció no es pot desfer.')) return;
+    this.pressupostService.reject(offerId).subscribe({
+      next: () => {
+        this.noticeMessage = 'La proposta s’ha descartat correctament.';
+        this.ofertes = this.ofertes.filter(o => o.id !== offerId);
+      },
+      error: () => {
+        this.ofertaService.delete(offerId).subscribe({
+          next: () => {
+            this.noticeMessage = 'L’oferta s’ha esborrat correctament.';
+            this.ofertes = this.ofertes.filter(o => o.id !== offerId);
+            if (this.tasca) {
+              this.loadOffers(this.tasca.id);
+            }
+          },
+          error: () => {
+            this.noticeMessage = 'No s’ha pogut borrar la proposta.';
+          }
+        });
+      }
+    });
+  }
+
+  /**
+   * Àlies per compatibilitat: rebutjar esdevé borrar/descartar.
    */
   onRejectOffer(offerId: string): void {
     this.onDeleteOffer(offerId);
@@ -1305,14 +1351,14 @@ export class TascaDetallComponent implements OnInit {
     if (!this.tasca) return;
     const confirmacio = confirm(
       `Vols confirmar la conclusió de la tasca "${this.tasca.titol}"?\n\n` +
-      `Aquesta acció marcarà el treball com a finalitzat i notificarà al client per a la seva valoració.`
+      `Aquesta acció registrarà la data de finalització del treball i notificarà al client per a la seva valoració.`
     );
     if (!confirmacio) return;
 
     this.tascaService.complete(this.tasca.id).subscribe({
       next: (updated) => {
         this.tasca = updated;
-        this.noticeMessage = 'Enhorabona! Has donat per finalitzada la tasca. S’ha notificat al client per a la seva valoració!';
+        this.noticeMessage = 'Enhorabona! Has donat per finalitzada la tasca. S’ha registrat la finalització i notificat al client!';
       },
       error: () => {
         this.noticeMessage = 'Error en finalitzar la tasca. Si us plau, torna-ho a provar.';
@@ -1321,7 +1367,7 @@ export class TascaDetallComponent implements OnInit {
   }
 
   /**
-   * Obre el modal per avaluar la tasca (encara que ja estiga finalitzada).
+   * Obre el modal per avaluar la tasca un cop el professional l'ha donat per finalitzada.
    */
   onCompleteTask(): void {
     if (!this.tasca) return;
@@ -1331,7 +1377,7 @@ export class TascaDetallComponent implements OnInit {
   }
 
   /**
-   * Confirma l'avaluació i envia la ressenya (desant-la directament a la taula tasques).
+   * Confirma l'avaluació i envia la valoració (només es permet una única vegada un cop acabada la tasca).
    */
   confirmarFinalitzacioAmbRessenya(): void {
     if (!this.tasca) return;
@@ -1339,7 +1385,7 @@ export class TascaDetallComponent implements OnInit {
     this.enviantRessenya = true;
     const textDesc = this.ressenyaDescripcio.trim() || 'Feina completada amb èxit i total satisfacció.';
 
-    this.tascaService.complete(t.id, {
+    this.tascaService.avaluar(t.id, {
       valoracio: this.puntuacioSeleccionada,
       opinio: textDesc
     }).subscribe({
@@ -1347,13 +1393,25 @@ export class TascaDetallComponent implements OnInit {
         this.tasca = updated;
         this.enviantRessenya = false;
         this.tancarModalFinalitzar();
-        this.noticeMessage = t.estat === 'Finalitzada'
-          ? 'La teva valoració s\'ha desat i publicat correctament!'
-          : 'Felicitats! La tasca ha estat marcada com a Finalitzada i la valoració s\'ha publicat.';
+        this.noticeMessage = 'La teva valoració s\'ha registrat i publicat correctament!';
       },
-      error: () => {
-        this.enviantRessenya = false;
-        this.noticeMessage = 'Error en registrar la valoració.';
+      error: (err) => {
+        // Fallback per si es completa conjuntament
+        this.tascaService.complete(t.id, {
+          valoracio: this.puntuacioSeleccionada,
+          opinio: textDesc
+        }).subscribe({
+          next: (updated) => {
+            this.tasca = updated;
+            this.enviantRessenya = false;
+            this.tancarModalFinalitzar();
+            this.noticeMessage = 'La teva valoració s\'ha registrat correctament!';
+          },
+          error: (e) => {
+            this.enviantRessenya = false;
+            this.noticeMessage = e?.error || 'Error en registrar la valoració. Recorda que només es pot valorar un cop acabada la tasca.';
+          }
+        });
       }
     });
   }

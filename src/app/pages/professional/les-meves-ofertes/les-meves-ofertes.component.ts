@@ -3,9 +3,11 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { OfertaService } from '../../../services/oferta.service';
 import { TascaService } from '../../../services/tasca.service';
+import { InteresService } from '../../../services/interes.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { Oferta } from '../../../models/oferta.model';
 import { Tasca } from '../../../models/tasca.model';
+import { Interes } from '../../../models/interes.model';
 
 /**
  * Component del Panell de Gestió d'Ofertes del Professional (/professional/les-meves-ofertes).
@@ -84,7 +86,58 @@ import { Tasca } from '../../../models/tasca.model';
         </div>
       </section>
 
-      <div class="section-divider" *ngIf="tasquesAssignades.length > 0"></div>
+      <!-- SECCIÓ D'INTERESSOS DE CLIENTS REBUTS PER A LES TEUES OFERTES -->
+      <section class="assigned-section" *ngIf="!loading && interessosRebuts.length > 0" style="border-left-color: #3b82f6;">
+        <div class="section-title-bar">
+          <div class="title-with-badge">
+            <span class="pro-assigned-pill" style="background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe;">SOL·LICITUDS D'INTERÉS</span>
+            <h3>Clients interessats en els teus serveis ({{ interessosRebuts.length }})</h3>
+          </div>
+          <span class="section-badge-hint">Accepta per crear una nova tasca acordada</span>
+        </div>
+
+        <div class="assigned-tasks-grid">
+          <div *ngFor="let item of interessosRebuts" class="assigned-task-card" style="border-left-color: #3b82f6;">
+            <div class="card-header">
+              <span class="badge-nature" style="background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe;">INTERÉS REBUT</span>
+              <span class="tasca-ref">{{ item.dataCreacio | slice:0:10 }}</span>
+            </div>
+
+            <h4 class="tasca-titol">{{ item.publicacioTitol || 'Interés en oferta ref: ' + item.publicacioId }}</h4>
+            <div class="assigned-meta">
+              <div class="assigned-meta-item">
+                <span class="lbl">Client:</span>
+                <strong><a [routerLink]="['/perfil', item.clientId || item.clientNom]" class="user-inline-link">{{ item.clientNom }}</a></strong>
+              </div>
+            </div>
+            <p class="tasca-desc" *ngIf="item.missatge">"{{ item.missatge }}"</p>
+
+            <div class="card-actions">
+              <button
+                type="button"
+                class="btn-action success"
+                (click)="acceptarInteres(item)"
+                title="Acceptar la sol·licitud i obrir tasca en curs"
+              >
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 5px;">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                Acceptar interés
+              </button>
+              <button
+                type="button"
+                class="btn-action danger"
+                (click)="rebutjarInteres(item)"
+                title="Descartar aquest interés"
+              >
+                Rebutjar
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="section-divider" *ngIf="tasquesAssignades.length > 0 || interessosRebuts.length > 0"></div>
 
       <!-- Capçalera secció d'ofertes (les ofertes no tenen estat, sols s'accepten o es borren) -->
       <div class="propostes-section-header">
@@ -611,6 +664,8 @@ export class LesMevesOfertesComponent implements OnInit {
   ofertes: Oferta[] = [];
   /** Llista de tasques on el professional ha estat assignat i convergeix amb el client */
   tasquesAssignades: Tasca[] = [];
+  /** Llista d'interessos rebuts en les seves ofertes per part de clients */
+  interessosRebuts: Interes[] = [];
   /** Mapa per accedir ràpidament a les dades de la tasca [tascaId -> Tasca] */
   tasquesMap: Record<string, Tasca> = {};
   /** Estat de càrrega */
@@ -623,6 +678,7 @@ export class LesMevesOfertesComponent implements OnInit {
   constructor(
     private readonly ofertaService: OfertaService,
     private readonly tascaService: TascaService,
+    private readonly interesService: InteresService,
     private readonly authService: AuthService,
     private readonly router: Router
   ) {}
@@ -646,6 +702,14 @@ export class LesMevesOfertesComponent implements OnInit {
       this.router.navigate(['/login']);
       return;
     }
+
+    // Carrega els interessos de clients per a les ofertes del professional
+    this.interesService.getByProfessional(user.id || user.nom).subscribe({
+      next: (interests) => {
+        this.interessosRebuts = (interests ?? []).filter(i => !i.tascaId);
+      },
+      error: () => {}
+    });
 
     // Carrega les tasques on aquest professional ha estat assignat
     this.tascaService.getByProfessional(user.nom).subscribe({
@@ -677,6 +741,44 @@ export class LesMevesOfertesComponent implements OnInit {
       error: () => {
         this.errorMsg = 'Error en carregar la llista de tasques associades.';
         this.loading = false;
+      }
+    });
+  }
+
+  /**
+   * Accepta una sol·licitud d'interés de client. Crea una tasca acordada i manté l'oferta activa.
+   */
+  acceptarInteres(item: Interes): void {
+    if (!confirm(`Vols acceptar la sol·licitud d'interés de ${item.clientNom}? S'iniciarà una nova tasca i es notificarà al client.`)) {
+      return;
+    }
+    this.interesService.accept(item.id).subscribe({
+      next: () => {
+        this.successMsg = `S'ha acceptat l'interés de ${item.clientNom} i s'ha creat la tasca correctament!`;
+        setTimeout(() => this.successMsg = '', 4500);
+        this.carregarOfertes();
+      },
+      error: () => {
+        alert("No s'ha pogut acceptar l'interés. Comprova si ja s'havia acceptat anteriorment.");
+      }
+    });
+  }
+
+  /**
+   * Rebutja una sol·licitud d'interés de client sense crear tasca.
+   */
+  rebutjarInteres(item: Interes): void {
+    if (!confirm(`Vols descartar la sol·licitud d'interés de ${item.clientNom}? No es generarà cap tasca.`)) {
+      return;
+    }
+    this.interesService.reject(item.id).subscribe({
+      next: () => {
+        this.interessosRebuts = this.interessosRebuts.filter(i => i.id !== item.id);
+        this.successMsg = "S'ha descartat la sol·licitud d'interés.";
+        setTimeout(() => this.successMsg = '', 3500);
+      },
+      error: () => {
+        alert("No s'ha pogut descartar l'interés.");
       }
     });
   }
