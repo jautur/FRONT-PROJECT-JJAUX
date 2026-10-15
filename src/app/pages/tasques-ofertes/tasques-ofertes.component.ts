@@ -102,7 +102,7 @@ interface CategoriaFiltre {
             [class.active]="tipusFiltre === 'tasques'"
             (click)="tipusFiltre = 'tasques'"
           >
-            Tasques en curs ({{ tasquesFiltrades.length }})
+            Les teues tasques ({{ tasquesFiltrades.length }})
           </button>
         </div>
       </section>
@@ -328,7 +328,7 @@ interface CategoriaFiltre {
             <!-- SECCIÓ DE TASQUES ACORDADES (CONVERGEIXEN CLIENT I PROFESSIONAL OBLIGATORIS) -->
             <section class="results-block" *ngIf="(tipusFiltre === 'tots' || tipusFiltre === 'tasques') && tasquesFiltrades.length > 0">
               <div class="results-block-header">
-                <h2>Tasques en curs i concloses (Client + Professional)</h2>
+                <h2>Les teues tasques acordades (Client + Professional)</h2>
                 <span class="count-tag count-tag-tasca">{{ tasquesFiltrades.length }} acordades</span>
               </div>
 

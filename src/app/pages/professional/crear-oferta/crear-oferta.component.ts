@@ -135,15 +135,49 @@ import { AuthService } from '../../../core/services/auth.service';
 
       <!-- FORMULARI 2: ENVIAR PRESSUPOST A UNA INCIDÈNCIA OBERTA -->
       <form *ngIf="mode === 'pressupost'" (ngSubmit)="onSubmitPressupost()" class="card">
-        <label>
-          Incidència a la qual presentes candidatura
-          <select [(ngModel)]="formData.tascaId" name="tascaId" required>
-            <option value="" disabled>Selecciona una incidència oberta</option>
-            <option *ngFor="let task of availableTasks" [value]="task.id">
-              [{{ task.id }}] {{ task.titol }} — Pressupost orientatiu del client: {{ task.budget }}
-            </option>
-          </select>
-        </label>
+        <div class="form-group-field">
+          <label for="selectIncidencia" class="label-incidencia">
+            <span class="label-main">Incidència a la qual presentes candidatura</span>
+            <span class="label-hint">Tria la petició del client a la qual vols enviar la teva proposta econòmica:</span>
+          </label>
+          <div class="select-wrapper">
+            <select
+              id="selectIncidencia"
+              [(ngModel)]="formData.tascaId"
+              name="tascaId"
+              required
+              class="select-incidencia"
+            >
+              <option value="" disabled>-- Selecciona una incidència oberta --</option>
+              <option *ngFor="let task of availableTasks" [value]="task.id">
+                {{ task.titol }} — {{ task.categoria || 'Altres Serveis' }} (Pressupost: {{ task.budget }})
+              </option>
+            </select>
+            <span class="select-chevron" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </span>
+          </div>
+
+          <!-- Fitxa detallada de resum de la incidència seleccionada -->
+          <div *ngIf="selectedTask" class="selected-incident-preview">
+            <div class="incident-preview-top">
+              <span class="preview-cat-badge">{{ selectedTask.categoria || 'Altres Serveis' }}</span>
+              <span class="preview-budget-badge">
+                Pressupost orientatiu del client: <strong>{{ selectedTask.budget }}</strong>
+              </span>
+            </div>
+            <h4 class="preview-title">{{ selectedTask.titol }}</h4>
+            <p class="preview-desc" *ngIf="selectedTask.descripcio">{{ selectedTask.descripcio }}</p>
+            <div class="preview-meta-row">
+              <span *ngIf="selectedTask.client" class="preview-client">
+                Client sol·licitant: <strong>{{ selectedTask.client }}</strong>
+              </span>
+              <span class="preview-id">Identificador: <code>{{ selectedTask.id }}</code></span>
+            </div>
+          </div>
+        </div>
 
         <label>
           El teu pressupost proposat (€)
@@ -313,6 +347,175 @@ import { AuthService } from '../../../core/services/auth.service';
         box-shadow: 0 0 12px rgba(255, 23, 68, 0.25);
       }
 
+      .form-group-field {
+        display: flex;
+        flex-direction: column;
+        gap: 0.65rem;
+      }
+
+      .label-incidencia {
+        display: flex;
+        flex-direction: column;
+        gap: 0.2rem;
+        cursor: pointer;
+      }
+
+      .label-main {
+        font-weight: 800;
+        font-size: 0.95rem;
+        color: #09090c;
+      }
+
+      .label-hint {
+        font-size: 0.8rem;
+        font-weight: 500;
+        color: #7d7a72;
+      }
+
+      .select-wrapper {
+        position: relative;
+        width: 100%;
+        display: flex;
+        align-items: center;
+      }
+
+      .select-incidencia {
+        width: 100%;
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        background-color: #faf9f6;
+        border: 1.5px solid #d6d0c4;
+        border-radius: 12px;
+        padding: 0.95rem 2.85rem 0.95rem 1.15rem;
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #09090c;
+        cursor: pointer;
+        line-height: 1.4;
+        transition: all 0.2s ease;
+      }
+
+      .select-incidencia:hover {
+        border-color: #b5b0a4;
+        background-color: #ffffff;
+      }
+
+      .select-incidencia:focus {
+        border-color: #ff1744;
+        background-color: #ffffff;
+        box-shadow: 0 0 14px rgba(255, 23, 68, 0.22);
+        outline: none;
+      }
+
+      .select-chevron {
+        position: absolute;
+        right: 1.1rem;
+        pointer-events: none;
+        color: #7d7a72;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: transform 0.2s ease, color 0.2s ease;
+      }
+
+      .select-wrapper:focus-within .select-chevron {
+        color: #ff1744;
+        transform: rotate(180deg);
+      }
+
+      .selected-incident-preview {
+        background: #faf8f4;
+        border: 1px solid #e5e0d5;
+        border-left: 4px solid var(--neon, #ff1744);
+        border-radius: 12px;
+        padding: 1.1rem 1.25rem;
+        margin-top: 0.35rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.55rem;
+        animation: fadeInPreview 0.2s ease;
+      }
+
+      @keyframes fadeInPreview {
+        from {
+          opacity: 0;
+          transform: translateY(-4px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .incident-preview-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+
+      .preview-cat-badge {
+        background: #09090c;
+        color: #ffffff;
+        font-size: 0.72rem;
+        font-weight: 800;
+        padding: 0.2rem 0.6rem;
+        border-radius: 6px;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+
+      .preview-budget-badge {
+        font-size: 0.82rem;
+        color: #636058;
+      }
+
+      .preview-budget-badge strong {
+        color: #09090c;
+        font-weight: 800;
+        font-size: 0.95rem;
+      }
+
+      .preview-title {
+        margin: 0;
+        font-size: 1.05rem;
+        font-weight: 800;
+        color: #09090c;
+        line-height: 1.35;
+      }
+
+      .preview-desc {
+        margin: 0;
+        font-size: 0.88rem;
+        color: #636058;
+        line-height: 1.45;
+      }
+
+      .preview-meta-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        padding-top: 0.45rem;
+        border-top: 1px dashed #e2ded5;
+        font-size: 0.8rem;
+        color: #7d7a72;
+      }
+
+      .preview-client strong {
+        color: #09090c;
+      }
+
+      .preview-id code {
+        background: #eeeae0;
+        padding: 0.15rem 0.4rem;
+        border-radius: 4px;
+        font-size: 0.76rem;
+      }
+
       .form-actions {
         display: flex;
         gap: 1rem;
@@ -407,6 +610,12 @@ export class CrearOfertaComponent implements OnInit {
 
   /** Llista de tasques obertes disponibles per a ofertar */
   availableTasks: Tasca[] = [];
+
+  /** Obté l'objecte complet de la incidència o tasca actualment seleccionada al desplegable */
+  get selectedTask(): Tasca | undefined {
+    if (!this.formData.tascaId) return undefined;
+    return this.availableTasks.find(t => t.id === this.formData.tascaId);
+  }
 
   /** Model per a la publicació d'oferta pública / pack de servei */
   ofertaServei = {
