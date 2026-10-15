@@ -298,6 +298,24 @@ import { AuthService } from '../../../core/services/auth.service';
         color: #dc2626;
         border: 1px solid #fecaca;
       }
+
+      @media (max-width: 600px) {
+        .card {
+          padding: 1.25rem 1rem;
+          border-radius: 14px;
+        }
+        .form-header h1 {
+          font-size: 1.45rem;
+        }
+        .form-actions {
+          flex-direction: column-reverse;
+          gap: 0.6rem;
+        }
+        .btn {
+          width: 100%;
+          text-align: center;
+        }
+      }
     `
   ]
 })

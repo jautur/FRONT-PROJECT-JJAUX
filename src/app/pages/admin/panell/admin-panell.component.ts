@@ -4,17 +4,19 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { TascaService } from '../../../services/tasca.service';
 import { OfertaService } from '../../../services/oferta.service';
+import { IncidenciaService } from '../../../services/incidencia.service';
 import { UsuariService } from '../../../services/usuari.service';
 import { AvisService } from '../../../services/avis.service';
 import { Tasca } from '../../../models/tasca.model';
 import { Oferta } from '../../../models/oferta.model';
+import { Incidencia } from '../../../models/incidencia.model';
 import { Usuari } from '../../../models/usuari.model';
 import { AuthService } from '../../../core/services/auth.service';
 
 /**
  * Pestanya activa al panell d'administració.
  */
-type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
+type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'usuaris';
 
 /**
  * Component del Panell d'Administració Global (/admin/panell).
@@ -52,24 +54,16 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
         </div>
       </div>
 
-      <!-- Mètriques globals -->
+      <!-- Mètriques globals interactives -->
       <div class="metrics-grid">
-        <div class="metric-card">
-          <span class="metric-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-              <circle cx="9" cy="7" r="4"></circle>
-              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-            </svg>
-          </span>
-          <div class="metric-info">
-            <span class="metric-value">{{ usuaris.length }}</span>
-            <span class="metric-label">Usuaris Registrats</span>
-          </div>
-        </div>
-
-        <div class="metric-card">
+        <div
+          class="metric-card"
+          [class.active-card]="tabActiva === 'tasques'"
+          (click)="canviarTab('tasques')"
+          role="button"
+          tabindex="0"
+          title="Veure i filtrar tasques"
+        >
           <span class="metric-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
               <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
@@ -81,11 +75,21 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
           <div class="metric-info">
             <span class="metric-value">{{ tasques.length }}</span>
             <span class="metric-label">Tasques Totals</span>
-            <small class="metric-sub">{{ countTasquesObertes() }} obertes · {{ countTasquesEnCurs() }} en curs</small>
+            <small class="metric-sub">
+              <span class="clickable-sub" (click)="filtrarPerEstatTasca('curs', $event)">{{ countTasquesEnCurs() }} en curs</span> ·
+              <span class="clickable-sub" (click)="filtrarPerEstatTasca('finalitzad', $event)">{{ countTasquesFinalitzades() }} fetes</span>
+            </small>
           </div>
         </div>
 
-        <div class="metric-card">
+        <div
+          class="metric-card"
+          [class.active-card]="tabActiva === 'ofertes'"
+          (click)="canviarTab('ofertes')"
+          role="button"
+          tabindex="0"
+          title="Veure llistat d'ofertes de professionals"
+        >
           <span class="metric-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
               <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
@@ -94,12 +98,60 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
           </span>
           <div class="metric-info">
             <span class="metric-value">{{ ofertes.length }}</span>
-            <span class="metric-label">Ofertes Presentades</span>
+            <span class="metric-label">Ofertes Professionals</span>
             <small class="metric-sub">{{ ofertes.length }} ofertes actives</small>
           </div>
         </div>
 
-        <div class="metric-card">
+        <div
+          class="metric-card"
+          [class.active-card]="tabActiva === 'incidencies'"
+          (click)="canviarTab('incidencies')"
+          role="button"
+          tabindex="0"
+          title="Veure llistat d'incidències de clients"
+        >
+          <span class="metric-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+          </span>
+          <div class="metric-info">
+            <span class="metric-value">{{ incidencies.length }}</span>
+            <span class="metric-label">Incidències Clients</span>
+            <small class="metric-sub">{{ incidencies.length }} incidències actives</small>
+          </div>
+        </div>
+
+        <div
+          class="metric-card"
+          [class.active-card]="tabActiva === 'usuaris'"
+          (click)="canviarTab('usuaris')"
+          role="button"
+          tabindex="0"
+          title="Veure usuaris del sistema"
+        >
+          <span class="metric-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            </svg>
+          </span>
+          <div class="metric-info">
+            <span class="metric-value">{{ usuaris.length }}</span>
+            <span class="metric-label">Usuaris Registrats</span>
+            <small class="metric-sub">
+              <span class="clickable-sub" (click)="filtrarPerRolUsuari('client', $event)">{{ countClients() }} clients</span> ·
+              <span class="clickable-sub" (click)="filtrarPerRolUsuari('professional', $event)">{{ countProfessionals() }} prof.</span>
+            </small>
+          </div>
+        </div>
+
+        <div class="metric-card metric-card-info" title="Total d'avisos i notificacions enviats">
           <span class="metric-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
               <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
@@ -109,6 +161,7 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
           <div class="metric-info">
             <span class="metric-value">{{ totalAvisos }}</span>
             <span class="metric-label">Avisos de Sistema</span>
+            <small class="metric-sub">Notificacions globals</small>
           </div>
         </div>
       </div>
@@ -134,6 +187,14 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
           (click)="canviarTab('ofertes')"
         >
           Llistat Complet d'Ofertes ({{ ofertes.length }})
+        </button>
+        <button
+          type="button"
+          class="tab-btn"
+          [class.active]="tabActiva === 'incidencies'"
+          (click)="canviarTab('incidencies')"
+        >
+          Incidències de Clients ({{ incidencies.length }})
         </button>
         <button
           type="button"
@@ -224,10 +285,11 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
                       title="Eliminar tasca de la base de dades"
                       aria-label="Eliminar"
                     >
-                      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;">
                         <polyline points="3 6 5 6 21 6"></polyline>
                         <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
                       </svg>
+                      Borrar
                     </button>
                   </div>
                 </td>
@@ -323,6 +385,78 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
 
         <div class="empty-box" *ngIf="ofertesFiltrades.length === 0">
           Cap oferta coincideix amb els filtres de cerca.
+        </div>
+      </section>
+
+      <!-- ============================================================== -->
+      <!-- PESTANYA: INCIDÈNCIES DE CLIENTS (SENSE ESTAT) -->
+      <!-- ============================================================== -->
+      <section class="tab-content" *ngIf="tabActiva === 'incidencies'">
+        <div class="filter-bar">
+          <input
+            type="text"
+            [(ngModel)]="searchIncidencia"
+            placeholder="Cerca per títol, client, descripció o categoria..."
+            class="search-input"
+          />
+        </div>
+
+        <div class="table-wrapper" *ngIf="incidenciesFiltrades.length > 0">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Títol i Descripció</th>
+                <th>Client</th>
+                <th>Categoria</th>
+                <th>Pressupost Màx.</th>
+                <th>Accions Administrador</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let inc of incidenciesFiltrades">
+                <td class="font-mono"><strong>{{ inc.id }}</strong></td>
+                <td>
+                  <div class="table-titol">{{ inc.titol }}</div>
+                  <div class="table-desc">{{ inc.descripcio }}</div>
+                </td>
+                <td>
+                  <a [routerLink]="['/perfil', inc.clientNom || inc.client]" class="user-inline-link" title="Veure perfil de {{ inc.clientNom || inc.client }}">
+                    {{ inc.clientNom || inc.client }}
+                  </a>
+                </td>
+                <td><span class="tag-cat">{{ inc.categoria }}</span></td>
+                <td><strong>{{ inc.budget }}</strong></td>
+                <td>
+                  <div class="action-buttons">
+                    <a [routerLink]="['/tasca-detall', inc.id]" class="btn-sm btn-info" title="Revisar incidència">
+                      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                      </svg>
+                      Detall
+                    </a>
+                    <button
+                      type="button"
+                      class="btn-sm btn-danger"
+                      (click)="eliminarIncidencia(inc.id)"
+                      title="Borrar incidència"
+                    >
+                      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                      </svg>
+                      Borrar
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="empty-box" *ngIf="incidenciesFiltrades.length === 0">
+          Cap incidència coincideix amb els criteris de cerca.
         </div>
       </section>
 
@@ -569,18 +703,48 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
     }
     .metric-card {
       background: #ffffff;
-      border: 1px solid #e5e0d7;
+      border: 1.5px solid #e5e0d7;
       border-radius: 14px;
       padding: 1.35rem;
       display: flex;
       align-items: center;
       gap: 1.1rem;
       box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
-      transition: all 0.2s;
+      transition: all 0.2s ease;
+      cursor: pointer;
+      user-select: none;
     }
     .metric-card:hover {
       border-color: #ff1744;
       transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(255, 23, 68, 0.12);
+    }
+    .metric-card.active-card {
+      border-color: #ff1744;
+      background: #fffafa;
+      box-shadow: 0 6px 20px rgba(255, 23, 68, 0.16);
+      position: relative;
+    }
+    .metric-card.active-card::after {
+      content: '';
+      position: absolute;
+      bottom: -6px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 28px;
+      height: 4px;
+      background: #ff1744;
+      border-radius: 2px;
+    }
+    .clickable-sub {
+      cursor: pointer;
+      text-decoration: underline;
+      text-decoration-style: dotted;
+      text-underline-offset: 2px;
+      transition: color 0.15s ease;
+    }
+    .clickable-sub:hover {
+      color: #ff1744;
     }
     .metric-icon {
       font-size: 2.2rem;
@@ -1113,6 +1277,73 @@ type AdminTab = 'tasques' | 'ofertes' | 'usuaris';
       opacity: 0.5;
       cursor: not-allowed;
     }
+
+    @media (max-width: 768px) {
+      .admin-container {
+        padding: 1rem 0.5rem;
+      }
+      .admin-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.85rem;
+      }
+      .title-group h2 {
+        font-size: 1.45rem;
+      }
+      .btn-refresh {
+        width: 100%;
+        text-align: center;
+      }
+      .metrics-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem;
+      }
+      .metric-card {
+        padding: 0.95rem;
+        gap: 0.65rem;
+      }
+      .metric-icon svg {
+        width: 24px;
+        height: 24px;
+      }
+      .metric-value {
+        font-size: 1.4rem;
+      }
+      .metric-label {
+        font-size: 0.75rem;
+      }
+      .nav-tabs {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.45rem;
+      }
+      .tab-btn {
+        width: 100%;
+        text-align: center;
+        padding: 0.55rem 0.65rem;
+        font-size: 0.8rem;
+      }
+      .filter-bar {
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      .search-input {
+        min-width: 100%;
+      }
+      .select-filter {
+        width: 100%;
+      }
+      .modal-card {
+        margin: 1rem;
+        max-width: calc(100vw - 2rem);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .metrics-grid {
+        grid-template-columns: 1fr;
+      }
+    }
   `]
 })
 export class AdminPanellComponent implements OnInit {
@@ -1120,12 +1351,14 @@ export class AdminPanellComponent implements OnInit {
   tasques: Tasca[] = [];
   /** Llista de totes les ofertes i pressupostos presentats */
   ofertes: Oferta[] = [];
+  /** Llista de totes les incidències registrades */
+  incidencies: Incidencia[] = [];
   /** Llista de tots els usuaris donats d'alta */
   usuaris: Usuari[] = [];
   /** Total de notificacions i avisos */
   totalAvisos = 0;
 
-  /** Pestanya actual seleccionada ('tasques' | 'ofertes' | 'usuaris') */
+  /** Pestanya actual seleccionada ('tasques' | 'ofertes' | 'incidencies' | 'usuaris') */
   tabActiva: AdminTab = 'tasques';
 
   /** Criteris de cerca i filtres */
@@ -1133,6 +1366,8 @@ export class AdminPanellComponent implements OnInit {
   filtreEstatTasca = 'tots';
 
   searchOferta = '';
+
+  searchIncidencia = '';
 
   searchUsuari = '';
   filtreRolUsuari = 'tots';
@@ -1155,6 +1390,7 @@ export class AdminPanellComponent implements OnInit {
   constructor(
     private readonly tascaService: TascaService,
     private readonly ofertaService: OfertaService,
+    private readonly incidenciaService: IncidenciaService,
     private readonly usuariService: UsuariService,
     private readonly avisService: AvisService,
     private readonly authService: AuthService
@@ -1168,7 +1404,7 @@ export class AdminPanellComponent implements OnInit {
   }
 
   /**
-   * Carrega en paral·lel totes les tasques, ofertes, usuaris i avisos de PostgreSQL.
+   * Carrega en paral·lel totes les tasques, ofertes, incidències, usuaris i avisos de PostgreSQL.
    */
   carregarDades(): void {
     this.loading = true;
@@ -1182,6 +1418,11 @@ export class AdminPanellComponent implements OnInit {
     this.ofertaService.getAll().subscribe({
       next: (o) => this.ofertes = o,
       error: () => this.errorMsg = 'Error en carregar les ofertes.'
+    });
+
+    this.incidenciaService.getAll().subscribe({
+      next: (i) => this.incidencies = i,
+      error: () => this.errorMsg = 'Error en carregar les incidències.'
     });
 
     this.usuariService.getAll().subscribe({
@@ -1242,6 +1483,22 @@ export class AdminPanellComponent implements OnInit {
         o.tascaId?.toLowerCase().includes(this.searchOferta.toLowerCase()) ||
         o.note?.toLowerCase().includes(this.searchOferta.toLowerCase()) ||
         o.price?.toLowerCase().includes(this.searchOferta.toLowerCase())
+      );
+    });
+  }
+
+  /**
+   * Filtra les incidències segons el text de cerca (sense filtre d'estat ja que les incidències no tenen estat).
+   */
+  get incidenciesFiltrades(): Incidencia[] {
+    return this.incidencies.filter(i => {
+      const clientName = i.clientNom || i.client || '';
+      return (
+        !this.searchIncidencia ||
+        i.titol?.toLowerCase().includes(this.searchIncidencia.toLowerCase()) ||
+        clientName.toLowerCase().includes(this.searchIncidencia.toLowerCase()) ||
+        i.descripcio?.toLowerCase().includes(this.searchIncidencia.toLowerCase()) ||
+        i.categoria?.toLowerCase().includes(this.searchIncidencia.toLowerCase())
       );
     });
   }
@@ -1332,6 +1589,57 @@ export class AdminPanellComponent implements OnInit {
       },
       error: () => this.errorMsg = 'Error en borrar l’oferta.'
     });
+  }
+
+  /**
+   * Acció d'administrador: elimina definitivament una incidència del sistema.
+   * Les incidències no tenen estat: o es mantenen actives o es borren / passen a tasca.
+   * @param id Identificador de la incidència
+   */
+  eliminarIncidencia(id: string): void {
+    if (!confirm(`ATENCIÓ: Vols eliminar definitivament la incidència ${id}?`)) return;
+
+    this.incidenciaService.delete(id).subscribe({
+      next: () => {
+        this.incidencies = this.incidencies.filter(x => x.id !== id);
+        this.successMsg = `Incidència ${id} eliminada correctament.`;
+        setTimeout(() => this.successMsg = '', 3500);
+      },
+      error: () => this.errorMsg = 'Error en eliminar la incidència.'
+    });
+  }
+
+  /**
+   * Filtra ràpidament tasques per estat des del recomptador de dalt.
+   */
+  filtrarPerEstatTasca(estat: string, event?: Event): void {
+    if (event) event.stopPropagation();
+    this.tabActiva = 'tasques';
+    this.filtreEstatTasca = estat;
+  }
+
+  /**
+   * Filtra ràpidament usuaris per rol des del recomptador de dalt.
+   */
+  filtrarPerRolUsuari(rol: string, event?: Event): void {
+    if (event) event.stopPropagation();
+    this.tabActiva = 'usuaris';
+    this.filtreRolUsuari = rol;
+  }
+
+  /** Recompte d'usuaris amb rol client */
+  countClients(): number {
+    return this.usuaris.filter(u => u.rol?.toLowerCase() === 'client').length;
+  }
+
+  /** Recompte d'usuaris amb rol professional */
+  countProfessionals(): number {
+    return this.usuaris.filter(u => u.rol?.toLowerCase() === 'professional').length;
+  }
+
+  /** Recompte de tasques finalitzades */
+  countTasquesFinalitzades(): number {
+    return this.tasques.filter(t => t.estat?.toLowerCase().includes('finalitzad')).length;
   }
 
   /** Recompte de tasques en estat obert */

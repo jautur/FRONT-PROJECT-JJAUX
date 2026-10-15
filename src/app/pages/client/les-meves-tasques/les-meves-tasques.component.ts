@@ -130,6 +130,15 @@ type FiltreEstatTasca = 'totes' | 'oberta' | 'en_curs' | 'finalitzada';
               <span class="meta-label">Ofertes rebudes:</span>
               <span class="meta-value ofertes-badge">{{ ofertesCount[t.id] }} pressupost(s)</span>
             </div>
+
+            <!-- Mostra la valoració si ja ha estat avaluada -->
+            <div class="meta-item rating-item" *ngIf="t.valoracio">
+              <span class="meta-label">La teva valoració del professional:</span>
+              <span class="meta-value rating-stars">
+                ★ {{ t.valoracio }}/5
+                <span *ngIf="t.opinio" class="rating-quote">"{{ t.opinio }}"</span>
+              </span>
+            </div>
           </div>
 
           <div class="card-actions">
@@ -141,6 +150,7 @@ type FiltreEstatTasca = 'totes' | 'oberta' | 'en_curs' | 'finalitzada';
               {{ isTascaConvergida(t) ? 'Veure seguiment & detall' : 'Revisar pressupostos (' + (ofertesCount[t.id] || 0) + ')' }}
             </a>
 
+            <!-- Si està en curs: botó per finalitzar i avaluar -->
             <button
               *ngIf="isTascaConvergida(t) && t.estat !== 'Finalitzada'"
               type="button"
@@ -151,6 +161,28 @@ type FiltreEstatTasca = 'totes' | 'oberta' | 'en_curs' | 'finalitzada';
                 <polyline points="20 6 9 17 4 12"></polyline>
               </svg>
               Finalitzar i Avaluar
+            </button>
+
+            <!-- Si ja està finalitzada però encara no s'ha avaluat -->
+            <button
+              *ngIf="isTascaConvergida(t) && t.estat === 'Finalitzada' && !t.valoracio"
+              type="button"
+              class="btn-action evaluate-btn"
+              (click)="obrirModalFinalitzar(t)"
+              title="Avaluar el servei rebut per a aquesta tasca"
+            >
+              ★ Avaluar tasca
+            </button>
+
+            <!-- Si ja està finalitzada i té valoració: modificar-la -->
+            <button
+              *ngIf="isTascaConvergida(t) && t.estat === 'Finalitzada' && t.valoracio"
+              type="button"
+              class="btn-action edit-rate-btn"
+              (click)="obrirModalFinalitzar(t)"
+              title="Modificar valoració existent"
+            >
+              ★ Modificar avaluació ({{ t.valoracio }}/5)
             </button>
 
             <button
@@ -186,7 +218,7 @@ type FiltreEstatTasca = 'totes' | 'oberta' | 'en_curs' | 'finalitzada';
           <header class="modal-header">
             <div>
               <span class="modal-badge-tag">AVALUACIÓ DE SERVEI</span>
-              <h2>Finalitzar tasca i avaluar professional</h2>
+              <h2>{{ tascaPerFinalitzar?.estat === 'Finalitzada' ? (tascaPerFinalitzar?.valoracio ? 'Modificar valoració del professional' : 'Avaluar professional') : 'Finalitzar tasca i avaluar professional' }}</h2>
             </div>
             <button type="button" class="btn-close-modal" (click)="tancarModalFinalitzar()" aria-label="Tancar">✕</button>
           </header>
@@ -234,9 +266,10 @@ type FiltreEstatTasca = 'totes' | 'oberta' | 'en_curs' | 'finalitzada';
                 (click)="confirmarFinalitzacioAmbRessenya()"
                 [disabled]="enviantRessenya"
               >
-                {{ enviantRessenya ? 'Enviant valoració...' : '★ Enviar Valoració i Finalitzar Tasca' }}
+                {{ enviantRessenya ? 'Enviant valoració...' : (tascaPerFinalitzar?.estat === 'Finalitzada' ? '★ Guardar Valoració' : '★ Enviar Valoració i Finalitzar Tasca') }}
               </button>
               <button
+                *ngIf="tascaPerFinalitzar?.estat !== 'Finalitzada'"
                 type="button"
                 class="btn-skip-review"
                 (click)="finalitzarSenseRessenya()"
@@ -498,6 +531,47 @@ type FiltreEstatTasca = 'totes' | 'oberta' | 'en_curs' | 'finalitzada';
     .btn-action.success:hover {
       background: #ff1744;
       color: #ffffff;
+    }
+    .btn-action.evaluate-btn {
+      background: #fef3c7;
+      color: #92400e;
+      border-color: #fde68a;
+      font-weight: 900;
+    }
+    .btn-action.evaluate-btn:hover {
+      background: #f59e0b;
+      color: #ffffff;
+      border-color: #f59e0b;
+    }
+    .btn-action.edit-rate-btn {
+      background: #faf8f4;
+      color: #636058;
+      border-color: #d6d0c4;
+      font-weight: 800;
+    }
+    .btn-action.edit-rate-btn:hover {
+      background: #09090c;
+      color: #ffffff;
+      border-color: #09090c;
+    }
+    .rating-item {
+      background: #fffbeb;
+      border: 1px solid #fef3c7;
+      border-radius: 6px;
+      padding: 0.35rem 0.6rem;
+      grid-column: 1 / -1;
+    }
+    .rating-stars {
+      color: #f59e0b;
+      font-weight: 900;
+      font-size: 0.92rem;
+    }
+    .rating-quote {
+      color: #78350f;
+      font-style: italic;
+      font-weight: 500;
+      font-size: 0.82rem;
+      margin-left: 0.5rem;
     }
     .btn-action.danger {
       background: rgba(239, 68, 68, 0.1);
@@ -770,6 +844,62 @@ type FiltreEstatTasca = 'totes' | 'oberta' | 'en_curs' | 'finalitzada';
     .btn-skip-review:hover:not(:disabled) {
       color: #09090c;
     }
+
+    @media (max-width: 768px) {
+      .panell-container {
+        padding: 1rem 0.5rem;
+      }
+      .panell-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.85rem;
+      }
+      .panell-header h2 {
+        font-size: 1.5rem;
+      }
+      .btn-crear {
+        text-align: center;
+        width: 100%;
+        box-sizing: border-box;
+        display: block;
+      }
+      .filter-tabs {
+        gap: 0.4rem;
+        overflow-x: auto;
+        padding-bottom: 0.5rem;
+        flex-wrap: nowrap;
+        -webkit-overflow-scrolling: touch;
+      }
+      .tab-btn {
+        white-space: nowrap;
+        padding: 0.45rem 0.85rem;
+        font-size: 0.8rem;
+        flex-shrink: 0;
+      }
+      .tasques-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+      .card-actions {
+        flex-direction: column;
+      }
+      .btn-action {
+        width: 100%;
+      }
+      .modal-dialog {
+        width: 100%;
+        max-height: 95vh;
+        border-radius: 14px;
+      }
+      .modal-header {
+        padding: 1.1rem 1.25rem;
+        border-radius: 14px 14px 0 0;
+      }
+      .modal-body {
+        padding: 1.25rem;
+        gap: 1.1rem;
+      }
+    }
   `]
 })
 export class LesMevesTasquesComponent implements OnInit {
@@ -883,7 +1013,7 @@ export class LesMevesTasquesComponent implements OnInit {
           professional: undefined,
           professionalNom: undefined,
           budget: inc.budget,
-          estat: inc.estat,
+          estat: inc.estat || '',
           tipus: 'incidencia',
           createdAt: inc.createdAt
         }));
@@ -945,8 +1075,8 @@ export class LesMevesTasquesComponent implements OnInit {
    */
   obrirModalFinalitzar(t: Tasca): void {
     this.tascaPerFinalitzar = t;
-    this.puntuacioSeleccionada = 5;
-    this.ressenyaDescripcio = '';
+    this.puntuacioSeleccionada = t.valoracio || 5;
+    this.ressenyaDescripcio = t.opinio || '';
     this.professionalPerFinalitzar = t.professionalNom || t.professional || '';
     this.modalFinalitzarObert = true;
 
@@ -997,7 +1127,9 @@ export class LesMevesTasquesComponent implements OnInit {
       next: (updatedTask) => {
         this.enviantRessenya = false;
         this.tancarModalFinalitzar();
-        this.successMsg = 'Tasca finalitzada i valoració enregistrada amb èxit!';
+        this.successMsg = t.estat === 'Finalitzada'
+          ? 'Valoració enregistrada amb èxit!'
+          : 'Tasca finalitzada i valoració enregistrada amb èxit!';
         const target = this.tasques.find(item => item.id === t.id);
         if (target) {
           target.estat = 'Finalitzada';
@@ -1008,7 +1140,7 @@ export class LesMevesTasquesComponent implements OnInit {
       },
       error: () => {
         this.enviantRessenya = false;
-        this.errorMsg = 'Error en finalitzar la tasca.';
+        this.errorMsg = 'Error en desar la valoració.';
       }
     });
   }

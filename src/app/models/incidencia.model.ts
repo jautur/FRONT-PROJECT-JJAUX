@@ -28,8 +28,8 @@ export interface Incidencia {
   /** Pressupost màxim orientatiu */
   budget: string;
 
-  /** Estat de la incidència ('Oberta', 'Assignada', 'Cancel·lada') */
-  estat: string;
+  /** Camp opcional d'estat (les incidències no tenen estat, sols es publiquen, es responen o es borren) */
+  estat?: string;
 
   /** Data de creació */
   createdAt?: string;

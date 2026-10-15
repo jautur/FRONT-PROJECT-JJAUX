@@ -188,7 +188,7 @@ interface CategoriaFiltre {
             <section class="results-block" *ngIf="(tipusFiltre === 'tots' || tipusFiltre === 'incidencies') && incidenciesFiltrades.length > 0">
               <div class="results-block-header">
                 <h2>Incidències i peticions de clients</h2>
-                <span class="count-tag">{{ incidenciesFiltrades.length }} obertes</span>
+                <span class="count-tag">{{ incidenciesFiltrades.length }} disponibles</span>
               </div>
 
               <div class="cards-grid">
@@ -198,9 +198,6 @@ interface CategoriaFiltre {
                       <span class="nature-pill client-nature">INCIDÈNCIA</span>
                       <span class="cat-pill">{{ task.categoria || 'Altres Serveis' }}</span>
                     </div>
-                    <span class="status-pill status-task" [ngClass]="getTaskStatusClass(task.estat)">
-                      {{ task.estat }}
-                    </span>
                   </div>
 
                   <h3 class="card-item-title">{{ task.titol }}</h3>
@@ -1050,11 +1047,69 @@ interface CategoriaFiltre {
       @media (max-width: 960px) {
         .market-layout {
           grid-template-columns: 1fr;
+          gap: 1.25rem;
         }
 
         .market-header {
           flex-direction: column;
           align-items: flex-start;
+          gap: 1rem;
+        }
+
+        .market-header-actions {
+          width: 100%;
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
+        }
+
+        .btn-create-task, .btn-create-offer {
+          width: 100%;
+          text-align: center;
+        }
+
+        .type-filter-pills {
+          overflow-x: auto;
+          flex-wrap: nowrap;
+          padding-bottom: 0.4rem;
+          -webkit-overflow-scrolling: touch;
+        }
+
+        .filter-pill {
+          white-space: nowrap;
+          flex-shrink: 0;
+        }
+
+        .categories-table {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+          gap: 0.35rem;
+        }
+
+        .market-card {
+          padding: 1.15rem 1rem;
+        }
+
+        .card-bottom-bar {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 0.75rem;
+        }
+
+        .card-actions {
+          width: 100%;
+          display: flex;
+        }
+
+        .btn-action-detail, .btn-action-primary {
+          flex: 1;
+          text-align: center;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .categories-table {
+          grid-template-columns: 1fr;
         }
       }
 

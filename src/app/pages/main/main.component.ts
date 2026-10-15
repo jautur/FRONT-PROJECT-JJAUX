@@ -1766,6 +1766,45 @@ import { Article } from '../../models/article.model';
         }
       }
 
+      @media (max-width: 640px) {
+        .dashboard-body {
+          padding: 1.25rem 0.85rem 4rem;
+          gap: 1.5rem;
+        }
+        .dashboard-header-bar {
+          flex-direction: column;
+          align-items: stretch;
+          padding: 1.25rem 1rem;
+          gap: 1rem;
+          text-align: center;
+        }
+        .btn-create-task {
+          width: 100%;
+          text-align: center;
+        }
+        .card-footer {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 0.75rem;
+        }
+        .actions {
+          width: 100%;
+          flex-direction: column;
+        }
+        .actions button {
+          width: 100%;
+        }
+        .app-sync-banner {
+          padding: 1.8rem 1.4rem;
+        }
+        .cta-propaganda-banner {
+          padding: 2.2rem 1.4rem;
+        }
+        .main-footer {
+          padding: 2.5rem 1.4rem 1.5rem;
+        }
+      }
+
       .pro-preview-rating {
         display: flex;
         align-items: center;

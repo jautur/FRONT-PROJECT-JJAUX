@@ -116,7 +116,25 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Determina si la pantalla actual correspon a un dispositiu mòbil o tauleta.
+   */
+  isMobile(): boolean {
+    return typeof window !== 'undefined' && window.innerWidth < 1100;
+  }
+
+  /**
+   * Gestiona el canvi de mida de finestra per evitar que el menú quedi desplegat en mòbil.
+   */
+  @HostListener('window:resize', [])
+  onWindowResize(): void {
+    if (this.isMobile() && !this.menuOcultatPerUsuari && this.isHomePage) {
+      this.menuObert = false;
+    }
+  }
+
+  /**
    * Comprova la posició de scroll per activar el fons llis i obrir el menú esquerre.
+   * En telèfons mòbils mai no s'obre automàticament per no envair la pantalla de l'usuari.
    * Si l'usuari l'ha tancat manualment, no es tornarà a forçar obert en cada píxel de scroll.
    */
   private checkScroll(): void {
@@ -128,8 +146,8 @@ export class AppComponent implements OnInit, OnDestroy {
     const scrollY = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
     if (scrollY > 70) {
       this.isScrolled = true;
-      // Només s'obre automàticament a la primera transició cap avall si l'usuari no l'ha tancat
-      if (!this.wasScrolled && !this.menuOcultatPerUsuari) {
+      // Només s'obre automàticament en pantalla d'escriptori (mai en mòbils) a la primera transició cap avall si l'usuari no l'ha tancat
+      if (!this.wasScrolled && !this.menuOcultatPerUsuari && !this.isMobile()) {
         this.menuObert = true;
       }
       this.wasScrolled = true;

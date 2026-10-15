@@ -122,6 +122,12 @@ import { AuthService } from '../../../core/services/auth.service';
         font-size: 0.875rem;
         margin: 0;
       }
+      @media (max-width: 480px) {
+        .auth-card {
+          padding: 1.5rem 1.25rem;
+          border-radius: 14px;
+        }
+      }
     `
   ]
 })

@@ -75,6 +75,41 @@ import { Oferta } from '../../../models/oferta.model';
           </button>
         </div>
 
+        <!-- Botó per al client quan la tasca ja està finalitzada però encara no té valoració -->
+        <div *ngIf="isClientOwner && tasca.estat === 'Finalitzada' && !tasca.valoracio" class="evaluate-box">
+          <div class="evaluate-box-content">
+            <span class="evaluate-icon">★</span>
+            <div>
+              <h3>Tasca finalitzada! Com ha anat el servei?</h3>
+              <p>Valora la feina de <strong>{{ assignedProfessional }}</strong> per publicar la teva ressenya i ajudar altres usuaris.</p>
+            </div>
+          </div>
+          <button type="button" class="btn btn-evaluate" (click)="onCompleteTask()">
+            ★ Avaluar Professional
+          </button>
+        </div>
+
+        <!-- Mostra la valoració registrada a la tasca finalitzada -->
+        <div *ngIf="tasca.estat === 'Finalitzada' && tasca.valoracio" class="review-display-card">
+          <div class="review-display-header">
+            <span class="review-display-badge">VALORACIÓ DEL CLIENT</span>
+            <div class="stars-display">
+              <span *ngFor="let s of [1, 2, 3, 4, 5]" class="star-glyph" [class.filled]="s <= (tasca.valoracio || 0)">★</span>
+              <span class="score-text">{{ tasca.valoracio }}/5</span>
+            </div>
+          </div>
+          <p class="review-display-opinion" *ngIf="tasca.opinio">"{{ tasca.opinio }}"</p>
+          <div *ngIf="isClientOwner" class="review-edit-row">
+            <button type="button" class="btn-sm btn-edit-review" (click)="onCompleteTask()">
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+              </svg>
+              Modificar valoració
+            </button>
+          </div>
+        </div>
+
         <!-- Botó per al professional assignat per donar per acabada la tasca -->
         <div *ngIf="isAssignedProfessional && !isClientOwner && tasca.estat === 'En curs'" class="complete-box pro-complete-box">
           <p>Has acabat la feina o servei per a aquest client?</p>
@@ -155,7 +190,7 @@ import { Oferta } from '../../../models/oferta.model';
           <header class="modal-header">
             <div>
               <span class="modal-badge-tag">AVALUACIÓ DE SERVEI</span>
-              <h2>Finalitzar tasca i avaluar professional</h2>
+              <h2>{{ tasca.estat === 'Finalitzada' ? (tasca.valoracio ? 'Modificar valoració del professional' : 'Avaluar servei professional') : 'Finalitzar tasca i avaluar professional' }}</h2>
             </div>
             <button type="button" class="btn-close-modal" (click)="tancarModalFinalitzar()" aria-label="Tancar">✕</button>
           </header>
@@ -203,9 +238,10 @@ import { Oferta } from '../../../models/oferta.model';
                 (click)="confirmarFinalitzacioAmbRessenya()"
                 [disabled]="enviantRessenya"
               >
-                {{ enviantRessenya ? 'Enviant valoració...' : '★ Enviar Valoració i Finalitzar Tasca' }}
+                {{ enviantRessenya ? 'Enviant valoració...' : (tasca.estat === 'Finalitzada' ? '★ Guardar Valoració' : '★ Enviar Valoració i Finalitzar Tasca') }}
               </button>
               <button
+                *ngIf="tasca.estat !== 'Finalitzada'"
                 type="button"
                 class="btn-skip-review"
                 (click)="finalitzarSenseRessenya()"
@@ -394,6 +430,160 @@ import { Oferta } from '../../../models/oferta.model';
         margin: 0 0 0.75rem;
         font-weight: 800;
         color: #09090c;
+      }
+
+      .evaluate-box {
+        margin-top: 1.5rem;
+        padding: 1.25rem 1.4rem;
+        background: #fffbeb;
+        border: 1.5px solid #fde68a;
+        border-radius: 14px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1.25rem;
+        flex-wrap: wrap;
+      }
+
+      .evaluate-box-content {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .evaluate-icon {
+        font-size: 2rem;
+        color: #f59e0b;
+        background: #fef3c7;
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+
+      .evaluate-box-content h3 {
+        margin: 0 0 0.25rem 0;
+        font-size: 1.05rem;
+        font-weight: 800;
+        color: #92400e;
+      }
+
+      .evaluate-box-content p {
+        margin: 0;
+        font-size: 0.88rem;
+        color: #78350f;
+        font-weight: 500;
+      }
+
+      .btn-evaluate {
+        background: #f59e0b;
+        color: #ffffff;
+        font-weight: 900;
+        padding: 0.75rem 1.4rem;
+        border-radius: 10px;
+        border: none;
+        cursor: pointer;
+        font-size: 0.92rem;
+        box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35);
+        transition: all 0.2s ease;
+        white-space: nowrap;
+      }
+
+      .btn-evaluate:hover {
+        background: #d97706;
+        box-shadow: 0 6px 18px rgba(245, 158, 11, 0.45);
+        transform: translateY(-1px);
+      }
+
+      .review-display-card {
+        margin-top: 1.5rem;
+        padding: 1.25rem 1.4rem;
+        background: #faf8f4;
+        border: 1.5px solid #e5e0d7;
+        border-radius: 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 0.65rem;
+      }
+
+      .review-display-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+
+      .review-display-badge {
+        font-size: 0.72rem;
+        font-weight: 900;
+        letter-spacing: 0.08em;
+        padding: 0.25rem 0.6rem;
+        border-radius: 6px;
+        background: rgba(245, 158, 11, 0.15);
+        color: #b45309;
+        border: 1px solid rgba(245, 158, 11, 0.3);
+      }
+
+      .stars-display {
+        display: flex;
+        align-items: center;
+        gap: 0.2rem;
+      }
+
+      .star-glyph {
+        color: #dcd7cc;
+        font-size: 1.25rem;
+      }
+
+      .star-glyph.filled {
+        color: #f59e0b;
+        text-shadow: 0 0 6px rgba(245, 158, 11, 0.35);
+      }
+
+      .score-text {
+        font-size: 0.95rem;
+        font-weight: 900;
+        color: #09090c;
+        margin-left: 0.4rem;
+      }
+
+      .review-display-opinion {
+        margin: 0;
+        font-style: italic;
+        color: #4a4841;
+        font-size: 0.95rem;
+        line-height: 1.5;
+        background: #ffffff;
+        padding: 0.75rem 1rem;
+        border-radius: 8px;
+        border: 1px solid #ede8de;
+      }
+
+      .review-edit-row {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .btn-edit-review {
+        background: #ffffff;
+        border: 1px solid #d6d0c4;
+        border-radius: 6px;
+        color: #09090c;
+        font-size: 0.82rem;
+        font-weight: 800;
+        padding: 0.4rem 0.85rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .btn-edit-review:hover {
+        border-color: #f59e0b;
+        color: #b45309;
+        background: #fefce8;
       }
 
       .offers-section {
@@ -842,6 +1032,62 @@ import { Oferta } from '../../../models/oferta.model';
       .btn-skip-review:hover:not(:disabled) {
         color: #09090c;
       }
+
+      @media (max-width: 768px) {
+        .detall-container {
+          padding: 1rem 0.5rem;
+        }
+        h1 {
+          font-size: 1.45rem;
+        }
+        .card {
+          padding: 1.25rem 1rem;
+          border-radius: 14px;
+        }
+        .meta-row {
+          flex-direction: column;
+          gap: 0.45rem;
+        }
+        .evaluate-box {
+          flex-direction: column;
+          align-items: stretch;
+          text-align: center;
+          gap: 1rem;
+        }
+        .evaluate-box-content {
+          flex-direction: column;
+          text-align: center;
+        }
+        .btn-evaluate {
+          width: 100%;
+        }
+        .offer-footer {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 0.75rem;
+        }
+        .offer-actions {
+          width: 100%;
+          display: flex;
+        }
+        .offer-actions .btn {
+          flex: 1;
+          text-align: center;
+        }
+        .modal-dialog {
+          width: 100%;
+          max-height: 95vh;
+          border-radius: 14px;
+        }
+        .modal-header {
+          padding: 1.1rem 1.25rem;
+          border-radius: 14px 14px 0 0;
+        }
+        .modal-body {
+          padding: 1.25rem;
+          gap: 1.1rem;
+        }
+      }
     `
   ]
 })
@@ -941,7 +1187,7 @@ export class TascaDetallComponent implements OnInit {
               professional: undefined,
               professionalNom: undefined,
               budget: inc.budget,
-              estat: inc.estat,
+              estat: inc.estat || '',
               tipus: 'incidencia',
               createdAt: inc.createdAt
             };
@@ -1075,17 +1321,17 @@ export class TascaDetallComponent implements OnInit {
   }
 
   /**
-   * Obre el modal per avaluar i finalitzar la tasca.
+   * Obre el modal per avaluar la tasca (encara que ja estiga finalitzada).
    */
   onCompleteTask(): void {
     if (!this.tasca) return;
-    this.puntuacioSeleccionada = 5;
-    this.ressenyaDescripcio = '';
+    this.puntuacioSeleccionada = this.tasca.valoracio || 5;
+    this.ressenyaDescripcio = this.tasca.opinio || '';
     this.modalFinalitzarObert = true;
   }
 
   /**
-   * Confirma la finalització i envia la ressenya (desant-la directament a la taula tasques).
+   * Confirma l'avaluació i envia la ressenya (desant-la directament a la taula tasques).
    */
   confirmarFinalitzacioAmbRessenya(): void {
     if (!this.tasca) return;
@@ -1101,11 +1347,13 @@ export class TascaDetallComponent implements OnInit {
         this.tasca = updated;
         this.enviantRessenya = false;
         this.tancarModalFinalitzar();
-        this.noticeMessage = 'Felicitats! La tasca ha estat marcada com a Finalitzada i la valoració s\'ha publicat.';
+        this.noticeMessage = t.estat === 'Finalitzada'
+          ? 'La teva valoració s\'ha desat i publicat correctament!'
+          : 'Felicitats! La tasca ha estat marcada com a Finalitzada i la valoració s\'ha publicat.';
       },
       error: () => {
         this.enviantRessenya = false;
-        this.noticeMessage = 'Error en finalitzar la tasca.';
+        this.noticeMessage = 'Error en registrar la valoració.';
       }
     });
   }

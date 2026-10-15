@@ -285,6 +285,16 @@ import { AuthService, RegisterData } from '../../../core/services/auth.service';
         text-decoration: none;
         font-weight: 800;
       }
+
+      @media (max-width: 520px) {
+        .auth-card {
+          padding: 1.5rem 1.15rem;
+          border-radius: 14px;
+        }
+        .role-selector {
+          grid-template-columns: 1fr;
+        }
+      }
     `
   ]
 })

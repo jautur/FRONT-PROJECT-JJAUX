@@ -576,6 +576,34 @@ import { Tasca } from '../../../models/tasca.model';
     .user-inline-link:hover {
       color: #ff1744;
     }
+
+    @media (max-width: 768px) {
+      .panell-container {
+        padding: 1rem 0.5rem;
+      }
+      .panell-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.85rem;
+      }
+      .btn-crear {
+        text-align: center;
+        width: 100%;
+        box-sizing: border-box;
+        display: block;
+      }
+      .assigned-tasks-grid,
+      .ofertes-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+      .card-actions {
+        flex-direction: column;
+      }
+      .btn-action {
+        width: 100%;
+      }
+    }
   `]
 })
 export class LesMevesOfertesComponent implements OnInit {

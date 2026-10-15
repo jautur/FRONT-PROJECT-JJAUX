@@ -761,6 +761,34 @@ import { TascaService } from '../../services/tasca.service';
         .perfil-header {
           flex-direction: column;
           text-align: center;
+          align-items: center;
+          padding: 1.5rem 1.25rem;
+        }
+
+        .header-name-row {
+          flex-direction: column;
+          align-items: center;
+        }
+
+        .badges-row {
+          justify-content: center;
+        }
+      }
+
+      @media (max-width: 600px) {
+        .perfil-container {
+          padding: 1rem 0.5rem;
+        }
+
+        .card {
+          padding: 1.25rem 1rem;
+          border-radius: 14px;
+        }
+
+        .public-info-row {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 0.25rem;
         }
       }
     `

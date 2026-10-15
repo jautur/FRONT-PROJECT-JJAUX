@@ -100,6 +100,16 @@ export class TascaService {
   }
 
   /**
+   * Avalua o actualitza la valoració d'una tasca per part del client (encara que ja estiga finalitzada).
+   * @param id Identificador de la tasca
+   * @param avaluacio Dades de valoració (1-5 estrelles) i opinió del client
+   * @returns Observable amb la tasca actualitzada
+   */
+  avaluar(id: string, avaluacio: { valoracio: number; opinio?: string }): Observable<Tasca> {
+    return this.http.post<Tasca>(`${this.apiUrl}/${id}/avaluar`, avaluacio);
+  }
+
+  /**
    * Elimina una tasca de la base de dades.
    * @param id Identificador de la tasca
    * @returns Observable buit de confirmació

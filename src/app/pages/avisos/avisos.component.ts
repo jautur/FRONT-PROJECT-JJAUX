@@ -375,6 +375,37 @@ type FiltreAvisos = 'totes' | 'pendents' | 'llegides';
       margin-bottom: 1rem;
       font-weight: 700;
     }
+
+    @media (max-width: 600px) {
+      .avisos-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.85rem;
+      }
+      .btn-action-alt {
+        width: 100%;
+        text-align: center;
+      }
+      .filter-tabs {
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        padding-bottom: 0.5rem;
+        -webkit-overflow-scrolling: touch;
+      }
+      .tab-btn {
+        white-space: nowrap;
+        flex-shrink: 0;
+      }
+      .avis-card {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+      }
+      .avis-actions {
+        width: 100%;
+        justify-content: flex-end;
+      }
+    }
   `]
 })
 export class AvisosComponent implements OnInit {

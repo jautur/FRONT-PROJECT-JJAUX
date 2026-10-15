@@ -43,8 +43,8 @@ export interface Tasca {
   /** Pressupost estimat pel client o preu acordat de la tasca */
   budget?: string;
 
-  /** Estat ('Oberta' per a incidència, 'En curs' o 'Finalitzada' per a tasca) */
-  estat: string;
+  /** Estat ('En curs' o 'Finalitzada' per a tasques; les incidències no tenen estat) */
+  estat?: string;
 
   /** Distinció conceptual: 'incidencia' (sols client) o 'tasca' (client + professional) */
   tipus?: 'incidencia' | 'tasca' | 'oferta' | string;
