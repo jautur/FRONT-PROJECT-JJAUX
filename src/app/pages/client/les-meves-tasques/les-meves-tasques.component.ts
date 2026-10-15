@@ -228,7 +228,13 @@ type FiltreEstatTasca = 'totes' | 'oberta' | 'en_curs' | 'finalitzada';
               <span class="badge-categoria">{{ tascaPerFinalitzar.categoria }}</span>
               <h3>{{ tascaPerFinalitzar.titol }}</h3>
               <p class="summary-pro">
-                Professional assignat: <strong>{{ professionalPerFinalitzar || 'Professional AVISA' }}</strong>
+                Professional assignat: 
+                <strong>
+                  <a *ngIf="professionalPerFinalitzar; else noProModal" [routerLink]="['/perfil', professionalPerFinalitzar]" class="user-inline-link" title="Veure perfil de {{ professionalPerFinalitzar }}">
+                    {{ professionalPerFinalitzar }}
+                  </a>
+                  <ng-template #noProModal>Professional AVISA</ng-template>
+                </strong>
               </p>
             </div>
 
@@ -416,6 +422,18 @@ type FiltreEstatTasca = 'totes' | 'oberta' | 'en_curs' | 'finalitzada';
     }
     .pro-assigned-val strong {
       color: #059669;
+    }
+    .user-inline-link {
+      color: inherit;
+      text-decoration: underline;
+      text-decoration-color: rgba(5, 150, 105, 0.45);
+      text-underline-offset: 3px;
+      transition: color 0.15s ease, text-decoration-color 0.15s ease;
+      cursor: pointer;
+    }
+    .user-inline-link:hover {
+      color: #059669 !important;
+      text-decoration-color: #059669;
     }
     .waiting-badge {
       font-size: 0.8rem;
