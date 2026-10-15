@@ -73,18 +73,18 @@ interface CategoriaFiltre {
           <button
             type="button"
             class="filter-pill"
-            [class.active]="tipusFiltre === 'incidencies'"
-            (click)="tipusFiltre = 'incidencies'"
-          >
-            Incidències de clients ({{ incidenciesFiltrades.length }})
-          </button>
-          <button
-            type="button"
-            class="filter-pill"
             [class.active]="tipusFiltre === 'ofertes'"
             (click)="tipusFiltre = 'ofertes'"
           >
             Ofertes de professionals ({{ ofertesFiltrades.length }})
+          </button>
+          <button
+            type="button"
+            class="filter-pill"
+            [class.active]="tipusFiltre === 'incidencies'"
+            (click)="tipusFiltre = 'incidencies'"
+          >
+            Incidències de clients ({{ incidenciesFiltrades.length }})
           </button>
           <button
             type="button"
@@ -184,6 +184,61 @@ interface CategoriaFiltre {
               </button>
             </div>
 
+            <!-- SECCIÓ D'OFERTES I PACKS DE SERVEIS PROFESSIONALS (SOLS PROFESSIONAL) -->
+            <section class="results-block" *ngIf="(tipusFiltre === 'tots' || tipusFiltre === 'ofertes') && ofertesFiltrades.length > 0">
+              <div class="results-block-header">
+                <h2>Ofertes i packs de servei professional</h2>
+                <span class="count-tag">{{ ofertesFiltrades.length }} disponibles</span>
+              </div>
+
+              <div class="cards-grid">
+                <article class="market-card offer-card" *ngFor="let offer of ofertesFiltrades">
+                  <div class="card-top-bar">
+                    <div class="pills-group">
+                      <span class="nature-pill pro-nature">OFERTA DE SERVEI</span>
+                      <span class="cat-pill">{{ getOfertaCategoria(offer) }}</span>
+                    </div>
+                  </div>
+
+                  <h3 class="card-item-title">{{ getOfertaTitol(offer) }}</h3>
+                  <p class="card-item-desc">{{ getOfertaDescripcio(offer) }}</p>
+
+                  <div class="card-meta-line">
+                    <span class="meta-label">Professional que ofereix el servei:</span>
+                    <a [routerLink]="['/perfil', getProfessionalIdentifier(offer.professional)]" class="user-profile-link pro-profile-link" title="Veure el perfil, descripció i ressenyes de {{ offer.professional }}">
+                      <span class="user-avatar-mini pro-avatar-mini">{{ (offer.professional || 'P').charAt(0) }}</span>
+                      <strong class="meta-value pro-name-val">{{ offer.professional }}</strong>
+                    </a>
+                    <span class="pro-rating-inline" *ngIf="getProfessionalRating(offer.professional) as ratingInfo">
+                      <span class="stars-gold">★ {{ ratingInfo.mitjana }}</span>
+                      <span class="reviews-count">({{ ratingInfo.total }} valoracions)</span>
+                      <button type="button" class="btn-view-reviews" (click)="obrirModalRessenyes(offer.professional)">
+                        Veure ressenyes
+                      </button>
+                    </span>
+                  </div>
+
+                  <div class="card-bottom-bar">
+                    <div class="budget-wrap">
+                      <span class="budget-label">Tarifa del servei:</span>
+                      <strong class="budget-value offer-price">{{ offer.price }}</strong>
+                    </div>
+                    <div class="card-actions">
+                      <button *ngIf="isOfferOwner(offer)" type="button" class="btn-action-delete-offer" (click)="onDeleteOferta(offer.id)" title="Borrar oferta">
+                        Borrar
+                      </button>
+                      <button type="button" class="btn-action-primary btn-contractar" (click)="onContractarOferta(offer)">
+                        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px; vertical-align: -2px;">
+                          <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                        Contractar / M'interessa
+                      </button>
+                    </div>
+                  </div>
+                </article>
+              </div>
+            </section>
+
             <!-- SECCIÓ D'INCIDÈNCIES DE CLIENTS (SOLS CLIENT, SENSE PROFESSIONAL ASSIGNAT) -->
             <section class="results-block" *ngIf="(tipusFiltre === 'tots' || tipusFiltre === 'incidencies') && incidenciesFiltrades.length > 0">
               <div class="results-block-header">
@@ -222,57 +277,6 @@ interface CategoriaFiltre {
                       </button>
                       <button type="button" class="btn-action-primary" (click)="onFerOferta(task.id)">
                         Proposar pressupost
-                      </button>
-                    </div>
-                  </div>
-                </article>
-              </div>
-            </section>
-
-            <!-- SECCIÓ D'OFERTES I PACKS DE SERVEIS PROFESSIONALS (SOLS PROFESSIONAL) -->
-            <section class="results-block" *ngIf="(tipusFiltre === 'tots' || tipusFiltre === 'ofertes') && ofertesFiltrades.length > 0">
-              <div class="results-block-header">
-                <h2>Ofertes i packs de servei professional</h2>
-                <span class="count-tag">{{ ofertesFiltrades.length }} disponibles</span>
-              </div>
-
-              <div class="cards-grid">
-                <article class="market-card offer-card" *ngFor="let offer of ofertesFiltrades">
-                  <div class="card-top-bar">
-                    <div class="pills-group">
-                      <span class="nature-pill pro-nature">OFERTA DE SERVEI</span>
-                      <span class="cat-pill">{{ getOfertaCategoria(offer) }}</span>
-                    </div>
-                  </div>
-
-                  <h3 class="card-item-title">
-                    <a [routerLink]="['/perfil', getProfessionalIdentifier(offer.professional)]" class="pro-title-link" title="Veure el perfil, descripció i ressenyes de {{ offer.professional }}">
-                      {{ offer.professional }}
-                    </a>
-                  </h3>
-                  <div class="pro-rating-row" *ngIf="getProfessionalRating(offer.professional) as ratingInfo">
-                    <span class="stars-gold">★ {{ ratingInfo.mitjana }}</span>
-                    <span class="reviews-count">({{ ratingInfo.total }} valoracions)</span>
-                    <button type="button" class="btn-view-reviews" (click)="obrirModalRessenyes(offer.professional)">
-                      Veure ressenyes
-                    </button>
-                  </div>
-                  <p class="card-item-desc">{{ offer.note || 'Pack de servei professional ofertat al mercat.' }}</p>
-
-                  <div class="card-bottom-bar">
-                    <div class="budget-wrap">
-                      <span class="budget-label">Tarifa del servei:</span>
-                      <strong class="budget-value offer-price">{{ offer.price }}</strong>
-                    </div>
-                    <div class="card-actions">
-                      <button *ngIf="isOfferOwner(offer)" type="button" class="btn-action-delete-offer" (click)="onDeleteOferta(offer.id)" title="Borrar oferta">
-                        Borrar
-                      </button>
-                      <button type="button" class="btn-action-primary btn-contractar" (click)="onContractarOferta(offer)">
-                        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px; vertical-align: -2px;">
-                          <polyline points="20 6 9 17 4 12"></polyline>
-                        </svg>
-                        Contractar / M'interessa
                       </button>
                     </div>
                   </div>
@@ -902,12 +906,23 @@ interface CategoriaFiltre {
       .card-meta-line {
         font-size: 0.84rem;
         color: #7a776e;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.35rem 0.5rem;
       }
 
       .card-meta-line .meta-value {
         color: #09090c;
         font-weight: 800;
         margin-left: 0.3rem;
+      }
+
+      .pro-rating-inline {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        margin-left: 0.4rem;
       }
 
       .card-bottom-bar {
@@ -1627,6 +1642,62 @@ export class TasquesOfertesComponent implements OnInit {
     return this.getTascaCategoria(targetId);
   }
 
+  getOfertaTitol(offer: any): string {
+    if (offer.titol && typeof offer.titol === 'string' && offer.titol.trim()) {
+      return offer.titol.trim();
+    }
+    if (offer.title && typeof offer.title === 'string' && offer.title.trim()) {
+      return offer.title.trim();
+    }
+    const note = offer.note ? String(offer.note).trim() : '';
+    if (note) {
+      if (note.includes(' — ')) {
+        const parts = note.split(' — ');
+        if (parts[0].trim()) return parts[0].trim();
+      }
+      if (note.includes(' - ')) {
+        const parts = note.split(' - ');
+        if (parts[0].trim()) return parts[0].trim();
+      }
+      if (note.length <= 60) {
+        return note;
+      }
+    }
+    const targetId = offer.tascaId || (offer as any).incidenciaId;
+    if (targetId && targetId !== 'standalone') {
+      const titolTasca = this.getTascaTitol(targetId);
+      if (titolTasca && titolTasca !== 'Tasca desconeguda') {
+        return 'Pressupost per a: ' + titolTasca;
+      }
+    }
+    const cat = this.getOfertaCategoria(offer);
+    if (cat && cat !== 'Altres Serveis') {
+      return 'Servei de ' + cat;
+    }
+    return 'Oferta de servei professional';
+  }
+
+  getOfertaDescripcio(offer: any): string {
+    const note = offer.note ? String(offer.note).trim() : '';
+    if (note) {
+      if (note.includes(' — ')) {
+        const parts = note.split(' — ');
+        const desc = parts.slice(1).join(' — ').trim();
+        if (desc) return desc;
+      }
+      if (note.includes(' - ')) {
+        const parts = note.split(' - ');
+        const desc = parts.slice(1).join(' - ').trim();
+        if (desc) return desc;
+      }
+      const titol = this.getOfertaTitol(offer);
+      if (note !== titol) {
+        return note;
+      }
+    }
+    return 'Pack de servei professional ofertat al mercat.';
+  }
+
   comptarElementsPerCategoria(nomCat: string): number {
     const q = nomCat.toLowerCase();
     const countIncidencies = (this.dashboard?.incidencies ?? []).filter((i) => {
@@ -1734,7 +1805,9 @@ export class TasquesOfertesComponent implements OnInit {
         const targetId = o.tascaId || (o as any).incidenciaId;
         const titolTasca = this.getTascaTitol(targetId).toLowerCase();
         const cat = this.getOfertaCategoria(o).toLowerCase();
+        const titolOferta = this.getOfertaTitol(o).toLowerCase();
         return (
+          titolOferta.includes(q) ||
           o.professional.toLowerCase().includes(q) ||
           (o.note && o.note.toLowerCase().includes(q)) ||
           titolTasca.includes(q) ||

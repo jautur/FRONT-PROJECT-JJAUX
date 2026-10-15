@@ -105,15 +105,15 @@ import { Article } from '../../models/article.model';
                   {{ offer.status }}
                 </span>
               </div>
-              <h3>
-                <a [routerLink]="['/perfil', offer.professional]" class="user-inline-link pro-title-link" title="Veure perfil de {{ offer.professional }}">{{ offer.professional }}</a>
-              </h3>
-              <div class="pro-preview-rating" *ngIf="getRatingInfo(offer.professional) as r">
-                <span class="stars-gold">★ {{ r.mitjana }}</span>
-                <span class="reviews-count">({{ r.total }} opinions)</span>
-              </div>
-              <p class="meta" *ngIf="offer.task">Tasca / Servei: {{ offer.task }}</p>
-              <p>{{ offer.note }}</p>
+              <h3>{{ getOfertaTitol(offer) }}</h3>
+              <p class="meta">
+                Professional: <a [routerLink]="['/perfil', offer.professional]" class="user-inline-link pro-title-link" title="Veure perfil de {{ offer.professional }}">{{ offer.professional }}</a>
+                <span class="pro-preview-rating" *ngIf="getRatingInfo(offer.professional) as r" style="display: inline-flex; margin-left: 0.5rem;">
+                  <span class="stars-gold">★ {{ r.mitjana }}</span>
+                  <span class="reviews-count">({{ r.total }})</span>
+                </span>
+              </p>
+              <p>{{ getOfertaDescripcio(offer) }}</p>
               <div class="card-footer">
                 <span>Preu: {{ offer.price }}</span>
                 <button type="button" (click)="onContractarOferta(offer)">Contractar / M'interessa</button>
@@ -2070,6 +2070,57 @@ export class MainComponent implements OnInit {
 
   getOfferStatusClass(status: string): string {
     return status.toLowerCase();
+  }
+
+  getOfertaTitol(offer: any): string {
+    if (offer.titol && typeof offer.titol === 'string' && offer.titol.trim()) {
+      return offer.titol.trim();
+    }
+    if (offer.title && typeof offer.title === 'string' && offer.title.trim()) {
+      return offer.title.trim();
+    }
+    const note = offer.note ? String(offer.note).trim() : '';
+    if (note) {
+      if (note.includes(' — ')) {
+        const parts = note.split(' — ');
+        if (parts[0].trim()) return parts[0].trim();
+      }
+      if (note.includes(' - ')) {
+        const parts = note.split(' - ');
+        if (parts[0].trim()) return parts[0].trim();
+      }
+      if (note.length <= 60) {
+        return note;
+      }
+    }
+    if (offer.task && offer.task !== 'standalone') {
+      return 'Pressupost per a: ' + offer.task;
+    }
+    if (offer.category && offer.category !== 'Altres Serveis') {
+      return 'Servei de ' + offer.category;
+    }
+    return 'Oferta de servei professional';
+  }
+
+  getOfertaDescripcio(offer: any): string {
+    const note = offer.note ? String(offer.note).trim() : '';
+    if (note) {
+      if (note.includes(' — ')) {
+        const parts = note.split(' — ');
+        const desc = parts.slice(1).join(' — ').trim();
+        if (desc) return desc;
+      }
+      if (note.includes(' - ')) {
+        const parts = note.split(' - ');
+        const desc = parts.slice(1).join(' - ').trim();
+        if (desc) return desc;
+      }
+      const titol = this.getOfertaTitol(offer);
+      if (note !== titol) {
+        return note;
+      }
+    }
+    return 'Pack de servei professional ofertat al mercat.';
   }
 
   private requireLogin(actionDesc: string, returnUrl: string = '/'): boolean {
