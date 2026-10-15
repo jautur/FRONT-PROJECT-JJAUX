@@ -4,6 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 
+/**
+ * Component d'Inici de Sessió (/login).
+ * Permet a clients, professionals i administradors autenticar-se a la plataforma AVISA
+ * amb les seves credencials (correu electrònic i contrasenya).
+ * Gestiona missatges informatius, errors d'autenticació i redirecció posterior mitjançant returnUrl.
+ */
 @Component({
   selector: 'app-login',
   standalone: true,

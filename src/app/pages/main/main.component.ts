@@ -9,6 +9,15 @@ import { Resenya } from '../../models/resenya.model';
 import { ArticleService } from '../../services/article.service';
 import { Article } from '../../models/article.model';
 
+/**
+ * Component Principal de la Pàgina d'Inici d'AVISA (/).
+ * Ofereix:
+ * 1. Portada immersiva a pantalla completa amb imatge fixa de fons, títol 'AVISA' i eslògan.
+ * 2. Tauler de categories amb accés ràpid per gremis.
+ * 3. Mostra d'ofertes i tasques destacades amb estadístiques reals.
+ * 4. Secció editorial / Blog amb articles tècnics i consells pràctics del sector local.
+ * 5. Crida a l'acció tant per a clients particulars com per a professionals autònoms.
+ */
 @Component({
   selector: 'app-main',
   standalone: true,

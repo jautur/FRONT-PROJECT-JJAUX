@@ -11,9 +11,11 @@ import { Tasca } from '../../../models/tasca.model';
 import { AuthService } from '../../../core/services/auth.service';
 
 /**
- * Component per presentar una oferta econòmica (/professional/crear-oferta).
- * Permet als professionals enviar pressupostos i propostes de treball
- * per a les tasques que es troben en estat 'Oberta'.
+ * Component per publicar ofertes i presentar pressupostos (/professional/crear-oferta).
+ * Ofereix dues modalitats clau per a professionals i autònoms:
+ * 1. 'Publicar Oferta / Pack de Servei': Anunciar al mercat un paquet tancat amb tarifa directa (ex: revisió caldera, pintura).
+ *    Quan un client hi clica «Contractar», es converteix directament en una Tasca en curs assignada al professional.
+ * 2. 'Enviar Pressupost a Incidència': Licitar a una petició o incidència oberta d'un client concret amb preu i condicions.
  */
 @Component({
   selector: 'app-crear-oferta',
@@ -477,7 +479,7 @@ export class CrearOfertaComponent implements OnInit {
           if (requestedId) {
             this.mode = 'pressupost';
             this.formData.tascaId = requestedId;
-            // Si la incidència o tasca no està a la llista, la recuperem pel seu id
+            // Si la incidència o tasca no està a la llista, la recuperem pel seu id provant primer Tasca i després Incidència
             if (!this.availableTasks.some(t => t.id === requestedId)) {
               this.tascaService.getById(requestedId).subscribe({
                 next: (t) => {
@@ -486,7 +488,41 @@ export class CrearOfertaComponent implements OnInit {
                   }
                   this.formData.tascaId = requestedId;
                 },
-                error: () => {}
+                error: () => {
+                  // Fallback a consultar com a incidència directa
+                  this.incidenciaService.getById(requestedId).subscribe({
+                    next: (inc) => {
+                      if (inc && !this.availableTasks.some(x => x.id === inc.id)) {
+                        this.availableTasks.unshift({
+                          id: inc.id,
+                          titol: inc.titol,
+                          descripcio: inc.descripcio || '',
+                          categoria: inc.categoria || 'Altres Serveis',
+                          client: inc.clientNom || (inc as any).client || '',
+                          clientId: inc.clientId,
+                          budget: inc.budget,
+                          estat: inc.estat || 'Oberta',
+                          tipus: 'incidencia'
+                        });
+                      }
+                      this.formData.tascaId = requestedId;
+                    },
+                    error: () => {
+                      // Si no es troba per cap de les dues vies, afegim un element temporal perquè el desplegable no quede buit
+                      this.availableTasks.unshift({
+                        id: requestedId,
+                        titol: 'Incidència ' + requestedId,
+                        descripcio: '',
+                        categoria: 'Altres Serveis',
+                        client: '',
+                        budget: 'A convenir',
+                        estat: 'Oberta',
+                        tipus: 'incidencia'
+                      });
+                      this.formData.tascaId = requestedId;
+                    }
+                  });
+                }
               });
             }
           } else if (this.availableTasks.length > 0 && !this.formData.tascaId) {

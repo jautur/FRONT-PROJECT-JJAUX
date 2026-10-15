@@ -16,6 +16,16 @@ interface CategoriaFiltre {
   icona: string;
 }
 
+/**
+ * Component del Mercat de Tasques i Ofertes (/tasques-ofertes).
+ * Actua com a tauler principal d'anuncis d'AVISA:
+ * 1. Mostra en primer lloc les OFERTES dels professionals quan se selecciona «Tots els anuncis».
+ * 2. Mostra a continuació les INCIDÈNCIES obertes pels clients sol·licitant pressupostos.
+ * 3. Mostra les TASQUES acordades exclusivament als 2 usuaris implicats (client i professional) o administrador,
+ *    garantint la privadesa dels contractes.
+ * 4. Permet cercar per text i filtrar per especialitat / gremi (lampisteria, electricitat, pintura, etc.).
+ * 5. Permet obrir el modal de ressenyes d'un professional per consultar el seu historial de valoracions públiques.
+ */
 @Component({
   selector: 'app-tasques-ofertes',
   standalone: true,
