@@ -23,3 +23,4 @@ export interface CrearPressupostRequest {
   descripcio?: string;
   duracioEstimada?: string;
 }
+

@@ -6,16 +6,25 @@
 -- ==============================================================================
 
 -- 1. Buidar activitat
-DELETE FROM tasques;
-DELETE FROM incidencies;
-DELETE FROM ofertes;
-DELETE FROM avisos;
 DO $$ 
 BEGIN 
+    IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'interessos') THEN 
+        DELETE FROM interessos; 
+    END IF; 
+    IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'pressupostos') THEN 
+        DELETE FROM pressupostos; 
+    END IF; 
+    IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'publicacions') THEN 
+        DELETE FROM publicacions; 
+    END IF; 
     IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'resenyes') THEN 
         DELETE FROM resenyes; 
     END IF; 
 END $$;
+DELETE FROM tasques;
+DELETE FROM incidencies;
+DELETE FROM ofertes;
+DELETE FROM avisos;
 
 -- 2. Netejar usuaris
 DELETE FROM usuaris;

@@ -20,3 +20,4 @@ export interface CrearInteresRequest {
   clientNom: string;
   missatge?: string;
 }
+

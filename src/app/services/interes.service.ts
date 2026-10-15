@@ -60,3 +60,4 @@ export class InteresService {
     return this.http.post<void>(`${this.apiUrl}/${id}/rebutjar`, {});
   }
 }
+
