@@ -2,8 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { forkJoin, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { OfertaService, CreateOfertaDto } from '../../../services/oferta.service';
 import { TascaService } from '../../../services/tasca.service';
+import { IncidenciaService } from '../../../services/incidencia.service';
 import { Tasca } from '../../../models/tasca.model';
 import { AuthService } from '../../../core/services/auth.service';
 
@@ -430,13 +433,14 @@ export class CrearOfertaComponent implements OnInit {
   constructor(
     private readonly ofertaService: OfertaService,
     private readonly tascaService: TascaService,
+    private readonly incidenciaService: IncidenciaService,
     private readonly authService: AuthService,
     private readonly route: ActivatedRoute,
     private readonly router: Router
   ) {}
 
   /**
-   * Càrrega de tasques obertes i comprovació de paràmetres d'URL.
+   * Càrrega d'incidències i tasques obertes i comprovació de paràmetres d'URL.
    */
   ngOnInit(): void {
     const user = this.authService.getCurrentUser();
@@ -444,17 +448,49 @@ export class CrearOfertaComponent implements OnInit {
       this.formData.professional = user.nom;
     }
 
-    // Carreguem les tasques obertes
-    this.tascaService.getAvailable().subscribe({
-      next: (tasks) => {
-        this.availableTasks = tasks;
-        // Si s'ha passat una tasca concreta per paràmetre de consulta, activem mode pressupost
+    // Carreguem tant incidències obertes com tasques obertes
+    const incidencies$ = this.incidenciaService.getAll().pipe(catchError(() => of([])));
+    const tasques$ = this.tascaService.getAvailable().pipe(catchError(() => of([])));
+
+    forkJoin([incidencies$, tasques$]).subscribe({
+      next: ([incidencies, tasks]) => {
+        const mappedIncidencies: Tasca[] = (incidencies || [])
+          .filter(inc => !inc.estat || inc.estat === 'Oberta')
+          .map(inc => ({
+            id: inc.id,
+            titol: inc.titol,
+            descripcio: inc.descripcio || '',
+            categoria: inc.categoria || 'Altres Serveis',
+            client: inc.clientNom || (inc as any).client || '',
+            clientId: inc.clientId,
+            budget: inc.budget,
+            estat: inc.estat || 'Oberta',
+            tipus: 'incidencia'
+          }));
+
+        const existingIds = new Set(mappedIncidencies.map(i => i.id));
+        const extraTasks = (tasks || []).filter(t => !existingIds.has(t.id));
+        this.availableTasks = [...mappedIncidencies, ...extraTasks];
+
         this.route.queryParams.subscribe((params) => {
-          if (params['taskId']) {
+          const requestedId = params['taskId'] || params['tascaId'];
+          if (requestedId) {
             this.mode = 'pressupost';
-            this.formData.tascaId = params['taskId'];
-          } else if (tasks.length > 0) {
-            this.formData.tascaId = tasks[0].id;
+            this.formData.tascaId = requestedId;
+            // Si la incidència o tasca no està a la llista, la recuperem pel seu id
+            if (!this.availableTasks.some(t => t.id === requestedId)) {
+              this.tascaService.getById(requestedId).subscribe({
+                next: (t) => {
+                  if (t && !this.availableTasks.some(x => x.id === t.id)) {
+                    this.availableTasks.unshift(t);
+                  }
+                  this.formData.tascaId = requestedId;
+                },
+                error: () => {}
+              });
+            }
+          } else if (this.availableTasks.length > 0 && !this.formData.tascaId) {
+            this.formData.tascaId = this.availableTasks[0].id;
           }
         });
       },
@@ -521,7 +557,19 @@ export class CrearOfertaComponent implements OnInit {
     this.errorMessage = '';
     this.successMessage = '';
 
-    this.ofertaService.create(this.formData).subscribe({
+    const selectedTask = this.availableTasks.find(t => t.id === this.formData.tascaId);
+    const user = this.authService.getCurrentUser();
+    const payload: CreateOfertaDto = {
+      tascaId: this.formData.tascaId,
+      incidenciaId: this.formData.tascaId,
+      professional: user ? user.nom : (this.formData.professional || 'Professional AVISA'),
+      categoria: selectedTask?.categoria || 'Altres Serveis',
+      price: this.formData.price.startsWith('€') ? this.formData.price : ('€' + this.formData.price.replace('€', '').trim()),
+      note: this.formData.note,
+      estat: 'Pendent'
+    };
+
+    this.ofertaService.create(payload).subscribe({
       next: () => {
         this.submitting = false;
         this.successMessage = 'Pressupost enviat al client correctament! Quan el client l\'accepti, passarà a ser una Tasca en curs.';

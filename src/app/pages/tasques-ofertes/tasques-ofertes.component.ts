@@ -168,8 +168,11 @@ interface CategoriaFiltre {
 
           <!-- Resultats de tasques i ofertes -->
           <div *ngIf="!loading && !error">
-            <!-- Estat buit quan la cerca no troba res -->
-            <div *ngIf="incidenciesFiltrades.length === 0 && ofertesFiltrades.length === 0 && tasquesFiltrades.length === 0" class="empty-state">
+            <!-- Estat buit quan no hi ha resultats segons el filtre actiu -->
+            <div *ngIf="(tipusFiltre === 'tots' && incidenciesFiltrades.length === 0 && ofertesFiltrades.length === 0 && tasquesFiltrades.length === 0) ||
+                        (tipusFiltre === 'ofertes' && ofertesFiltrades.length === 0) ||
+                        (tipusFiltre === 'incidencies' && incidenciesFiltrades.length === 0) ||
+                        (tipusFiltre === 'tasques' && tasquesFiltrades.length === 0)" class="empty-state">
               <div class="empty-icon" aria-hidden="true">
                 <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                   <circle cx="11" cy="11" r="8"></circle>
@@ -177,11 +180,39 @@ interface CategoriaFiltre {
                   <line x1="8" y1="11" x2="14" y2="11"></line>
                 </svg>
               </div>
-              <h3>Cap incidència, oferta o tasca coincideix amb els teus filtres</h3>
-              <p>Prova amb una altra paraula clau o selecciona una altra categoria per trobar resultats.</p>
-              <button type="button" class="btn-reset-filters" (click)="resetFiltres()">
-                Restablir filtres de cerca
-              </button>
+              <ng-container [ngSwitch]="tipusFiltre">
+                <div *ngSwitchCase="'tasques'">
+                  <h3>No tens cap tasca acordada visible</h3>
+                  <p>
+                    Les tasques acordades són privades i només són visibles per als 2 usuaris implicats (el client i el professional) i al panell de control.
+                    {{ !isLoggedIn ? 'Inicia sessió per consultar les teves tasques acordades.' : 'Quan contractis un servei o s’accepti una oferta, la teva tasca en curs apareixerà aquí.' }}
+                  </p>
+                  <a *ngIf="!isLoggedIn" routerLink="/login" class="btn-reset-filters" style="display: inline-block; text-decoration: none; margin-top: 0.5rem;">
+                    Iniciar Sessió
+                  </a>
+                </div>
+                <div *ngSwitchCase="'ofertes'">
+                  <h3>Cap oferta coincideix amb els teus filtres</h3>
+                  <p>Prova amb una altra paraula clau o selecciona una altra categoria per trobar serveis.</p>
+                  <button type="button" class="btn-reset-filters" (click)="resetFiltres()">
+                    Restablir filtres de cerca
+                  </button>
+                </div>
+                <div *ngSwitchCase="'incidencies'">
+                  <h3>Cap incidència de client coincideix amb els teus filtres</h3>
+                  <p>Prova amb una altra paraula clau o selecciona una altra categoria per trobar peticions.</p>
+                  <button type="button" class="btn-reset-filters" (click)="resetFiltres()">
+                    Restablir filtres de cerca
+                  </button>
+                </div>
+                <div *ngSwitchDefault>
+                  <h3>Cap anunci coincideix amb els teus filtres</h3>
+                  <p>Prova amb una altra paraula clau o selecciona una altra categoria per trobar resultats.</p>
+                  <button type="button" class="btn-reset-filters" (click)="resetFiltres()">
+                    Restablir filtres de cerca
+                  </button>
+                </div>
+              </ng-container>
             </div>
 
             <!-- SECCIÓ D'OFERTES I PACKS DE SERVEIS PROFESSIONALS (SOLS PROFESSIONAL) -->
@@ -1612,6 +1643,10 @@ export class TasquesOfertesComponent implements OnInit {
     this.router.navigate(['/perfil', userId]);
   }
 
+  get isLoggedIn(): boolean {
+    return this.authService.isLoggedIn();
+  }
+
   get totalElements(): number {
     return this.incidenciesFiltrades.length + this.ofertesFiltrades.length + this.tasquesFiltrades.length;
   }
@@ -1705,13 +1740,7 @@ export class TasquesOfertesComponent implements OnInit {
       return cat.includes(q) || q.includes(cat);
     }).length;
 
-    const countTasks = (this.dashboard?.tasks ?? []).filter((t) => {
-      // Evitem duplicar si és una incidència ja comptada a incidencies
-      if (t.tipus === 'incidencia' || !t.professional) {
-        if ((this.dashboard?.incidencies ?? []).some((inc) => inc.id === t.id)) {
-          return false;
-        }
-      }
+    const countTasks = this.tasquesFiltrades.filter((t) => {
       const cat = (t.categoria?.trim() || 'Altres Serveis').toLowerCase();
       return cat.includes(q) || q.includes(cat);
     }).length;
@@ -1830,11 +1859,33 @@ export class TasquesOfertesComponent implements OnInit {
   /**
    * Tasques acordades:
    * On ja convergeixen Client I Professional obligatoris!
+   * PRIVADESA: Les tasques acordades només són visibles per als 2 usuaris implicats (client i professional) i per a l'admin al panell de control.
    */
   get tasquesFiltrades() {
+    const user = this.authService.getCurrentUser();
+    // Si no hi ha sessió iniciada, les tasques privades no són visibles
+    if (!user) {
+      return [];
+    }
+
     let llista = (this.dashboard?.tasks ?? []).filter(
       (t) => (t.tipus === 'tasca' || (!!t.professional && !!t.client)) && t.tipus !== 'oferta'
     );
+
+    // Si no és administrador, filtrar exclusivament per als 2 usuaris implicats
+    if (!this.authService.isAdmin()) {
+      const uNom = (user.nom || '').toLowerCase();
+      const uId = (user.id || '').toLowerCase();
+      llista = llista.filter((t) => {
+        const isClient = (t.client && t.client.toLowerCase() === uNom) ||
+                         ((t as any).clientId && String((t as any).clientId).toLowerCase() === uId) ||
+                         ((t as any).clientNom && String((t as any).clientNom).toLowerCase() === uNom);
+        const isPro = (t.professional && t.professional.toLowerCase() === uNom) ||
+                      ((t as any).professionalId && String((t as any).professionalId).toLowerCase() === uId) ||
+                      ((t as any).professionalNom && String((t as any).professionalNom).toLowerCase() === uNom);
+        return isClient || isPro;
+      });
+    }
 
     if (this.searchQuery.trim()) {
       const q = this.searchQuery.toLowerCase().trim();

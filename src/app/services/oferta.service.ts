@@ -11,6 +11,8 @@ import { environment } from '../../environments/environment';
 export interface CreateOfertaDto {
   /** Identificador de la tasca a la qual s'aplica (o buit per a pack de servei autònom) */
   tascaId?: string;
+  /** Identificador de la incidència (si s'aplica a una incidència de client) */
+  incidenciaId?: string;
   /** Nom del professional emissor */
   professional: string;
   /** Categoria o gremi professional del servei ofertat */

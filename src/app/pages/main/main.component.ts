@@ -55,7 +55,7 @@ import { Article } from '../../models/article.model';
           <section class="panel">
             <div class="panel-header">
               <h2>Últimes incidències de clients</h2>
-              <a routerLink="/tasques-ofertes" [queryParams]="{ tipus: 'tasques' }">
+              <a routerLink="/tasques-ofertes" [queryParams]="{ tipus: 'incidencies' }">
                 Veure totes ({{ tasks.length }})
               </a>
             </div>
@@ -79,7 +79,7 @@ import { Article } from '../../models/article.model';
             </article>
 
             <div class="preview-toggle-wrap">
-              <button type="button" class="btn-preview-toggle" (click)="onNavegarTasquesOfertes('tasques')">
+              <button type="button" class="btn-preview-toggle" (click)="onNavegarTasquesOfertes('incidencies')">
                 Explorar totes les incidències disponibles ({{ tasks.length }})
                 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 6px; vertical-align: middle;">
                   <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -2022,8 +2022,19 @@ export class MainComponent implements OnInit {
   }
 
   get tasks() {
-    return (this.dashboard?.tasks ?? [])
-      .filter((task) => (task.tipus === 'incidencia' || !task.professional) && task.estat === 'Oberta' && task.tipus !== 'oferta')
+    const rawIncidencies = (this.dashboard?.incidencies ?? [])
+      .filter((inc) => !inc.estat || inc.estat === 'Oberta')
+      .map((inc) => ({
+        id: inc.id,
+        title: inc.titol,
+        client: inc.clientNom || (inc as any).client || '',
+        category: inc.categoria?.trim() ? inc.categoria.trim() : 'Altres Serveis',
+        budget: inc.budget,
+        status: inc.estat || 'Oberta'
+      }));
+
+    const rawTasks = (this.dashboard?.tasks ?? [])
+      .filter((task) => (task.tipus === 'incidencia' || !task.professional) && task.estat === 'Oberta' && task.tipus !== 'oferta' && !rawIncidencies.some(i => i.id === task.id))
       .map((task) => ({
         id: task.id,
         title: task.titol,
@@ -2032,6 +2043,8 @@ export class MainComponent implements OnInit {
         budget: task.budget,
         status: task.estat
       }));
+
+    return [...rawIncidencies, ...rawTasks];
   }
 
   get offers() {
@@ -2148,7 +2161,7 @@ export class MainComponent implements OnInit {
     }
   }
 
-  onNavegarTasquesOfertes(tipus: 'tots' | 'tasques' | 'ofertes' = 'tots'): void {
+  onNavegarTasquesOfertes(tipus: 'tots' | 'tasques' | 'ofertes' | 'incidencies' = 'tots'): void {
     if (tipus !== 'tots') {
       this.router.navigate(['/tasques-ofertes'], { queryParams: { tipus } });
     } else {
