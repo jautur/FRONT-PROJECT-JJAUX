@@ -30,4 +30,7 @@ export interface Usuari {
 
   /** Biografia, presentació o descripció d'habilitats del perfil */
   bio?: string;
+
+  /** Percentil de comissió reservat per a la plataforma (0-100, per defecte 3) */
+  percentil?: number;
 }

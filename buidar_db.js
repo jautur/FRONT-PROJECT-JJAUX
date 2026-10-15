@@ -129,6 +129,7 @@ async function main() {
         rol VARCHAR(50) NOT NULL,
         telefon VARCHAR(50),
         bio TEXT,
+        percentil INT DEFAULT 3 CHECK (percentil >= 0 AND percentil <= 100),
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
 
@@ -318,7 +319,7 @@ async function main() {
     console.table(stats);
 
     console.log('🔑 === USUARIS DISPONIBLES PER A PROVES ===');
-    const usersRes = await client.query('SELECT id, nom, email, password, rol, telefon FROM usuaris ORDER BY id');
+    const usersRes = await client.query('SELECT id, nom, email, password, rol, telefon, percentil FROM usuaris ORDER BY id');
     console.table(usersRes.rows);
 
     console.log('✨ Tot a punt per testejar des de zero tant a casa com a classe!');

@@ -84,6 +84,35 @@ import { TascaService } from '../../services/tasca.service';
               <textarea [(ngModel)]="formData.bio" name="bio" rows="4" placeholder="Explica breument la teva experiència o serveis..."></textarea>
             </label>
 
+            <!-- Percentil de comissió reservat per a la plataforma (0-100%, defecte 3%) -->
+            <label class="percentil-form-group">
+              Percentil de comissió plataforma (%)
+              <div class="percentil-input-row" style="display: flex; align-items: center; gap: 0.75rem; margin-top: 0.35rem;">
+                <input
+                  type="number"
+                  [(ngModel)]="formData.percentil"
+                  name="percentil"
+                  [min]="isAdmin ? 0 : (usuari?.percentil ?? 3)"
+                  max="100"
+                  step="1"
+                  required
+                  style="max-width: 130px; font-weight: 700;"
+                />
+                <span class="percentil-badge-pill" style="background: #eff6ff; color: #1d4ed8; font-weight: 800; padding: 0.35rem 0.75rem; border-radius: 6px; font-size: 0.85rem; border: 1px solid #bfdbfe;">
+                  {{ formData.percentil ?? (usuari?.percentil ?? 3) }}% reservat plataforma
+                </span>
+              </div>
+              <small class="hint" *ngIf="isAdmin" style="color: #059669; font-weight: 600; margin-top: 0.3rem; display: block;">
+                ★ Com a Administrador, disposes de permisos per assignar o reduir qualsevol percentil (0% - 100%).
+              </small>
+              <small class="hint" *ngIf="!isAdmin" style="margin-top: 0.3rem; display: block;">
+                Com a usuari pots editar el percentil per a augmentar-lo (mínim actual: {{ usuari?.percentil ?? 3 }}%). Per reduir-lo cal intervenció d'un administrador.
+              </small>
+              <div class="commission-simulation-box" style="margin-top: 0.5rem; padding: 0.6rem 0.85rem; background: #fdfbf7; border: 1px dashed #dcd6cb; border-radius: 6px; font-size: 0.82rem; color: #4b4841;">
+                <strong>Normalització i càlcul estimat:</strong> Per a un servei de 100€, es reservaran <strong>{{ getCommissionSimulation() }}€</strong> com a comissió per a la plataforma.
+              </div>
+            </label>
+
             <button type="submit" class="btn btn-primary" [disabled]="saving">
               {{ saving ? 'Desant...' : 'Desar canvis' }}
             </button>
@@ -144,6 +173,11 @@ import { TascaService } from '../../services/tasca.service';
             <div class="public-info-row" *ngIf="usuari?.email">
               <span class="info-label">Correu electrònic:</span>
               <span class="info-value">{{ usuari?.email }}</span>
+            </div>
+
+            <div class="public-info-row" *ngIf="usuari?.percentil != null">
+              <span class="info-label">Comissió plataforma (Percentil):</span>
+              <strong class="info-value" style="color: #ff1744;">{{ usuari?.percentil }}%</strong>
             </div>
 
             <div class="public-bio-box" *ngIf="usuari?.bio">
@@ -806,10 +840,11 @@ export class PerfilComponent implements OnInit {
   usuari: Usuari | null = null;
 
   /** Camps del formulari d'edició del perfil */
-  formData: { nom: string; telefon: string; bio: string } = {
+  formData: { nom: string; telefon: string; bio: string; percentil: number } = {
     nom: '',
     telefon: '',
-    bio: ''
+    bio: '',
+    percentil: 3
   };
 
   /** Camps del formulari de canvi de contrasenya */
@@ -847,6 +882,24 @@ export class PerfilComponent implements OnInit {
   ) {}
 
   /**
+   * Comprova si l'usuari connectat és administrador.
+   */
+  get isAdmin(): boolean {
+    const cur = this.authService.getCurrentUser();
+    return cur?.rol === 'admin';
+  }
+
+  /**
+   * Calcula el valor de comissió normalitzat per a la simulació en pantalla.
+   */
+  getCommissionSimulation(): number {
+    const p = Number(this.formData.percentil);
+    if (isNaN(p) || p < 0) return 0;
+    if (p > 100) return 100;
+    return Math.round(p * 10) / 10;
+  }
+
+  /**
    * Cicle de vida OnInit:
    * Comprova l'autenticació i carrega les dades actuals des de PostgreSQL.
    */
@@ -868,6 +921,7 @@ export class PerfilComponent implements OnInit {
         this.formData.nom = currentUser.nom || '';
         this.formData.telefon = currentUser.telefon || '';
         this.formData.bio = currentUser.bio || '';
+        this.formData.percentil = currentUser.percentil ?? 3;
         this.carregarPerfilUsuari(currentUser.id);
       }
     });
@@ -882,6 +936,7 @@ export class PerfilComponent implements OnInit {
             this.formData.nom = freshUser.nom || '';
             this.formData.telefon = freshUser.telefon || '';
             this.formData.bio = freshUser.bio || '';
+            this.formData.percentil = freshUser.percentil ?? 3;
             this.authService.setCurrentUser(freshUser);
           }
           this.carregarTasquesPerfil(freshUser);
@@ -946,25 +1001,40 @@ export class PerfilComponent implements OnInit {
       return;
     }
 
+    const p = Number(this.formData.percentil);
+    if (isNaN(p) || p < 0 || p > 100) {
+      this.errorMessage = 'El percentil de comissió ha de ser un número sencer comprès entre 0 i 100.';
+      return;
+    }
+
+    const currentPercentil = this.usuari.percentil ?? 3;
+    if (!this.isAdmin && p < currentPercentil) {
+      this.errorMessage = `Com a usuari només pots augmentar el teu percentil (mínim actual: ${currentPercentil}%). Per reduir-lo, cal intervenció d'un administrador.`;
+      return;
+    }
+
     this.saving = true;
     this.clearAlerts();
 
     const updatedData: Partial<Usuari> = {
       nom: this.formData.nom,
       telefon: this.formData.telefon,
-      bio: this.formData.bio
+      bio: this.formData.bio,
+      percentil: Math.round(p)
     };
 
     this.usuariService.updateProfile(this.usuari.id, updatedData).subscribe({
       next: (savedUser) => {
         this.saving = false;
         this.usuari = savedUser;
+        this.formData.percentil = savedUser.percentil ?? 3;
         this.authService.setCurrentUser(savedUser);
         this.successMessage = 'Les dades del teu perfil s’han desat correctament a la base de dades.';
       },
-      error: () => {
+      error: (err) => {
         this.saving = false;
-        this.errorMessage = 'S’ha produït un error en desar el perfil. Torna-ho a provar.';
+        const msg = err?.error?.message || err?.error?.error;
+        this.errorMessage = msg || 'S’ha produït un error en desar el perfil. Torna-ho a provar.';
       }
     });
   }
