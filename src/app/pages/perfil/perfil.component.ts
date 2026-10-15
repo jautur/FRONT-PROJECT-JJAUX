@@ -223,8 +223,15 @@ import { TascaService } from '../../services/tasca.service';
   `,
   styles: [
     `
+      :host {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+      }
+
       .perfil-container {
         width: min(1000px, 100%);
+        margin: 0 auto;
         display: flex;
         flex-direction: column;
         gap: 1.75rem;

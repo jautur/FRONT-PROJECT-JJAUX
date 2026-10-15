@@ -183,35 +183,82 @@
 }
 
 /* ============================================================== */
-/* VISTA PRÈVIA DESPLEGABLE DEL PERFIL D'USUARI                   */
+/* VISTA PRÈVIA / MODAL DE PERFIL D'USUARI EN MIG                */
 /* ============================================================== */
 .profile-dropdown-container {
   position: relative;
 }
 
-.profile-dropdown-card {
-  position: absolute;
-  top: calc(100% + 12px);
-  right: 0;
-  width: 280px;
-  background: #0c0c11;
-  border: 1px solid #232332;
-  border-radius: 14px;
-  padding: 1.1rem;
-  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.85), 0 0 1px rgba(255, 23, 68, 0.4);
-  z-index: 200;
-  box-sizing: border-box;
-  animation: dropdownFadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+.profile-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(9, 9, 12, 0.72);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1.25rem;
+  animation: modalOverlayFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-@keyframes dropdownFadeIn {
+.profile-dropdown-card {
+  position: relative;
+  width: min(390px, 94vw);
+  background: #0d0d12;
+  border: 1px solid #232332;
+  border-radius: 20px;
+  padding: 1.6rem 1.4rem;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.9), 0 0 25px rgba(255, 23, 68, 0.25);
+  z-index: 1001;
+  box-sizing: border-box;
+  animation: modalScaleIn 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-close-profile-modal {
+  position: absolute;
+  top: 1rem;
+  right: 1.1rem;
+  background: #181822;
+  border: 1px solid #2c2c3e;
+  color: #a09d94;
+  font-size: 1.1rem;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  line-height: 1;
+  transition: all 0.2s ease;
+}
+
+.btn-close-profile-modal:hover {
+  color: #ffffff;
+  background: #ff1744;
+  border-color: #ff1744;
+  transform: scale(1.08);
+}
+
+@keyframes modalOverlayFadeIn {
   from {
     opacity: 0;
-    transform: translateY(-8px) scale(0.97);
   }
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes modalScaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.92) translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
   }
 }
 
@@ -996,10 +1043,8 @@
   }
 
   .profile-dropdown-card {
-    right: -6px;
-    width: min(290px, calc(100vw - 20px));
-    top: calc(100% + 8px);
-    padding: 0.95rem;
+    width: min(350px, 94vw);
+    padding: 1.35rem 1.15rem;
   }
 }
 

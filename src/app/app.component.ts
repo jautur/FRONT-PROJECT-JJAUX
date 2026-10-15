@@ -209,6 +209,16 @@ export class AppComponent implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * Tanca el modal de perfil si es prem la tecla Escape.
+   */
+  @HostListener('document:keydown.escape', [])
+  onEscapePress(): void {
+    if (this.perfilDropdownObert) {
+      this.perfilDropdownObert = false;
+    }
+  }
+
   isClient(): boolean {
     return this.authService.isClient();
   }
