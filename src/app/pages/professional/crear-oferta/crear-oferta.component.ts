@@ -654,6 +654,16 @@ export class CrearOfertaComponent implements OnInit {
    * Càrrega d'incidències i tasques obertes i comprovació de paràmetres d'URL.
    */
   ngOnInit(): void {
+    const origen = this.route.snapshot.queryParams['origen'] || (typeof history !== 'undefined' ? history.state?.origen : null);
+    if (origen !== 'tasques-ofertes') {
+      this.router.navigate(['/tasques-ofertes'], {
+        queryParams: {
+          avís: 'Per a publicar una oferta o pressupost cal accedir des de la secció de Tasques i Ofertes.'
+        }
+      });
+      return;
+    }
+
     const user = this.authService.getCurrentUser();
     if (user) {
       this.formData.professional = user.nom;

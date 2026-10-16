@@ -1,10 +1,9 @@
 <div class="shell" [class.has-solid-header]="isScrolled" [class.sidebar-open]="menuObert && isScrolled" [class.not-home-page]="!isHomePage">
   <!-- Capçalera superior fixa amb el títol centrat -->
   <header class="topbar" [class.solid-header]="isScrolled">
-    <!-- Botó per obrir/tancar el menú a l'esquerra (només visible quan s'ha lliscat) -->
+    <!-- Botó per obrir/tancar el menú a l'esquerra -->
     <div class="topbar-left">
       <button
-        *ngIf="isScrolled"
         type="button"
         class="btn-menu-toggle"
         (click)="toggleMenu()"
@@ -22,9 +21,40 @@
       </button>
     </div>
 
-    <!-- TÍTOL CENTRAT EN MIG A LA PART SUPERIOR -->
-    <div class="brand-centered" *ngIf="isScrolled || !isHomePage">
-      <a routerLink="/" class="brand-title">AVISA</a>
+    <!-- TÍTOL I ENLLAÇOS AL COSTAT A LA BARRA DE DALT -->
+    <div class="topbar-center-group">
+      <div class="brand-centered">
+        <a routerLink="/" class="brand-title">AVISA</a>
+      </div>
+
+      <!-- Enllaços que es mostren al costat en fer hover sobre la barra de dalt -->
+      <nav class="topbar-links-inline" aria-label="Enllaços ràpids">
+        <a routerLink="/blog" routerLinkActive="active-top-link" class="top-nav-link" title="Blog i Guies">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+          </svg>
+          <span>Blog</span>
+        </a>
+
+        <a routerLink="/tasques-ofertes" routerLinkActive="active-top-link" class="top-nav-link" title="Tasques i Ofertes">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+          </svg>
+          <span>Tasques i Ofertes</span>
+        </a>
+
+        <a routerLink="/comunitat-professionals" routerLinkActive="active-top-link" class="top-nav-link" title="Comunitat de Professionals">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+          </svg>
+          <span>Professionals</span>
+        </a>
+      </nav>
     </div>
 
     <!-- Espai dret d'equilibri visual amb botó i vista prèvia desplegable de perfil -->
@@ -135,8 +165,8 @@
     </div>
   </header>
 
-  <!-- MENÚ LATERAL A L'ESQUERRA QUE S'OBRI EN FER SCROLL -->
-  <aside class="sidebar-left" [class.open]="menuObert && isScrolled">
+  <!-- MENÚ LATERAL A L'ESQUERRA -->
+  <aside class="sidebar-left" [class.open]="menuObert">
     <div class="sidebar-header">
       <div class="sidebar-brand">
         <span class="brand-badge">AV</span>
@@ -212,6 +242,16 @@
         <span>Comunitat Professionals</span>
       </a>
 
+      <a routerLink="/blog" routerLinkActive="active-nav-item" (click)="tancarMenu()">
+        <span class="nav-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+          </svg>
+        </span>
+        <span>Blog i Guies</span>
+      </a>
+
       <!-- Secció per a clients i professionals -->
       <ng-container *ngIf="authService.isLoggedIn() && isClient()">
         <div class="nav-group-title">GESTIÓ DE FEINA</div>
@@ -226,7 +266,7 @@
           </span>
           <span>Les meves tasques</span>
         </a>
-        <a routerLink="/client/crear-tasca" routerLinkActive="active-nav-item" class="nav-cta-item" (click)="tancarMenu()">
+        <a routerLink="/tasques-ofertes" [queryParams]="{ tipus: 'incidencies', accio: 'crear-incidencia' }" class="nav-cta-item" (click)="tancarMenu()">
           <span class="nav-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="12" cy="12" r="10"></circle>
@@ -234,7 +274,7 @@
               <line x1="8" y1="12" x2="16" y2="12"></line>
             </svg>
           </span>
-          <span>Crear Incidència</span>
+          <span>Crear Incidència (al Mercat)</span>
         </a>
       </ng-container>
 
@@ -250,7 +290,7 @@
           </span>
           <span>Els meus pressupostos</span>
         </a>
-        <a routerLink="/professional/crear-oferta" routerLinkActive="active-nav-item" class="nav-cta-item" (click)="tancarMenu()">
+        <a routerLink="/tasques-ofertes" [queryParams]="{ tipus: 'ofertes', accio: 'crear-oferta' }" class="nav-cta-item" (click)="tancarMenu()">
           <span class="nav-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -259,7 +299,7 @@
               <line x1="16" y1="17" x2="8" y2="17"></line>
             </svg>
           </span>
-          <span>Publicar Oferta / Servei</span>
+          <span>Publicar Oferta / Servei (al Mercat)</span>
         </a>
       </ng-container>
 
@@ -316,7 +356,7 @@
   </aside>
 
   <!-- Fons fosc semitransparent quan el menú està obert en pantalles mitjanes/petites -->
-  <div class="sidebar-backdrop" *ngIf="menuObert && isScrolled" (click)="tancarMenu()"></div>
+  <div class="sidebar-backdrop" *ngIf="menuObert" (click)="tancarMenu()"></div>
 
   <!-- Contingut de la pàgina -->
   <main class="content">

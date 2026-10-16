@@ -1553,6 +1553,14 @@ export class TasquesOfertesComponent implements OnInit {
       if (params['cerca']) {
         this.searchQuery = params['cerca'];
       }
+      if (params['avis'] || params['avís']) {
+        this.noticeMessage = params['avis'] || params['avís'];
+      }
+      if (params['accio'] === 'crear-incidencia') {
+        setTimeout(() => this.onNovaIncidencia(), 100);
+      } else if (params['accio'] === 'crear-oferta') {
+        setTimeout(() => this.onNovaOferta(), 100);
+      }
     });
     this.carregarDades();
   }
@@ -1959,7 +1967,7 @@ export class TasquesOfertesComponent implements OnInit {
   onNovaIncidencia(): void {
     if (!this.requireLogin('publicar una incidència', '/client/crear-tasca')) return;
     if (this.authService.isClient()) {
-      this.router.navigate(['/client/crear-tasca']);
+      this.router.navigate(['/client/crear-tasca'], { queryParams: { origen: 'tasques-ofertes' } });
     } else {
       this.noticeMessage = 'Només els comptes amb rol de "Client" o "Ambdós" poden publicar incidències.';
     }
@@ -1968,7 +1976,7 @@ export class TasquesOfertesComponent implements OnInit {
   onNovaOferta(): void {
     if (!this.requireLogin('publicar una oferta professional', '/professional/crear-oferta')) return;
     if (this.authService.isProfessional()) {
-      this.router.navigate(['/professional/crear-oferta']);
+      this.router.navigate(['/professional/crear-oferta'], { queryParams: { origen: 'tasques-ofertes' } });
     } else {
       this.noticeMessage = 'Només els comptes amb rol de "Professional" o "Ambdós" poden publicar ofertes de servei.';
     }
@@ -1986,7 +1994,7 @@ export class TasquesOfertesComponent implements OnInit {
   onFerOferta(taskId: string): void {
     if (!this.requireLogin(`fer una oferta per a la tasca ${taskId}`, '/professional/crear-oferta')) return;
     if (this.authService.isProfessional()) {
-      this.router.navigate(['/professional/crear-oferta'], { queryParams: { taskId } });
+      this.router.navigate(['/professional/crear-oferta'], { queryParams: { taskId, origen: 'tasques-ofertes' } });
     } else {
       this.noticeMessage = 'Només els comptes amb rol de "Professional" o "Ambdós" poden fer ofertes econòmiques.';
     }

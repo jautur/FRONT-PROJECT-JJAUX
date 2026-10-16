@@ -25,14 +25,32 @@ interface GuiaProfessional {
   standalone: true,
   imports: [CommonModule, RouterLink],
   template: `
-    <main class="pro-community-page">
+    <div class="pro-community-page">
+      <!-- Breadcrumbs de navegació -->
+      <nav class="pro-breadcrumbs" aria-label="Fil d'ariadna">
+        <a routerLink="/" class="breadcrumb-link">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+          </svg>
+          Inici
+        </a>
+        <span class="breadcrumb-separator">/</span>
+        <a routerLink="/tasques-ofertes" class="breadcrumb-link">Professionals</a>
+        <span class="breadcrumb-separator">/</span>
+        <span class="breadcrumb-current">Comunitat</span>
+      </nav>
+
       <!-- Capçalera Hero -->
       <header class="pro-hero-section">
-        <div class="hero-badge">COMUNITAT DE PROFESSIONALS AVISA</div>
-        <h1 class="hero-title">Fes créixer el teu negoci local amb feina real, tracte directe i 0% de comissions</h1>
+        <div class="hero-badge">
+          <span class="badge-dot"></span>
+          COMUNITAT DE PROFESSIONALS AVISA
+        </div>
+        <h1 class="hero-title">Fes créixer el teu negoci local amb feina real, tracte directe i màxima transparència</h1>
         <p class="hero-lead">
           Descobreix per què fusters, lampistes, electricistes, pintors i paletes de la Costera, la Vall d'Albaida, la Safor i la Ribera (Xàtiva, Ontinyent, Gandia, Alzira...)
-          escullen AVISA per gestionar la seva feina sense intermediaris que es quedin amb el seu marge.
+          escullen AVISA per gestionar la seva feina sense quotes mensuals fixes ni intermediaris abusius.
         </p>
 
         <div class="hero-cta-group">
@@ -57,8 +75,8 @@ interface GuiaProfessional {
         <!-- Mètriques ràpides -->
         <div class="pro-stats-strip">
           <div class="stat-item">
-            <span class="stat-number">0%</span>
-            <span class="stat-label">Comissió sobre els teus ingressos</span>
+            <span class="stat-number">3%</span>
+            <span class="stat-label">Comissió transparent de manteniment (0€ quotes fixes)</span>
           </div>
           <div class="stat-item">
             <span class="stat-number">100%</span>
@@ -75,7 +93,7 @@ interface GuiaProfessional {
         </div>
       </header>
 
-      <!-- SECCIÓ 1: ELS 5 GRANS MOTIUS PER ADHERIR-SE A AVISA -->
+      <!-- SECCIÓ 1: ELS 6 PILARS DE LA COMUNITAT -->
       <section class="reasons-section">
         <div class="section-heading">
           <span class="section-tag">ELS NOSTRES PILARS</span>
@@ -96,10 +114,10 @@ interface GuiaProfessional {
                 <line x1="12" y1="16" x2="12" y2="18"></line>
               </svg>
             </div>
-            <h3>1. Cobres el 100% del teu preu</h3>
+            <h3>1. Sense quotes ni pagaments per contacte</h3>
             <p>
-              El pressupost que envies és íntegre per a tu. No ens quedem cap percentatge del teu treball
-              ni cobrem per "comprar dades de contacte" que després no contesten. El client et paga directament a tu.
+              Oblida't de pagar per veure telèfons de clients que després no responen. A AVISA només s'aplica una mínima
+              reserva transparent del 3% per al servei i manteniment de la xarxa en feines tancades.
             </p>
           </div>
 
@@ -111,11 +129,11 @@ interface GuiaProfessional {
                 <line x1="9" y1="14" x2="15" y2="14"></line>
               </svg>
             </div>
-            <h3>2. La doble via d'ingressos: Incidències i Ofertes</h3>
+            <h3>2. Doble via d'ingressos: Incidències i Ofertes</h3>
             <p>
               Aprofita la simetria de la plataforma:
-              <strong>Mode Incidència</strong> per respondre a urgències o feines a mida (<strong>++ preu</strong>),
-              i <strong>Mode Oferta</strong> per anunciar packs tancats i cobrir buits d'agenda (<strong>-- preu</strong>).
+              <strong>Mode Incidència</strong> per respondre a urgències o feines a mida,
+              i <strong>Mode Oferta</strong> per anunciar packs tancats i cobrir buits d'agenda.
             </p>
           </div>
 
@@ -128,7 +146,7 @@ interface GuiaProfessional {
             <h3>3. "Colecciona" Tasques i guanya prestigi</h3>
             <p>
               A AVISA, cada tasca que finalitzes amb èxit queda registrada al teu perfil amb valoracions reals de clients.
-              Aquest historial demostrable és el teu millor aval davant nous clients de la zona sense gastar ni un euro en màrqueting.
+              Aquest historial demostrable és el teu millor aval davant nous clients de la comarca.
             </p>
           </div>
 
@@ -183,7 +201,7 @@ interface GuiaProfessional {
       <section class="comparison-section">
         <div class="section-heading">
           <span class="section-tag">COMPARATIVA TRANSPARENT</span>
-          <h2>AVISA davant les plataformes habituals d'intermediaris</h2>
+          <h2>AVISA davant les plataformes tradicionals d'intermediaris</h2>
         </div>
 
         <div class="table-responsive">
@@ -197,29 +215,29 @@ interface GuiaProfessional {
             </thead>
             <tbody>
               <tr>
-                <td><strong>Comissió per feina tancada</strong></td>
-                <td class="col-avisa"><span class="badge-win">0% (Comissió zero)</span></td>
-                <td>15% - 25% de la factura</td>
+                <td><strong>Model de cobrament</strong></td>
+                <td class="col-avisa"><span class="badge-win">Mínim 3% (Sense quotes fixes)</span></td>
+                <td>15% - 25% comissió o pagar 150€/mes</td>
               </tr>
               <tr>
-                <td><strong>Cobrament de la feina</strong></td>
-                <td class="col-avisa">Directe de client a professional</td>
-                <td>Retingut per la web durant setmanes</td>
+                <td><strong>Pagament per contacte / Lead</strong></td>
+                <td class="col-avisa"><span class="badge-win">0 € (100% gratuït contactar)</span></td>
+                <td>Entre 10€ i 40€ per cada telèfon</td>
               </tr>
               <tr>
                 <td><strong>Accés al telèfon del client</strong></td>
-                <td class="col-avisa"><span class="badge-win">Immediat en acceptar</span></td>
-                <td>Opac o de pagament previ</td>
+                <td class="col-avisa"><span class="badge-win">Immediat en acceptar la proposta</span></td>
+                <td>Opac, filtrat o de pagament previ</td>
               </tr>
               <tr>
                 <td><strong>Publicació d'ofertes pròpies</strong></td>
-                <td class="col-avisa"><span class="badge-win">Inclosa de forma il·limitada</span></td>
-                <td>Quota mensual obligatòria</td>
+                <td class="col-avisa"><span class="badge-win">Inclosa il·limitada per als membres</span></td>
+                <td>Quota mensual o paquet d'anuncis</td>
               </tr>
               <tr>
                 <td><strong>Focalització territorial</strong></td>
-                <td class="col-avisa">Negoci local i comarcal directe</td>
-                <td>Empreses grans de fora de la zona</td>
+                <td class="col-avisa">Negoci local i comarcal directe (La Costera, Safor...)</td>
+                <td>Empreses grans i multinacionals de fora</td>
               </tr>
             </tbody>
           </table>
@@ -267,7 +285,7 @@ interface GuiaProfessional {
               </div>
 
               <div class="guide-callout">
-                <span>💡</span>
+                <span class="callout-icon">💡</span>
                 <p><strong>Consell AVISA:</strong> {{ guia.destacat }}</p>
               </div>
             </div>
@@ -333,6 +351,7 @@ interface GuiaProfessional {
       <!-- SECCIÓ 5: CRIDA FINAL A L'ACCIÓ -->
       <section class="final-pro-cta">
         <div class="cta-inner-card">
+          <span class="cta-mini-tag">COMUNITAT LOCAL D'AVISA</span>
           <h2>Fes el pas avui mateix i suma't a la comunitat d'oficis líder de la zona</h2>
           <p>
             El registre triga menys de 2 minuts. Només necessites el teu nom, correu i telèfon per començar a
@@ -346,53 +365,91 @@ interface GuiaProfessional {
           </div>
         </div>
       </section>
-    </main>
+    </div>
   `,
   styles: [`
     .pro-community-page {
-      max-width: 1100px;
+      max-width: 1180px;
       margin: 0 auto;
-      padding: 2.5rem 1.25rem 6rem;
-      color: #e2e8f0;
+      padding: 1.5rem 1.25rem 5rem;
+      color: #09090c;
       font-family: inherit;
+    }
+
+    /* Breadcrumbs */
+    .pro-breadcrumbs {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.88rem;
+      color: #636058;
+      margin-bottom: 2rem;
+    }
+    .breadcrumb-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      color: #636058;
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.2s ease;
+    }
+    .breadcrumb-link:hover {
+      color: #ff1744;
+    }
+    .breadcrumb-separator {
+      color: #d6d0c4;
+    }
+    .breadcrumb-current {
+      color: #09090c;
+      font-weight: 700;
     }
 
     /* Hero */
     .pro-hero-section {
       text-align: center;
-      padding: 3rem 1.5rem 3.5rem;
-      background: radial-gradient(circle at top, rgba(255, 23, 68, 0.15) 0%, rgba(20, 20, 28, 0.95) 70%);
-      border: 1px solid rgba(255, 23, 68, 0.3);
-      border-radius: 18px;
+      padding: 3.5rem 2rem 3rem;
+      background: linear-gradient(180deg, rgba(255, 23, 68, 0.04) 0%, #ffffff 100%);
+      border: 1px solid #e5e0d7;
+      border-radius: 20px;
       margin-bottom: 4rem;
-      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.04);
     }
     .hero-badge {
-      display: inline-block;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
       padding: 0.4rem 1rem;
-      background: #ff1744;
-      color: #ffffff;
+      background: rgba(255, 23, 68, 0.08);
+      color: #ff1744;
       font-size: 0.8rem;
       font-weight: 800;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.06em;
       text-transform: uppercase;
-      border-radius: 30px;
+      border-radius: 9999px;
+      border: 1px solid rgba(255, 23, 68, 0.2);
       margin-bottom: 1.25rem;
     }
+    .badge-dot {
+      width: 7px;
+      height: 7px;
+      background: #ff1744;
+      border-radius: 50%;
+    }
     .hero-title {
-      font-size: 2.6rem;
+      font-size: 2.5rem;
       line-height: 1.2;
       font-weight: 900;
-      color: #ffffff;
-      max-width: 850px;
+      color: #09090c;
+      max-width: 880px;
       margin: 0 auto 1.25rem;
       letter-spacing: -0.02em;
     }
     .hero-lead {
-      font-size: 1.15rem;
-      line-height: 1.6;
-      color: #94a3b8;
-      max-width: 720px;
+      font-size: 1.12rem;
+      line-height: 1.65;
+      color: #636058;
+      max-width: 760px;
       margin: 0 auto 2.25rem;
     }
     .hero-cta-group {
@@ -406,31 +463,31 @@ interface GuiaProfessional {
       display: inline-flex;
       align-items: center;
       gap: 0.6rem;
-      padding: 0.9rem 1.8rem;
+      padding: 0.95rem 1.9rem;
       background: #ff1744;
       color: #ffffff;
       border: none;
-      border-radius: 10px;
+      border-radius: 12px;
       font-size: 1rem;
       font-weight: 800;
       cursor: pointer;
-      transition: all 0.25s ease;
-      box-shadow: 0 4px 18px rgba(255, 23, 68, 0.4);
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 4px 18px rgba(255, 23, 68, 0.35);
     }
     .btn-hero-primary:hover {
       background: #d50000;
       transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(255, 23, 68, 0.6);
+      box-shadow: 0 8px 25px rgba(255, 23, 68, 0.5);
     }
     .btn-hero-secondary {
       display: inline-flex;
       align-items: center;
       gap: 0.6rem;
-      padding: 0.9rem 1.6rem;
-      background: #14141d;
-      color: #f1f5f9;
-      border: 1px solid #36364a;
-      border-radius: 10px;
+      padding: 0.95rem 1.7rem;
+      background: #ffffff;
+      color: #09090c;
+      border: 1px solid #d6d0c4;
+      border-radius: 12px;
       font-size: 0.95rem;
       font-weight: 700;
       text-decoration: none;
@@ -439,16 +496,17 @@ interface GuiaProfessional {
     .btn-hero-secondary:hover {
       border-color: #ff1744;
       color: #ff1744;
-      background: #1a1a26;
+      background: #faf8f4;
+      transform: translateY(-2px);
     }
 
     /* Mètriques */
     .pro-stats-strip {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
       gap: 1.5rem;
-      padding-top: 2rem;
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding-top: 2.25rem;
+      border-top: 1px solid #ede8df;
     }
     .stat-item {
       display: flex;
@@ -456,23 +514,24 @@ interface GuiaProfessional {
       align-items: center;
     }
     .stat-number {
-      font-size: 2.2rem;
+      font-size: 2.1rem;
       font-weight: 900;
       color: #ff1744;
       line-height: 1;
-      margin-bottom: 0.4rem;
+      margin-bottom: 0.45rem;
     }
     .stat-label {
-      font-size: 0.85rem;
-      color: #cbd5e1;
+      font-size: 0.86rem;
+      color: #636058;
       font-weight: 600;
       text-align: center;
+      line-height: 1.4;
     }
 
     /* Encapçalaments de secció */
     .section-heading {
       text-align: center;
-      max-width: 720px;
+      max-width: 740px;
       margin: 0 auto 3rem;
     }
     .section-tag {
@@ -485,14 +544,15 @@ interface GuiaProfessional {
       margin-bottom: 0.5rem;
     }
     .section-heading h2 {
-      font-size: 2rem;
-      font-weight: 800;
-      color: #ffffff;
+      font-size: 2.1rem;
+      font-weight: 900;
+      color: #09090c;
       margin: 0 0 0.85rem;
+      letter-spacing: -0.02em;
     }
     .section-heading p {
       font-size: 1.05rem;
-      color: #94a3b8;
+      color: #636058;
       line-height: 1.6;
       margin: 0;
     }
@@ -503,53 +563,58 @@ interface GuiaProfessional {
     }
     .reasons-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
       gap: 1.75rem;
     }
     .reason-card {
-      background: #14141d;
-      border: 1px solid #282838;
-      border-radius: 14px;
-      padding: 2rem 1.75rem;
+      background: #ffffff;
+      border: 1px solid #e5e0d7;
+      border-radius: 16px;
+      padding: 2.2rem 2rem;
       transition: all 0.25s ease;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.03);
     }
     .reason-card:hover {
       border-color: #ff1744;
       transform: translateY(-4px);
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
     }
     .reason-icon-wrapper {
-      width: 54px;
-      height: 54px;
-      border-radius: 12px;
-      background: rgba(255, 23, 68, 0.12);
-      border: 1px solid rgba(255, 23, 68, 0.3);
+      width: 56px;
+      height: 56px;
+      border-radius: 14px;
+      background: rgba(255, 23, 68, 0.08);
+      border: 1px solid rgba(255, 23, 68, 0.18);
       color: #ff1744;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-bottom: 1.25rem;
+      margin-bottom: 1.35rem;
     }
     .reason-card h3 {
       font-size: 1.25rem;
       font-weight: 800;
-      color: #ffffff;
+      color: #09090c;
       margin: 0 0 0.75rem;
     }
     .reason-card p {
       font-size: 0.95rem;
-      line-height: 1.6;
-      color: #94a3b8;
+      line-height: 1.65;
+      color: #636058;
       margin: 0;
+    }
+    .reason-card strong {
+      color: #09090c;
     }
 
     /* Taula comparativa */
     .comparison-section {
       margin-bottom: 5rem;
-      background: #12121a;
-      border: 1px solid #252535;
-      border-radius: 16px;
-      padding: 3rem 2rem;
+      background: #ffffff;
+      border: 1px solid #e5e0d7;
+      border-radius: 20px;
+      padding: 3.5rem 2.5rem;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.03);
     }
     .table-responsive {
       overflow-x: auto;
@@ -561,37 +626,41 @@ interface GuiaProfessional {
       font-size: 0.95rem;
     }
     .comparison-table th {
-      padding: 1rem 1.25rem;
-      background: #1a1a24;
-      color: #ffffff;
+      padding: 1.1rem 1.4rem;
+      background: #faf8f4;
+      color: #09090c;
       font-weight: 800;
-      border-bottom: 2px solid #333346;
+      border-bottom: 2px solid #e5e0d7;
+      font-size: 0.95rem;
     }
     .comparison-table th.col-avisa {
-      background: rgba(255, 23, 68, 0.15);
+      background: rgba(255, 23, 68, 0.08);
       color: #ff1744;
       border-bottom-color: #ff1744;
       border-left: 2px solid #ff1744;
       border-right: 2px solid #ff1744;
     }
     .comparison-table td {
-      padding: 1rem 1.25rem;
-      border-bottom: 1px solid #232332;
-      color: #cbd5e1;
+      padding: 1.1rem 1.4rem;
+      border-bottom: 1px solid #ede8df;
+      color: #636058;
+    }
+    .comparison-table td strong {
+      color: #09090c;
     }
     .comparison-table td.col-avisa {
-      background: rgba(255, 23, 68, 0.04);
+      background: rgba(255, 23, 68, 0.02);
       font-weight: 700;
-      color: #ffffff;
+      color: #09090c;
       border-left: 2px solid #ff1744;
       border-right: 2px solid #ff1744;
     }
     .badge-win {
       display: inline-block;
-      padding: 0.25rem 0.6rem;
-      background: rgba(16, 185, 129, 0.2);
-      color: #10b981;
-      border: 1px solid #10b981;
+      padding: 0.3rem 0.7rem;
+      background: #ecfdf5;
+      color: #059669;
+      border: 1px solid #a7f3d0;
       border-radius: 6px;
       font-weight: 800;
       font-size: 0.85rem;
@@ -607,17 +676,19 @@ interface GuiaProfessional {
       gap: 1.5rem;
     }
     .guide-card {
-      background: #14141d;
-      border: 1px solid #282838;
-      border-radius: 14px;
+      background: #ffffff;
+      border: 1px solid #e5e0d7;
+      border-radius: 16px;
       overflow: hidden;
-      transition: all 0.2s ease;
+      transition: all 0.25s ease;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.02);
     }
     .guide-card:hover {
-      border-color: #3b3b4f;
+      border-color: #d6d0c4;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
     }
     .guide-header {
-      padding: 1.75rem 2rem;
+      padding: 1.8rem 2.2rem;
       cursor: pointer;
       user-select: none;
     }
@@ -630,33 +701,36 @@ interface GuiaProfessional {
     .guide-cat-badge {
       display: inline-block;
       padding: 0.25rem 0.65rem;
-      background: rgba(255, 23, 68, 0.15);
+      background: rgba(255, 23, 68, 0.08);
       color: #ff1744;
       font-size: 0.72rem;
       font-weight: 800;
       text-transform: uppercase;
-      border-radius: 4px;
+      border-radius: 6px;
     }
     .guide-read-time {
-      font-size: 0.8rem;
-      color: #64748b;
+      font-size: 0.82rem;
+      color: #8c887b;
+      font-weight: 500;
     }
     .guide-header h3 {
       font-size: 1.35rem;
       font-weight: 800;
-      color: #ffffff;
+      color: #09090c;
       margin: 0 0 0.4rem;
+      line-height: 1.35;
     }
     .guide-subtitle {
-      font-size: 0.95rem;
-      color: #94a3b8;
+      font-size: 0.98rem;
+      color: #636058;
       margin: 0 0 1rem;
+      line-height: 1.5;
     }
     .guide-toggle-btn {
       display: inline-flex;
       align-items: center;
       gap: 0.4rem;
-      font-size: 0.85rem;
+      font-size: 0.88rem;
       font-weight: 700;
       color: #ff1744;
     }
@@ -668,34 +742,36 @@ interface GuiaProfessional {
     }
 
     .guide-content-body {
-      padding: 0 2rem 2rem;
-      border-top: 1px solid #232332;
+      padding: 0 2.2rem 2.2rem;
+      border-top: 1px solid #ede8df;
       animation: fadeIn 0.3s ease;
     }
     .guide-cover-img {
       width: 100%;
-      max-height: 320px;
+      max-height: 340px;
       object-fit: cover;
-      border-radius: 10px;
-      margin: 1.5rem 0;
+      border-radius: 12px;
+      margin: 1.75rem 0 1.5rem;
     }
     .guide-paragraphs p {
       font-size: 1rem;
-      line-height: 1.7;
-      color: #cbd5e1;
+      line-height: 1.75;
+      color: #4b5563;
       margin-bottom: 1rem;
     }
     .guide-checklist {
-      background: #191924;
-      border-left: 3px solid #ff1744;
-      padding: 1.25rem 1.5rem;
+      background: #faf8f4;
+      border-left: 4px solid #ff1744;
+      padding: 1.35rem 1.6rem;
       border-radius: 8px;
-      margin: 1.5rem 0;
+      margin: 1.75rem 0;
     }
     .guide-checklist strong {
       display: block;
-      color: #ffffff;
-      margin-bottom: 0.6rem;
+      color: #09090c;
+      font-weight: 800;
+      margin-bottom: 0.75rem;
+      font-size: 1rem;
     }
     .guide-checklist ul {
       list-style: none;
@@ -703,22 +779,28 @@ interface GuiaProfessional {
       margin: 0;
       display: flex;
       flex-direction: column;
-      gap: 0.4rem;
-      color: #e2e8f0;
-      font-size: 0.92rem;
+      gap: 0.5rem;
+      color: #4b5563;
+      font-size: 0.95rem;
     }
     .guide-callout {
       display: flex;
       align-items: flex-start;
-      gap: 0.75rem;
-      background: #1e1e2c;
-      padding: 1rem 1.25rem;
-      border-radius: 8px;
-      font-size: 0.92rem;
-      color: #f1f5f9;
+      gap: 0.85rem;
+      background: rgba(255, 23, 68, 0.05);
+      border: 1px solid rgba(255, 23, 68, 0.15);
+      padding: 1.1rem 1.4rem;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      color: #09090c;
+    }
+    .callout-icon {
+      font-size: 1.25rem;
+      line-height: 1;
     }
     .guide-callout p {
       margin: 0;
+      line-height: 1.6;
     }
 
     /* Testimonis */
@@ -727,75 +809,93 @@ interface GuiaProfessional {
     }
     .testimonials-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
       gap: 1.75rem;
     }
     .testi-card {
-      background: #14141c;
-      border: 1px solid #282836;
-      border-radius: 14px;
-      padding: 2rem 1.75rem;
+      background: #ffffff;
+      border: 1px solid #e5e0d7;
+      border-radius: 16px;
+      padding: 2.2rem 2rem;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.03);
+      transition: all 0.25s ease;
+    }
+    .testi-card:hover {
+      border-color: #ff1744;
+      transform: translateY(-4px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
     }
     .testi-stars {
       color: #f59e0b;
-      font-size: 1.2rem;
+      font-size: 1.25rem;
       letter-spacing: 2px;
-      margin-bottom: 1rem;
+      margin-bottom: 1.1rem;
     }
     .testi-quote {
       font-size: 0.95rem;
-      line-height: 1.6;
-      color: #cbd5e1;
+      line-height: 1.65;
+      color: #4b5563;
       font-style: italic;
-      margin: 0 0 1.5rem;
+      margin: 0 0 1.75rem;
     }
     .testi-author {
       display: flex;
       align-items: center;
-      gap: 0.85rem;
+      gap: 0.95rem;
     }
     .testi-avatar {
-      width: 44px;
-      height: 44px;
+      width: 48px;
+      height: 48px;
       border-radius: 50%;
       object-fit: cover;
       border: 2px solid #ff1744;
     }
     .testi-author strong {
       display: block;
-      color: #ffffff;
-      font-size: 0.95rem;
+      color: #09090c;
+      font-size: 0.98rem;
     }
     .testi-author span {
-      font-size: 0.78rem;
-      color: #94a3b8;
+      font-size: 0.8rem;
+      color: #636058;
     }
 
     /* CTA final */
     .final-pro-cta {
-      background: linear-gradient(135deg, #2b060f 0%, #151522 100%);
-      border: 1px solid rgba(255, 23, 68, 0.5);
-      border-radius: 18px;
-      padding: 3.5rem 2rem;
+      background: linear-gradient(135deg, #09090c 0%, #1e1e24 100%);
+      border: 1px solid #2d2d38;
+      border-radius: 20px;
+      padding: 4rem 2rem;
       text-align: center;
-      box-shadow: 0 15px 40px rgba(255, 23, 68, 0.15);
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+    }
+    .cta-mini-tag {
+      display: inline-block;
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: #ff1744;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
     }
     .cta-inner-card h2 {
-      font-size: 2.1rem;
+      font-size: 2.2rem;
       color: #ffffff;
       font-weight: 900;
       margin: 0 auto 1rem;
-      max-width: 750px;
+      max-width: 780px;
+      letter-spacing: -0.02em;
+      line-height: 1.25;
     }
     .cta-inner-card p {
       font-size: 1.1rem;
-      color: #94a3b8;
-      max-width: 620px;
-      margin: 0 auto 2rem;
-      line-height: 1.6;
+      color: #cbd5e1;
+      max-width: 640px;
+      margin: 0 auto 2.25rem;
+      line-height: 1.65;
     }
     .cta-actions {
       display: flex;
@@ -804,11 +904,11 @@ interface GuiaProfessional {
       gap: 1.25rem;
     }
     .btn-register-pro-big {
-      padding: 1rem 2.5rem;
+      padding: 1.05rem 2.6rem;
       background: #ff1744;
       color: #ffffff;
       border: none;
-      border-radius: 10px;
+      border-radius: 12px;
       font-size: 1.05rem;
       font-weight: 900;
       cursor: pointer;
@@ -821,13 +921,14 @@ interface GuiaProfessional {
       box-shadow: 0 10px 30px rgba(255, 23, 68, 0.6);
     }
     .link-back-main {
-      color: #cbd5e1;
+      color: #94a3b8;
       text-decoration: none;
-      font-size: 0.9rem;
+      font-size: 0.92rem;
+      font-weight: 600;
       transition: color 0.2s;
     }
     .link-back-main:hover {
-      color: #ff1744;
+      color: #ffffff;
     }
 
     @keyframes fadeIn {
@@ -836,18 +937,76 @@ interface GuiaProfessional {
     }
 
     @media (max-width: 768px) {
+      .pro-community-page {
+        padding: 1rem 0.75rem 3.5rem;
+      }
+      .pro-hero-section {
+        padding: 2rem 1rem 2.25rem;
+        border-radius: 14px;
+        margin-bottom: 2.5rem;
+      }
       .hero-title {
-        font-size: 1.85rem;
+        font-size: 1.55rem;
+      }
+      .hero-lead {
+        font-size: 0.95rem;
+        margin-bottom: 1.75rem;
+      }
+      .pro-stats-strip {
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        padding-top: 1.5rem;
+      }
+      .stat-number {
+        font-size: 1.6rem;
+      }
+      .stat-label {
+        font-size: 0.78rem;
+      }
+      .section-heading h2 {
+        font-size: 1.5rem;
+      }
+      .reasons-section, .comparison-section, .pro-blog-section, .testimonials-section {
+        margin-bottom: 3rem;
+      }
+      .reason-card {
+        padding: 1.5rem 1.15rem;
+        border-radius: 14px;
+      }
+      .comparison-section {
+        padding: 1.75rem 1rem;
+        border-radius: 14px;
+      }
+      .comparison-table th, .comparison-table td {
+        padding: 0.75rem 0.65rem;
+        font-size: 0.82rem;
+      }
+      .guide-header {
+        padding: 1.25rem 1rem;
+      }
+      .guide-header h3 {
+        font-size: 1.15rem;
+      }
+      .guide-content-body {
+        padding: 0 1rem 1.5rem;
+      }
+      .testi-card {
+        padding: 1.5rem 1.15rem;
+        border-radius: 14px;
+      }
+      .final-pro-cta {
+        padding: 2.25rem 1.15rem;
+        border-radius: 14px;
       }
       .cta-inner-card h2 {
-        font-size: 1.5rem;
+        font-size: 1.45rem;
+      }
+      .cta-inner-card p {
+        font-size: 0.95rem;
       }
       .btn-hero-primary, .btn-hero-secondary, .btn-register-pro-big {
         width: 100%;
         justify-content: center;
-      }
-      .pro-stats-strip {
-        grid-template-columns: 1fr 1fr;
       }
     }
   `]

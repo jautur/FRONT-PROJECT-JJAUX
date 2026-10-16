@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TascaService, CreateTascaDto } from '../../../services/tasca.service';
 import { IncidenciaService } from '../../../services/incidencia.service';
 import { CrearIncidenciaDTO } from '../../../models/incidencia.model';
@@ -341,13 +341,24 @@ export class CrearTascaComponent implements OnInit {
     private readonly incidenciaService: IncidenciaService,
     private readonly tascaService: TascaService,
     private readonly authService: AuthService,
+    private readonly route: ActivatedRoute,
     private readonly router: Router
   ) {}
 
   /**
-   * Inicialització: assigna automàticament el client a partir de l'usuari connectat.
+   * Inicialització: comprova l'origen des de tasques-ofertes i assigna el client.
    */
   ngOnInit(): void {
+    const origen = this.route.snapshot.queryParams['origen'] || (typeof history !== 'undefined' ? history.state?.origen : null);
+    if (origen !== 'tasques-ofertes') {
+      this.router.navigate(['/tasques-ofertes'], {
+        queryParams: {
+          avís: 'Per a publicar una incidència cal fer-ho des de la secció de Tasques i Ofertes.'
+        }
+      });
+      return;
+    }
+
     const user = this.authService.getCurrentUser();
     if (user) {
       this.formData.client = user.nom;

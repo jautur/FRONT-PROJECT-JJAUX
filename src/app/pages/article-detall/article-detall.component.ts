@@ -26,19 +26,19 @@ import { AuthService } from '../../core/services/auth.service';
           Inici
         </a>
         <span class="breadcrumb-separator">/</span>
-        <a routerLink="/" fragment="blog-avisa" class="breadcrumb-link">Blog i Consells</a>
+        <a routerLink="/blog" class="breadcrumb-link">Blog i Consells</a>
         <span class="breadcrumb-separator">/</span>
         <span class="breadcrumb-current">{{ article?.categoria }}</span>
       </nav>
 
       <!-- Botó de retorn ràpid -->
       <div class="back-action-bar">
-        <a routerLink="/" class="btn-back">
+        <a routerLink="/blog" class="btn-back">
           <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <line x1="19" y1="12" x2="5" y2="12"></line>
             <polyline points="12 19 5 12 12 5"></polyline>
           </svg>
-          <span>Tornar a la pàgina principal</span>
+          <span>Tornar al blog</span>
         </a>
       </div>
 
@@ -205,7 +205,7 @@ import { AuthService } from '../../core/services/auth.service';
         <section class="related-articles-section" *ngIf="articlesRelacionats.length > 0">
           <div class="related-header">
             <h3>Altres guies i articles d'interès</h3>
-            <a routerLink="/" class="link-all-articles">Veure tot el blog →</a>
+            <a routerLink="/blog" class="link-all-articles">Veure tot el blog →</a>
           </div>
           <div class="related-grid">
             <article class="related-card" *ngFor="let rel of articlesRelacionats" [routerLink]="['/article', rel.id]" (click)="carregarArticle(rel.id)">
