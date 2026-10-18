@@ -244,6 +244,69 @@ import { GuiaProfessional, GUIES_PRO_VA, GUIES_PRO_ES, GUIES_PRO_EN } from '../.
         </div>
       </section>
 
+      <!-- SECCIÓ VERIFICACIÓ DE PROFESSIONALS PER TRUCADA -->
+      <section class="verif-process-section">
+        <div class="section-heading">
+          <span class="section-tag verif-tag-pill">{{ 'COMMUNITY_PRO.VERIF_TAG' | translate }}</span>
+          <h2>{{ 'COMMUNITY_PRO.VERIF_TITLE' | translate }}</h2>
+          <p>{{ 'COMMUNITY_PRO.VERIF_DESC' | translate }}</p>
+        </div>
+
+        <div class="verif-steps-grid">
+          <div class="verif-step-card">
+            <div class="step-badge">1</div>
+            <div class="step-icon">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="8.5" cy="7" r="4"></circle>
+                <line x1="20" y1="8" x2="20" y2="14"></line>
+                <line x1="23" y1="11" x2="17" y2="11"></line>
+              </svg>
+            </div>
+            <h4>{{ 'COMMUNITY_PRO.VERIF_STEP_1_TITLE' | translate }}</h4>
+            <p>{{ 'COMMUNITY_PRO.VERIF_STEP_1_DESC' | translate }}</p>
+          </div>
+
+          <div class="verif-step-card">
+            <div class="step-badge">2</div>
+            <div class="step-icon">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+                <polyline points="10 9 9 9 8 9"></polyline>
+              </svg>
+            </div>
+            <h4>{{ 'COMMUNITY_PRO.VERIF_STEP_2_TITLE' | translate }}</h4>
+            <p>{{ 'COMMUNITY_PRO.VERIF_STEP_2_DESC' | translate }}</p>
+          </div>
+
+          <div class="verif-step-card highlight-step">
+            <div class="step-badge">3</div>
+            <div class="step-icon">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+              </svg>
+            </div>
+            <h4>{{ 'COMMUNITY_PRO.VERIF_STEP_3_TITLE' | translate }}</h4>
+            <p>{{ 'COMMUNITY_PRO.VERIF_STEP_3_DESC' | translate }}</p>
+          </div>
+
+          <div class="verif-step-card success-step">
+            <div class="step-badge">4</div>
+            <div class="step-icon">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                <polyline points="9 12 11 14 15 10"></polyline>
+              </svg>
+            </div>
+            <h4>{{ 'COMMUNITY_PRO.VERIF_STEP_4_TITLE' | translate }}</h4>
+            <p>{{ 'COMMUNITY_PRO.VERIF_STEP_4_DESC' | translate }}</p>
+          </div>
+        </div>
+      </section>
+
       <!-- SECCIÓ 3: BLOG I GUIES TÈCNIQUES PER A PROFESSIONALS -->
       <section class="pro-blog-section">
         <div class="section-heading">
@@ -710,6 +773,100 @@ import { GuiaProfessional, GUIES_PRO_VA, GUIES_PRO_ES, GUIES_PRO_EN } from '../.
       font-size: 0.85rem;
     }
 
+    /* Secció Procés de Verificació per Trucada */
+    .verif-process-section {
+      margin-bottom: 5rem;
+    }
+    .verif-tag-pill {
+      background: #ecfdf5 !important;
+      color: #059669 !important;
+      border-color: #a7f3d0 !important;
+    }
+    .verif-steps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr));
+      gap: 1.5rem;
+      margin-top: 2.25rem;
+    }
+    .verif-step-card {
+      background: #ffffff;
+      border: 1px solid #e5e0d7;
+      border-radius: 16px;
+      padding: 1.85rem 1.4rem;
+      position: relative;
+      transition: all 0.25s ease;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.03);
+    }
+    .verif-step-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+    }
+    .verif-step-card.highlight-step {
+      border-color: #fdba74;
+      background: linear-gradient(180deg, #fffbf6 0%, #ffffff 100%);
+    }
+    .verif-step-card.success-step {
+      border-color: #86efac;
+      background: linear-gradient(180deg, #f0fdf4 0%, #ffffff 100%);
+    }
+    .step-badge {
+      position: absolute;
+      top: 1.25rem;
+      right: 1.25rem;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #f1f5f9;
+      color: #64748b;
+      font-size: 0.8rem;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .highlight-step .step-badge {
+      background: #ffedd5;
+      color: #ea580c;
+    }
+    .success-step .step-badge {
+      background: #dcfce7;
+      color: #15803d;
+    }
+    .step-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 12px;
+      background: #f8fafc;
+      color: #09090c;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid #e2e8f0;
+      margin-bottom: 1.15rem;
+    }
+    .highlight-step .step-icon {
+      background: #ffedd5;
+      color: #ea580c;
+      border-color: #fed7aa;
+    }
+    .success-step .step-icon {
+      background: #dcfce7;
+      color: #16a34a;
+      border-color: #bbf7d0;
+    }
+    .verif-step-card h4 {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: #09090c;
+      margin: 0 0 0.55rem;
+    }
+    .verif-step-card p {
+      font-size: 0.9rem;
+      line-height: 1.55;
+      color: #636058;
+      margin: 0;
+    }
+
     /* Blog / Guies */
     .pro-blog-section {
       margin-bottom: 5rem;
@@ -1010,8 +1167,12 @@ import { GuiaProfessional, GUIES_PRO_VA, GUIES_PRO_ES, GUIES_PRO_EN } from '../.
       .section-heading h2 {
         font-size: 1.5rem;
       }
-      .reasons-section, .transparency-section, .comparison-section, .pro-blog-section, .testimonials-section {
+      .reasons-section, .transparency-section, .comparison-section, .verif-process-section, .pro-blog-section, .testimonials-section {
         margin-bottom: 2.75rem;
+      }
+      .verif-steps-grid {
+        grid-template-columns: 1fr;
+        gap: 1.15rem;
       }
       .transparency-card {
         flex-direction: column;

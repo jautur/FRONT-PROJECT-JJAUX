@@ -80,6 +80,33 @@ export class UsuariService {
   }
 
   /**
+   * Envia una sol·licitud perquè l'administrador verifiqui el compte professional mitjançant comprovació telefònica.
+   * @param id Identificador de l'usuari
+   * @returns Observable amb l'usuari actualitzat
+   */
+  sollicitarVerificacio(id: string): Observable<Usuari> {
+    return this.http.post<Usuari>(`${this.apiUrl}/${id}/sollicitar-verificacio`, {});
+  }
+
+  /**
+   * Permet a un administrador verificar o desverificar oficialment un professional després de la trucada.
+   * @param id Identificador de l'usuari
+   * @param estat true per aprovar, false per rebutjar/desverificar
+   * @returns Observable amb l'usuari actualitzat
+   */
+  verificarProfessional(id: string, estat: boolean = true): Observable<Usuari> {
+    const raw = localStorage.getItem('jjaux_user');
+    const headers: Record<string, string> = {};
+    if (raw) {
+      try {
+        const u = JSON.parse(raw);
+        if (u.rol) headers['X-User-Rol'] = u.rol;
+      } catch {}
+    }
+    return this.http.put<Usuari>(`${this.apiUrl}/${id}/verificar?estat=${estat}`, {}, { headers });
+  }
+
+  /**
    * Elimina o dona de baixa un usuari de la plataforma.
    * @param id Identificador de l'usuari
    * @returns Observable buit de confirmació

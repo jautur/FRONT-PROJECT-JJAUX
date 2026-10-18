@@ -33,4 +33,10 @@ export interface Usuari {
 
   /** Percentil de comissió reservat per a la plataforma (0-100, per defecte 3) */
   percentil?: number;
+
+  /** Indica si el professional ha estat oficialment verificat per l'administrador mitjançant trucada */
+  verificat?: boolean;
+
+  /** Indica si hi ha una sol·licitud de verificació pendent de comprovació telefònica */
+  sollicitudVerificacio?: boolean;
 }
