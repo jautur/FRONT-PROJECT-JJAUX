@@ -4,6 +4,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ArticleService } from '../../services/article.service';
 import { Article } from '../../models/article.model';
 import { AuthService } from '../../core/services/auth.service';
+import { TranslatePipe } from '../../core/pipes/translate.pipe';
 
 /**
  * Pàgina completa de detall per a cada article del Blog (/article/:id).
@@ -13,7 +14,7 @@ import { AuthService } from '../../core/services/auth.service';
 @Component({
   selector: 'app-article-detall',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, TranslatePipe],
   template: `
     <main class="article-page-container">
       <!-- Barra superior de navegació i fil d'Ariadna -->
@@ -23,12 +24,12 @@ import { AuthService } from '../../core/services/auth.service';
             <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
             <polyline points="9 22 9 12 15 12 15 22"></polyline>
           </svg>
-          Inici
+          {{ 'BLOG.BREADCRUMB_HOME' | translate }}
         </a>
         <span class="breadcrumb-separator">/</span>
-        <a routerLink="/blog" class="breadcrumb-link">Blog i Consells</a>
+        <a routerLink="/blog" class="breadcrumb-link">{{ 'BLOG.BREADCRUMB_CONSELLS' | translate }}</a>
         <span class="breadcrumb-separator">/</span>
-        <span class="breadcrumb-current">{{ article?.categoria }}</span>
+        <span class="breadcrumb-current">{{ article?.categoria | translate }}</span>
       </nav>
 
       <!-- Botó de retorn ràpid -->
@@ -38,7 +39,7 @@ import { AuthService } from '../../core/services/auth.service';
             <line x1="19" y1="12" x2="5" y2="12"></line>
             <polyline points="12 19 5 12 12 5"></polyline>
           </svg>
-          <span>Tornar al blog</span>
+          <span>{{ 'BLOG.BACK_TO_BLOG' | translate }}</span>
         </a>
       </div>
 
@@ -107,7 +108,7 @@ import { AuthService } from '../../core/services/auth.service';
             </svg>
           </div>
           <div class="summary-body">
-            <strong>Resum clau:</strong>
+            <strong>{{ 'BLOG.SUMMARY_TITLE' | translate }}</strong>
             <p>{{ article.resum }}</p>
           </div>
         </div>
@@ -123,7 +124,7 @@ import { AuthService } from '../../core/services/auth.service';
 
             <!-- Punts clau / Checklist -->
             <div class="key-points-box" *ngIf="sec.puntsClau && sec.puntsClau.length > 0">
-              <h3 class="key-points-title">Consells d'especialista a tenir en compte:</h3>
+              <h3 class="key-points-title">{{ 'BLOG.TIPS_TITLE' | translate }}</h3>
               <ul class="key-points-list">
                 <li *ngFor="let pt of sec.puntsClau">
                   <span class="check-icon">✓</span>
@@ -134,14 +135,14 @@ import { AuthService } from '../../core/services/auth.service';
 
             <!-- Taula de preus orientatius -->
             <div class="price-table-wrapper" *ngIf="sec.taulaPreus && sec.taulaPreus.length > 0">
-              <h3 class="table-title">Estimació de costos i pressupostos a la zona (2026):</h3>
+              <h3 class="table-title">{{ 'BLOG.TABLE_TITLE' | translate }}</h3>
               <div class="price-table-responsive">
                 <table class="price-table">
                   <thead>
                     <tr>
-                      <th>Feina / Concepte</th>
-                      <th>Preu orientatiu mitjà</th>
-                      <th>Observacions i recomanacions</th>
+                      <th>{{ 'BLOG.TABLE_COL_JOB' | translate }}</th>
+                      <th>{{ 'BLOG.TABLE_COL_PRICE' | translate }}</th>
+                      <th>{{ 'BLOG.TABLE_COL_NOTES' | translate }}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -159,7 +160,7 @@ import { AuthService } from '../../core/services/auth.service';
             <div class="tip-callout-card" *ngIf="sec.destacatConsell">
               <div class="tip-icon">💡</div>
               <div class="tip-text">
-                <strong>Recomanació d'AVISA:</strong> {{ sec.destacatConsell }}
+                <strong>{{ 'BLOG.TIP_RECOMMENDATION' | translate }}</strong> {{ sec.destacatConsell }}
               </div>
             </div>
           </section>
@@ -167,7 +168,7 @@ import { AuthService } from '../../core/services/auth.service';
 
         <!-- Etiquetes / Tags de cerca -->
         <div class="article-tags-footer" *ngIf="article.tags && article.tags.length > 0">
-          <span class="tags-label">Temes relacionats:</span>
+          <span class="tags-label">{{ 'BLOG.RELATED_TOPICS' | translate }}</span>
           <div class="tags-list">
             <span class="tag-pill" *ngFor="let tag of article.tags">#{{ tag }}</span>
           </div>
@@ -176,22 +177,19 @@ import { AuthService } from '../../core/services/auth.service';
         <!-- Banner de Conversió / Crida a l'acció (CTA) -->
         <section class="conversion-banner">
           <div class="banner-content">
-            <span class="banner-badge">Necessites ajuda amb aquest servei?</span>
-            <h2>Troba professionals verificats a la teva zona o publica la teva oferta a AVISA</h2>
-            <p>
-              Compara fins a 3 pressupostos gratuïts i sense compromís de professionals de màxima confiança
-              prop de tu, amb preus clars i valoracions de clients reals.
-            </p>
+            <span class="banner-badge">{{ 'BLOG.CTA_BANNER_BADGE' | translate }}</span>
+            <h2>{{ 'BLOG.CTA_BANNER_TITLE' | translate }}</h2>
+            <p>{{ 'BLOG.CTA_BANNER_DESC' | translate }}</p>
             <div class="banner-buttons">
               <button type="button" class="btn-cta-primary" (click)="anarCrearTasca()">
                 <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                   <line x1="12" y1="5" x2="12" y2="19"></line>
                   <line x1="5" y1="12" x2="19" y2="12"></line>
                 </svg>
-                <span>Demanar pressupost / Crear tasca</span>
+                <span>{{ 'BLOG.CTA_BANNER_BTN_TASK' | translate }}</span>
               </button>
               <a routerLink="/tasques-ofertes" class="btn-cta-secondary">
-                <span>Explorar ofertes de professionals</span>
+                <span>{{ 'BLOG.CTA_BANNER_BTN_OFFERS' | translate }}</span>
                 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                   <line x1="5" y1="12" x2="19" y2="12"></line>
                   <polyline points="12 5 19 12 12 19"></polyline>
@@ -204,20 +202,20 @@ import { AuthService } from '../../core/services/auth.service';
         <!-- Articles relacionats -->
         <section class="related-articles-section" *ngIf="articlesRelacionats.length > 0">
           <div class="related-header">
-            <h3>Altres guies i articles d'interès</h3>
-            <a routerLink="/blog" class="link-all-articles">Veure tot el blog →</a>
+            <h3>{{ 'BLOG.RELATED_ARTICLES_TITLE' | translate }}</h3>
+            <a routerLink="/blog" class="link-all-articles">{{ 'HOME.VIEW_ALL_ARTICLES' | translate }}</a>
           </div>
           <div class="related-grid">
             <article class="related-card" *ngFor="let rel of articlesRelacionats" [routerLink]="['/article', rel.id]" (click)="carregarArticle(rel.id)">
               <div class="related-media">
                 <img [src]="rel.imatge" [alt]="rel.titol" loading="lazy" />
-                <span class="related-cat">{{ rel.categoria }}</span>
+                <span class="related-cat">{{ rel.categoria | translate }}</span>
               </div>
               <div class="related-body">
                 <span class="related-time">{{ rel.tempsLectura }}</span>
                 <h4>{{ rel.titol }}</h4>
                 <p>{{ rel.resum }}</p>
-                <span class="related-read-more">Llegir guia completa →</span>
+                <span class="related-read-more">{{ 'HOME.READ_MORE' | translate }}</span>
               </div>
             </article>
           </div>
@@ -228,9 +226,9 @@ import { AuthService } from '../../core/services/auth.service';
       <ng-template #articleNoTrobat>
         <div class="article-not-found-card">
           <div class="not-found-icon">🔍</div>
-          <h2>Article no trobat</h2>
-          <p>L'article que busques no existeix o ha estat desplaçat.</p>
-          <a routerLink="/" class="btn-back-home">Tornar a la pàgina principal</a>
+          <h2>{{ 'BLOG.NOT_FOUND_TITLE' | translate }}</h2>
+          <p>{{ 'BLOG.NOT_FOUND_DESC' | translate }}</p>
+          <a routerLink="/" class="btn-back-home">{{ 'NAV.INICI' | translate }}</a>
         </div>
       </ng-template>
     </main>
@@ -894,8 +892,7 @@ import { AuthService } from '../../core/services/auth.service';
   `]
 })
 export class ArticleDetallComponent implements OnInit {
-  article?: Article;
-  articlesRelacionats: Article[] = [];
+  currentId?: string | number;
 
   constructor(
     private readonly route: ActivatedRoute,
@@ -908,17 +905,23 @@ export class ArticleDetallComponent implements OnInit {
     this.route.paramMap.subscribe(params => {
       const id = params.get('id');
       if (id) {
-        this.carregarArticle(id);
+        this.currentId = id;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       }
     });
   }
 
+  get article(): Article | undefined {
+    return this.currentId ? this.articleService.getArticleById(this.currentId) : undefined;
+  }
+
+  get articlesRelacionats(): Article[] {
+    return this.currentId ? this.articleService.getArticlesRelacionats(this.currentId, 3) : [];
+  }
+
   carregarArticle(id: string | number): void {
-    this.article = this.articleService.getArticleById(id);
-    if (this.article) {
-      this.articlesRelacionats = this.articleService.getArticlesRelacionats(this.article.id, 3);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
+    this.currentId = id;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   formatParagraph(text: string): string {

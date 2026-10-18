@@ -9,6 +9,8 @@ import { Resenya } from '../../models/resenya.model';
 import { ArticleService } from '../../services/article.service';
 import { Article } from '../../models/article.model';
 
+import { TranslatePipe } from '../../core/pipes/translate.pipe';
+
 /**
  * Component Principal de la Pàgina d'Inici d'AVISA (/).
  * Ofereix:
@@ -21,7 +23,7 @@ import { Article } from '../../models/article.model';
 @Component({
   selector: 'app-main',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, TranslatePipe],
   template: `
     <section class="main-page">
       <!-- PORTADA INICIAL DE PANTALLA COMPLETA AMB 1 SOLA FOTO FIXA DE FONS -->
@@ -29,10 +31,10 @@ import { Article } from '../../models/article.model';
         <!-- NOM DE LA WEB EN MIG DE LA PÀGINA I SLOGAN ORIGINAL FIX -->
         <div class="hero-center">
           <h1 class="hero-brand">AVISA</h1>
-          <p class="hero-slogan">Connectant necessitats i professionals</p>
+          <p class="hero-slogan">{{ 'HOME.HERO_SLOGAN' | translate }}</p>
         </div>
 
-        <div class="cover-scroll-hint" (click)="scrollToContent()" role="button" aria-label="Llisca cap avall" title="Llisca cap avall">
+        <div class="cover-scroll-hint" (click)="scrollToContent()" role="button" [attr.aria-label]="'HOME.SCROLL_DOWN' | translate" [title]="'HOME.SCROLL_DOWN' | translate">
           <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="6 9 12 15 18 9"></polyline>
           </svg>
@@ -43,10 +45,10 @@ import { Article } from '../../models/article.model';
       <div class="dashboard-body">
         <div class="dashboard-header-bar">
           <div>
-            <span class="eyebrow-tag">Plataforma AVISA</span>
-            <h2 class="dashboard-title">Tauler d'Incidències i Ofertes</h2>
+            <span class="eyebrow-tag">{{ 'HOME.PLATAFORMA_AVISA' | translate }}</span>
+            <h2 class="dashboard-title">{{ 'HOME.DASHBOARD_TITLE' | translate }}</h2>
           </div>
-          <a routerLink="/tasques-ofertes" class="btn-create-task">Publicar des de Tasques i Ofertes →</a>
+          <a routerLink="/tasques-ofertes" class="btn-create-task">{{ 'HOME.PUBLICAR_BTN' | translate }}</a>
         </div>
 
         <div *ngIf="noticeMessage" class="notice-banner">
@@ -63,33 +65,33 @@ import { Article } from '../../models/article.model';
           <!-- SECCIÓ DE TASQUES RECENTS -->
           <section class="panel">
             <div class="panel-header">
-              <h2>Últimes incidències de clients</h2>
+              <h2>{{ 'HOME.INCIDENCIES_TITLE' | translate }}</h2>
               <a routerLink="/tasques-ofertes" [queryParams]="{ tipus: 'incidencies' }">
-                Veure totes ({{ tasks.length }})
+                {{ 'HOME.VEURE_TOTES' | translate }} ({{ tasks.length }})
               </a>
             </div>
 
             <article class="card" *ngFor="let task of previewTasks">
               <div class="card-top">
-                <span class="tag">{{ task.category }}</span>
+                <span class="tag">{{ task.category | translate }}</span>
                 <span class="status status-task" [ngClass]="getTaskStatusClass(task.status)">
-                  {{ task.status }}
+                  {{ task.status | translate }}
                 </span>
               </div>
               <h3>{{ task.title }}</h3>
-              <p class="meta">Client: <a [routerLink]="['/perfil', task.client]" class="user-inline-link" title="Veure perfil de {{ task.client }}">{{ task.client }}</a></p>
+              <p class="meta">{{ 'HOME.CLIENT_LABEL' | translate }}<a [routerLink]="['/perfil', task.client]" class="user-inline-link" title="Veure perfil de {{ task.client }}">{{ task.client }}</a></p>
               <div class="card-footer">
-                <span>Pressupost: {{ task.budget }}</span>
+                <span>{{ 'HOME.PRESSUPOST_LABEL' | translate }}{{ task.budget }}</span>
                 <div class="actions">
-                  <button type="button" (click)="onDetallTasca(task.id)">Detall</button>
-                  <button type="button" class="btn-secondary" (click)="onFerOferta(task.id)">Proposar pressupost</button>
+                  <button type="button" (click)="onDetallTasca(task.id)">{{ 'HOME.DETALL' | translate }}</button>
+                  <button type="button" class="btn-secondary" (click)="onFerOferta(task.id)">{{ 'HOME.PROPOSAR_PRESSUPOST' | translate }}</button>
                 </div>
               </div>
             </article>
 
             <div class="preview-toggle-wrap">
               <button type="button" class="btn-preview-toggle" (click)="onNavegarTasquesOfertes('incidencies')">
-                Explorar totes les incidències disponibles ({{ tasks.length }})
+                {{ 'HOME.EXPLORAR_INCIDENCIES' | translate }} ({{ tasks.length }})
                 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 6px; vertical-align: middle;">
                   <line x1="5" y1="12" x2="19" y2="12"></line>
                   <polyline points="12 5 19 12 12 19"></polyline>
@@ -101,22 +103,22 @@ import { Article } from '../../models/article.model';
           <!-- SECCIÓ D'OFERTES RECENTS -->
           <section class="panel">
             <div class="panel-header">
-              <h2>Ofertes i serveis de professionals</h2>
+              <h2>{{ 'HOME.OFERTES_TITLE' | translate }}</h2>
               <a routerLink="/tasques-ofertes" [queryParams]="{ tipus: 'ofertes' }">
-                Veure totes ({{ offers.length }})
+                {{ 'HOME.VEURE_TOTES' | translate }} ({{ offers.length }})
               </a>
             </div>
 
             <article class="card offer-card" *ngFor="let offer of previewOffers">
               <div class="card-top">
-                <span class="tag alt">{{ offer.category || 'Altres Serveis' }}</span>
+                <span class="tag alt">{{ (offer.category || 'Altres Serveis') | translate }}</span>
                 <span class="status status-offer" [ngClass]="getOfferStatusClass(offer.status)">
-                  {{ offer.status }}
+                  {{ offer.status | translate }}
                 </span>
               </div>
               <h3>{{ getOfertaTitol(offer) }}</h3>
               <p class="meta">
-                Professional: <a [routerLink]="['/perfil', offer.professional]" class="user-inline-link pro-title-link" title="Veure perfil de {{ offer.professional }}">{{ offer.professional }}</a>
+                {{ 'HOME.PRO_LABEL' | translate }}<a [routerLink]="['/perfil', offer.professional]" class="user-inline-link pro-title-link" title="Veure perfil de {{ offer.professional }}">{{ offer.professional }}</a>
                 <span class="pro-preview-rating" *ngIf="getRatingInfo(offer.professional) as r" style="display: inline-flex; margin-left: 0.5rem;">
                   <span class="stars-gold">★ {{ r.mitjana }}</span>
                   <span class="reviews-count">({{ r.total }})</span>
@@ -124,14 +126,14 @@ import { Article } from '../../models/article.model';
               </p>
               <p>{{ getOfertaDescripcio(offer) }}</p>
               <div class="card-footer">
-                <span>Preu: {{ offer.price }}</span>
-                <button type="button" (click)="onContractarOferta(offer)">Contractar / M'interessa</button>
+                <span>{{ 'HOME.PREU_LABEL' | translate }}{{ offer.price }}</span>
+                <button type="button" (click)="onContractarOferta(offer)">{{ 'HOME.CONTRACTAR_INTERESSA' | translate }}</button>
               </div>
             </article>
 
             <div class="preview-toggle-wrap">
               <button type="button" class="btn-preview-toggle" (click)="onNavegarTasquesOfertes('ofertes')">
-                Explorar totes les ofertes disponibles ({{ offers.length }})
+                {{ 'HOME.EXPLORAR_OFERTES' | translate }} ({{ offers.length }})
                 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 6px; vertical-align: middle;">
                   <line x1="5" y1="12" x2="19" y2="12"></line>
                   <polyline points="12 5 19 12 12 19"></polyline>
@@ -145,12 +147,10 @@ import { Article } from '../../models/article.model';
         <!-- SECCIÓ 1: QUÈ ÉS I PER A QUÈ SERVEIX AVISA (PROPÒSIT I SEO)     -->
         <!-- ============================================================== -->
         <section class="seo-feature-section" id="que-es-avisa">
-          <div class="section-badge-tag">LA PLATAFORMA DE SERVEIS PROFESSIONALS</div>
-          <h2 class="seo-section-title">Connectem persones amb necessitats i especialistes de confiança</h2>
+          <div class="section-badge-tag">{{ 'HOME.SEO_BADGE' | translate }}</div>
+          <h2 class="seo-section-title">{{ 'HOME.SEO_TITLE' | translate }}</h2>
           <p class="seo-section-intro">
-            <strong>AVISA</strong> és la plataforma digital creada per fer ràpida, transparent i segura la gestió de qualsevol encàrrec o avaria. 
-            Tant si necessites una petita reparació urgent a la llar com un projecte complet de reforma, obra nova o manteniment d'instal·lacions, 
-            AVISA elimina els intermediaris innecessaris i et posa en contacte directe amb professionals verificats de la teva localitat.
+            {{ 'HOME.SEO_INTRO' | translate }}
           </p>
 
           <div class="feature-grid">
@@ -161,9 +161,9 @@ import { Article } from '../../models/article.model';
                   <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
                 </svg>
               </div>
-              <h3>Publicació àgil i gratuïta</h3>
+              <h3>{{ 'HOME.FEATURE_1_TITLE' | translate }}</h3>
               <p>
-                Descriu el que necessites en menys de 2 minuts, estableix el teu pressupost de referència i la feina es publicarà immediatament per a professionals de la teva zona.
+                {{ 'HOME.FEATURE_1_DESC' | translate }}
               </p>
             </div>
 
@@ -174,9 +174,9 @@ import { Article } from '../../models/article.model';
                   <path d="m9 12 2 2 4-4"></path>
                 </svg>
               </div>
-              <h3>Professionals verificats</h3>
+              <h3>{{ 'HOME.FEATURE_2_TITLE' | translate }}</h3>
               <p>
-                Lampistes, electricistes, fusters, pintors, instal·ladors i paletes amb perfils revisats, telèfon directe de contacte i valoracions públiques per a la teva tranquil·litat.
+                {{ 'HOME.FEATURE_2_DESC' | translate }}
               </p>
             </div>
 
@@ -188,9 +188,9 @@ import { Article } from '../../models/article.model';
                   <line x1="12" y1="16" x2="12.01" y2="16"></line>
                 </svg>
               </div>
-              <h3>Sense comissions ocultes</h3>
+              <h3>{{ 'HOME.FEATURE_3_TITLE' | translate }}</h3>
               <p>
-                Preus justos i pactats lliurement entre client i professional. Sense lletra petita ni recàrrecs que inflin el cost final de la teva feina.
+                {{ 'HOME.FEATURE_3_DESC' | translate }}
               </p>
             </div>
           </div>
@@ -201,35 +201,34 @@ import { Article } from '../../models/article.model';
         <!-- ============================================================== -->
         <section class="app-sync-banner">
           <div class="app-sync-content">
-            <span class="sync-tag">100% SINCRONITZAT AMB L'APP MÒBIL</span>
-            <h2>La mateixa potència des del navegador o des del mòbil</h2>
+            <span class="sync-tag">{{ 'HOME.APP_BADGE' | translate }}</span>
+            <h2>{{ 'HOME.APP_TITLE' | translate }}</h2>
             <p>
-              AVISA està dissenyada per funcionar exactament igual a la web que a l'aplicació mòbil nativa. 
-              Tots els teus avisos, tasques actives, ofertes rebudes i notificacions es sincronitzen instantàniament en temps real al teu telèfon.
+              {{ 'HOME.APP_DESC' | translate }}
             </p>
             <div class="sync-highlights">
               <div class="highlight-item">
                 <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                   <polyline points="20 6 9 17 4 12"></polyline>
                 </svg>
-                <span>Avisos push immediats en rebre una oferta</span>
+                <span>{{ 'HOME.APP_F1' | translate }}</span>
               </div>
               <div class="highlight-item">
                 <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                   <polyline points="20 6 9 17 4 12"></polyline>
                 </svg>
-                <span>Geolocalització de tasques a prop de la teva ubicació</span>
+                <span>{{ 'HOME.APP_F2' | translate }}</span>
               </div>
               <div class="highlight-item">
                 <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                   <polyline points="20 6 9 17 4 12"></polyline>
                 </svg>
-                <span>Contacte directe per telèfon i missatgeria</span>
+                <span>{{ 'HOME.APP_F3' | translate }}</span>
               </div>
             </div>
             <div class="sync-actions">
-              <button type="button" class="btn-sync-action" (click)="onNovaTasca()">Explorar Tasques i Ofertes</button>
-              <button type="button" class="btn-sync-secondary" (click)="onAnarRegistreClient()">Crear compte gratuït</button>
+              <button type="button" class="btn-sync-action" (click)="onNovaTasca()">{{ 'NAV.TASQUES_OFERTES' | translate }}</button>
+              <button type="button" class="btn-sync-secondary" (click)="onAnarRegistreClient()">{{ 'NAV.CREAR_COMPTE_REGISTRE' | translate }}</button>
             </div>
           </div>
         </section>
@@ -240,63 +239,63 @@ import { Article } from '../../models/article.model';
         <section class="roles-showcase-section">
           <div class="role-box client-role-box">
             <div class="role-box-header">
-              <span class="role-badge client-badge">PER A CLIENTS I PARTICULARS</span>
-              <h3>Necessites resoldre una incidència o reforma?</h3>
-              <p>Publica la teva petició gratuïtament i rep pressupostos personalitzats d'especialistes de la teva zona.</p>
+              <span class="role-badge client-badge">{{ 'HOME.ROLES_CLIENT_BADGE' | translate }}</span>
+              <h3>{{ 'HOME.ROLES_CLIENT_TITLE' | translate }}</h3>
+              <p>{{ 'HOME.ROLES_CLIENT_DESC' | translate }}</p>
             </div>
             <ul class="role-benefits-list">
               <li>
                 <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                   <polyline points="20 6 9 17 4 12"></polyline>
                 </svg>
-                <span>Publicació 100% gratuïta d'incidències i sense compromís</span>
+                <span>{{ 'HOME.ROLES_CLIENT_F1' | translate }}</span>
               </li>
               <li>
                 <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                   <polyline points="20 6 9 17 4 12"></polyline>
                 </svg>
-                <span>Compara pressupostos, terminis i valoracions de diversos professionals</span>
+                <span>{{ 'HOME.ROLES_CLIENT_F2' | translate }}</span>
               </li>
               <li>
                 <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                   <polyline points="20 6 9 17 4 12"></polyline>
                 </svg>
-                <span>Contacta o contracta directament packs de servei amb preus clars</span>
+                <span>{{ 'HOME.ROLES_CLIENT_F3' | translate }}</span>
               </li>
             </ul>
-            <button type="button" class="btn-role-action" (click)="onNovaTasca()">Publicar Incidència (al Mercat)</button>
+            <button type="button" class="btn-role-action" (click)="onNovaTasca()">{{ 'HOME.ROLES_CLIENT_BTN' | translate }}</button>
           </div>
 
           <div class="role-box pro-role-box">
             <div class="role-box-header">
-              <span class="role-badge pro-badge">PER A PROFESSIONALS I AUTÒNOMS</span>
-              <h3>Busques feines noves o vols oferir els teus serveis?</h3>
-              <p>Accedeix a la borsa diària d'incidències reals o publica packs d'ofertes sense comissions.</p>
+              <span class="role-badge pro-badge">{{ 'HOME.ROLES_PRO_BADGE' | translate }}</span>
+              <h3>{{ 'HOME.ROLES_PRO_TITLE' | translate }}</h3>
+              <p>{{ 'HOME.ROLES_PRO_DESC' | translate }}</p>
             </div>
             <ul class="role-benefits-list">
               <li>
                 <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                   <polyline points="20 6 9 17 4 12"></polyline>
                 </svg>
-                <span>Envia pressupostos a incidències obertes amb el teu preu pactat</span>
+                <span>{{ 'HOME.ROLES_PRO_F1' | translate }}</span>
               </li>
               <li>
                 <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                   <polyline points="20 6 9 17 4 12"></polyline>
                 </svg>
-                <span>Publica ofertes de serveis de tarifa fixa perquè els clients et contractin directament</span>
+                <span>{{ 'HOME.ROLES_PRO_F2' | translate }}</span>
               </li>
               <li>
                 <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                   <polyline points="20 6 9 17 4 12"></polyline>
                 </svg>
-                <span>Acumula tasques finalitzades i ressenyes per augmentar la teva reputació i fiabilitat</span>
+                <span>{{ 'HOME.ROLES_PRO_F3' | translate }}</span>
               </li>
             </ul>
             <div class="pro-role-actions">
-              <button type="button" class="btn-role-action pro-btn" (click)="onPublicarOferta()">Publicar Oferta (al Mercat)</button>
+              <button type="button" class="btn-role-action pro-btn" (click)="onPublicarOferta()">{{ 'HOME.ROLES_PRO_BTN' | translate }}</button>
               <a routerLink="/comunitat-professionals" class="btn-community-link">
-                <span>Per què unir-te a la Comunitat AVISA? (Guia & Blog)</span>
+                <span>{{ 'HOME.ROLES_PRO_COMMUNITY' | translate }}</span>
                 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                   <line x1="5" y1="12" x2="19" y2="12"></line>
                   <polyline points="12 5 19 12 12 19"></polyline>
@@ -312,14 +311,14 @@ import { Article } from '../../models/article.model';
         <section class="blog-seo-section" id="blog-avisa">
           <div class="blog-header-group">
             <div>
-              <span class="section-badge-tag">BLOG D'AVISA · CONSELLS I RECURSOS</span>
-              <h2 class="seo-section-title">Guies pràctiques per a la llar i claus per a professionals</h2>
+              <span class="section-badge-tag">{{ 'HOME.BLOG_SECTION_BADGE' | translate }}</span>
+              <h2 class="seo-section-title">{{ 'HOME.BLOG_SECTION_TITLE' | translate }}</h2>
               <p class="seo-section-intro">
-                Articles especialitzats per a la Costera, la Vall d'Albaida, la Safor i la Ribera amb consells tècnics, preus orientatius locals i solucions adaptades a les nostres comarques.
+                {{ 'HOME.BLOG_SECTION_SUB' | translate }}
               </p>
             </div>
             <a routerLink="/blog" class="btn-all-blog-link">
-              <span>Veure tots els articles →</span>
+              <span>{{ 'HOME.VIEW_ALL_ARTICLES' | translate }}</span>
             </a>
           </div>
 
@@ -327,7 +326,7 @@ import { Article } from '../../models/article.model';
             <article class="blog-card" *ngFor="let article of articlesBlog">
               <div class="blog-card-media" [routerLink]="['/article', article.id]" style="cursor: pointer;">
                 <img [src]="article.imatge" [alt]="article.titol" loading="lazy" />
-                <span class="blog-category-tag">{{ article.categoria }}</span>
+                <span class="blog-category-tag">{{ article.categoria | translate }}</span>
               </div>
               <div class="blog-card-content">
                 <div class="blog-meta">
@@ -338,7 +337,7 @@ import { Article } from '../../models/article.model';
                 <h3 [routerLink]="['/article', article.id]" style="cursor: pointer;">{{ article.titol }}</h3>
                 <p>{{ article.resum }}</p>
                 <a [routerLink]="['/article', article.id]" class="btn-read-article">
-                  <span>Llegir article complet</span>
+                  <span>{{ 'HOME.READ_MORE' | translate }}</span>
                   <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                     <line x1="5" y1="12" x2="19" y2="12"></line>
                     <polyline points="12 5 19 12 12 19"></polyline>
@@ -353,10 +352,10 @@ import { Article } from '../../models/article.model';
         <!-- SECCIÓ: OPINIONS I VALORACIONS REALS DE CLIENTS               -->
         <!-- ============================================================== -->
         <section class="seo-feature-section reviews-feature-section" id="ressenyes-clients">
-          <div class="section-badge-tag">OPINIONS I VALORACIONS VERIFICADES</div>
-          <h2 class="seo-section-title">La confiança dels nostres clients parla per nosaltres</h2>
+          <div class="section-badge-tag">{{ 'HOME.REVIEWS_BADGE' | translate }}</div>
+          <h2 class="seo-section-title">{{ 'HOME.REVIEWS_TITLE' | translate }}</h2>
           <p class="seo-section-intro">
-            Consulta les experiències recents de particulars i comunitats de veïns que han contractat serveis a través d'AVISA. Qualitat, puntualitat i acabats excel·lents garantits.
+            {{ 'HOME.REVIEWS_INTRO' | translate }}
           </p>
 
           <div class="reviews-home-grid">
@@ -384,18 +383,17 @@ import { Article } from '../../models/article.model';
         <!-- ============================================================== -->
         <section class="cta-propaganda-banner">
           <div class="cta-banner-content">
-            <span class="cta-tag">UN PAS ENDAVANT AMB AVISA</span>
-            <h2>Preparat per resoldre la teva propera feina o aconseguir clients?</h2>
+            <span class="cta-tag">{{ 'HOME.CTA_BANNER_TAG' | translate }}</span>
+            <h2>{{ 'HOME.CTA_BANNER_TITLE' | translate }}</h2>
             <p>
-              Tant si ets un particular amb una tasca a resoldre com un professional autònom, 
-              AVISA és la comunitat que simplifica la teva activitat diària des de la web i el mòbil.
+              {{ 'HOME.CTA_BANNER_DESC' | translate }}
             </p>
             <div class="cta-buttons-row">
               <button type="button" class="btn-cta-main" (click)="onNovaTasca()">
-                Explorar i publicar al Mercat de Tasques i Ofertes
+                {{ 'HOME.CTA_BANNER_BTN_MARKET' | translate }}
               </button>
               <button type="button" class="btn-cta-secondary" (click)="onAnarRegistreProfessional()">
-                Registrar-se com a professional
+                {{ 'HOME.CTA_BANNER_BTN_PRO' | translate }}
               </button>
             </div>
           </div>
@@ -412,52 +410,47 @@ import { Article } from '../../models/article.model';
                 <span class="footer-logo-text">AVISA</span>
               </div>
               <p class="footer-desc">
-                La plataforma de referència per a la publicació de tasques, serveis professionals, reformes i manteniment de la llar. 
-                Sincronització total entre plataforma web i aplicació mòbil nativa.
+                {{ 'FOOTER.DESC' | translate }}
               </p>
-              <span class="footer-status-pill">Plataforma operativa 24/7</span>
+              <span class="footer-status-pill">{{ 'FOOTER.STATUS_247' | translate }}</span>
             </div>
 
             <div class="footer-col">
-              <h4>Serveis populars</h4>
+              <h4>{{ 'FOOTER.POPULAR_SERVICES' | translate }}</h4>
               <ul>
-                <li><span>Reformes integrals i paletes</span></li>
-                <li><span>Electricistes homologats</span></li>
-                <li><span>Lampisteria i desatascos</span></li>
-                <li><span>Pintura i restauració</span></li>
-                <li><span>Climatització i aerotèrmia</span></li>
-                <li><span>Fusteria i serralleria</span></li>
+                <li><span>{{ 'CATEGORIES.Reformes' | translate }}</span></li>
+                <li><span>{{ 'CATEGORIES.Electricitat' | translate }}</span></li>
+                <li><span>{{ 'CATEGORIES.Lampisteria' | translate }}</span></li>
+                <li><span>{{ 'CATEGORIES.Pintura' | translate }}</span></li>
+                <li><span>{{ 'CATEGORIES.Climatització' | translate }}</span></li>
+                <li><span>{{ 'CATEGORIES.Fusteria' | translate }}</span></li>
               </ul>
             </div>
 
             <div class="footer-col">
-              <h4>Navegació i Àrees</h4>
+              <h4>{{ 'FOOTER.NAV_AREAS' | translate }}</h4>
               <ul>
-                <li><a routerLink="/tasques-ofertes">Mercat de Tasques i Ofertes</a></li>
-                <li><a routerLink="/tasques-ofertes" [queryParams]="{ tipus: 'incidencies' }">Incidències de clients (al Mercat)</a></li>
-                <li><a routerLink="/tasques-ofertes" [queryParams]="{ tipus: 'ofertes' }">Ofertes de professionals (al Mercat)</a></li>
-                <li><a routerLink="/comunitat-professionals">Comunitat de Professionals (Blog)</a></li>
-                <li><a routerLink="/registre" [queryParams]="{ rol: 'professional' }">Àrea Professionals</a></li>
-                <li><a routerLink="/registre" [queryParams]="{ rol: 'client' }">Registre de clients</a></li>
-                <li><a href="#que-es-avisa">Què fa AVISA</a></li>
-                <li><a routerLink="/blog">Blog i Guies Locals</a></li>
+                <li><a routerLink="/tasques-ofertes">{{ 'NAV.TASQUES_OFERTES' | translate }}</a></li>
+                <li><a routerLink="/tasques-ofertes" [queryParams]="{ tipus: 'incidencies' }">{{ 'TASQUES_OFERTES.FILTER_INCIDENCIES' | translate }}</a></li>
+                <li><a routerLink="/tasques-ofertes" [queryParams]="{ tipus: 'ofertes' }">{{ 'TASQUES_OFERTES.FILTER_OFFERS' | translate }}</a></li>
+                <li><a routerLink="/comunitat-professionals">{{ 'NAV.COMUNITAT_PROFESSIONALS' | translate }}</a></li>
+                <li><a routerLink="/registre" [queryParams]="{ rol: 'professional' }">{{ 'COMMON.PROFESSIONAL' | translate }}</a></li>
+                <li><a routerLink="/registre" [queryParams]="{ rol: 'client' }">{{ 'COMMON.CLIENT' | translate }}</a></li>
+                <li><a routerLink="/blog">{{ 'NAV.BLOG' | translate }}</a></li>
               </ul>
             </div>
 
             <div class="footer-col">
-              <h4>Seguretat i Legal</h4>
+              <h4>{{ 'FOOTER.SECURITY_LEGAL' | translate }}</h4>
               <ul>
-                <li><span>Model d'herència de rols</span></li>
-                <li><span>Professionals verificats</span></li>
-                <li><span>Privacitat i protecció de dades</span></li>
-                <li><span>Condicions generals d'ús</span></li>
-                <li><span>Atenció i suport tècnic</span></li>
+                <li><span>{{ 'HOME.FEATURE_2_TITLE' | translate }}</span></li>
+                <li><span>{{ 'FOOTER.STATUS_247' | translate }}</span></li>
               </ul>
             </div>
           </div>
 
           <div class="footer-bottom">
-            <p>© 2026 AVISA Platform. Tots els drets reservats. Connexió web i mòbil garantida.</p>
+            <p>{{ 'FOOTER.RIGHTS' | translate }}</p>
           </div>
         </footer>
       </div>
@@ -2068,7 +2061,6 @@ export class MainComponent implements OnInit {
   ngOnInit(): void {
     this.loadDashboard();
     this.loadResenyes();
-    this.articlesBlog = this.articleService.getArticles();
   }
 
   loadDashboard(): void {
@@ -2175,7 +2167,9 @@ export class MainComponent implements OnInit {
   }
 
   /** Articles informatius del blog gestionats a través d'ArticleService */
-  articlesBlog: Article[] = [];
+  get articlesBlog(): Article[] {
+    return this.articleService.getArticles();
+  }
 
   /** Retorna la vista prèvia aleatòria de 3 tasques per a la pàgina principal */
   get previewTasks() {

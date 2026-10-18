@@ -15,3 +15,4 @@ export const TRANSLATIONS: Record<SupportedLang, typeof va> = {
 };
 
 export { va, es, en };
+

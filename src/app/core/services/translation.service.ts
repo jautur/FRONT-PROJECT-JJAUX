@@ -58,9 +58,10 @@ export class TranslationService {
   }
 
   /**
-   * Retorna el text traduït per a una clau donada (ex: 'NAV.MENU') amb suport per a paràmetres ({{param}}).
+   * Retorna el text traduït per a una clau donada (ex: 'NAV.MENU', o 'Lampisteria') amb suport per a paràmetres ({{param}}).
    */
   t(key: string, params?: Record<string, string | number>): string {
+    if (!key) return '';
     const lang = this.currentLang();
     let text = this.buscarClau(TRANSLATIONS[lang], key);
 
@@ -83,10 +84,44 @@ export class TranslationService {
   }
 
   /**
+   * Tradueix el nom d'una categoria de servei al idioma actual.
+   */
+  translateCategory(category: string): string {
+    if (!category) return '';
+    return this.t(`CATEGORIES.${category}`) || category;
+  }
+
+  /**
+   * Tradueix un estat de tasca o oferta al idioma actual.
+   */
+  translateStatus(status: string): string {
+    if (!status) return '';
+    return this.t(`STATUS.${status}`) || status;
+  }
+
+  /**
    * Cerca recursivament una clau separada per punts dins d'un objecte diccionari.
+   * Si no té punts, cerca també dins de CATEGORIES, STATUS i COMMON com a drecera.
    */
   private buscarClau(obj: any, path: string): string | undefined {
     if (!obj || !path) return undefined;
+
+    if (!path.includes('.')) {
+      if (obj.CATEGORIES && path in obj.CATEGORIES) {
+        return obj.CATEGORIES[path];
+      }
+      if (obj.STATUS && path in obj.STATUS) {
+        return obj.STATUS[path];
+      }
+      if (obj.COMMON && path in obj.COMMON) {
+        return obj.COMMON[path];
+      }
+      if (path in obj) {
+        const val = obj[path];
+        if (typeof val === 'string') return val;
+      }
+    }
+
     const parts = path.split('.');
     let actual: any = obj;
     for (const part of parts) {
@@ -113,3 +148,4 @@ export class TranslationService {
     }
   }
 }
+
