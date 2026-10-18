@@ -643,6 +643,10 @@ export class RegistreComponent implements OnInit {
         if (err.status === 400 && err.error?.missatges) {
           const msgs = Object.values(err.error.missatges).join(' ');
           this.errorMessage = msgs || 'Dades de registre incorrectes.';
+        } else if (err.error?.error && typeof err.error.error === 'string') {
+          this.errorMessage = err.error.error;
+        } else if (err.status === 0 || err.status === 502 || err.status === 504) {
+          this.errorMessage = 'El servidor no respon. Comprova que el backend estigui actiu al port 8080.';
         } else {
           this.errorMessage = 'No s’ha pogut completar el registre. El correu podria estar ja en ús o el servidor no respon.';
         }
