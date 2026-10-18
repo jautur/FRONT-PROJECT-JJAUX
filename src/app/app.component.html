@@ -1,6 +1,6 @@
 <div class="shell" [class.has-solid-header]="isScrolled" [class.sidebar-open]="menuObert && isScrolled" [class.not-home-page]="!isHomePage">
-  <!-- Capçalera superior fixa amb el títol centrat -->
-  <header class="topbar" [class.solid-header]="isScrolled">
+  <!-- Capçalera superior que es mostra exclusivament després de fer scroll cap avall o en pàgines secundàries -->
+  <header class="topbar" [class.visible-bar]="!isHomePage || isScrolled" [class.solid-header]="isScrolled || !isHomePage">
     <!-- Botó per obrir/tancar el menú a l'esquerra -->
     <div class="topbar-left">
       <button
@@ -27,7 +27,7 @@
         <a routerLink="/" class="brand-title">AVISA</a>
       </div>
 
-      <!-- Enllaços que es mostren al costat en fer hover sobre la barra de dalt -->
+      <!-- Enllaços ràpids visibles directament a la barra de dalt -->
       <nav class="topbar-links-inline" aria-label="Enllaços ràpids">
         <a routerLink="/blog" routerLinkActive="active-top-link" class="top-nav-link" title="Blog i Guies">
           <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">

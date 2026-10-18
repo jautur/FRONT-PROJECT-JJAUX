@@ -608,3 +608,4 @@ export class TermesModalComponent implements OnInit {
     this.close.emit();
   }
 }
+
