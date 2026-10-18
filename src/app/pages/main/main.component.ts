@@ -46,7 +46,7 @@ import { Article } from '../../models/article.model';
             <span class="eyebrow-tag">Plataforma AVISA</span>
             <h2 class="dashboard-title">Tauler d'Incidències i Ofertes</h2>
           </div>
-          <button type="button" class="btn-create-task" (click)="onNovaTasca()">+ Crear Incidència</button>
+          <a routerLink="/tasques-ofertes" class="btn-create-task">Publicar des de Tasques i Ofertes →</a>
         </div>
 
         <div *ngIf="noticeMessage" class="notice-banner">
@@ -228,7 +228,7 @@ import { Article } from '../../models/article.model';
               </div>
             </div>
             <div class="sync-actions">
-              <button type="button" class="btn-sync-action" (click)="onNovaTasca()">Provar a la web ara</button>
+              <button type="button" class="btn-sync-action" (click)="onNovaTasca()">Explorar Tasques i Ofertes</button>
               <button type="button" class="btn-sync-secondary" (click)="onAnarRegistreClient()">Crear compte gratuït</button>
             </div>
           </div>
@@ -264,7 +264,7 @@ import { Article } from '../../models/article.model';
                 <span>Contacta o contracta directament packs de servei amb preus clars</span>
               </li>
             </ul>
-            <button type="button" class="btn-role-action" (click)="onNovaTasca()">Crear Incidència (Gratuït)</button>
+            <button type="button" class="btn-role-action" (click)="onNovaTasca()">Publicar Incidència (al Mercat)</button>
           </div>
 
           <div class="role-box pro-role-box">
@@ -294,7 +294,7 @@ import { Article } from '../../models/article.model';
               </li>
             </ul>
             <div class="pro-role-actions">
-              <button type="button" class="btn-role-action pro-btn" (click)="onPublicarOferta()">Publicar Oferta de Servei</button>
+              <button type="button" class="btn-role-action pro-btn" (click)="onPublicarOferta()">Publicar Oferta (al Mercat)</button>
               <a routerLink="/comunitat-professionals" class="btn-community-link">
                 <span>Per què unir-te a la Comunitat AVISA? (Guia & Blog)</span>
                 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -318,6 +318,9 @@ import { Article } from '../../models/article.model';
                 Articles especialitzats per a la Costera, la Vall d'Albaida, la Safor i la Ribera amb consells tècnics, preus orientatius locals i solucions adaptades a les nostres comarques.
               </p>
             </div>
+            <a routerLink="/blog" class="btn-all-blog-link">
+              <span>Veure tots els articles →</span>
+            </a>
           </div>
 
           <div class="blog-grid">
@@ -389,7 +392,7 @@ import { Article } from '../../models/article.model';
             </p>
             <div class="cta-buttons-row">
               <button type="button" class="btn-cta-main" (click)="onNovaTasca()">
-                + Publicar una tasca gratuïta
+                Explorar i publicar al Mercat de Tasques i Ofertes
               </button>
               <button type="button" class="btn-cta-secondary" (click)="onAnarRegistreProfessional()">
                 Registrar-se com a professional
@@ -431,13 +434,13 @@ import { Article } from '../../models/article.model';
               <h4>Navegació i Àrees</h4>
               <ul>
                 <li><a routerLink="/tasques-ofertes">Mercat de Tasques i Ofertes</a></li>
-                <li><a routerLink="/client/crear-tasca">Crear incidència nova</a></li>
-                <li><a routerLink="/professional/crear-oferta">Publicar oferta de servei</a></li>
+                <li><a routerLink="/tasques-ofertes" [queryParams]="{ tipus: 'incidencies' }">Incidències de clients (al Mercat)</a></li>
+                <li><a routerLink="/tasques-ofertes" [queryParams]="{ tipus: 'ofertes' }">Ofertes de professionals (al Mercat)</a></li>
                 <li><a routerLink="/comunitat-professionals">Comunitat de Professionals (Blog)</a></li>
                 <li><a routerLink="/registre" [queryParams]="{ rol: 'professional' }">Àrea Professionals</a></li>
                 <li><a routerLink="/registre" [queryParams]="{ rol: 'client' }">Registre de clients</a></li>
                 <li><a href="#que-es-avisa">Què fa AVISA</a></li>
-                <li><a href="#blog-avisa">Blog i Consells SEO</a></li>
+                <li><a routerLink="/blog">Blog i Guies Locals</a></li>
               </ul>
             </div>
 
@@ -1323,6 +1326,37 @@ import { Article } from '../../models/article.model';
         margin-top: 1rem;
       }
 
+      .blog-header-group {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+      }
+
+      .btn-all-blog-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        background: #ffffff;
+        color: #ff1744;
+        border: 2px solid #ff1744;
+        padding: 0.6rem 1.2rem;
+        border-radius: 9999px;
+        font-weight: 800;
+        font-size: 0.88rem;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+      }
+
+      .btn-all-blog-link:hover {
+        background: #ff1744;
+        color: #ffffff;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 14px rgba(255, 23, 68, 0.3);
+      }
+
       .blog-grid {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
@@ -1762,6 +1796,12 @@ import { Article } from '../../models/article.model';
       }
 
       @media (max-width: 900px) {
+        .columns {
+          grid-template-columns: 1fr;
+        }
+        .stats {
+          grid-template-columns: 1fr;
+        }
         .feature-grid,
         .roles-showcase-section,
         .blog-grid,
@@ -1776,41 +1816,102 @@ import { Article } from '../../models/article.model';
       }
 
       @media (max-width: 640px) {
+        .fullscreen-cover {
+          height: 85vh;
+          min-height: 480px;
+          padding: 1.5rem 1rem;
+        }
+        .hero-brand {
+          font-size: clamp(2.3rem, 11vw, 3.6rem);
+          letter-spacing: 0.06em;
+        }
+        .hero-slogan {
+          font-size: 0.92rem;
+          letter-spacing: 0.08em;
+          margin-top: 0.75rem;
+        }
         .dashboard-body {
-          padding: 1.25rem 0.85rem 4rem;
-          gap: 1.5rem;
+          padding: 1rem 0.65rem 3.5rem;
+          gap: 1.25rem;
         }
         .dashboard-header-bar {
           flex-direction: column;
           align-items: stretch;
-          padding: 1.25rem 1rem;
-          gap: 1rem;
+          padding: 1.1rem 0.85rem;
+          gap: 0.85rem;
           text-align: center;
+        }
+        .dashboard-title {
+          font-size: 1.45rem;
         }
         .btn-create-task {
           width: 100%;
           text-align: center;
+          font-size: 0.88rem;
+          padding: 0.75rem 1rem;
+        }
+        .panel {
+          padding: 1.15rem 0.85rem;
+          border-radius: 14px;
+        }
+        .panel-header {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 0.5rem;
+        }
+        .panel-header h2 {
+          font-size: 1.2rem;
+        }
+        .card {
+          padding: 1rem 0.85rem;
+          border-radius: 12px;
+        }
+        .card-top {
+          flex-wrap: wrap;
+          gap: 0.5rem;
         }
         .card-footer {
           flex-direction: column;
-          align-items: flex-start;
+          align-items: stretch;
           gap: 0.75rem;
         }
         .actions {
           width: 100%;
           flex-direction: column;
+          gap: 0.5rem;
         }
         .actions button {
           width: 100%;
         }
+        .seo-section-title {
+          font-size: 1.45rem !important;
+        }
+        .feature-card {
+          padding: 1.25rem 1rem;
+        }
+        .role-box {
+          padding: 1.5rem 1rem;
+          border-radius: 14px;
+        }
+        .role-box h3 {
+          font-size: 1.25rem;
+        }
         .app-sync-banner {
-          padding: 1.8rem 1.4rem;
+          padding: 1.75rem 1.15rem;
+          border-radius: 14px;
+        }
+        .app-sync-banner h2 {
+          font-size: 1.45rem;
         }
         .cta-propaganda-banner {
-          padding: 2.2rem 1.4rem;
+          padding: 2rem 1.15rem;
+          border-radius: 14px;
+        }
+        .cta-propaganda-banner h2 {
+          font-size: 1.45rem;
         }
         .main-footer {
-          padding: 2.5rem 1.4rem 1.5rem;
+          padding: 2.25rem 1.15rem 1.5rem;
         }
       }
 
@@ -2162,12 +2263,7 @@ export class MainComponent implements OnInit {
   }
 
   onNovaTasca(): void {
-    if (!this.requireLogin('crear una tasca nova', '/client/crear-tasca')) return;
-    if (this.authService.isClient()) {
-      this.router.navigate(['/client/crear-tasca']);
-    } else {
-      this.noticeMessage = 'Només els comptes amb rol de "Client" o "Ambdós" poden crear noves tasques.';
-    }
+    this.router.navigate(['/tasques-ofertes'], { queryParams: { tipus: 'incidencies', accio: 'crear-incidencia' } });
   }
 
   onNavegarTasquesOfertes(tipus: 'tots' | 'tasques' | 'ofertes' | 'incidencies' = 'tots'): void {
@@ -2188,12 +2284,7 @@ export class MainComponent implements OnInit {
   }
 
   onFerOferta(taskId: string): void {
-    if (!this.requireLogin(`fer una oferta per a la tasca ${taskId}`, '/professional/crear-oferta')) return;
-    if (this.authService.isProfessional()) {
-      this.router.navigate(['/professional/crear-oferta'], { queryParams: { taskId } });
-    } else {
-      this.noticeMessage = 'Només els comptes amb rol de "Professional" o "Ambdós" poden fer ofertes econòmiques.';
-    }
+    this.router.navigate(['/tasques-ofertes'], { queryParams: { taskId } });
   }
 
   onVeureTotesOfertes(): void {
@@ -2224,12 +2315,7 @@ export class MainComponent implements OnInit {
   }
 
   onPublicarOferta(): void {
-    if (!this.requireLogin('publicar una oferta de servei', '/professional/crear-oferta')) return;
-    if (this.authService.isProfessional()) {
-      this.router.navigate(['/professional/crear-oferta']);
-    } else {
-      this.noticeMessage = 'Només els comptes amb rol de "Professional" o "Ambdós" poden publicar ofertes de servei.';
-    }
+    this.router.navigate(['/tasques-ofertes'], { queryParams: { tipus: 'ofertes', accio: 'crear-oferta' } });
   }
 
   onAcceptarOferta(offerId: string): void {

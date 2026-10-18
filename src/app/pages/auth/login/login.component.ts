@@ -1,19 +1,20 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 
 /**
  * Component d'Inici de Sessió (/login).
  * Permet a clients, professionals i administradors autenticar-se a la plataforma AVISA
  * amb les seves credencials (correu electrònic i contrasenya).
- * Gestiona missatges informatius, errors d'autenticació i redirecció posterior mitjançant returnUrl.
+ * Gestiona missatges informatius, errors d'autenticació, redirecció posterior mitjançant returnUrl
+ * i enllaç directe cap al registre (/registre) per a nous usuaris.
  */
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   template: `
     <section class="auth-card">
       <h1>Inici de sessió</h1>
@@ -21,17 +22,56 @@ import { AuthService } from '../../../core/services/auth.service';
       <p *ngIf="!message">Introdueix les teves credencials per continuar.</p>
       <form (ngSubmit)="onSubmit()">
         <label>
-          Correu
-          <input type="email" [(ngModel)]="email" name="email" required placeholder="nom@empresa.com" />
+          Correu o usuari
+          <input
+            type="text"
+            [(ngModel)]="email"
+            name="email"
+            required
+            placeholder="cli, pro o nom@empresa.com"
+            autocapitalize="none"
+            autocorrect="off"
+            spellcheck="false"
+            autocomplete="username"
+          />
         </label>
         <label>
           Contrasenya
-          <input type="password" [(ngModel)]="password" name="password" placeholder="••••••••" />
+          <input
+            type="password"
+            [(ngModel)]="password"
+            name="password"
+            placeholder="••••••••"
+            autocapitalize="none"
+            autocorrect="off"
+            spellcheck="false"
+            autocomplete="current-password"
+          />
         </label>
         <button type="submit" [disabled]="loading">
           {{ loading ? 'Entrant...' : 'Entrar' }}
         </button>
         <p *ngIf="error" class="error">{{ error }}</p>
+
+        <!-- Botons d'accés ràpid per a proves des de mòbil o PC -->
+        <div class="quick-test-section">
+          <span class="quick-test-title">Comptes de prova ràpids:</span>
+          <div class="quick-test-buttons">
+            <button type="button" class="btn-quick-user" (click)="omplirCredencials('cli', 'clicli')">
+              👤 Client (cli)
+            </button>
+            <button type="button" class="btn-quick-user" (click)="omplirCredencials('pro', 'propro')">
+              🔨 Pro (pro)
+            </button>
+            <button type="button" class="btn-quick-user" (click)="omplirCredencials('admin@admin.es', 'adminadmin')">
+              ⚙️ Admin
+            </button>
+          </div>
+        </div>
+
+        <p class="footer-hint">
+          Encara no tens compte? <a routerLink="/registre" [queryParams]="returnUrl !== '/' ? { returnUrl: returnUrl } : null">Registra't aquí</a>
+        </p>
       </form>
     </section>
   `,
@@ -128,10 +168,72 @@ import { AuthService } from '../../../core/services/auth.service';
         font-size: 0.875rem;
         margin: 0;
       }
+      .footer-hint {
+        text-align: center;
+        font-size: 0.88rem;
+        color: #57554e;
+        margin: 0.65rem 0 0;
+        font-weight: 600;
+      }
+      .footer-hint a {
+        color: #ff1744;
+        text-decoration: none;
+        font-weight: 800;
+        transition: all 0.15s ease;
+      }
+      .footer-hint a:hover {
+        color: #09090c;
+        text-decoration: underline;
+      }
+      .quick-test-section {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px dashed #dcd6cb;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      .quick-test-title {
+        font-size: 0.78rem;
+        font-weight: 800;
+        color: #78756c;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      .quick-test-buttons {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.45rem;
+      }
+      .btn-quick-user {
+        margin: 0;
+        background: #faf8f4;
+        border: 1px solid #dcd7ce;
+        color: #09090c;
+        padding: 0.55rem 0.4rem;
+        border-radius: 8px;
+        font-size: 0.78rem;
+        font-weight: 800;
+        text-transform: none;
+        letter-spacing: 0;
+        box-shadow: none;
+        cursor: pointer;
+        transition: all 0.15s ease;
+      }
+      .btn-quick-user:hover {
+        background: #09090c;
+        color: #ffffff;
+        border-color: #09090c;
+        transform: translateY(-1px);
+      }
       @media (max-width: 480px) {
         .auth-card {
-          padding: 1.5rem 1.25rem;
+          padding: 1.5rem 1.15rem;
           border-radius: 14px;
+        }
+        .quick-test-buttons {
+          grid-template-columns: 1fr;
+          gap: 0.35rem;
         }
       }
     `
@@ -143,7 +245,7 @@ export class LoginComponent implements OnInit {
   loading = false;
   error = '';
   message = '';
-  private returnUrl = '/';
+  returnUrl = '/';
 
   constructor(
     private readonly authService: AuthService,
@@ -162,22 +264,38 @@ export class LoginComponent implements OnInit {
     });
   }
 
+  omplirCredencials(u: string, p: string): void {
+    this.email = u;
+    this.password = p;
+    this.error = '';
+    this.onSubmit();
+  }
+
   onSubmit(): void {
-    if (!this.email) {
-      this.error = 'Cal indicar un correu electrònic';
+    const cleanEmail = (this.email || '').trim();
+    const cleanPassword = (this.password || '').trim();
+
+    if (!cleanEmail) {
+      this.error = 'Cal indicar un correu o nom d’usuari.';
       return;
     }
     this.loading = true;
     this.error = '';
 
-    this.authService.login({ email: this.email, password: this.password }).subscribe({
-      next: (user) => {
+    this.authService.login({ email: cleanEmail, password: cleanPassword }).subscribe({
+      next: () => {
         this.loading = false;
         this.router.navigateByUrl(this.returnUrl);
       },
-      error: () => {
+      error: (err) => {
         this.loading = false;
-        this.error = 'Error en iniciar sessió. Comprova les dades o el servidor.';
+        if (err.status === 401) {
+          this.error = 'Credencials no vàlides. Comprova l’usuari o contrasenya (p. ex: cli / clicli, pro / propro).';
+        } else if (err.status === 0) {
+          this.error = 'No es pot connectar amb el servidor backend (port 8080). Comprova que estigui executant-se.';
+        } else {
+          this.error = 'Error en iniciar sessió. Comprova les dades o el servidor.';
+        }
       }
     });
   }

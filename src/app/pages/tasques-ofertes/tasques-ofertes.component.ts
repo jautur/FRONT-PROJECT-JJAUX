@@ -25,6 +25,7 @@ interface CategoriaFiltre {
  *    garantint la privadesa dels contractes.
  * 4. Permet cercar per text i filtrar per especialitat / gremi (lampisteria, electricitat, pintura, etc.).
  * 5. Permet obrir el modal de ressenyes d'un professional per consultar el seu historial de valoracions públiques.
+ * 6. Disseny adaptable (responsive) optimitzat per a mòbils: selectors desplegables natius nets (sense barres de lliscament horitzontals molestes), botons tàctils ergonòmics (44px), accions adaptades i inputs anti-zoom en iOS.
  */
 @Component({
   selector: 'app-tasques-ofertes',
@@ -63,7 +64,7 @@ interface CategoriaFiltre {
           <input
             type="text"
             [(ngModel)]="searchQuery"
-            placeholder="Cerca per nom de tasca, professional, client o paraula clau..."
+            placeholder="Cerca per nom, professional, client o paraula clau..."
             aria-label="Cercar tasques i ofertes per nom"
           />
           <button *ngIf="searchQuery" type="button" class="btn-clear-search" (click)="searchQuery = ''" aria-label="Netejar cerca">
@@ -104,6 +105,38 @@ interface CategoriaFiltre {
           >
             Les teues tasques ({{ tasquesFiltrades.length }})
           </button>
+        </div>
+
+        <!-- Selectors de filtre exclusius per a mòbils (sense barres de lliscament horitzontals) -->
+        <div class="mobile-filter-selectors">
+          <div class="mobile-select-box">
+            <label class="mobile-select-label" for="mobile-categoria">Categoria:</label>
+            <select
+              id="mobile-categoria"
+              [(ngModel)]="categoriaSeleccionada"
+              (change)="seleccionarCategoria(categoriaSeleccionada)"
+              class="mobile-native-select"
+            >
+              <option value="totes">📁 Totes les categories ({{ totalElements }})</option>
+              <option *ngFor="let cat of categoriesLlista" [value]="cat.nom">
+                {{ cat.nom }} ({{ comptarElementsPerCategoria(cat.nom) }})
+              </option>
+            </select>
+          </div>
+
+          <div class="mobile-select-box">
+            <label class="mobile-select-label" for="mobile-tipus">Mostrar:</label>
+            <select
+              id="mobile-tipus"
+              [(ngModel)]="tipusFiltre"
+              class="mobile-native-select"
+            >
+              <option value="tots">📋 Tots els anuncis ({{ totalElements }})</option>
+              <option value="ofertes">💼 Ofertes de professionals ({{ ofertesFiltrades.length }})</option>
+              <option value="incidencies">🔧 Incidències de clients ({{ incidenciesFiltrades.length }})</option>
+              <option value="tasques">🤝 Les teues tasques ({{ tasquesFiltrades.length }})</option>
+            </select>
+          </div>
         </div>
       </section>
 
@@ -622,6 +655,50 @@ interface CategoriaFiltre {
         border-color: #09090c;
       }
 
+      /* Selectors de filtre exclusius per a mòbils (sense barres de desplaçament horitzontals) */
+      .mobile-filter-selectors {
+        display: none;
+        width: 100%;
+        gap: 0.75rem;
+        box-sizing: border-box;
+      }
+
+      .mobile-select-box {
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+        min-width: 0;
+      }
+
+      .mobile-select-label {
+        font-size: 0.75rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #716e65;
+      }
+
+      .mobile-native-select {
+        width: 100%;
+        background-color: #faf8f4;
+        border: 1px solid #dcd7cc;
+        border-radius: 9px;
+        padding: 0.65rem 0.75rem;
+        font-size: 0.88rem;
+        font-weight: 700;
+        color: #111827;
+        outline: none;
+        box-sizing: border-box;
+        cursor: pointer;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+      }
+
+      .mobile-native-select:focus {
+        border-color: #ff1744;
+        background-color: #ffffff;
+        box-shadow: 0 0 0 3px rgba(255, 23, 68, 0.12);
+      }
+
       /* Layout */
       .market-layout {
         display: grid;
@@ -1100,74 +1177,7 @@ interface CategoriaFiltre {
         font-weight: bold;
       }
 
-      @media (max-width: 960px) {
-        .market-layout {
-          grid-template-columns: 1fr;
-          gap: 1.25rem;
-        }
 
-        .market-header {
-          flex-direction: column;
-          align-items: flex-start;
-          gap: 1rem;
-        }
-
-        .market-header-actions {
-          width: 100%;
-          display: flex;
-          flex-direction: column;
-          gap: 0.5rem;
-        }
-
-        .btn-create-task, .btn-create-offer {
-          width: 100%;
-          text-align: center;
-        }
-
-        .type-filter-pills {
-          overflow-x: auto;
-          flex-wrap: nowrap;
-          padding-bottom: 0.4rem;
-          -webkit-overflow-scrolling: touch;
-        }
-
-        .filter-pill {
-          white-space: nowrap;
-          flex-shrink: 0;
-        }
-
-        .categories-table {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-          gap: 0.35rem;
-        }
-
-        .market-card {
-          padding: 1.15rem 1rem;
-        }
-
-        .card-bottom-bar {
-          flex-direction: column;
-          align-items: flex-start;
-          gap: 0.75rem;
-        }
-
-        .card-actions {
-          width: 100%;
-          display: flex;
-        }
-
-        .btn-action-detail, .btn-action-primary {
-          flex: 1;
-          text-align: center;
-        }
-      }
-
-      @media (max-width: 480px) {
-        .categories-table {
-          grid-template-columns: 1fr;
-        }
-      }
 
       .pro-rating-row {
         display: flex;
@@ -1458,6 +1468,253 @@ interface CategoriaFiltre {
         background: #fee2e2;
         border-color: #dc2626;
       }
+
+      /* ============================================================== */
+      /* ADAPTACIÓ RESPONSIVE I USABILITAT PER A DISPOSITIUS MÒBILS    */
+      /* ============================================================== */
+      @media (max-width: 960px) {
+        .market-page {
+          padding: 0.75rem 0.75rem 3.5rem;
+        }
+
+        /* Oculta la columna vertical de categories en mòbils */
+        .categories-sidebar {
+          display: none !important;
+        }
+
+        /* Oculta les pastilles horitzontals en mòbil per evitar qualsevol barra de desplaçament */
+        .type-filter-pills {
+          display: none !important;
+        }
+
+        /* Mostra els selectors desplegables natius adaptats a mòbils */
+        .mobile-filter-selectors {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 0.65rem;
+          width: 100%;
+        }
+
+        .market-layout {
+          grid-template-columns: 1fr;
+          gap: 1rem;
+        }
+
+        .market-header {
+          flex-direction: column;
+          align-items: stretch;
+          padding: 1.25rem 1rem;
+          border-radius: 14px;
+          margin-bottom: 1rem;
+          gap: 0.85rem;
+        }
+
+        .market-header h1 {
+          font-size: 1.45rem;
+          line-height: 1.25;
+        }
+
+        .market-subtitle {
+          font-size: 0.85rem;
+          line-height: 1.45;
+        }
+
+        .market-header-actions {
+          width: 100%;
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 0.5rem;
+        }
+
+        .btn-create-task,
+        .btn-create-offer {
+          width: 100%;
+          text-align: center;
+          padding: 0.65rem 0.5rem;
+          font-size: 0.82rem;
+          white-space: normal;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          box-sizing: border-box;
+          min-height: 44px;
+          border-radius: 9px;
+        }
+
+        .search-filter-bar {
+          padding: 0.85rem 0.95rem;
+          border-radius: 14px;
+          margin-bottom: 1rem;
+          gap: 0.75rem;
+        }
+
+        .search-input-wrap {
+          border-radius: 9px;
+          padding: 0 0.85rem;
+        }
+
+        .search-input-wrap input {
+          font-size: 16px; /* Impedeix el zoom forçat a navegadors mòbils com iOS Safari */
+          padding: 0.75rem 0;
+        }
+
+        .results-block {
+          margin-bottom: 2rem;
+        }
+
+        .results-block-header {
+          margin-bottom: 0.85rem;
+          flex-wrap: wrap;
+          gap: 0.4rem;
+        }
+
+        .results-block-header h2 {
+          font-size: 1.15rem;
+        }
+
+        .market-card {
+          padding: 1.15rem 1rem;
+          border-radius: 12px;
+          gap: 0.75rem;
+        }
+
+        .card-top-bar {
+          gap: 0.4rem;
+        }
+
+        .card-item-title {
+          font-size: 1.08rem;
+        }
+
+        .card-item-desc {
+          font-size: 0.88rem;
+          line-height: 1.48;
+        }
+
+        .card-meta-line {
+          font-size: 0.82rem;
+          flex-wrap: wrap;
+          gap: 0.35rem 0.5rem;
+        }
+
+        .pro-rating-inline {
+          margin-left: 0;
+          width: 100%;
+          display: flex;
+          align-items: center;
+          gap: 0.35rem;
+          margin-top: 0.25rem;
+          font-size: 0.82rem;
+        }
+
+        .card-bottom-bar {
+          flex-direction: column;
+          align-items: stretch;
+          gap: 0.65rem;
+          padding-top: 0.75rem;
+        }
+
+        .budget-wrap {
+          flex-direction: row;
+          justify-content: space-between;
+          align-items: center;
+          background: #faf8f4;
+          padding: 0.5rem 0.75rem;
+          border-radius: 8px;
+          border: 1px solid #eeeae0;
+        }
+
+        .budget-label {
+          font-size: 0.72rem;
+        }
+
+        .budget-value {
+          font-size: 1.05rem;
+        }
+
+        .card-actions {
+          width: 100%;
+          display: flex;
+          gap: 0.5rem;
+        }
+
+        .btn-action-detail,
+        .btn-action-primary,
+        .btn-action-delete-offer {
+          flex: 1;
+          text-align: center;
+          padding: 0.65rem 0.85rem;
+          font-size: 0.85rem;
+          min-height: 42px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          box-sizing: border-box;
+          border-radius: 8px;
+        }
+
+        .btn-action-delete-offer {
+          flex: 0 0 auto;
+          padding: 0.65rem 0.95rem;
+        }
+
+        .empty-state {
+          padding: 2.25rem 1.25rem;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .mobile-filter-selectors {
+          grid-template-columns: 1fr;
+          gap: 0.5rem;
+        }
+
+        .market-header-actions {
+          grid-template-columns: 1fr;
+        }
+
+        .btn-create-task,
+        .btn-create-offer {
+          font-size: 0.85rem;
+        }
+
+        .market-header h1 {
+          font-size: 1.4rem;
+        }
+
+        .modal-backdrop {
+          padding: 0;
+          align-items: flex-end;
+        }
+
+        .modal-dialog {
+          width: 100%;
+          max-height: 90vh;
+          border-radius: 18px 18px 0 0;
+        }
+
+        .modal-header {
+          padding: 1rem 1.15rem;
+        }
+
+        .modal-body {
+          padding: 1rem 1.15rem;
+        }
+
+        .modal-footer {
+          padding: 0.75rem 1.15rem;
+          flex-direction: column;
+          gap: 0.5rem;
+        }
+
+        .btn-view-full-profile,
+        .btn-primary-close {
+          width: 100%;
+          margin: 0;
+          text-align: center;
+          padding: 0.75rem 1rem;
+        }
+      }
     `
   ]
 })
@@ -1552,6 +1809,14 @@ export class TasquesOfertesComponent implements OnInit {
       }
       if (params['cerca']) {
         this.searchQuery = params['cerca'];
+      }
+      if (params['avis'] || params['avís']) {
+        this.noticeMessage = params['avis'] || params['avís'];
+      }
+      if (params['accio'] === 'crear-incidencia') {
+        setTimeout(() => this.onNovaIncidencia(), 100);
+      } else if (params['accio'] === 'crear-oferta') {
+        setTimeout(() => this.onNovaOferta(), 100);
       }
     });
     this.carregarDades();
@@ -1959,7 +2224,7 @@ export class TasquesOfertesComponent implements OnInit {
   onNovaIncidencia(): void {
     if (!this.requireLogin('publicar una incidència', '/client/crear-tasca')) return;
     if (this.authService.isClient()) {
-      this.router.navigate(['/client/crear-tasca']);
+      this.router.navigate(['/client/crear-tasca'], { queryParams: { origen: 'tasques-ofertes' } });
     } else {
       this.noticeMessage = 'Només els comptes amb rol de "Client" o "Ambdós" poden publicar incidències.';
     }
@@ -1968,7 +2233,7 @@ export class TasquesOfertesComponent implements OnInit {
   onNovaOferta(): void {
     if (!this.requireLogin('publicar una oferta professional', '/professional/crear-oferta')) return;
     if (this.authService.isProfessional()) {
-      this.router.navigate(['/professional/crear-oferta']);
+      this.router.navigate(['/professional/crear-oferta'], { queryParams: { origen: 'tasques-ofertes' } });
     } else {
       this.noticeMessage = 'Només els comptes amb rol de "Professional" o "Ambdós" poden publicar ofertes de servei.';
     }
@@ -1986,7 +2251,7 @@ export class TasquesOfertesComponent implements OnInit {
   onFerOferta(taskId: string): void {
     if (!this.requireLogin(`fer una oferta per a la tasca ${taskId}`, '/professional/crear-oferta')) return;
     if (this.authService.isProfessional()) {
-      this.router.navigate(['/professional/crear-oferta'], { queryParams: { taskId } });
+      this.router.navigate(['/professional/crear-oferta'], { queryParams: { taskId, origen: 'tasques-ofertes' } });
     } else {
       this.noticeMessage = 'Només els comptes amb rol de "Professional" o "Ambdós" poden fer ofertes econòmiques.';
     }

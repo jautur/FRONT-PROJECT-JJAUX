@@ -16,4 +16,6 @@ export interface Avis {
   llegit?: boolean;
   /** Data i hora d'emissió de la notificació */
   data: string | Date;
+  /** Enllaç de redirecció a l'apartat relacionat amb l'avís */
+  enllac?: string;
 }

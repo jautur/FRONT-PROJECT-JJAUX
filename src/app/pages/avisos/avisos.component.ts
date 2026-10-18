@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { AvisService } from '../../services/avis.service';
 import { AuthService } from '../../core/services/auth.service';
 import { Avis } from '../../models/avis.model';
@@ -75,6 +75,8 @@ type FiltreAvisos = 'totes' | 'pendents' | 'llegides';
           *ngFor="let a of avisosFiltrats"
           class="avis-card"
           [class.no-llegit]="!a.llegit"
+          (click)="anarApartat(a)"
+          title="Clica per anar a l'apartat relacionat amb aquest avís"
         >
           <div class="avis-indicator">
             <span class="dot" *ngIf="!a.llegit" title="Pendent de llegir"></span>
@@ -82,21 +84,45 @@ type FiltreAvisos = 'totes' | 'pendents' | 'llegides';
 
           <div class="avis-body">
             <div class="avis-meta">
+              <span class="badge-category" [style.background]="getCategoryBadgeStyle(a).bg" [style.color]="getCategoryBadgeStyle(a).color">
+                {{ getCategoriaAvis(a) }}
+              </span>
               <span class="badge-status" [class.badge-pendent]="!a.llegit" [class.badge-llegit]="a.llegit">
                 {{ a.llegit ? 'Llegit' : 'Nou' }}
               </span>
               <span class="avis-date">{{ formatData(a.data) }}</span>
             </div>
             <p class="avis-text">{{ a.missatge }}</p>
+            <span class="avis-link-hint">
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 3px;">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                <polyline points="15 3 21 3 21 9"></polyline>
+                <line x1="10" y1="14" x2="21" y2="3"></line>
+              </svg>
+              {{ getNomDestinacio(a) }}
+            </span>
           </div>
 
           <div class="avis-actions">
+            <button
+              type="button"
+              class="btn-icon btn-anar"
+              title="Anar a l'apartat relacionat"
+              (click)="$event.stopPropagation(); anarApartat(a)"
+            >
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                <polyline points="15 3 21 3 21 9"></polyline>
+                <line x1="10" y1="14" x2="21" y2="3"></line>
+              </svg>
+              Obrir apartat
+            </button>
             <button
               *ngIf="!a.llegit"
               type="button"
               class="btn-icon"
               title="Marcar com a llegit"
-              (click)="marcarLlegit(a.id)"
+              (click)="$event.stopPropagation(); marcarLlegit(a.id)"
             >
               <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;">
                 <polyline points="20 6 9 17 4 12"></polyline>
@@ -107,7 +133,7 @@ type FiltreAvisos = 'totes' | 'pendents' | 'llegides';
               type="button"
               class="btn-icon danger"
               title="Eliminar notificació"
-              (click)="eliminarAvis(a.id)"
+              (click)="$event.stopPropagation(); eliminarAvis(a.id)"
               aria-label="Eliminar"
             >
               <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -204,15 +230,33 @@ type FiltreAvisos = 'totes' | 'pendents' | 'llegides';
       border-radius: 12px;
       padding: 1.1rem 1.35rem;
       box-shadow: 0 2px 12px rgba(0, 0, 0, 0.03);
+      cursor: pointer;
       transition: all 0.2s ease;
     }
     .avis-card:hover {
-      border-color: #d6d0c4;
+      border-color: #09090c;
       background: #faf8f4;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
     }
     .avis-card.no-llegit {
       border-left: 4px solid #ff1744;
       background: #ffffff;
+    }
+    .badge-category {
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      padding: 0.2rem 0.55rem;
+      border-radius: 9999px;
+      letter-spacing: 0.02em;
+    }
+    .avis-link-hint {
+      display: inline-block;
+      margin-top: 0.45rem;
+      font-size: 0.78rem;
+      color: #ff1744;
+      font-weight: 800;
     }
     .avis-indicator {
       width: 14px;
@@ -283,6 +327,16 @@ type FiltreAvisos = 'totes' | 'pendents' | 'llegides';
     .btn-icon:hover {
       border-color: #ff1744;
       color: #ff1744;
+    }
+    .btn-icon.btn-anar {
+      background: #09090c;
+      color: #ffffff;
+      border-color: #09090c;
+    }
+    .btn-icon.btn-anar:hover {
+      background: #ff1744;
+      border-color: #ff1744;
+      color: #ffffff;
     }
     .btn-icon.danger {
       color: #dc2626;
@@ -422,8 +476,101 @@ export class AvisosComponent implements OnInit {
 
   constructor(
     private readonly avisService: AvisService,
-    private readonly authService: AuthService
+    private readonly authService: AuthService,
+    private readonly router: Router
   ) {}
+
+  /**
+   * Navega a l'apartat corresponent a l'avís i el marca com a llegit si no ho estava.
+   * @param a Notificació clicada
+   */
+  anarApartat(a: Avis): void {
+    if (!a.llegit) {
+      this.marcarLlegit(a.id);
+    }
+    const ruta = this.getDestinacioAvis(a);
+    if (ruta) {
+      this.router.navigateByUrl(ruta);
+    }
+  }
+
+  /**
+   * Obté la ruta URL de destinació segons la informació de l'avís.
+   * @param a Notificació
+   * @returns Ruta de navegació interna
+   */
+  getDestinacioAvis(a: Avis): string {
+    if (a.enllac && a.enllac.trim() !== '') {
+      return a.enllac;
+    }
+    const text = (a.missatge || '').toLowerCase();
+    const user = this.authService.getCurrentUser();
+    const isProf = user?.rol === 'professional';
+
+    if (text.includes('oferta') || text.includes('contractaci') || text.includes('servei')) {
+      return isProf ? '/professional/les-meves-ofertes' : '/tasques-ofertes';
+    }
+    if (text.includes('pressupost')) {
+      return isProf ? '/tasques-ofertes' : '/client/les-meves-tasques';
+    }
+    if (text.includes('tasca') || text.includes('treball') || text.includes('finalitzat') || text.includes('contractada') || text.includes('incidència') || text.includes('incidencia')) {
+      return isProf ? '/professional/les-meves-ofertes' : '/client/les-meves-tasques';
+    }
+    if (text.includes('perfil') || text.includes('comissió') || text.includes('percentil') || text.includes('ressenya') || text.includes('resenya')) {
+      return '/perfil';
+    }
+    return isProf ? '/professional/les-meves-ofertes' : '/client/les-meves-tasques';
+  }
+
+  /**
+   * Obté el text indicatiu de la destinació de l'enllaç.
+   * @param a Notificació
+   * @returns Etiqueta de la destinació
+   */
+  getNomDestinacio(a: Avis): string {
+    const ruta = this.getDestinacioAvis(a);
+    if (ruta.includes('les-meves-tasques')) return 'Veure les meves tasques';
+    if (ruta.includes('les-meves-ofertes')) return 'Veure les meves ofertes';
+    if (ruta.includes('tasques-ofertes')) return 'Veure mercat d\'ofertes';
+    if (ruta.includes('tasca-detall')) return 'Veure detall de la tasca';
+    if (ruta.includes('perfil')) return 'Anar al meu perfil';
+    return 'Veure apartat';
+  }
+
+  /**
+   * Obté la categoria visual per a l'avís.
+   * @param a Notificació
+   * @returns Categoria
+   */
+  getCategoriaAvis(a: Avis): string {
+    const text = (a.missatge || '').toLowerCase();
+    if (text.includes('pressupost')) return 'PRESSUPOST';
+    if (text.includes('oferta') || text.includes('contractaci')) return 'OFERTA';
+    if (text.includes('tasca') || text.includes('incidència') || text.includes('incidencia') || text.includes('treball')) return 'TASCA';
+    if (text.includes('perfil') || text.includes('percentil') || text.includes('comissió') || text.includes('ressenya') || text.includes('resenya')) return 'PERFIL';
+    return 'AVÍS';
+  }
+
+  /**
+   * Retorna els colors de fons i text per a la categoria de l'avís.
+   * @param a Notificació
+   * @returns Objecte amb bg i color
+   */
+  getCategoryBadgeStyle(a: Avis): { bg: string; color: string } {
+    const cat = this.getCategoriaAvis(a);
+    switch (cat) {
+      case 'PRESSUPOST':
+        return { bg: '#fef3c7', color: '#b45309' };
+      case 'OFERTA':
+        return { bg: '#ecfdf5', color: '#047857' };
+      case 'TASCA':
+        return { bg: '#e0f2fe', color: '#0369a1' };
+      case 'PERFIL':
+        return { bg: '#ede9fe', color: '#6d28d9' };
+      default:
+        return { bg: '#f3f4f6', color: '#374151' };
+    }
+  }
 
   /**
    * Inicialització del component: carrega els avisos de l'usuari connectat.

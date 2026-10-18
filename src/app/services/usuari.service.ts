@@ -55,7 +55,16 @@ export class UsuariService {
    * @returns Observable amb l'usuari actualitzat
    */
   updateProfile(id: string, data: Partial<Usuari>): Observable<Usuari> {
-    return this.http.put<Usuari>(`${this.apiUrl}/${id}`, data);
+    const raw = localStorage.getItem('jjaux_user');
+    const headers: Record<string, string> = {};
+    if (raw) {
+      try {
+        const u = JSON.parse(raw);
+        if (u.rol) headers['X-User-Rol'] = u.rol;
+        if (u.id) headers['X-User-Id'] = u.id;
+      } catch {}
+    }
+    return this.http.put<Usuari>(`${this.apiUrl}/${id}`, data, { headers });
   }
 
   /**

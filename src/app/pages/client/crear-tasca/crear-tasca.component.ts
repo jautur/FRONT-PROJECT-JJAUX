@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TascaService, CreateTascaDto } from '../../../services/tasca.service';
 import { IncidenciaService } from '../../../services/incidencia.service';
 import { CrearIncidenciaDTO } from '../../../models/incidencia.model';
@@ -11,6 +11,7 @@ import { AuthService } from '../../../core/services/auth.service';
  * Component per a la creació i publicació de noves tasques (/client/crear-tasca).
  * Permet als usuaris amb rol de Client detallar una necessitat, seleccionar una categoria
  * i establir un pressupost orientatiu per rebre ofertes de professionals.
+ * Disseny net i directe sense barres de desplaçament horitzontals.
  */
 @Component({
   selector: 'app-crear-tasca',
@@ -26,24 +27,6 @@ import { AuthService } from '../../../core/services/auth.service';
           rebran la notificació immediata i et proposaran pressupostos a mida.
         </p>
       </header>
-
-      <!-- Banner de flux de treball explicatiu -->
-      <div class="workflow-info-strip">
-        <div class="wf-step">
-          <span class="step-num">1</span>
-          <span>Creació d'Incidència</span>
-        </div>
-        <span class="wf-arrow">→</span>
-        <div class="wf-step">
-          <span class="step-num">2</span>
-          <span>Pressupostos dels Professionals</span>
-        </div>
-        <span class="wf-arrow">→</span>
-        <div class="wf-step highlight">
-          <span class="step-num">3</span>
-          <span>Conversió a TASCA en curs (++)</span>
-        </div>
-      </div>
 
       <div *ngIf="errorMessage" class="alert alert-danger">
         {{ errorMessage }}
@@ -118,6 +101,8 @@ import { AuthService } from '../../../core/services/auth.service';
         display: flex;
         flex-direction: column;
         gap: 1.5rem;
+        box-sizing: border-box;
+        overflow-x: hidden;
       }
 
       .role-badge-tag {
@@ -132,53 +117,6 @@ import { AuthService } from '../../../core/services/auth.service';
         padding: 0.3rem 0.75rem;
         border-radius: 6px;
         margin-bottom: 0.6rem;
-      }
-
-      .workflow-info-strip {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        background: #ffffff;
-        border: 1px solid #e5e0d7;
-        border-radius: 12px;
-        padding: 0.75rem 1.25rem;
-        font-size: 0.82rem;
-        font-weight: 700;
-        color: #636058;
-        overflow-x: auto;
-      }
-
-      .wf-step {
-        display: flex;
-        align-items: center;
-        gap: 0.4rem;
-        white-space: nowrap;
-      }
-
-      .wf-step.highlight {
-        color: #ff1744;
-      }
-
-      .step-num {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 20px;
-        height: 20px;
-        border-radius: 50%;
-        background: #09090c;
-        color: #ffffff;
-        font-size: 0.72rem;
-        font-weight: 900;
-      }
-
-      .wf-step.highlight .step-num {
-        background: #ff1744;
-      }
-
-      .wf-arrow {
-        color: #b0aba0;
-        font-weight: 900;
       }
 
       .form-header h1 {
@@ -217,6 +155,9 @@ import { AuthService } from '../../../core/services/auth.service';
       }
 
       input, select, textarea {
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
         background: #ffffff;
         border: 1.5px solid #d6d0c4;
         border-radius: 10px;
@@ -226,6 +167,10 @@ import { AuthService } from '../../../core/services/auth.service';
         font-family: inherit;
         font-weight: 600;
         transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      textarea {
+        resize: vertical;
       }
 
       input:focus, select:focus, textarea:focus {
@@ -341,13 +286,24 @@ export class CrearTascaComponent implements OnInit {
     private readonly incidenciaService: IncidenciaService,
     private readonly tascaService: TascaService,
     private readonly authService: AuthService,
+    private readonly route: ActivatedRoute,
     private readonly router: Router
   ) {}
 
   /**
-   * Inicialització: assigna automàticament el client a partir de l'usuari connectat.
+   * Inicialització: comprova l'origen des de tasques-ofertes i assigna el client.
    */
   ngOnInit(): void {
+    const origen = this.route.snapshot.queryParams['origen'] || (typeof history !== 'undefined' ? history.state?.origen : null);
+    if (origen !== 'tasques-ofertes') {
+      this.router.navigate(['/tasques-ofertes'], {
+        queryParams: {
+          avís: 'Per a publicar una incidència cal fer-ho des de la secció de Tasques i Ofertes.'
+        }
+      });
+      return;
+    }
+
     const user = this.authService.getCurrentUser();
     if (user) {
       this.formData.client = user.nom;
