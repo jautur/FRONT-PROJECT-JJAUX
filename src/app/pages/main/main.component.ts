@@ -476,8 +476,8 @@ import { Article } from '../../models/article.model';
 
       .fullscreen-cover {
         width: 100%;
-        height: calc(100vh - 48px);
-        min-height: 560px;
+        height: 100vh;
+        min-height: 100vh;
         background-image: linear-gradient(rgba(8, 8, 12, 0.52), rgba(8, 8, 12, 0.78)),
           url('https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=2000&q=80');
         background-size: cover;
@@ -1817,8 +1817,8 @@ import { Article } from '../../models/article.model';
 
       @media (max-width: 640px) {
         .fullscreen-cover {
-          height: 85vh;
-          min-height: 480px;
+          height: 100vh;
+          min-height: 100vh;
           padding: 1.5rem 1rem;
         }
         .hero-brand {

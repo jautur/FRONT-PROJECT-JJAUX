@@ -17,6 +17,32 @@ const MIME_TYPES = {
 };
 
 const server = http.createServer((req, res) => {
+  // Proxy cap al backend Spring Boot per a totes les peticions /api
+  if (req.url.startsWith('/api')) {
+    const proxyReq = http.request({
+      hostname: '127.0.0.1',
+      port: 8080,
+      path: req.url,
+      method: req.method,
+      headers: { ...req.headers, host: 'localhost:8080' }
+    }, (proxyRes) => {
+      res.writeHead(proxyRes.statusCode, proxyRes.headers);
+      proxyRes.pipe(res, { end: true });
+    });
+
+    proxyReq.on('error', (err) => {
+      res.writeHead(502, { 'Content-Type': 'application/json; charset=utf-8' });
+      res.end(JSON.stringify({
+        status: 502,
+        error: 'Bad Gateway',
+        missatges: { servidor: 'El servidor backend no respon al port 8080.' }
+      }));
+    });
+
+    req.pipe(proxyReq, { end: true });
+    return;
+  }
+
   let safePath = path.normalize(req.url.split('?')[0]);
   let filePath = path.join(DIST_DIR, safePath);
 

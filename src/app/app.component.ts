@@ -25,6 +25,9 @@ export class AppComponent implements OnInit, OnDestroy {
   /** Nombre d'avisos pendents */
   avisosPendents = 0;
 
+  /** Idioma actiu de la plataforma ('VA' per defecte, 'ES', 'EN') */
+  currentLang: 'EN' | 'VA' | 'ES' = 'VA';
+
   /** Indica si la pàgina actual és la de safata d'avisos */
   isAvisosPage = false;
 
@@ -60,11 +63,12 @@ export class AppComponent implements OnInit, OnDestroy {
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
         this.perfilDropdownObert = false;
-        this.isHomePage = event.urlAfterRedirects === '/' || event.urlAfterRedirects === '';
-        this.isAvisosPage = event.urlAfterRedirects.startsWith('/avisos');
+        const url = event.urlAfterRedirects || '';
+        this.isHomePage = url === '/' || url === '' || url.startsWith('/?');
+        this.isAvisosPage = url.startsWith('/avisos');
         this.actualitzarAvisos();
         if (!this.isHomePage) {
-          // A les pàgines secundàries el fons sempre és llis per llegibilitat
+          // A les pàgines secundàries la barra superior està disponible directament
           this.isScrolled = true;
           this.wasScrolled = true;
           this.menuObert = false;
@@ -81,6 +85,12 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    if (typeof localStorage !== 'undefined') {
+      const savedLang = localStorage.getItem('avisa_lang') as 'EN' | 'VA' | 'ES' | null;
+      if (savedLang && (savedLang === 'EN' || savedLang === 'VA' || savedLang === 'ES')) {
+        this.currentLang = savedLang;
+      }
+    }
     this.actualitzarAvisos();
     this.checkScroll();
 
@@ -133,9 +143,9 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Comprova la posició de scroll per activar el fons llis i obrir el menú esquerre.
-   * En telèfons mòbils mai no s'obre automàticament per no envair la pantalla de l'usuari.
-   * Si l'usuari l'ha tancat manualment, no es tornarà a forçar obert en cada píxel de scroll.
+   * Comprova la posició de scroll a la pàgina d'inici:
+   * La barra superior (topbar) es manté amagada a dalt de tot de la portada (scrollY <= 70)
+   * i apareix suaument amb tot el seu contingut pertinent quan l'usuari llisca cap avall (scrollY > 70).
    */
   private checkScroll(): void {
     if (!this.isHomePage) {
@@ -146,10 +156,6 @@ export class AppComponent implements OnInit, OnDestroy {
     const scrollY = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
     if (scrollY > 70) {
       this.isScrolled = true;
-      // Només s'obre automàticament en pantalla d'escriptori (mai en mòbils) a la primera transició cap avall si l'usuari no l'ha tancat
-      if (!this.wasScrolled && !this.menuOcultatPerUsuari && !this.isMobile()) {
-        this.menuObert = true;
-      }
       this.wasScrolled = true;
     } else {
       this.isScrolled = false;
@@ -176,6 +182,19 @@ export class AppComponent implements OnInit, OnDestroy {
   tancarMenu(): void {
     this.menuObert = false;
     this.menuOcultatPerUsuari = true;
+  }
+
+  /**
+   * Canvia l'idioma seleccionat (EN, VA, ES) i el desa a localStorage.
+   */
+  setLanguage(lang: 'EN' | 'VA' | 'ES', event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
+    this.currentLang = lang;
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem('avisa_lang', lang);
+    }
   }
 
   /**

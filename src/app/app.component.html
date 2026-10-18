@@ -1,6 +1,6 @@
 <div class="shell" [class.has-solid-header]="isScrolled" [class.sidebar-open]="menuObert && isScrolled" [class.not-home-page]="!isHomePage">
-  <!-- Capçalera superior fixa amb el títol centrat -->
-  <header class="topbar" [class.solid-header]="isScrolled">
+  <!-- Capçalera superior que es mostra exclusivament després de fer scroll cap avall o en pàgines secundàries -->
+  <header class="topbar" [class.visible-bar]="!isHomePage || isScrolled" [class.solid-header]="isScrolled || !isHomePage">
     <!-- Botó per obrir/tancar el menú a l'esquerra -->
     <div class="topbar-left">
       <button
@@ -27,7 +27,7 @@
         <a routerLink="/" class="brand-title">AVISA</a>
       </div>
 
-      <!-- Enllaços que es mostren al costat en fer hover sobre la barra de dalt -->
+      <!-- Enllaços ràpids visibles directament a la barra de dalt -->
       <nav class="topbar-links-inline" aria-label="Enllaços ràpids">
         <a routerLink="/blog" routerLinkActive="active-top-link" class="top-nav-link" title="Blog i Guies">
           <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -57,9 +57,47 @@
       </nav>
     </div>
 
-    <!-- Espai dret d'equilibri visual amb botó i vista prèvia desplegable de perfil -->
-    <div class="topbar-right profile-dropdown-container">
-      <button
+    <!-- Espai dret d'equilibri visual amb botó d'idioma i vista prèvia desplegable de perfil -->
+    <div class="topbar-right">
+      <!-- Botó selector d'idioma (EN | VA | ES) -->
+      <div class="lang-switcher-btn" title="Canviar idioma / Cambiar idioma / Change language">
+        <span class="lang-globe-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="2" y1="12" x2="22" y2="12"></line>
+            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+          </svg>
+        </span>
+        <button
+          type="button"
+          class="lang-opt-btn"
+          [class.active]="currentLang === 'EN'"
+          (click)="setLanguage('EN', $event)"
+          title="English">
+          EN
+        </button>
+        <span class="lang-sep">|</span>
+        <button
+          type="button"
+          class="lang-opt-btn"
+          [class.active]="currentLang === 'VA'"
+          (click)="setLanguage('VA', $event)"
+          title="Valencià">
+          VA
+        </button>
+        <span class="lang-sep">|</span>
+        <button
+          type="button"
+          class="lang-opt-btn"
+          [class.active]="currentLang === 'ES'"
+          (click)="setLanguage('ES', $event)"
+          title="Español">
+          ES
+        </button>
+      </div>
+
+      <div class="profile-dropdown-container">
+        <button
         type="button"
         class="quick-profile-btn"
         (click)="togglePerfilDropdown($event)"
@@ -163,7 +201,8 @@
         </div>
       </div>
     </div>
-  </header>
+  </div>
+</header>
 
   <!-- MENÚ LATERAL A L'ESQUERRA -->
   <aside class="sidebar-left" [class.open]="menuObert">

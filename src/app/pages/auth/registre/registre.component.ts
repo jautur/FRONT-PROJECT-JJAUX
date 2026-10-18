@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService, RegisterData } from '../../../core/services/auth.service';
+import { TermesModalComponent } from '../termes-modal/termes-modal.component';
 
 /**
  * Component de Registre d'usuaris (/registre).
@@ -10,29 +11,36 @@ import { AuthService, RegisterData } from '../../../core/services/auth.service';
  * - Client: requereix email i contrasenya; pot publicar peticions i feines.
  * - Professional (fill del client): hereta tot el que fa el client, requereix a més
  *   un número de telèfon obligatori i pot resoldre peticions (presentar ofertes).
+ * 
+ * Inclou formulari reactiu (ReactiveFormsModule) amb dues caselles obligatòries
+ * no marcades per defecte (Validators.requiredTrue):
+ * - acceptedTerms: Termes i Condicions d'Ús d'AVISA.
+ * - acceptedPrivacy: Política de Privacitat i protecció de dades.
+ * 
+ * Permet obrir el modal amb el text legal complet sense sortir del formulari.
  */
 @Component({
   selector: 'app-registre',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, TermesModalComponent],
   template: `
     <section class="auth-card">
       <h1>Crear un compte</h1>
       <p class="subtitle">Registra't a AVISA com a client o com a professional.</p>
 
-      <div *ngIf="errorMessage" class="alert alert-danger">
+      <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
         {{ errorMessage }}
       </div>
 
-      <form (ngSubmit)="onRegister()">
+      <form [formGroup]="registerForm" (ngSubmit)="onRegister()">
         <!-- Selecció de Tipus de Compte (Herència) -->
-        <label>
-          Tipus de compte
+        <div class="field-wrap">
+          <span class="field-label">Tipus de compte</span>
           <div class="role-selector">
             <button
               type="button"
               class="role-btn"
-              [class.active]="formData.rol === 'client'"
+              [class.active]="registerForm.get('rol')?.value === 'client'"
               (click)="onSelectRole('client')">
               <strong>Client</strong>
               <small>Publicar feines i peticions</small>
@@ -41,73 +49,176 @@ import { AuthService, RegisterData } from '../../../core/services/auth.service';
             <button
               type="button"
               class="role-btn"
-              [class.active]="formData.rol === 'professional'"
+              [class.active]="registerForm.get('rol')?.value === 'professional'"
               (click)="onSelectRole('professional')">
               <strong>Professional</strong>
               <small>Client + Resoldre peticions (requereix telèfon)</small>
             </button>
           </div>
-        </label>
+        </div>
 
         <!-- Informació pedagògica del rol seleccionat -->
-        <div class="role-info-box" [ngClass]="formData.rol">
-          <div *ngIf="formData.rol === 'client'">
+        <div class="role-info-box" [ngClass]="registerForm.get('rol')?.value">
+          <div *ngIf="registerForm.get('rol')?.value === 'client'">
             ℹ️ Com a <strong>Client</strong>, podràs publicar peticions de feina i revisar pressupostos. Només requereix correu i contrasenya.
           </div>
-          <div *ngIf="formData.rol === 'professional'">
+          <div *ngIf="registerForm.get('rol')?.value === 'professional'">
             ℹ️ Com a <strong>Professional</strong> (fill del client), podràs fer tot el que fa el client (publicar feines) i a més <strong>resoldre peticions</strong> d'altres usuaris. Requereix telèfon obligatori.
           </div>
         </div>
 
+        <!-- Nom complet -->
         <label>
           Nom complet o comercial *
-          <input type="text" [(ngModel)]="formData.nom" name="nom" required placeholder="Ex: Joan Garcia" />
+          <input
+            type="text"
+            formControlName="nom"
+            required
+            placeholder="Ex: Joan Garcia"
+            [class.input-error]="submitted && registerForm.get('nom')?.invalid"
+          />
+          <small *ngIf="submitted && registerForm.get('nom')?.hasError('required')" class="field-error-text">
+            El nom és obligatori.
+          </small>
         </label>
 
+        <!-- Correu electrònic -->
         <label>
           Correu electrònic *
-          <input type="email" [(ngModel)]="formData.email" name="email" required placeholder="nom@exemple.cat" />
+          <input
+            type="email"
+            formControlName="email"
+            required
+            placeholder="nom@exemple.cat"
+            autocapitalize="none"
+            spellcheck="false"
+            [class.input-error]="submitted && registerForm.get('email')?.invalid"
+          />
+          <small *ngIf="submitted && registerForm.get('email')?.hasError('required')" class="field-error-text">
+            El correu electrònic és obligatori.
+          </small>
+          <small *ngIf="submitted && registerForm.get('email')?.hasError('email')" class="field-error-text">
+            Introdueix un correu electrònic vàlid.
+          </small>
         </label>
 
         <!-- Telèfon obligatori per a professionals -->
-        <label *ngIf="formData.rol === 'professional'">
+        <label *ngIf="registerForm.get('rol')?.value === 'professional'">
           Telèfon de contacte (Obligatori per a professionals) *
           <input
             type="tel"
-            [(ngModel)]="formData.telefon"
-            name="telefon"
+            formControlName="telefon"
             required
             placeholder="Ex: +34 600 123 456"
             class="input-required"
+            [class.input-error]="submitted && registerForm.get('rol')?.value === 'professional' && !registerForm.get('telefon')?.value"
           />
           <small class="hint">Necessari perquè els clients et puguin contactar quan resolguis les seves peticions.</small>
+          <small *ngIf="submitted && registerForm.get('rol')?.value === 'professional' && !registerForm.get('telefon')?.value" class="field-error-text">
+            El telèfon és obligatori per a professionals.
+          </small>
         </label>
 
+        <!-- Contrasenya -->
         <label>
           Contrasenya *
-          <input type="password" [(ngModel)]="formData.password" name="password" required minlength="6" placeholder="Mínim 6 caràcters" />
+          <input
+            type="password"
+            formControlName="password"
+            required
+            minlength="6"
+            placeholder="Mínim 6 caràcters"
+            [class.input-error]="submitted && registerForm.get('password')?.invalid"
+          />
+          <small *ngIf="submitted && registerForm.get('password')?.hasError('required')" class="field-error-text">
+            La contrasenya és obligatòria.
+          </small>
+          <small *ngIf="submitted && registerForm.get('password')?.hasError('minlength')" class="field-error-text">
+            La contrasenya ha de tenir com a mínim 6 caràcters.
+          </small>
         </label>
 
+        <!-- Caselles de verificació obligatòries (Termes i Privacitat) -->
+        <div class="legal-checkboxes-block">
+          <!-- Checkbox 1: Termes i Condicions d'Ús -->
+          <div class="legal-checkbox-item">
+            <label class="checkbox-container" [class.field-error]="submitted && registerForm.get('acceptedTerms')?.invalid">
+              <input
+                type="checkbox"
+                formControlName="acceptedTerms"
+                id="acceptedTerms"
+                class="native-checkbox"
+              />
+              <span class="checkbox-label-text">
+                He llegit i accepte els
+                <button
+                  type="button"
+                  class="link-terms-btn"
+                  (click)="obrirModalTermes('termes')">
+                  Termes i Condicions d'Ús d'AVISA
+                </button> *
+              </span>
+            </label>
+            <div *ngIf="submitted && registerForm.get('acceptedTerms')?.hasError('required')" class="checkbox-error-msg">
+              ⚠️ Cal acceptar els termes i condicions per registrar-se.
+            </div>
+          </div>
+
+          <!-- Checkbox 2: Política de Privacitat -->
+          <div class="legal-checkbox-item">
+            <label class="checkbox-container" [class.field-error]="submitted && registerForm.get('acceptedPrivacy')?.invalid">
+              <input
+                type="checkbox"
+                formControlName="acceptedPrivacy"
+                id="acceptedPrivacy"
+                class="native-checkbox"
+              />
+              <span class="checkbox-label-text">
+                He llegit i accepte la
+                <button
+                  type="button"
+                  class="link-terms-btn"
+                  (click)="obrirModalTermes('privacitat')">
+                  Política de Privacitat
+                </button> *
+              </span>
+            </label>
+            <div *ngIf="submitted && registerForm.get('acceptedPrivacy')?.hasError('required')" class="checkbox-error-msg">
+              ⚠️ Cal acceptar la política de privacitat per registrar-se.
+            </div>
+          </div>
+        </div>
+
         <button type="submit" class="submit-btn" [disabled]="loading">
-          {{ loading ? 'Creant compte...' : 'Registrar-me com a ' + (formData.rol === 'professional' ? 'Professional' : 'Client') }}
+          {{ loading ? 'Creant compte...' : 'Registrar-me com a ' + (registerForm.get('rol')?.value === 'professional' ? 'Professional' : 'Client') }}
         </button>
 
         <p class="footer-hint">
           Ja tens compte? <a routerLink="/login">Inicia sessió aquí</a>
         </p>
       </form>
+
+      <!-- Modal emergent amb el text legal complet -->
+      <app-termes-modal
+        *ngIf="showTermsModal"
+        [isModal]="true"
+        [activeTab]="modalActiveTab"
+        (close)="tancarModalTermes()"
+        (accept)="onAcceptLegal($event)">
+      </app-termes-modal>
     </section>
   `,
   styles: [
     `
       .auth-card {
-        width: min(520px, 100%);
+        width: min(540px, 100%);
         background: #ffffff;
         padding: 2.4rem;
         border-radius: 20px;
         border: 1px solid #e5e0d7;
         box-shadow: 0 16px 40px rgba(0, 0, 0, 0.06);
         color: #09090c;
+        box-sizing: border-box;
       }
 
       h1 {
@@ -131,6 +242,13 @@ import { AuthService, RegisterData } from '../../../core/services/auth.service';
         gap: 1.15rem;
       }
 
+      .field-wrap {
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+      }
+
+      .field-label,
       label {
         display: flex;
         flex-direction: column;
@@ -142,7 +260,10 @@ import { AuthService, RegisterData } from '../../../core/services/auth.service';
         letter-spacing: 0.05em;
       }
 
-      input {
+      input[type="text"],
+      input[type="email"],
+      input[type="tel"],
+      input[type="password"] {
         background: #ffffff;
         color: #09090c;
         border: 1px solid #dcd7ce;
@@ -151,7 +272,9 @@ import { AuthService, RegisterData } from '../../../core/services/auth.service';
         font-size: 0.95rem;
         font-weight: 600;
         outline: none;
-        transition: border-color 0.15s ease;
+        box-sizing: border-box;
+        width: 100%;
+        transition: border-color 0.15s ease, box-shadow 0.15s ease;
       }
 
       input:focus {
@@ -161,13 +284,29 @@ import { AuthService, RegisterData } from '../../../core/services/auth.service';
 
       .input-required {
         border-color: #ff1744;
-        background: rgba(255, 23, 68, 0.04);
+        background: rgba(255, 23, 68, 0.02);
+      }
+
+      .input-error {
+        border-color: #ef4444 !important;
+        background: #fef2f2 !important;
+      }
+
+      .field-error-text {
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: #dc2626;
+        text-transform: none;
+        letter-spacing: normal;
+        margin-top: 0.15rem;
       }
 
       .hint {
         font-size: 0.78rem;
         color: #7d7a72;
         font-weight: 600;
+        text-transform: none;
+        letter-spacing: normal;
       }
 
       .role-selector {
@@ -233,8 +372,78 @@ import { AuthService, RegisterData } from '../../../core/services/auth.service';
         color: #09090c;
       }
 
+      /* Bloc de caselles de verificació legal */
+      .legal-checkboxes-block {
+        background: #faf8f4;
+        border: 1px solid #e5e0d7;
+        border-radius: 14px;
+        padding: 1.15rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.85rem;
+        margin: 0.35rem 0;
+      }
+
+      .legal-checkbox-item {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .checkbox-container {
+        display: flex;
+        flex-direction: row;
+        align-items: flex-start;
+        gap: 0.75rem;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 0.88rem;
+        color: #2b2a26;
+        text-transform: none;
+        letter-spacing: normal;
+        user-select: none;
+      }
+
+      .native-checkbox {
+        width: 19px;
+        height: 19px;
+        accent-color: #ff1744;
+        cursor: pointer;
+        margin-top: 2px;
+        flex-shrink: 0;
+      }
+
+      .checkbox-label-text {
+        line-height: 1.4;
+      }
+
+      .link-terms-btn {
+        background: transparent;
+        border: none;
+        padding: 0;
+        font-family: inherit;
+        font-size: inherit;
+        font-weight: 800;
+        color: #ff1744;
+        text-decoration: underline;
+        cursor: pointer;
+        display: inline;
+        transition: color 0.15s ease;
+      }
+
+      .link-terms-btn:hover {
+        color: #09090c;
+      }
+
+      .checkbox-error-msg {
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: #dc2626;
+        margin-top: 0.3rem;
+        margin-left: 1.9rem;
+      }
+
       .submit-btn {
-        margin-top: 0.75rem;
+        margin-top: 0.5rem;
         border: none;
         background: #ff1744;
         color: #ffffff;
@@ -294,76 +503,153 @@ import { AuthService, RegisterData } from '../../../core/services/auth.service';
         .role-selector {
           grid-template-columns: 1fr;
         }
+        .legal-checkboxes-block {
+          padding: 0.85rem;
+        }
       }
     `
   ]
 })
-export class RegistreComponent {
-  /** Model del formulari de registre */
-  formData: RegisterData = {
-    nom: '',
-    email: '',
-    rol: 'client',
-    password: '',
-    telefon: ''
-  };
+export class RegistreComponent implements OnInit {
+  /** Formulari reactiu de registre */
+  registerForm!: FormGroup;
 
-  /** Estat de càrrega durant la petició */
+  /** Estat d'enviament per mostrar errors visuals */
+  submitted = false;
+
+  /** Estat de càrrega durant la petició HTTP */
   loading = false;
 
-  /** Missatge d'error si falla el registre */
+  /** Missatge d'error general o del servidor */
   errorMessage = '';
 
+  /** Control de visibilitat del modal legal */
+  showTermsModal = false;
+
+  /** Pestanya activa del modal ('termes' o 'privacitat') */
+  modalActiveTab: 'termes' | 'privacitat' = 'termes';
+
   constructor(
+    private readonly fb: FormBuilder,
     private readonly authService: AuthService,
     private readonly router: Router
   ) {}
 
+  ngOnInit(): void {
+    // Inicialització del formulari reactiu amb les dues caselles obligatòries no marcades per defecte
+    this.registerForm = this.fb.group({
+      rol: ['client', [Validators.required]],
+      nom: ['', [Validators.required]],
+      email: ['', [Validators.required, Validators.email]],
+      telefon: [''],
+      password: ['', [Validators.required, Validators.minLength(6)]],
+      acceptedTerms: [false, [Validators.requiredTrue]],
+      acceptedPrivacy: [false, [Validators.requiredTrue]]
+    });
+  }
+
   /**
-   * Canvia el rol seleccionat.
+   * Canvia el rol seleccionat al formulari reactiu.
    * @param rol 'client' o 'professional'
    */
   onSelectRole(rol: 'client' | 'professional'): void {
-    this.formData.rol = rol;
+    this.registerForm.patchValue({ rol });
     this.errorMessage = '';
   }
 
   /**
-   * Valida i envia les dades de registre al backend.
-   * Els clients necessiten correu i contrasenya.
-   * Els professionals necessiten a més obligatòriament el telèfon.
+   * Obre el modal legal a la pestanya de termes o de privacitat.
+   */
+  obrirModalTermes(tab: 'termes' | 'privacitat'): void {
+    this.modalActiveTab = tab;
+    this.showTermsModal = true;
+  }
+
+  /**
+   * Tanca el modal legal.
+   */
+  tancarModalTermes(): void {
+    this.showTermsModal = false;
+  }
+
+  /**
+   * Gestiona l'acceptació del document des del botó d'acció del propi modal.
+   * Marca automàticament la casella corresponent.
+   */
+  onAcceptLegal(tab: 'termes' | 'privacitat'): void {
+    if (tab === 'termes') {
+      this.registerForm.patchValue({ acceptedTerms: true });
+      this.registerForm.get('acceptedTerms')?.markAsTouched();
+    } else {
+      this.registerForm.patchValue({ acceptedPrivacy: true });
+      this.registerForm.get('acceptedPrivacy')?.markAsTouched();
+    }
+  }
+
+  /**
+   * Valida i envia les dades de registre al backend Spring Boot.
+   * Comprova requisits del client, requisits del professional (telèfon)
+   * i l'acceptació obligatòria de termes i privacitat.
    */
   onRegister(): void {
-    if (!this.formData.nom || !this.formData.email || !this.formData.password) {
-      this.errorMessage = 'Cal emplenar tots els camps obligatoris (nom, email i contrasenya).';
+    this.submitted = true;
+    this.errorMessage = '';
+
+    if (this.registerForm.invalid) {
+      this.registerForm.markAllAsTouched();
+
+      if (this.registerForm.get('acceptedTerms')?.hasError('required')) {
+        this.errorMessage = 'Cal acceptar els termes i condicions per poder registrar-se.';
+        return;
+      }
+      if (this.registerForm.get('acceptedPrivacy')?.hasError('required')) {
+        this.errorMessage = 'Cal acceptar la política de privacitat per poder registrar-se.';
+        return;
+      }
+      this.errorMessage = 'Si us plau, revisa els camps obligatoris del formulari.';
       return;
     }
 
-    if (this.formData.password.length < 6) {
-      this.errorMessage = 'La contrasenya ha de tenir com a mínim 6 caràcters.';
-      return;
-    }
+    const formVal = this.registerForm.value;
 
-    // Validació específica del fill (Professional): requereix telèfon
-    if (this.formData.rol === 'professional') {
-      if (!this.formData.telefon || !this.formData.telefon.trim()) {
+    // Validació específica del fill (Professional): requereix telèfon obligatori
+    if (formVal.rol === 'professional') {
+      if (!formVal.telefon || !formVal.telefon.trim()) {
         this.errorMessage = 'Com a Professional, el telèfon de contacte és obligatori per poder resoldre peticions.';
         return;
       }
     }
 
     this.loading = true;
-    this.errorMessage = '';
 
-    this.authService.register(this.formData).subscribe({
+    const registerData: RegisterData = {
+      nom: (formVal.nom || '').trim(),
+      email: (formVal.email || '').trim(),
+      rol: formVal.rol,
+      telefon: formVal.telefon ? formVal.telefon.trim() : '',
+      password: formVal.password,
+      acceptedTerms: !!formVal.acceptedTerms,
+      acceptedPrivacy: !!formVal.acceptedPrivacy
+    };
+
+    this.authService.register(registerData).subscribe({
       next: () => {
         this.loading = false;
-        // Sessió iniciada directament -> tornem a l'inici
+        // Sessió iniciada directament -> tornem a la pàgina principal
         this.router.navigate(['/']);
       },
-      error: () => {
+      error: (err) => {
         this.loading = false;
-        this.errorMessage = 'No s’ha pogut completar el registre. El correu podria estar ja en ús.';
+        if (err.status === 400 && err.error?.missatges) {
+          const msgs = Object.values(err.error.missatges).join(' ');
+          this.errorMessage = msgs || 'Dades de registre incorrectes.';
+        } else if (err.error?.error && typeof err.error.error === 'string') {
+          this.errorMessage = err.error.error;
+        } else if (err.status === 0 || err.status === 502 || err.status === 504) {
+          this.errorMessage = 'El servidor no respon. Comprova que el backend estigui actiu al port 8080.';
+        } else {
+          this.errorMessage = 'No s’ha pogut completar el registre. El correu podria estar ja en ús o el servidor no respon.';
+        }
       }
     });
   }
