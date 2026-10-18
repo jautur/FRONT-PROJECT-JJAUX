@@ -1,4 +1,5 @@
 import { Injectable, signal } from '@angular/core';
+import { TranslationService } from './translation.service';
 
 export interface ConfirmDialogOptions {
   title?: string;
@@ -14,21 +15,24 @@ export interface ConfirmDialogOptions {
  * Servei global per a gestionar modals de confirmació i avisos elegants.
  * Substitueix completament els diàlegs natius del navegador (window.confirm / window.alert)
  * evitant missatges lletjos com "localhost dice...".
+ * Totalment integrat amb TranslationService per a suport multilingüe complet (VA, ES, EN).
  */
 @Injectable({
   providedIn: 'root'
 })
 export class ConfirmService {
   isOpen = signal(false);
-  title = signal('Confirmació');
+  title = signal('CONFIRM_MODAL.DEFAULT_TITLE');
   message = signal('');
-  confirmText = signal('Confirmar');
-  cancelText = signal('Cancel·lar');
+  confirmText = signal('CONFIRM_MODAL.DEFAULT_CONFIRM');
+  cancelText = signal('CONFIRM_MODAL.DEFAULT_CANCEL');
   isDanger = signal(false);
   isAlert = signal(false);
   icon = signal<'question' | 'success' | 'warning' | 'danger'>('question');
 
   private resolveFn?: (value: boolean) => void;
+
+  constructor(private readonly translationService: TranslationService) {}
 
   /**
    * Mostra un modal de confirmació estilitzat (amb botons Acceptar / Cancel·lar).
@@ -40,10 +44,10 @@ export class ConfirmService {
       ? { message: options }
       : options;
 
-    this.title.set(opts.title || 'Confirmació');
+    this.title.set(opts.title || 'CONFIRM_MODAL.DEFAULT_TITLE');
     this.message.set(opts.message);
-    this.confirmText.set(opts.confirmText || 'Confirmar');
-    this.cancelText.set(opts.cancelText || 'Cancel·lar');
+    this.confirmText.set(opts.confirmText || 'CONFIRM_MODAL.DEFAULT_CONFIRM');
+    this.cancelText.set(opts.cancelText || 'CONFIRM_MODAL.DEFAULT_CANCEL');
     this.isDanger.set(opts.isDanger || false);
     this.isAlert.set(opts.isAlert || false);
     this.icon.set(opts.icon || (opts.isDanger ? 'danger' : 'question'));
@@ -61,11 +65,11 @@ export class ConfirmService {
    * @param title Títol de l'avís
    * @returns Promesa que resol quan l'usuari tanca l'avís
    */
-  alert(message: string, title: string = 'Avís'): Promise<void> {
+  alert(message: string, title: string = 'CONFIRM_MODAL.DEFAULT_ALERT'): Promise<void> {
     return this.confirm({
       title,
       message,
-      confirmText: 'D\'acord',
+      confirmText: 'CONFIRM_MODAL.DEFAULT_OK',
       isAlert: true,
       icon: 'warning'
     }).then(() => {});

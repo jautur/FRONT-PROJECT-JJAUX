@@ -13,6 +13,7 @@ import { Incidencia } from '../../../models/incidencia.model';
 import { Usuari } from '../../../models/usuari.model';
 import { AuthService } from '../../../core/services/auth.service';
 import { ConfirmService } from '../../../core/services/confirm.service';
+import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 
 /**
  * Pestanya activa al panell d'administració.
@@ -32,16 +33,15 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'usuaris';
 @Component({
   selector: 'app-admin-panell',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, TranslatePipe],
   template: `
     <div class="admin-container">
       <!-- Capçalera del Panell -->
-      <!-- Capçalera del Panell -->
       <div class="admin-header">
         <div class="title-group">
-          <div class="admin-badge">ADMINISTRACIÓ GLOBAL</div>
-          <h2>Panell de Control i Supervisió AVISA</h2>
-          <p class="subtitle">Gestió centralitzada de tots els usuaris, tasques publicades i ofertes del sistema.</p>
+          <div class="admin-badge">{{ 'ADMIN.BADGE' | translate }}</div>
+          <h2>{{ 'ADMIN.TITLE' | translate }}</h2>
+          <p class="subtitle">{{ 'ADMIN.SUBTITLE' | translate }}</p>
         </div>
         <div class="refresh-group">
           <button type="button" class="btn-refresh" (click)="carregarDades()" [disabled]="loading">
@@ -50,7 +50,7 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'usuaris';
               <polyline points="1 20 1 14 7 14"></polyline>
               <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
             </svg>
-            {{ loading ? 'Actualitzant...' : 'Actualitzar dades' }}
+            {{ loading ? ('ADMIN.REFRESHING' | translate) : ('ADMIN.BTN_REFRESH' | translate) }}
           </button>
         </div>
       </div>
@@ -75,7 +75,7 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'usuaris';
           </span>
           <div class="metric-info">
             <span class="metric-value">{{ tasques.length }}</span>
-            <span class="metric-label">Tasques Totals</span>
+            <span class="metric-label">{{ 'ADMIN.METRIC_TASKS' | translate }}</span>
             <small class="metric-sub">
               <span class="clickable-sub" (click)="filtrarPerEstatTasca('curs', $event)">{{ countTasquesEnCurs() }} en curs</span> ·
               <span class="clickable-sub" (click)="filtrarPerEstatTasca('finalitzad', $event)">{{ countTasquesFinalitzades() }} fetes</span>
@@ -99,8 +99,8 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'usuaris';
           </span>
           <div class="metric-info">
             <span class="metric-value">{{ ofertes.length }}</span>
-            <span class="metric-label">Ofertes Professionals</span>
-            <small class="metric-sub">{{ ofertes.length }} ofertes actives</small>
+            <span class="metric-label">{{ 'ADMIN.METRIC_OFFERS' | translate }}</span>
+            <small class="metric-sub">{{ ofertes.length }} {{ 'MERCAT.AVAILABLE' | translate }}</small>
           </div>
         </div>
 
@@ -121,8 +121,8 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'usuaris';
           </span>
           <div class="metric-info">
             <span class="metric-value">{{ incidencies.length }}</span>
-            <span class="metric-label">Incidències Clients</span>
-            <small class="metric-sub">{{ incidencies.length }} incidències actives</small>
+            <span class="metric-label">{{ 'ADMIN.METRIC_INCIDENCIES' | translate }}</span>
+            <small class="metric-sub">{{ incidencies.length }} {{ 'MERCAT.AVAILABLE' | translate }}</small>
           </div>
         </div>
 
@@ -144,7 +144,7 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'usuaris';
           </span>
           <div class="metric-info">
             <span class="metric-value">{{ usuaris.length }}</span>
-            <span class="metric-label">Usuaris Registrats</span>
+            <span class="metric-label">{{ 'ADMIN.METRIC_USERS' | translate }}</span>
             <small class="metric-sub">
               <span class="clickable-sub" (click)="filtrarPerRolUsuari('client', $event)">{{ countClients() }} clients</span> ·
               <span class="clickable-sub" (click)="filtrarPerRolUsuari('professional', $event)">{{ countProfessionals() }} prof.</span>
@@ -161,8 +161,8 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'usuaris';
           </span>
           <div class="metric-info">
             <span class="metric-value">{{ totalAvisos }}</span>
-            <span class="metric-label">Avisos de Sistema</span>
-            <small class="metric-sub">Notificacions globals</small>
+            <span class="metric-label">{{ 'ADMIN.METRIC_NOTICES' | translate }}</span>
+            <small class="metric-sub">{{ 'ADMIN.METRIC_NOTICES_SUB' | translate }}</small>
           </div>
         </div>
       </div>
@@ -179,7 +179,7 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'usuaris';
           [class.active]="tabActiva === 'tasques'"
           (click)="canviarTab('tasques')"
         >
-          Llistat Complet de Tasques ({{ tasques.length }})
+          {{ 'ADMIN.TAB_TASKS' | translate }} ({{ tasques.length }})
         </button>
         <button
           type="button"
@@ -187,7 +187,7 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'usuaris';
           [class.active]="tabActiva === 'ofertes'"
           (click)="canviarTab('ofertes')"
         >
-          Llistat Complet d'Ofertes ({{ ofertes.length }})
+          {{ 'ADMIN.TAB_OFFERS' | translate }} ({{ ofertes.length }})
         </button>
         <button
           type="button"
@@ -195,7 +195,7 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'usuaris';
           [class.active]="tabActiva === 'incidencies'"
           (click)="canviarTab('incidencies')"
         >
-          Incidències de Clients ({{ incidencies.length }})
+          {{ 'ADMIN.TAB_INCIDENCIES' | translate }} ({{ incidencies.length }})
         </button>
         <button
           type="button"
@@ -203,7 +203,7 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'usuaris';
           [class.active]="tabActiva === 'usuaris'"
           (click)="canviarTab('usuaris')"
         >
-          Usuaris del Sistema ({{ usuaris.length }})
+          {{ 'ADMIN.TAB_USERS' | translate }} ({{ usuaris.length }})
         </button>
       </div>
 
@@ -215,11 +215,11 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'usuaris';
           <input
             type="text"
             [(ngModel)]="searchTasca"
-            placeholder="Cerca per títol, client o descripció..."
+            [placeholder]="'ADMIN.SEARCH_TASKS_PLACEHOLDER' | translate"
             class="search-input"
           />
           <select [(ngModel)]="filtreEstatTasca" class="select-filter">
-            <option value="tots">Tots els estats</option>
+            <option value="tots">{{ 'ADMIN.ALL_STATUSES' | translate }}</option>
             <option value="oberta">Obertes</option>
             <option value="curs">En curs</option>
             <option value="finalitzada">Finalitzades</option>
@@ -230,13 +230,13 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'usuaris';
           <table class="data-table">
             <thead>
               <tr>
-                <th>ID</th>
-                <th>Títol i Descripció</th>
-                <th>Client</th>
-                <th>Categoria</th>
-                <th>Pressupost</th>
-                <th>Estat</th>
-                <th>Accions Administrador</th>
+                <th>{{ 'ADMIN.TABLE_COL_ID' | translate }}</th>
+                <th>{{ 'ADMIN.TABLE_COL_TITLE_DESC' | translate }}</th>
+                <th>{{ 'ADMIN.TABLE_COL_CLIENT' | translate }}</th>
+                <th>{{ 'ADMIN.TABLE_COL_CATEGORY' | translate }}</th>
+                <th>{{ 'ADMIN.TABLE_COL_BUDGET' | translate }}</th>
+                <th>{{ 'ADMIN.TABLE_COL_STATUS' | translate }}</th>
+                <th>{{ 'ADMIN.TABLE_COL_ACTIONS' | translate }}</th>
               </tr>
             </thead>
             <tbody>
@@ -247,25 +247,25 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'usuaris';
                   <div class="table-desc">{{ t.descripcio }}</div>
                 </td>
                 <td>
-                  <a [routerLink]="['/perfil', t.clientNom || t.client]" class="user-inline-link" title="Veure perfil de {{ t.clientNom || t.client }}">
+                  <a [routerLink]="['/perfil', t.clientNom || t.client]" class="user-inline-link" title="Veure perfil">
                     {{ t.clientNom || t.client }}
                   </a>
                 </td>
-                <td><span class="tag-cat">{{ t.categoria }}</span></td>
+                <td><span class="tag-cat">{{ t.categoria | translate }}</span></td>
                 <td><strong>{{ t.budget }}</strong></td>
                 <td>
                   <span class="badge-status" [ngClass]="getEstatTascaClass(t.estat)">
-                    {{ t.estat }}
+                    {{ t.estat | translate }}
                   </span>
                 </td>
                 <td>
                   <div class="action-buttons">
-                    <a [routerLink]="['/tasca-detall', t.id]" class="btn-sm btn-info" title="Revisar detall i ofertes">
+                    <a [routerLink]="['/tasca-detall', t.id]" class="btn-sm btn-info" title="Revisar detall">
                       <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;">
                         <circle cx="11" cy="11" r="8"></circle>
                         <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                       </svg>
-                      Detall
+                      {{ 'MERCAT.DETALL' | translate }}
                     </a>
                     <button
                       *ngIf="t.estat !== 'Finalitzada'"
@@ -277,7 +277,7 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'usuaris';
                       <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;">
                         <polyline points="20 6 9 17 4 12"></polyline>
                       </svg>
-                      Finalitzar
+                      {{ 'ADMIN.BTN_FINALIZE' | translate }}
                     </button>
                     <button
                       type="button"
@@ -290,7 +290,7 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'usuaris';
                         <polyline points="3 6 5 6 21 6"></polyline>
                         <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
                       </svg>
-                      Borrar
+                      {{ 'ADMIN.BTN_DELETE' | translate }}
                     </button>
                   </div>
                 </td>
@@ -300,7 +300,7 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'usuaris';
         </div>
 
         <div class="empty-box" *ngIf="tasquesFiltrades.length === 0">
-          Cap tasca coincideix amb els filtres de cerca.
+          {{ 'ADMIN.EMPTY_TASKS' | translate }}
         </div>
       </section>
 
@@ -312,7 +312,7 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'usuaris';
           <input
             type="text"
             [(ngModel)]="searchOferta"
-            placeholder="Cerca per professional, ref. tasca o nota..."
+            [placeholder]="'ADMIN.SEARCH_OFFERS_PLACEHOLDER' | translate"
             class="search-input"
           />
         </div>
@@ -321,12 +321,12 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'usuaris';
           <table class="data-table">
             <thead>
               <tr>
-                <th>ID</th>
-                <th>Ref. Tasca</th>
-                <th>Professional</th>
-                <th>Preu Proposat</th>
-                <th>Nota / Justificació</th>
-                <th>Accions Administrador</th>
+                <th>{{ 'ADMIN.TABLE_COL_ID' | translate }}</th>
+                <th>{{ 'ADMIN.TABLE_COL_REF_TASK' | translate }}</th>
+                <th>{{ 'ADMIN.TABLE_COL_PRO' | translate }}</th>
+                <th>{{ 'ADMIN.TABLE_COL_PRICE_PROPOSED' | translate }}</th>
+                <th>{{ 'ADMIN.TABLE_COL_NOTE' | translate }}</th>
+                <th>{{ 'ADMIN.TABLE_COL_ACTIONS' | translate }}</th>
               </tr>
             </thead>
             <tbody>
@@ -339,7 +339,7 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'usuaris';
                   <span *ngIf="!o.tascaId">-</span>
                 </td>
                 <td>
-                  <a [routerLink]="['/perfil', o.professionalNom || o.professional]" class="user-inline-link" title="Veure perfil de {{ o.professionalNom || o.professional }}">
+                  <a [routerLink]="['/perfil', o.professionalNom || o.professional]" class="user-inline-link" title="Veure perfil">
                     <strong>{{ o.professionalNom || o.professional }}</strong>
                   </a>
                 </td>
@@ -356,7 +356,7 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'usuaris';
                       <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;">
                         <polyline points="20 6 9 17 4 12"></polyline>
                       </svg>
-                      Acceptar
+                      {{ 'ADMIN.BTN_ACCEPT' | translate }}
                     </button>
                     <button
                       type="button"
@@ -368,14 +368,14 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'usuaris';
                         <polyline points="3 6 5 6 21 6"></polyline>
                         <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
                       </svg>
-                      Borrar
+                      {{ 'ADMIN.BTN_DELETE' | translate }}
                     </button>
                     <a *ngIf="o.tascaId" [routerLink]="['/tasca-detall', o.tascaId]" class="btn-sm btn-info" title="Anar a la tasca">
                       <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;">
                         <circle cx="11" cy="11" r="8"></circle>
                         <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                       </svg>
-                      Tasca
+                      {{ 'MERCAT.DETALL' | translate }}
                     </a>
                   </div>
                 </td>
@@ -385,7 +385,7 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'usuaris';
         </div>
 
         <div class="empty-box" *ngIf="ofertesFiltrades.length === 0">
-          Cap oferta coincideix amb els filtres de cerca.
+          {{ 'ADMIN.EMPTY_OFFERS' | translate }}
         </div>
       </section>
 
@@ -397,7 +397,7 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'usuaris';
           <input
             type="text"
             [(ngModel)]="searchIncidencia"
-            placeholder="Cerca per títol, client, descripció o categoria..."
+            [placeholder]="'ADMIN.SEARCH_INCIDENCIES_PLACEHOLDER' | translate"
             class="search-input"
           />
         </div>
@@ -406,12 +406,12 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'usuaris';
           <table class="data-table">
             <thead>
               <tr>
-                <th>ID</th>
-                <th>Títol i Descripció</th>
-                <th>Client</th>
-                <th>Categoria</th>
-                <th>Pressupost Màx.</th>
-                <th>Accions Administrador</th>
+                <th>{{ 'ADMIN.TABLE_COL_ID' | translate }}</th>
+                <th>{{ 'ADMIN.TABLE_COL_TITLE_DESC' | translate }}</th>
+                <th>{{ 'ADMIN.TABLE_COL_CLIENT' | translate }}</th>
+                <th>{{ 'ADMIN.TABLE_COL_CATEGORY' | translate }}</th>
+                <th>{{ 'ADMIN.TABLE_COL_MAX_BUDGET' | translate }}</th>
+                <th>{{ 'ADMIN.TABLE_COL_ACTIONS' | translate }}</th>
               </tr>
             </thead>
             <tbody>
@@ -422,11 +422,11 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'usuaris';
                   <div class="table-desc">{{ inc.descripcio }}</div>
                 </td>
                 <td>
-                  <a [routerLink]="['/perfil', inc.clientNom || inc.client]" class="user-inline-link" title="Veure perfil de {{ inc.clientNom || inc.client }}">
+                  <a [routerLink]="['/perfil', inc.clientNom || inc.client]" class="user-inline-link" title="Veure perfil">
                     {{ inc.clientNom || inc.client }}
                   </a>
                 </td>
-                <td><span class="tag-cat">{{ inc.categoria }}</span></td>
+                <td><span class="tag-cat">{{ inc.categoria | translate }}</span></td>
                 <td><strong>{{ inc.budget }}</strong></td>
                 <td>
                   <div class="action-buttons">
@@ -435,7 +435,7 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'usuaris';
                         <circle cx="11" cy="11" r="8"></circle>
                         <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                       </svg>
-                      Detall
+                      {{ 'MERCAT.DETALL' | translate }}
                     </a>
                     <button
                       type="button"
@@ -447,7 +447,7 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'usuaris';
                         <polyline points="3 6 5 6 21 6"></polyline>
                         <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
                       </svg>
-                      Borrar
+                      {{ 'ADMIN.BTN_DELETE' | translate }}
                     </button>
                   </div>
                 </td>
@@ -457,7 +457,7 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'usuaris';
         </div>
 
         <div class="empty-box" *ngIf="incidenciesFiltrades.length === 0">
-          Cap incidència coincideix amb els criteris de cerca.
+          {{ 'ADMIN.EMPTY_INCIDENCIES' | translate }}
         </div>
       </section>
 
@@ -469,13 +469,13 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'usuaris';
           <input
             type="text"
             [(ngModel)]="searchUsuari"
-            placeholder="Cerca per nom, email o telèfon..."
+            [placeholder]="'ADMIN.SEARCH_USERS_PLACEHOLDER' | translate"
             class="search-input"
           />
           <select [(ngModel)]="filtreRolUsuari" class="select-filter">
-            <option value="tots">Tots els rols</option>
+            <option value="tots">{{ 'ADMIN.ALL_ROLES' | translate }}</option>
             <option value="client">Client</option>
-            <option value="professional">Professional (Client + Resolutor)</option>
+            <option value="professional">Professional</option>
             <option value="admin">Administrador</option>
           </select>
         </div>
@@ -484,20 +484,20 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'usuaris';
           <table class="data-table">
             <thead>
               <tr>
-                <th>ID</th>
-                <th>Nom d'usuari</th>
-                <th>Correu electrònic</th>
-                <th>Rol</th>
-                <th>Telèfon</th>
-                <th>Biografia / Perfil</th>
-                <th>Accions Administrador</th>
+                <th>{{ 'ADMIN.TABLE_COL_ID' | translate }}</th>
+                <th>{{ 'ADMIN.TABLE_COL_USERNAME' | translate }}</th>
+                <th>{{ 'ADMIN.TABLE_COL_EMAIL' | translate }}</th>
+                <th>{{ 'ADMIN.TABLE_COL_ROLE' | translate }}</th>
+                <th>{{ 'ADMIN.TABLE_COL_PHONE' | translate }}</th>
+                <th>{{ 'ADMIN.TABLE_COL_BIO' | translate }}</th>
+                <th>{{ 'ADMIN.TABLE_COL_ACTIONS' | translate }}</th>
               </tr>
             </thead>
             <tbody>
               <tr *ngFor="let u of usuarisFiltrats">
                 <td class="font-mono"><strong>{{ u.id }}</strong></td>
                 <td>
-                  <a [routerLink]="['/perfil', u.id]" class="user-inline-link" title="Veure perfil de {{ u.nom }}">
+                  <a [routerLink]="['/perfil', u.id]" class="user-inline-link" title="Veure perfil">
                     <strong>{{ u.nom }}</strong>
                   </a>
                 </td>
@@ -511,12 +511,12 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'usuaris';
                 <td class="bio-cell">{{ u.bio || '-' }}</td>
                 <td>
                   <div class="action-buttons">
-                    <a [routerLink]="['/perfil', u.id]" class="btn-sm btn-info" title="Veure perfil de {{ u.nom }}">
+                    <a [routerLink]="['/perfil', u.id]" class="btn-sm btn-info" title="Veure perfil">
                       <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;">
                         <circle cx="12" cy="7" r="4"></circle>
                         <path d="M5.5 21a6.5 6.5 0 0 1 13 0"></path>
                       </svg>
-                      Perfil
+                      {{ 'PERFIL.TITLE_OWN' | translate }}
                     </a>
                     <button
                       type="button"
@@ -528,7 +528,7 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'usuaris';
                         <circle cx="8" cy="8" r="5"></circle>
                         <path d="M11.5 11.5 21 21m-4 0 2-2m-2-2 2-2"></path>
                       </svg>
-                      Nova contrasenya
+                      {{ 'ADMIN.BTN_NEW_PASSWORD' | translate }}
                     </button>
                     <button
                       *ngIf="u.id !== 'u-admin' && u.email !== 'admin@admin' && u.email !== 'admin@admin.es'"
@@ -541,7 +541,7 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'usuaris';
                         <polyline points="3 6 5 6 21 6"></polyline>
                         <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
                       </svg>
-                      Eliminar
+                      {{ 'ADMIN.BTN_DELETE' | translate }}
                     </button>
                   </div>
                 </td>
@@ -551,7 +551,7 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'usuaris';
         </div>
 
         <div class="empty-box" *ngIf="usuarisFiltrats.length === 0">
-          Cap usuari coincideix amb els criteris de cerca.
+          {{ 'ADMIN.EMPTY_USERS' | translate }}
         </div>
       </section>
 
@@ -561,7 +561,7 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'usuaris';
       <div class="modal-backdrop" *ngIf="modalPasswordObert">
         <div class="modal-card">
           <div class="modal-header">
-            <h3>Assignar Nova Contrasenya</h3>
+            <h3>{{ 'ADMIN.BTN_NEW_PASSWORD' | translate }}</h3>
             <button type="button" class="btn-close" (click)="tancarModalPassword()" aria-label="Tancar">
               <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -586,7 +586,7 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'usuaris';
             </div>
 
             <div class="form-group">
-              <label for="adminNovaPass">Nova Contrasenya:</label>
+              <label for="adminNovaPass">{{ 'PERFIL.NEW_PASSWORD' | translate }}:</label>
               <div class="input-password-wrapper">
                 <input
                   id="adminNovaPass"
@@ -609,7 +609,7 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'usuaris';
             </div>
 
             <div class="form-group">
-              <label for="adminConfirmaPass">Confirmar Nova Contrasenya:</label>
+              <label for="adminConfirmaPass">{{ 'PERFIL.REPEAT_PASSWORD' | translate }}:</label>
               <input
                 id="adminConfirmaPass"
                 [type]="mostrarPassword ? 'text' : 'password'"
@@ -626,10 +626,10 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'usuaris';
 
           <div class="modal-footer">
             <button type="button" class="btn-secondary" (click)="tancarModalPassword()" [disabled]="savingPassword">
-              Cancel·lar
+              {{ 'CONFIRM_MODAL.DEFAULT_CANCEL' | translate }}
             </button>
             <button type="button" class="btn-primary" (click)="guardarNovaPassword()" [disabled]="savingPassword">
-              {{ savingPassword ? 'Actualitzant...' : 'Desar Nova Contrasenya' }}
+              {{ savingPassword ? ('PERFIL.UPDATING_PASSWORD' | translate) : ('PERFIL.UPDATE_PASSWORD' | translate) }}
             </button>
           </div>
         </div>
@@ -1555,10 +1555,10 @@ export class AdminPanellComponent implements OnInit {
    */
   async eliminarTasca(id: string): Promise<void> {
     const confirmacio = await this.confirmService.confirm({
-      title: 'Eliminar Tasca (Admin)',
-      message: `ATENCIÓ: Vols eliminar definitivament la tasca ${id} i totes les seves ofertes? Aquesta acció no es pot desfer.`,
-      confirmText: 'Eliminar Tasca',
-      cancelText: 'Cancel·lar',
+      title: 'CONFIRM_MODAL.DELETE_TASK_TITLE',
+      message: 'CONFIRM_MODAL.DELETE_TASK_MSG',
+      confirmText: 'CONFIRM_MODAL.DEFAULT_CONFIRM',
+      cancelText: 'CONFIRM_MODAL.DEFAULT_CANCEL',
       isDanger: true,
       icon: 'danger'
     });
@@ -1597,10 +1597,10 @@ export class AdminPanellComponent implements OnInit {
    */
   async eliminarOferta(offerId: string): Promise<void> {
     const confirmacio = await this.confirmService.confirm({
-      title: 'Eliminar Oferta (Admin)',
-      message: `Segur que vols eliminar/borrar definitivament l'oferta ${offerId}?`,
-      confirmText: 'Borrar Oferta',
-      cancelText: 'Cancel·lar',
+      title: 'CONFIRM_MODAL.DELETE_OFFER_TITLE',
+      message: 'CONFIRM_MODAL.DELETE_OFFER_MSG',
+      confirmText: 'CONFIRM_MODAL.DEFAULT_CONFIRM',
+      cancelText: 'CONFIRM_MODAL.DEFAULT_CANCEL',
       isDanger: true,
       icon: 'danger'
     });
@@ -1623,10 +1623,10 @@ export class AdminPanellComponent implements OnInit {
    */
   async eliminarIncidencia(id: string): Promise<void> {
     const confirmacio = await this.confirmService.confirm({
-      title: 'Eliminar Incidència (Admin)',
-      message: `ATENCIÓ: Vols eliminar definitivament la incidència ${id}? Aquesta acció no es pot desfer.`,
-      confirmText: 'Eliminar Incidència',
-      cancelText: 'Cancel·lar',
+      title: 'CONFIRM_MODAL.DELETE_TASK_TITLE',
+      message: 'CONFIRM_MODAL.DELETE_TASK_MSG',
+      confirmText: 'CONFIRM_MODAL.DEFAULT_CONFIRM',
+      cancelText: 'CONFIRM_MODAL.DEFAULT_CANCEL',
       isDanger: true,
       icon: 'danger'
     });
@@ -1784,10 +1784,10 @@ export class AdminPanellComponent implements OnInit {
       `Aquesta acció no es pot desfer. Vols continuar?`;
 
     const confirmacio = await this.confirmService.confirm({
-      title: 'Eliminar Usuari (Admin)',
+      title: 'CONFIRM_MODAL.DELETE_TASK_TITLE',
       message: confirmMsg,
-      confirmText: 'Eliminar Usuari',
-      cancelText: 'Cancel·lar',
+      confirmText: 'CONFIRM_MODAL.DEFAULT_CONFIRM',
+      cancelText: 'CONFIRM_MODAL.DEFAULT_CANCEL',
       isDanger: true,
       icon: 'danger'
     });

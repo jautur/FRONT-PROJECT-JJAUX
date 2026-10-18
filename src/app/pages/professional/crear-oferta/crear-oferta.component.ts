@@ -10,6 +10,8 @@ import { IncidenciaService } from '../../../services/incidencia.service';
 import { Tasca } from '../../../models/tasca.model';
 import { AuthService } from '../../../core/services/auth.service';
 
+import { TranslatePipe } from '../../../core/pipes/translate.pipe';
+
 /**
  * Component per publicar ofertes i presentar pressupostos (/professional/crear-oferta).
  * Ofereix dues modalitats clau per a professionals i autònoms:
@@ -20,16 +22,16 @@ import { AuthService } from '../../../core/services/auth.service';
 @Component({
   selector: 'app-crear-oferta',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, TranslatePipe],
   template: `
     <section class="offer-form-container">
       <header class="form-header">
-        <div class="role-badge-tag">PER A PROFESSIONALS I AUTÒNOMS</div>
-        <h1>{{ mode === 'oferta' ? 'Publicar Oferta / Servei Professional' : 'Enviar Pressupost a una Incidència' }}</h1>
+        <div class="role-badge-tag">{{ 'CREAR_OFERTA.BADGE' | translate }}</div>
+        <h1>{{ mode === 'oferta' ? ('CREAR_OFERTA.TITLE_OFFER' | translate) : ('CREAR_OFERTA.TITLE_BUDGET' | translate) }}</h1>
         <p class="subtitle">
           {{ mode === 'oferta'
-              ? 'Anuncia el teu pack de servei o tarifa tancada al mercat. Els clients podran contractar-lo directament per convertir-lo en Tasca.'
-              : 'Envia la teva proposta econòmica i pressupost detallat per a una incidència publicada per un client.'
+              ? ('CREAR_OFERTA.SUBTITLE_OFFER' | translate)
+              : ('CREAR_OFERTA.SUBTITLE_BUDGET' | translate)
           }}
         </p>
       </header>
@@ -42,8 +44,8 @@ import { AuthService } from '../../../core/services/auth.service';
           [class.active]="mode === 'oferta'"
           (click)="canviarMode('oferta')"
         >
-          <span class="tab-badge">Tarifa Directa (-- preu)</span>
-          <strong>Publicar Oferta / Pack de Servei</strong>
+          <span class="tab-badge">{{ 'CREAR_OFERTA.TAB_OFFER_BADGE' | translate }}</span>
+          <strong>{{ 'CREAR_OFERTA.TAB_OFFER_TITLE' | translate }}</strong>
         </button>
         <button
           type="button"
@@ -51,16 +53,16 @@ import { AuthService } from '../../../core/services/auth.service';
           [class.active]="mode === 'pressupost'"
           (click)="canviarMode('pressupost')"
         >
-          <span class="tab-badge">Licitació (++ preu)</span>
-          <strong>Enviar Pressupost a Incidència</strong>
+          <span class="tab-badge">{{ 'CREAR_OFERTA.TAB_BUDGET_BADGE' | translate }}</span>
+          <strong>{{ 'CREAR_OFERTA.TAB_BUDGET_TITLE' | translate }}</strong>
         </button>
       </div>
 
       <div *ngIf="errorMessage" class="alert alert-danger">
-        {{ errorMessage }}
+        {{ errorMessage | translate }}
       </div>
       <div *ngIf="successMessage" class="alert alert-success">
-        {{ successMessage }}
+        {{ successMessage | translate }}
       </div>
 
       <!-- FORMULARI 1: PUBLICAR OFERTA / PACK DE SERVEI PROFESSIONAL -->
@@ -72,41 +74,40 @@ import { AuthService } from '../../../core/services/auth.service';
             <line x1="12" y1="8" x2="12.01" y2="8"></line>
           </svg>
           <p>
-            Aquesta oferta apareixerà destacada a la borsa d'ofertes públiques. Quan un client hi cliqui
-            <strong>«Contractar / M'interessa»</strong>, es generarà automàticament una nova <strong>TASCA en curs</strong> assignada a tu.
+            {{ 'CREAR_OFERTA.OFFER_INFO_BANNER' | translate }}
           </p>
         </div>
 
         <label>
-          Títol del servei o pack que ofereixes
+          {{ 'CREAR_OFERTA.LABEL_OFFER_TITLE' | translate }}
           <input
             type="text"
             [(ngModel)]="ofertaServei.titol"
             name="titolServei"
             required
-            placeholder="Ex: Revisió oficial de caldera i neteja de filtres (o Pintura de pis blanc llis 3 hab)" />
+            placeholder="Ex: Revisió oficial de caldera i neteja de filtres" />
         </label>
 
         <label>
-          Gremi o Especialitat del servei
+          {{ 'CREAR_OFERTA.LABEL_OFFER_CAT' | translate }}
           <select [(ngModel)]="ofertaServei.categoria" name="categoriaServei" required>
-            <option value="" disabled>Selecciona el gremi professional</option>
-            <option value="Reformes i Obres">Reformes i Obres (Paleteria, banys, cuines)</option>
-            <option value="Lampisteria">Lampisteria i Fontaneria (Fuites, calderes, gas)</option>
-            <option value="Electricitat">Electricitat i Il·luminació (Quadres, butlletins oficials)</option>
-            <option value="Climatització">Climatització i Calefacció (Aire condicionat, aerotèrmia)</option>
-            <option value="Pintura">Pintura i Decoració (Alisat de parets, pintura plàstica)</option>
-            <option value="Fusteria">Fusteria i Parquet (Portes, armaris, sòls laminats)</option>
-            <option value="Neteja">Neteja i Manteniment (Final d'obra, desinfecció)</option>
-            <option value="Serralleria">Serralleria (Panys antibumping, obertura portes)</option>
-            <option value="Arquitectura">Arquitectura & Llicències (Cèdules, certificats, ITE)</option>
-            <option value="Informàtica">Informàtica, Web & Suport IT</option>
-            <option value="Altres">Altres serveis professionals</option>
+            <option value="" disabled>{{ 'CREAR_TASCA.SELECT_CAT_DEFAULT' | translate }}</option>
+            <option value="Reformes i Obres">{{ 'CATEGORIES.Reformes i Obres' | translate }}</option>
+            <option value="Lampisteria">{{ 'CATEGORIES.Lampisteria' | translate }}</option>
+            <option value="Electricitat">{{ 'CATEGORIES.Electricitat' | translate }}</option>
+            <option value="Climatització">{{ 'CATEGORIES.Climatització' | translate }}</option>
+            <option value="Pintura">{{ 'CATEGORIES.Pintura' | translate }}</option>
+            <option value="Fusteria">{{ 'CATEGORIES.Fusteria' | translate }}</option>
+            <option value="Neteja">{{ 'CATEGORIES.Neteja' | translate }}</option>
+            <option value="Serralleria">{{ 'CATEGORIES.Serralleria' | translate }}</option>
+            <option value="Arquitectura">{{ 'CATEGORIES.Arquitectura' | translate }}</option>
+            <option value="Informàtica">{{ 'CATEGORIES.Informàtica' | translate }}</option>
+            <option value="Altres">{{ 'CATEGORIES.Altres' | translate }}</option>
           </select>
         </label>
 
         <label>
-          Tarifa / Preu tancat del servei (€)
+          {{ 'CREAR_OFERTA.LABEL_OFFER_PRICE' | translate }}
           <input
             type="text"
             [(ngModel)]="ofertaServei.price"
@@ -116,20 +117,20 @@ import { AuthService } from '../../../core/services/auth.service';
         </label>
 
         <label>
-          Què inclou el teu pack de servei?
+          {{ 'CREAR_OFERTA.LABEL_OFFER_NOTE' | translate }}
           <textarea
             [(ngModel)]="ofertaServei.note"
             name="noteServei"
             rows="5"
             required
-            placeholder="Descriu amb detall el contingut del servei: desplaçament inclòs, revisió de seguretat, peces, garantia per escrit, etc..."></textarea>
+            placeholder="Descriu amb detall el contingut del servei: desplaçament inclòs, revisió, garantia..."></textarea>
         </label>
 
         <div class="form-actions">
           <button type="submit" class="btn btn-primary" [disabled]="submitting">
-            {{ submitting ? 'Publicant oferta...' : 'Publicar Oferta / Servei al Mercat' }}
+            {{ submitting ? ('CREAR_OFERTA.SUBMITTING_OFFER' | translate) : ('CREAR_OFERTA.SUBMIT_OFFER_BTN' | translate) }}
           </button>
-          <a routerLink="/" class="btn btn-cancel">Cancel·lar</a>
+          <a routerLink="/" class="btn btn-cancel">{{ 'COMMON.CANCEL_LAR' | translate }}</a>
         </div>
       </form>
 
@@ -137,8 +138,7 @@ import { AuthService } from '../../../core/services/auth.service';
       <form *ngIf="mode === 'pressupost'" (ngSubmit)="onSubmitPressupost()" class="card">
         <div class="form-group-field">
           <label for="selectIncidencia" class="label-incidencia">
-            <span class="label-main">Incidència a la qual presentes candidatura</span>
-            <span class="label-hint">Tria la petició del client a la qual vols enviar la teva proposta econòmica:</span>
+            <span class="label-main">{{ 'CREAR_OFERTA.LABEL_SELECT_INCIDENCIA' | translate }}</span>
           </label>
           <div class="select-wrapper">
             <select
@@ -150,7 +150,7 @@ import { AuthService } from '../../../core/services/auth.service';
             >
               <option value="" disabled>-- Selecciona una incidència oberta --</option>
               <option *ngFor="let task of availableTasks" [value]="task.id">
-                {{ task.titol }} — {{ task.categoria || 'Altres Serveis' }} (Pressupost: {{ task.budget }})
+                {{ task.titol }} — {{ (task.categoria ? (task.categoria | translate) : ('CATEGORIES.Altres Serveis' | translate)) }} ({{ 'COMMON.PRESSUPOST' | translate }}: {{ task.budget }})
               </option>
             </select>
             <span class="select-chevron" aria-hidden="true">
@@ -163,24 +163,24 @@ import { AuthService } from '../../../core/services/auth.service';
           <!-- Fitxa detallada de resum de la incidència seleccionada -->
           <div *ngIf="selectedTask" class="selected-incident-preview">
             <div class="incident-preview-top">
-              <span class="preview-cat-badge">{{ selectedTask.categoria || 'Altres Serveis' }}</span>
+              <span class="preview-cat-badge">{{ selectedTask.categoria ? (selectedTask.categoria | translate) : ('CATEGORIES.Altres Serveis' | translate) }}</span>
               <span class="preview-budget-badge">
-                Pressupost orientatiu del client: <strong>{{ selectedTask.budget }}</strong>
+                {{ 'LES_MEVES_TASQUES.ESTIMATED_BUDGET' | translate }} <strong>{{ selectedTask.budget }}</strong>
               </span>
             </div>
             <h4 class="preview-title">{{ selectedTask.titol }}</h4>
             <p class="preview-desc" *ngIf="selectedTask.descripcio">{{ selectedTask.descripcio }}</p>
             <div class="preview-meta-row">
               <span *ngIf="selectedTask.client" class="preview-client">
-                Client sol·licitant: <strong>{{ selectedTask.client }}</strong>
+                {{ 'HOME.CLIENT_LABEL' | translate }} <strong>{{ selectedTask.client }}</strong>
               </span>
-              <span class="preview-id">Identificador: <code>{{ selectedTask.id }}</code></span>
+              <span class="preview-id">{{ 'TASCA_DETALL.IDENTIFIER' | translate }} <code>{{ selectedTask.id }}</code></span>
             </div>
           </div>
         </div>
 
         <label>
-          El teu pressupost proposat (€)
+          {{ 'CREAR_OFERTA.LABEL_BUDGET_PRICE' | translate }}
           <input
             type="text"
             [(ngModel)]="formData.price"
@@ -190,7 +190,7 @@ import { AuthService } from '../../../core/services/auth.service';
         </label>
 
         <label>
-          Descripció de la teva proposta i terminis
+          {{ 'CREAR_OFERTA.LABEL_BUDGET_NOTE' | translate }}
           <textarea
             [(ngModel)]="formData.note"
             name="note"
@@ -201,9 +201,9 @@ import { AuthService } from '../../../core/services/auth.service';
 
         <div class="form-actions">
           <button type="submit" class="btn btn-primary" [disabled]="submitting || availableTasks.length === 0">
-            {{ submitting ? 'Enviant pressupost...' : 'Enviar Pressupost al Client' }}
+            {{ submitting ? ('CREAR_OFERTA.SUBMITTING_BUDGET' | translate) : ('CREAR_OFERTA.SUBMIT_BUDGET_BTN' | translate) }}
           </button>
-          <a routerLink="/" class="btn btn-cancel">Cancel·lar</a>
+          <a routerLink="/" class="btn btn-cancel">{{ 'COMMON.CANCEL_LAR' | translate }}</a>
         </div>
       </form>
     </section>

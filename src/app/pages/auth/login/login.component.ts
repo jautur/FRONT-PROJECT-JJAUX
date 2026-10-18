@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 
 /**
  * Component d'Inici de Sessió (/login).
@@ -14,21 +15,21 @@ import { AuthService } from '../../../core/services/auth.service';
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, TranslatePipe],
   template: `
     <section class="auth-card">
-      <h1>Inici de sessió</h1>
+      <h1>{{ 'AUTH.LOGIN.TITLE' | translate }}</h1>
       <p *ngIf="message" class="alert-message">{{ message }}</p>
-      <p *ngIf="!message">Introdueix les teves credencials per continuar.</p>
+      <p *ngIf="!message">{{ 'AUTH.LOGIN.SUBTITLE' | translate }}</p>
       <form (ngSubmit)="onSubmit()">
         <label>
-          Correu o usuari
+          {{ 'AUTH.LOGIN.EMAIL_LABEL' | translate }}
           <input
             type="text"
             [(ngModel)]="email"
             name="email"
             required
-            placeholder="cli, pro o nom@empresa.com"
+            [placeholder]="'AUTH.LOGIN.EMAIL_PLACEHOLDER' | translate"
             autocapitalize="none"
             autocorrect="off"
             spellcheck="false"
@@ -36,7 +37,7 @@ import { AuthService } from '../../../core/services/auth.service';
           />
         </label>
         <label>
-          Contrasenya
+          {{ 'AUTH.LOGIN.PASSWORD_LABEL' | translate }}
           <input
             type="password"
             [(ngModel)]="password"
@@ -49,28 +50,28 @@ import { AuthService } from '../../../core/services/auth.service';
           />
         </label>
         <button type="submit" [disabled]="loading">
-          {{ loading ? 'Entrant...' : 'Entrar' }}
+          {{ loading ? ('AUTH.LOGIN.SUBMITTING' | translate) : ('AUTH.LOGIN.SUBMIT_BTN' | translate) }}
         </button>
-        <p *ngIf="error" class="error">{{ error }}</p>
+        <p *ngIf="error" class="error">{{ error | translate }}</p>
 
         <!-- Botons d'accés ràpid per a proves des de mòbil o PC -->
         <div class="quick-test-section">
-          <span class="quick-test-title">Comptes de prova ràpids:</span>
+          <span class="quick-test-title">{{ 'AUTH.LOGIN.QUICK_TEST_TITLE' | translate }}</span>
           <div class="quick-test-buttons">
             <button type="button" class="btn-quick-user" (click)="omplirCredencials('cli', 'clicli')">
-              👤 Client (cli)
+              {{ 'AUTH.LOGIN.QUICK_CLIENT' | translate }}
             </button>
             <button type="button" class="btn-quick-user" (click)="omplirCredencials('pro', 'propro')">
-              🔨 Pro (pro)
+              {{ 'AUTH.LOGIN.QUICK_PRO' | translate }}
             </button>
             <button type="button" class="btn-quick-user" (click)="omplirCredencials('admin@admin.es', 'adminadmin')">
-              ⚙️ Admin
+              {{ 'AUTH.LOGIN.QUICK_ADMIN' | translate }}
             </button>
           </div>
         </div>
 
         <p class="footer-hint">
-          Encara no tens compte? <a routerLink="/registre" [queryParams]="returnUrl !== '/' ? { returnUrl: returnUrl } : null">Registra't aquí</a>
+          {{ 'AUTH.LOGIN.NO_ACCOUNT' | translate }} <a routerLink="/registre" [queryParams]="returnUrl !== '/' ? { returnUrl: returnUrl } : null">{{ 'AUTH.LOGIN.REGISTER_HERE' | translate }}</a>
         </p>
       </form>
     </section>
@@ -276,7 +277,7 @@ export class LoginComponent implements OnInit {
     const cleanPassword = (this.password || '').trim();
 
     if (!cleanEmail) {
-      this.error = 'Cal indicar un correu o nom d’usuari.';
+      this.error = 'AUTH.LOGIN.ERROR_REQUIRED';
       return;
     }
     this.loading = true;
@@ -290,11 +291,11 @@ export class LoginComponent implements OnInit {
       error: (err) => {
         this.loading = false;
         if (err.status === 401) {
-          this.error = 'Credencials no vàlides. Comprova l’usuari o contrasenya (p. ex: cli / clicli, pro / propro).';
+          this.error = 'AUTH.LOGIN.ERROR_INVALID';
         } else if (err.status === 0) {
-          this.error = 'No es pot connectar amb el servidor backend (port 8080). Comprova que estigui executant-se.';
+          this.error = 'AUTH.LOGIN.ERROR_SERVER';
         } else {
-          this.error = 'Error en iniciar sessió. Comprova les dades o el servidor.';
+          this.error = 'AUTH.LOGIN.ERROR_GENERIC';
         }
       }
     });

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { AvisService } from '../../services/avis.service';
 import { AuthService } from '../../core/services/auth.service';
+import { TranslatePipe } from '../../core/pipes/translate.pipe';
 import { Avis } from '../../models/avis.model';
 
 /**
@@ -21,17 +22,17 @@ type FiltreAvisos = 'totes' | 'pendents' | 'llegides';
 @Component({
   selector: 'app-avisos',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, TranslatePipe],
   template: `
     <div class="avisos-container">
       <div class="avisos-header">
         <div>
-          <h2>Safata d'Avisos i Notificacions</h2>
-          <p class="subtitle">Estat de les teves tasques, ofertes i alertes en temps real.</p>
+          <h2>{{ 'AVISOS_PAGE.TITLE' | translate }}</h2>
+          <p class="subtitle">{{ 'AVISOS_PAGE.SUBTITLE' | translate }}</p>
         </div>
         <div class="header-actions" *ngIf="avisos.length > 0">
           <button type="button" class="btn-action-alt" (click)="marcarTotesLlegides()" [disabled]="pendentsCount === 0">
-            Marcar totes com a llegides
+            {{ 'AVISOS_PAGE.MARK_ALL_READ' | translate }}
           </button>
         </div>
       </div>
@@ -44,7 +45,7 @@ type FiltreAvisos = 'totes' | 'pendents' | 'llegides';
           [class.active]="filtreActiu === 'totes'"
           (click)="canviarFiltre('totes')"
         >
-          Totes ({{ avisos.length }})
+          {{ 'AVISOS_PAGE.TAB_ALL' | translate }} ({{ avisos.length }})
         </button>
         <button
           type="button"
@@ -52,7 +53,7 @@ type FiltreAvisos = 'totes' | 'pendents' | 'llegides';
           [class.active]="filtreActiu === 'pendents'"
           (click)="canviarFiltre('pendents')"
         >
-          Pendents ({{ pendentsCount }})
+          {{ 'AVISOS_PAGE.TAB_PENDING' | translate }} ({{ pendentsCount }})
         </button>
         <button
           type="button"
@@ -60,12 +61,12 @@ type FiltreAvisos = 'totes' | 'pendents' | 'llegides';
           [class.active]="filtreActiu === 'llegides'"
           (click)="canviarFiltre('llegides')"
         >
-          Llegides ({{ avisos.length - pendentsCount }})
+          {{ 'AVISOS_PAGE.TAB_READ' | translate }} ({{ avisos.length - pendentsCount }})
         </button>
       </div>
 
       <!-- Estat de càrrega o error -->
-      <div *ngIf="loading" class="state-box">Carregant avisos...</div>
+      <div *ngIf="loading" class="state-box">{{ 'MERCAT.LOADING' | translate }}</div>
       <div *ngIf="errorMsg" class="alert-error">{{ errorMsg }}</div>
       <div *ngIf="successMsg" class="alert-success">{{ successMsg }}</div>
 
@@ -88,7 +89,7 @@ type FiltreAvisos = 'totes' | 'pendents' | 'llegides';
                 {{ getCategoriaAvis(a) }}
               </span>
               <span class="badge-status" [class.badge-pendent]="!a.llegit" [class.badge-llegit]="a.llegit">
-                {{ a.llegit ? 'Llegit' : 'Nou' }}
+                {{ a.llegit ? ('AVISOS_PAGE.STATUS_READ' | translate) : ('AVISOS_PAGE.STATUS_NEW' | translate) }}
               </span>
               <span class="avis-date">{{ formatData(a.data) }}</span>
             </div>
@@ -115,7 +116,7 @@ type FiltreAvisos = 'totes' | 'pendents' | 'llegides';
                 <polyline points="15 3 21 3 21 9"></polyline>
                 <line x1="10" y1="14" x2="21" y2="3"></line>
               </svg>
-              Obrir apartat
+              {{ 'AVISOS_PAGE.OPEN_SECTION' | translate }}
             </button>
             <button
               *ngIf="!a.llegit"
@@ -127,14 +128,14 @@ type FiltreAvisos = 'totes' | 'pendents' | 'llegides';
               <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;">
                 <polyline points="20 6 9 17 4 12"></polyline>
               </svg>
-              Llegit
+              {{ 'AVISOS_PAGE.MARK_READ' | translate }}
             </button>
             <button
               type="button"
               class="btn-icon danger"
-              title="Eliminar notificació"
+              [title]="'AVISOS_PAGE.DELETE' | translate"
               (click)="$event.stopPropagation(); eliminarAvis(a.id)"
-              aria-label="Eliminar"
+              [attr.aria-label]="'AVISOS_PAGE.DELETE' | translate"
             >
               <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -153,10 +154,9 @@ type FiltreAvisos = 'totes' | 'pendents' | 'llegides';
             <path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path>
           </svg>
         </div>
-        <h3>No tens cap notificació en aquest apartat</h3>
-        <p *ngIf="filtreActiu !== 'totes'">Prova de canviar de filtre per veure altres notificacions.</p>
-        <p *ngIf="filtreActiu === 'totes'">Quan rebis pressupostos o s'actualitzi una de les teves tasques, apareixeran aquí.</p>
-        <a routerLink="/" class="btn-primary">Tornar a l'inici</a>
+        <h3>{{ 'AVISOS_PAGE.EMPTY_TITLE' | translate }}</h3>
+        <p>{{ 'AVISOS_PAGE.EMPTY_DESC' | translate }}</p>
+        <a routerLink="/" class="btn-primary">{{ 'NAV.HOME' | translate }}</a>
       </div>
     </div>
   `,

@@ -433,9 +433,9 @@
         <span *ngIf="confirmService.icon() === 'danger'">🗑️</span>
       </div>
 
-      <h3 class="confirm-modal-title">{{ confirmService.title() }}</h3>
+      <h3 class="confirm-modal-title">{{ confirmService.title() | translate }}</h3>
       <div class="confirm-modal-message-box">
-        <p class="confirm-modal-message">{{ confirmService.message() }}</p>
+        <p class="confirm-modal-message">{{ confirmService.message() | translate }}</p>
       </div>
 
       <div class="confirm-modal-actions">
@@ -444,14 +444,14 @@
           class="btn-confirm-cancel"
           *ngIf="!confirmService.isAlert()"
           (click)="confirmService.onCancel()">
-          {{ confirmService.cancelText() }}
+          {{ confirmService.cancelText() | translate }}
         </button>
         <button
           type="button"
           class="btn-confirm-accept"
           [class.btn-danger]="confirmService.isDanger()"
           (click)="confirmService.onAccept()">
-          {{ confirmService.confirmText() }}
+          {{ confirmService.confirmText() | translate }}
         </button>
       </div>
     </div>

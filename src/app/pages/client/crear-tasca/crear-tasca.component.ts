@@ -7,6 +7,8 @@ import { IncidenciaService } from '../../../services/incidencia.service';
 import { CrearIncidenciaDTO } from '../../../models/incidencia.model';
 import { AuthService } from '../../../core/services/auth.service';
 
+import { TranslatePipe } from '../../../core/pipes/translate.pipe';
+
 /**
  * Component per a la creació i publicació de noves tasques (/client/crear-tasca).
  * Permet als usuaris amb rol de Client detallar una necessitat, seleccionar una categoria
@@ -16,79 +18,78 @@ import { AuthService } from '../../../core/services/auth.service';
 @Component({
   selector: 'app-crear-tasca',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, TranslatePipe],
   template: `
     <section class="task-form-container">
       <header class="form-header">
-        <div class="role-badge-tag">PER A CLIENTS I PARTICULARS · NOVA INCIDÈNCIA</div>
-        <h1>Crear Incidència / Petició de Treball</h1>
+        <div class="role-badge-tag">{{ 'CREAR_TASCA.BADGE' | translate }}</div>
+        <h1>{{ 'CREAR_TASCA.TITLE' | translate }}</h1>
         <p class="subtitle">
-          Descriu la teva avaria, reforma o necessitat a la llar. Els professionals verificats de la comarca
-          rebran la notificació immediata i et proposaran pressupostos a mida.
+          {{ 'CREAR_TASCA.SUBTITLE' | translate }}
         </p>
       </header>
 
       <div *ngIf="errorMessage" class="alert alert-danger">
-        {{ errorMessage }}
+        {{ errorMessage | translate }}
       </div>
       <div *ngIf="successMessage" class="alert alert-success">
-        {{ successMessage }}
+        {{ successMessage | translate }}
       </div>
 
       <form (ngSubmit)="onSubmit()" class="card">
         <label>
-          Títol de la incidència o necessitat
+          {{ 'CREAR_TASCA.LABEL_TITLE' | translate }}
           <input
             type="text"
             [(ngModel)]="formData.titol"
             name="titol"
             required
-            placeholder="Ex: Reparació urgent de fuita d'aigua sota l'aigüera o canvi de banyera" />
+            [placeholder]="'CREAR_TASCA.PLACEHOLDER_TITLE' | translate" />
         </label>
 
         <label>
-          Gremi o Especialitat requerida
+          {{ 'CREAR_TASCA.LABEL_CAT' | translate }}
           <select [(ngModel)]="formData.categoria" name="categoria" required>
-            <option value="" disabled>Selecciona el gremi professional</option>
-            <option value="Reformes i Obres">Reformes i Obres (Paleteria, banys, cuines)</option>
-            <option value="Lampisteria">Lampisteria i Fontaneria (Fuites, calderes, desbussos)</option>
-            <option value="Electricitat">Electricitat i Il·luminació (Quadres, butlletins oficials, LED)</option>
-            <option value="Climatització">Climatització i Calefacció (Aire condicionat, aerotèrmia)</option>
-            <option value="Pintura">Pintura i Decoració (Alisat de parets, pintura plàstica)</option>
-            <option value="Fusteria">Fusteria i Parquet (Portes de pas, armaris, terres)</option>
-            <option value="Neteja">Neteja i Manteniment (Final d'obra, desinfecció)</option>
-            <option value="Serralleria">Serralleria (Panys de seguretat, obertures 24h)</option>
-            <option value="Arquitectura">Arquitectura & Llicències (Cèdules, certificats, ITE)</option>
-            <option value="Informàtica">Informàtica, Web & Suport IT</option>
-            <option value="Altres">Altres serveis professionals</option>
+            <option value="" disabled>{{ 'CREAR_TASCA.SELECT_CAT_DEFAULT' | translate }}</option>
+            <option value="Reformes i Obres">{{ 'CATEGORIES.Reformes i Obres' | translate }}</option>
+            <option value="Lampisteria">{{ 'CATEGORIES.Lampisteria' | translate }}</option>
+            <option value="Electricitat">{{ 'CATEGORIES.Electricitat' | translate }}</option>
+            <option value="Climatització">{{ 'CATEGORIES.Climatització' | translate }}</option>
+            <option value="Pintura">{{ 'CATEGORIES.Pintura' | translate }}</option>
+            <option value="Fusteria">{{ 'CATEGORIES.Fusteria' | translate }}</option>
+            <option value="Neteja">{{ 'CATEGORIES.Neteja' | translate }}</option>
+            <option value="Serralleria">{{ 'CATEGORIES.Serralleria' | translate }}</option>
+            <option value="Arquitectura">{{ 'CATEGORIES.Arquitectura' | translate }}</option>
+            <option value="Informàtica">{{ 'CATEGORIES.Informàtica' | translate }}</option>
+            <option value="Altres">{{ 'CATEGORIES.Altres' | translate }}</option>
           </select>
         </label>
 
         <label>
-          Descripció detallada de l'avaria o feina
+          {{ 'CREAR_TASCA.LABEL_DESC' | translate }}
           <textarea
             [(ngModel)]="formData.descripcio"
             name="descripcio"
             rows="6"
             required
-            placeholder="Detalla què ha passat, quins materials calen, terminis d'execució o la teva disponibilitat..."></textarea>
+            [placeholder]="'CREAR_TASCA.PLACEHOLDER_DESC' | translate"></textarea>
         </label>
 
         <label>
-          Pressupost màxim orientatiu (€)
+          {{ 'CREAR_TASCA.LABEL_BUDGET' | translate }}
           <input
             type="text"
             [(ngModel)]="formData.budget"
             name="budget"
             required
-            placeholder="Ex: €350" />
+            [placeholder]="'CREAR_TASCA.PLACEHOLDER_BUDGET' | translate" />
         </label>
 
         <div class="form-actions">
           <button type="submit" class="btn btn-primary" [disabled]="submitting">
-            {{ submitting ? 'Publicant incidència...' : 'Publicar Incidència' }}
+            {{ submitting ? ('CREAR_TASCA.SUBMITTING' | translate) : ('CREAR_TASCA.SUBMIT_BTN' | translate) }}
           </button>
-          <a routerLink="/" class="btn btn-cancel">Cancel·lar</a>
+          <a routerLink="/" class="btn btn-cancel">{{ 'COMMON.CANCEL_LAR' | translate }}</a>
         </div>
       </form>
     </section>

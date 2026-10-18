@@ -26,20 +26,22 @@ type FiltreEstatTasca = 'totes' | 'oberta' | 'en_curs' | 'finalitzada';
  * - Accedir a la revisió d'ofertes o donar per finalitzat el servei amb valoració.
  * - Eliminar tasques publicades.
  */
+import { TranslatePipe } from '../../../core/pipes/translate.pipe';
+
 @Component({
   selector: 'app-les-meves-tasques',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, TranslatePipe],
   template: `
     <div class="panell-container">
       <div class="panell-header">
         <div>
-          <h2>Les meves Tasques i Incidències</h2>
-          <p class="subtitle">Gestiona les teves sol·licituds de servei, revisa pressupostos i avalua els treballs conclosos.</p>
+          <h2>{{ 'LES_MEVES_TASQUES.TITLE' | translate }}</h2>
+          <p class="subtitle">{{ 'LES_MEVES_TASQUES.SUBTITLE' | translate }}</p>
         </div>
         <div>
           <a routerLink="/client/crear-tasca" class="btn-crear">
-            + Crear Incidència
+            {{ 'LES_MEVES_TASQUES.BTN_NEW_INCIDENCIA' | translate }}
           </a>
         </div>
       </div>
@@ -52,7 +54,7 @@ type FiltreEstatTasca = 'totes' | 'oberta' | 'en_curs' | 'finalitzada';
           [class.active]="filtreActiu === 'totes'"
           (click)="canviarFiltre('totes')"
         >
-          Totes ({{ tasques.length }})
+          {{ 'LES_MEVES_TASQUES.TAB_ALL' | translate }} ({{ tasques.length }})
         </button>
         <button
           type="button"
@@ -60,7 +62,7 @@ type FiltreEstatTasca = 'totes' | 'oberta' | 'en_curs' | 'finalitzada';
           [class.active]="filtreActiu === 'oberta'"
           (click)="canviarFiltre('oberta')"
         >
-          Incidències obertes ({{ countIncidencies() }})
+          {{ 'LES_MEVES_TASQUES.TAB_OPEN' | translate }} ({{ countIncidencies() }})
         </button>
         <button
           type="button"
@@ -68,7 +70,7 @@ type FiltreEstatTasca = 'totes' | 'oberta' | 'en_curs' | 'finalitzada';
           [class.active]="filtreActiu === 'en_curs'"
           (click)="canviarFiltre('en_curs')"
         >
-          Tasques en curs ({{ countEnCurs() }})
+          {{ 'LES_MEVES_TASQUES.TAB_IN_PROGRESS' | translate }} ({{ countEnCurs() }})
         </button>
         <button
           type="button"
@@ -76,12 +78,12 @@ type FiltreEstatTasca = 'totes' | 'oberta' | 'en_curs' | 'finalitzada';
           [class.active]="filtreActiu === 'finalitzada'"
           (click)="canviarFiltre('finalitzada')"
         >
-          Finalitzades ({{ countFinalitzades() }})
+          {{ 'LES_MEVES_TASQUES.TAB_COMPLETED' | translate }} ({{ countFinalitzades() }})
         </button>
       </div>
 
       <!-- Missatges d'estat -->
-      <div *ngIf="loading" class="state-box">Carregant les teves tasques...</div>
+      <div *ngIf="loading" class="state-box">{{ 'COMMON.CARREGANT' | translate }}</div>
       <div *ngIf="errorMsg" class="alert-error">{{ errorMsg }}</div>
       <div *ngIf="successMsg" class="alert-success">{{ successMsg }}</div>
 
@@ -91,11 +93,11 @@ type FiltreEstatTasca = 'totes' | 'oberta' | 'en_curs' | 'finalitzada';
           <div class="card-header">
             <div class="header-nature-group">
               <span class="badge-nature" [ngClass]="isTascaConvergida(t) ? 'is-tasca' : 'is-incidencia'">
-                {{ isTascaConvergida(t) ? 'TASCA' : 'INCIDÈNCIA' }}
+                {{ isTascaConvergida(t) ? ('LES_MEVES_TASQUES.NATURE_TASK' | translate) : ('LES_MEVES_TASQUES.NATURE_INCIDENCIA' | translate) }}
               </span>
-              <span class="badge-categoria">{{ t.categoria }}</span>
+              <span class="badge-categoria">{{ t.categoria ? (t.categoria | translate) : ('CATEGORIES.Altres Serveis' | translate) }}</span>
             </div>
-            <span class="badge-estat" [ngClass]="getEstatClass(t.estat)">{{ t.estat }}</span>
+            <span class="badge-estat" [ngClass]="getEstatClass(t.estat)">{{ t.estat ? (t.estat | translate) : '' }}</span>
           </div>
 
           <h3 class="tasca-titol">{{ t.titol }}</h3>
@@ -104,7 +106,7 @@ type FiltreEstatTasca = 'totes' | 'oberta' | 'en_curs' | 'finalitzada';
           <div class="tasca-meta">
             <!-- Professional assignat si és tasca en curs o finalitzada -->
             <div class="meta-item pro-assigned-item" *ngIf="isTascaConvergida(t)">
-              <span class="meta-label">Professional assignat:</span>
+              <span class="meta-label">{{ 'LES_MEVES_TASQUES.PRO_ASSIGNED' | translate }}</span>
               <span class="meta-value pro-assigned-val">
                 <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;">
                   <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
@@ -118,23 +120,23 @@ type FiltreEstatTasca = 'totes' | 'oberta' | 'en_curs' | 'finalitzada';
 
             <!-- Sense professional si és incidència oberta -->
             <div class="meta-item waiting-item" *ngIf="!isTascaConvergida(t)">
-              <span class="meta-label">Estat professional:</span>
-              <span class="meta-value waiting-badge">Sense professional assignat</span>
+              <span class="meta-label">{{ 'LES_MEVES_TASQUES.PRO_STATUS' | translate }}</span>
+              <span class="meta-value waiting-badge">{{ 'LES_MEVES_TASQUES.NO_PRO_ASSIGNED' | translate }}</span>
             </div>
 
             <div class="meta-item">
-              <span class="meta-label">{{ isTascaConvergida(t) ? 'Preu acordat:' : 'Pressupost orientatiu:' }}</span>
+              <span class="meta-label">{{ isTascaConvergida(t) ? ('LES_MEVES_TASQUES.AGREED_PRICE' | translate) : ('LES_MEVES_TASQUES.ESTIMATED_BUDGET' | translate) }}</span>
               <span class="meta-value budget">{{ t.budget }}</span>
             </div>
 
             <div class="meta-item" *ngIf="!isTascaConvergida(t) && ofertesCount[t.id] !== undefined">
-              <span class="meta-label">Ofertes rebudes:</span>
-              <span class="meta-value ofertes-badge">{{ ofertesCount[t.id] }} pressupost(s)</span>
+              <span class="meta-label">{{ 'LES_MEVES_TASQUES.QUOTES_RECEIVED' | translate }}</span>
+              <span class="meta-value ofertes-badge">{{ ofertesCount[t.id] }} {{ 'LES_MEVES_TASQUES.QUOTES_COUNT' | translate }}</span>
             </div>
 
             <!-- Mostra la valoració si ja ha estat avaluada -->
             <div class="meta-item rating-item" *ngIf="t.valoracio">
-              <span class="meta-label">La teva valoració del professional:</span>
+              <span class="meta-label">{{ 'LES_MEVES_TASQUES.YOUR_RATING' | translate }}</span>
               <span class="meta-value rating-stars">
                 ★ {{ t.valoracio }}/5
                 <span *ngIf="t.opinio" class="rating-quote">"{{ t.opinio }}"</span>
@@ -148,7 +150,7 @@ type FiltreEstatTasca = 'totes' | 'oberta' | 'en_curs' | 'finalitzada';
                 <circle cx="11" cy="11" r="8"></circle>
                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
               </svg>
-              {{ isTascaConvergida(t) ? 'Veure seguiment & detall' : 'Revisar pressupostos (' + (ofertesCount[t.id] || 0) + ')' }}
+              {{ isTascaConvergida(t) ? ('TASQUES_OFERTES.VEURE_SEGUIMENT' | translate) : ('LES_MEVES_TASQUES.BTN_REVIEW_QUOTES' | translate) + ' (' + (ofertesCount[t.id] || 0) + ')' }}
             </a>
 
             <!-- Si ja està finalitzada però encara no s'ha avaluat -->
@@ -159,7 +161,7 @@ type FiltreEstatTasca = 'totes' | 'oberta' | 'en_curs' | 'finalitzada';
               (click)="obrirModalFinalitzar(t)"
               title="Avaluar el servei rebut per a aquesta tasca"
             >
-              ★ Avaluar tasca
+              ★ {{ 'TASCA_DETALL.BTN_EVALUATE' | translate }}
             </button>
 
             <button
@@ -171,7 +173,7 @@ type FiltreEstatTasca = 'totes' | 'oberta' | 'en_curs' | 'finalitzada';
                 <polyline points="3 6 5 6 21 6"></polyline>
                 <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
               </svg>
-              Eliminar
+              {{ 'COMMON.BORRAR' | translate }}
             </button>
           </div>
         </div>
@@ -184,9 +186,9 @@ type FiltreEstatTasca = 'totes' | 'oberta' | 'en_curs' | 'finalitzada';
             <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
           </svg>
         </div>
-        <h3>No s’ha trobat cap tasca en aquesta secció</h3>
-        <p>Encara no has publicat cap sol·licitud o cap coincideix amb el filtre seleccionat.</p>
-        <a routerLink="/client/crear-tasca" class="btn-crear">Crea la teva primera incidència</a>
+        <h3>{{ 'LES_MEVES_TASQUES.EMPTY_TITLE' | translate }}</h3>
+        <p>{{ 'LES_MEVES_TASQUES.EMPTY_DESC' | translate }}</p>
+        <a routerLink="/client/crear-tasca" class="btn-crear">{{ 'LES_MEVES_TASQUES.BTN_NEW_INCIDENCIA' | translate }}</a>
       </div>
 
       <!-- MODAL D'AVALUACIÓ I FINALITZACIÓ DE TASCA -->
@@ -194,18 +196,18 @@ type FiltreEstatTasca = 'totes' | 'oberta' | 'en_curs' | 'finalitzada';
         <div class="modal-dialog" (click)="$event.stopPropagation()">
           <header class="modal-header">
             <div>
-              <span class="modal-badge-tag">AVALUACIÓ DE SERVEI</span>
-              <h2>{{ tascaPerFinalitzar?.estat === 'Finalitzada' ? (tascaPerFinalitzar?.valoracio ? 'Modificar valoració del professional' : 'Avaluar professional') : 'Finalitzar tasca i avaluar professional' }}</h2>
+              <span class="modal-badge-tag">{{ 'TASCA_DETALL.REVIEW_HEADER' | translate }}</span>
+              <h2>{{ 'TASCA_DETALL.MODAL_EVALUATE_TITLE' | translate }}</h2>
             </div>
             <button type="button" class="btn-close-modal" (click)="tancarModalFinalitzar()" aria-label="Tancar">✕</button>
           </header>
 
           <div class="modal-body" *ngIf="tascaPerFinalitzar">
             <div class="modal-task-summary">
-              <span class="badge-categoria">{{ tascaPerFinalitzar.categoria }}</span>
+              <span class="badge-categoria">{{ tascaPerFinalitzar.categoria ? (tascaPerFinalitzar.categoria | translate) : '' }}</span>
               <h3>{{ tascaPerFinalitzar.titol }}</h3>
               <p class="summary-pro">
-                Professional assignat: 
+                {{ 'LES_MEVES_TASQUES.PRO_ASSIGNED' | translate }} 
                 <strong>
                   <a *ngIf="professionalPerFinalitzar; else noProModal" [routerLink]="['/perfil', professionalPerFinalitzar]" class="user-inline-link" title="Veure perfil de {{ professionalPerFinalitzar }}">
                     {{ professionalPerFinalitzar }}
@@ -216,7 +218,7 @@ type FiltreEstatTasca = 'totes' | 'oberta' | 'en_curs' | 'finalitzada';
             </div>
 
             <div class="rating-input-group">
-              <label class="rating-title">Com valores la feina realitzada? (1 a 5 estrelles):</label>
+              <label class="rating-title">{{ 'TASCA_DETALL.MODAL_RATING_LABEL' | translate }}</label>
               <div class="stars-picker">
                 <button
                   type="button"
@@ -233,12 +235,12 @@ type FiltreEstatTasca = 'totes' | 'oberta' | 'en_curs' | 'finalitzada';
             </div>
 
             <div class="comment-input-group">
-              <label for="ressenya-desc">Comentari i opinió sobre el servei:</label>
+              <label for="ressenya-desc">{{ 'TASCA_DETALL.MODAL_COMMENT_LABEL' | translate }}</label>
               <textarea
                 id="ressenya-desc"
                 [(ngModel)]="ressenyaDescripcio"
                 rows="4"
-                placeholder="Explica què tal ha anat: puntualitat, qualitat dels acabats, neteja posterior i recomanació..."
+                [placeholder]="'TASCA_DETALL.MODAL_COMMENT_PLACEHOLDER' | translate"
               ></textarea>
             </div>
 
@@ -249,7 +251,7 @@ type FiltreEstatTasca = 'totes' | 'oberta' | 'en_curs' | 'finalitzada';
                 (click)="confirmarFinalitzacioAmbRessenya()"
                 [disabled]="enviantRessenya"
               >
-                {{ enviantRessenya ? 'Enviant valoració...' : (tascaPerFinalitzar?.estat === 'Finalitzada' ? '★ Guardar Valoració' : '★ Enviar Valoració i Finalitzar Tasca') }}
+                {{ enviantRessenya ? ('COMMON.CARREGANT' | translate) : ('TASCA_DETALL.BTN_SAVE_REVIEW' | translate) }}
               </button>
               <button
                 *ngIf="tascaPerFinalitzar?.estat !== 'Finalitzada'"
@@ -258,7 +260,7 @@ type FiltreEstatTasca = 'totes' | 'oberta' | 'en_curs' | 'finalitzada';
                 (click)="finalitzarSenseRessenya()"
                 [disabled]="enviantRessenya"
               >
-                Finalitzar directament sense deixar valoració
+                {{ 'TASCA_DETALL.BTN_COMPLETE_PRO' | translate }}
               </button>
             </div>
           </div>
@@ -1189,10 +1191,10 @@ export class LesMevesTasquesComponent implements OnInit {
    */
   async eliminarTasca(id: string): Promise<void> {
     const confirmacio = await this.confirmService.confirm({
-      title: 'Eliminar Petició',
-      message: 'Estàs segur d’eliminar aquesta petició? Aquesta acció no es pot desfer.',
-      confirmText: 'Eliminar',
-      cancelText: 'Cancel·lar',
+      title: 'CONFIRM_MODAL.DELETE_TASK_TITLE',
+      message: 'CONFIRM_MODAL.DELETE_TASK_MSG',
+      confirmText: 'COMMON.BORRAR',
+      cancelText: 'COMMON.CANCEL_LAR',
       isDanger: true,
       icon: 'danger'
     });

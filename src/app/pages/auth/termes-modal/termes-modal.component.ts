@@ -17,20 +17,22 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
  * - Secció 6: Sancions i cancel·lació de comptes (frau, infraccions reiterades).
  * - Política de Privacitat: Responsable, finalitats i exercici de drets RGPD.
  */
+import { TranslatePipe } from '../../../core/pipes/translate.pipe';
+
 @Component({
   selector: 'app-termes-modal',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, TranslatePipe],
   template: `
     <div [class.modal-backdrop]="isModal" (click)="onBackdropClick($event)">
       <div class="legal-container" [class.is-modal-window]="isModal" (click)="$event.stopPropagation()">
         <!-- Capçalera amb pestanyes -->
         <header class="legal-header">
           <div class="header-titles">
-            <span class="legal-eyebrow">DOCUMENTACIÓ LEGAL AVISA</span>
-            <h2>{{ activeTab === 'termes' ? 'Termes i Condicions d\'Ús' : 'Política de Privacitat' }}</h2>
+            <span class="legal-eyebrow">{{ 'AUTH.TERMES_MODAL.EYEBROW' | translate }}</span>
+            <h2>{{ activeTab === 'termes' ? ('AUTH.TERMES_MODAL.TERMES_TITLE' | translate) : ('AUTH.TERMES_MODAL.PRIVACY_TITLE' | translate) }}</h2>
           </div>
-          <button *ngIf="isModal" type="button" class="btn-close" (click)="close.emit()" aria-label="Tancar document legal">✕</button>
+          <button *ngIf="isModal" type="button" class="btn-close" (click)="close.emit()" [attr.aria-label]="'AUTH.TERMES_MODAL.CLOSE' | translate">✕</button>
         </header>
 
         <!-- Selector de pestanyes: Termes vs Privacitat -->
@@ -40,14 +42,14 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
             class="tab-btn"
             [class.active]="activeTab === 'termes'"
             (click)="activeTab = 'termes'">
-            📄 Termes i Condicions
+            {{ 'AUTH.TERMES_MODAL.TAB_TERMES' | translate }}
           </button>
           <button
             type="button"
             class="tab-btn"
             [class.active]="activeTab === 'privacitat'"
             (click)="activeTab = 'privacitat'">
-            🔒 Política de Privacitat
+            {{ 'AUTH.TERMES_MODAL.TAB_PRIVACY' | translate }}
           </button>
         </nav>
 
@@ -262,13 +264,13 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
         <!-- Peu amb accions -->
         <footer class="legal-footer">
           <button *ngIf="isModal" type="button" class="btn-cancel" (click)="close.emit()">
-            Tancar
+            {{ 'COMMON.TANCAR' | translate }}
           </button>
           <button *ngIf="isModal" type="button" class="btn-accept" (click)="onAcceptClick()">
-            ✓ He llegit i accepte {{ activeTab === 'termes' ? 'els termes' : 'la privacitat' }}
+            ✓ {{ 'AUTH.TERMES_MODAL.ACCEPT_DOC' | translate }}
           </button>
           <a *ngIf="!isModal" routerLink="/registre" class="btn-accept" style="text-decoration: none;">
-            Tornar al Registre
+            {{ 'AUTH.REGISTER.TITLE' | translate }}
           </a>
         </footer>
       </div>

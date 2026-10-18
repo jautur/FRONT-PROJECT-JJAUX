@@ -7,6 +7,8 @@ import { UsuariService } from '../../services/usuari.service';
 import { AuthService } from '../../core/services/auth.service';
 import { Tasca } from '../../models/tasca.model';
 import { TascaService } from '../../services/tasca.service';
+import { TranslationService } from '../../core/services/translation.service';
+import { TranslatePipe } from '../../core/pipes/translate.pipe';
 
 /**
  * Component de Perfil d'Usuari (/perfil).
@@ -19,7 +21,7 @@ import { TascaService } from '../../services/tasca.service';
 @Component({
   selector: 'app-perfil',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslatePipe],
   template: `
     <section class="perfil-container">
       <!-- Capçalera del Perfil -->
@@ -29,10 +31,10 @@ import { TascaService } from '../../services/tasca.service';
         </div>
         <div class="header-info">
           <div class="header-name-row">
-            <h1>{{ usuari?.nom || 'El meu perfil' }}</h1>
+            <h1>{{ usuari?.nom || ('PERFIL.TITLE_OWN' | translate) }}</h1>
             <div class="pro-rating-badge-head" *ngIf="mitjanaPuntuacio">
               <span class="stars-gold">★ {{ mitjanaPuntuacio }}</span>
-              <span class="count-head">({{ totalValoracions }} {{ totalValoracions === 1 ? 'valoració' : 'valoracions' }})</span>
+              <span class="count-head">({{ totalValoracions }} {{ totalValoracions === 1 ? ('PERFIL.RATING_COUNT_SINGULAR' | translate) : ('PERFIL.RATING_COUNT_PLURAL' | translate) }})</span>
             </div>
           </div>
           <p class="email">{{ usuari?.email }}</p>
@@ -41,13 +43,13 @@ import { TascaService } from '../../services/tasca.service';
               {{ usuari?.rol | uppercase }}
             </span>
             <span class="verified-badge" *ngIf="usuari?.rol === 'professional' && usuari?.verificat">
-              ✓ Professional Verificat AVISA
+              {{ 'PERFIL.BADGE_VERIFIED' | translate }}
             </span>
             <span class="pending-badge" *ngIf="usuari?.rol === 'professional' && !usuari?.verificat && usuari?.sollicitudVerificacio">
-              ⏳ Verificació Pendent (Trucada)
+              {{ 'PERFIL.BADGE_PENDING' | translate }}
             </span>
             <span class="unverified-badge" *ngIf="usuari?.rol === 'professional' && !usuari?.verificat && !usuari?.sollicitudVerificacio">
-              ⚠️ No verificat
+              {{ 'PERFIL.BADGE_UNVERIFIED' | translate }}
             </span>
           </div>
         </div>
@@ -65,34 +67,34 @@ import { TascaService } from '../../services/tasca.service';
       <div class="perfil-grid" *ngIf="isOwnProfile">
         <!-- Formulari d'edició de dades bàsiques -->
         <article class="card">
-          <h2>Dades personals</h2>
-          <p class="subtitle">Actualitza la teva informació de contacte i presentació.</p>
+          <h2>{{ 'PERFIL.PERSONAL_DATA_TITLE' | translate }}</h2>
+          <p class="subtitle">{{ 'PERFIL.PERSONAL_DATA_SUB' | translate }}</p>
 
           <form (ngSubmit)="onSaveProfile()">
             <label>
-              Nom complet o comercial
-              <input type="text" [(ngModel)]="formData.nom" name="nom" required placeholder="El teu nom" />
+              {{ 'PERFIL.FULL_NAME' | translate }}
+              <input type="text" [(ngModel)]="formData.nom" name="nom" required [placeholder]="'PERFIL.FULL_NAME' | translate" />
             </label>
 
             <label>
-              Correu electrònic
+              {{ 'PERFIL.EMAIL' | translate }}
               <input type="email" [value]="usuari?.email" disabled class="input-disabled" />
-              <small class="hint">El correu s'utilitza per identificar el compte i no es pot canviar directament.</small>
+              <small class="hint">{{ 'PERFIL.EMAIL_HINT' | translate }}</small>
             </label>
 
             <label>
-              Telèfon de contacte
+              {{ 'PERFIL.PHONE' | translate }}
               <input type="tel" [(ngModel)]="formData.telefon" name="telefon" placeholder="+34 600 000 000" />
             </label>
 
             <label>
-              Biografia / Presentació
-              <textarea [(ngModel)]="formData.bio" name="bio" rows="4" placeholder="Explica breument la teva experiència o serveis..."></textarea>
+              {{ 'PERFIL.BIO' | translate }}
+              <textarea [(ngModel)]="formData.bio" name="bio" rows="4" [placeholder]="'PERFIL.BIO_PLACEHOLDER' | translate"></textarea>
             </label>
 
             <!-- Percentil de comissió reservat per a la plataforma (0-100%, defecte 3%) -->
             <label class="percentil-form-group">
-              Percentil de comissió plataforma (%)
+              {{ 'PERFIL.COMMISSION_PERCENTILE' | translate }}
               <div class="percentil-input-row" style="display: flex; align-items: center; gap: 0.75rem; margin-top: 0.35rem;">
                 <input
                   type="number"
@@ -105,22 +107,22 @@ import { TascaService } from '../../services/tasca.service';
                   style="max-width: 130px; font-weight: 700;"
                 />
                 <span class="percentil-badge-pill" style="background: #eff6ff; color: #1d4ed8; font-weight: 800; padding: 0.35rem 0.75rem; border-radius: 6px; font-size: 0.85rem; border: 1px solid #bfdbfe;">
-                  {{ formData.percentil ?? (usuari?.percentil ?? 3) }}% reservat plataforma
+                  {{ formData.percentil ?? (usuari?.percentil ?? 3) }}% {{ 'PERFIL.COMMISSION_RESERVED' | translate }}
                 </span>
               </div>
               <small class="hint" *ngIf="isAdmin" style="color: #059669; font-weight: 600; margin-top: 0.3rem; display: block;">
-                ★ Com a Administrador, disposes de permisos per assignar o reduir qualsevol percentil (0% - 100%).
+                {{ 'PERFIL.ADMIN_PERCENTILE_HINT' | translate }}
               </small>
               <small class="hint" *ngIf="!isAdmin" style="margin-top: 0.3rem; display: block;">
-                Com a usuari pots editar el percentil per a augmentar-lo (mínim actual: {{ usuari?.percentil ?? 3 }}%). Per reduir-lo cal intervenció d'un administrador.
+                {{ 'PERFIL.USER_PERCENTILE_HINT' | translate }}
               </small>
               <div class="commission-simulation-box" style="margin-top: 0.5rem; padding: 0.6rem 0.85rem; background: #fdfbf7; border: 1px dashed #dcd6cb; border-radius: 6px; font-size: 0.82rem; color: #4b4841;">
-                <strong>Normalització i càlcul estimat:</strong> Per a un servei de 100€, es reservaran <strong>{{ getCommissionSimulation() }}€</strong> com a comissió per a la plataforma.
+                <strong>{{ 'PERFIL.COMMISSION_SIMULATION_TITLE' | translate }}</strong> {{ 'PERFIL.COMMISSION_SIMULATION_TEXT' | translate }} <strong>{{ getCommissionSimulation() }}€</strong> {{ 'PERFIL.COMMISSION_SIMULATION_END' | translate }}
               </div>
             </label>
 
             <button type="submit" class="btn btn-primary" [disabled]="saving">
-              {{ saving ? 'Desant...' : 'Desar canvis' }}
+              {{ saving ? ('PERFIL.SAVING' | translate) : ('PERFIL.SAVE_CHANGES' | translate) }}
             </button>
           </form>
         </article>
@@ -128,22 +130,22 @@ import { TascaService } from '../../services/tasca.service';
         <!-- Secció de Seguretat i Canvi de contrasenya -->
         <div class="side-column">
           <article class="card">
-            <h2>Seguretat del compte</h2>
-            <p class="subtitle">Canvia la contrasenya d'accés a la plataforma.</p>
+            <h2>{{ 'PERFIL.ACCOUNT_SECURITY' | translate }}</h2>
+            <p class="subtitle">{{ 'PERFIL.ACCOUNT_SECURITY_SUB' | translate }}</p>
 
             <form (ngSubmit)="onChangePassword()">
               <label>
-                Nova contrasenya
+                {{ 'PERFIL.NEW_PASSWORD' | translate }}
                 <input type="password" [(ngModel)]="passwordData.newPassword" name="newPassword" required minlength="6" placeholder="Mínim 6 caràcters" />
               </label>
 
               <label>
-                Repeteix la nova contrasenya
+                {{ 'PERFIL.REPEAT_PASSWORD' | translate }}
                 <input type="password" [(ngModel)]="passwordData.confirmPassword" name="confirmPassword" required placeholder="Repeteix la contrasenya" />
               </label>
 
               <button type="submit" class="btn btn-secondary" [disabled]="changingPassword">
-                {{ changingPassword ? 'Actualitzant...' : 'Actualitzar contrasenya' }}
+                {{ changingPassword ? ('PERFIL.UPDATING_PASSWORD' | translate) : ('PERFIL.UPDATE_PASSWORD' | translate) }}
               </button>
             </form>
           </article>
@@ -160,7 +162,7 @@ import { TascaService } from '../../services/tasca.service';
                 </svg>
               </span>
               <div>
-                <h2>Estat de Verificació</h2>
+                <h2>{{ 'PERFIL.VERIF_STATUS_TITLE' | translate }}</h2>
                 <span class="verif-status-pill" [ngClass]="getVerifStatusClass()">
                   {{ getVerifStatusLabel() }}
                 </span>
@@ -174,11 +176,11 @@ import { TascaService } from '../../services/tasca.service';
             <div class="verif-checklist">
               <div class="check-item" [class.valid]="!!usuari?.email">
                 <span class="check-icon">{{ !!usuari?.email ? '✓' : '✗' }}</span>
-                <span>Email registrat: <strong>{{ usuari?.email || 'Mancant' }}</strong></span>
+                <span>{{ 'PERFIL.EMAIL_REGISTERED' | translate }} <strong>{{ usuari?.email || 'Mancant' }}</strong></span>
               </div>
               <div class="check-item" [class.valid]="!!usuari?.telefon">
                 <span class="check-icon">{{ !!usuari?.telefon ? '✓' : '✗' }}</span>
-                <span>Telèfon de trucada: <strong>{{ usuari?.telefon || 'Cal afegir un telèfon' }}</strong></span>
+                <span>{{ 'PERFIL.PHONE_CALL' | translate }} <strong>{{ usuari?.telefon || 'Cal afegir un telèfon' }}</strong></span>
               </div>
             </div>
 
@@ -189,10 +191,10 @@ import { TascaService } from '../../services/tasca.service';
                 class="btn btn-verif"
                 (click)="onSollicitarVerificacio()"
                 [disabled]="sollicitantVerificacio || !usuari?.telefon">
-                {{ sollicitantVerificacio ? 'Enviant sol·licitud...' : '📞 Sol·licitar Verificació per Trucada' }}
+                {{ sollicitantVerificacio ? ('PERFIL.REQUESTING_VERIF' | translate) : ('PERFIL.BTN_REQUEST_VERIF' | translate) }}
               </button>
               <small *ngIf="!usuari?.telefon" class="field-error-text" style="display:block; margin-top: 0.35rem;">
-                * Cal que desis un telèfon de contacte abans de poder sol·licitar la verificació.
+                {{ 'PERFIL.PHONE_REQUIRED_FOR_VERIF' | translate }}
               </small>
             </div>
 
@@ -200,7 +202,7 @@ import { TascaService } from '../../services/tasca.service';
             <div *ngIf="!usuari?.verificat && usuari?.sollicitudVerificacio" class="pending-notice-box" style="margin-top: 0.85rem;">
               <span class="notice-icon">📞</span>
               <div>
-                <strong>Sol·licitud en curs:</strong> L'administrador d'AVISA es posarà en contacte amb tu en breu al telèfon <strong>{{ usuari?.telefon }}</strong> per comprovar la teva identitat.
+                <strong>{{ 'PERFIL.VERIF_PENDING_TITLE' | translate }}</strong> {{ 'PERFIL.VERIF_PENDING_DESC' | translate }}
               </div>
             </div>
 
@@ -208,14 +210,14 @@ import { TascaService } from '../../services/tasca.service';
             <div *ngIf="usuari?.verificat" class="verified-notice-box" style="margin-top: 0.85rem;">
               <span class="notice-icon">✓</span>
               <div>
-                <strong>Compte Oficialment Verificat:</strong> La teva identitat i telèfon han estat comprovats telefònicament. Disposes del distintiu visible al mercat.
+                <strong>{{ 'PERFIL.VERIF_OFFICIAL_TITLE' | translate }}</strong> {{ 'PERFIL.VERIF_OFFICIAL_DESC' | translate }}
               </div>
             </div>
 
             <!-- Accions de l'Administrador -->
             <div *ngIf="isAdmin" class="admin-verif-actions" style="margin-top: 1.15rem; padding-top: 0.85rem; border-top: 1px dashed #cbd5e1;">
               <p style="font-size: 0.8rem; font-weight: 700; color: #475569; margin-bottom: 0.5rem;">
-                ★ Acció Administrador (Comprovació Trucada):
+                {{ 'PERFIL.ADMIN_VERIF_TITLE' | translate }}
               </p>
               <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
                 <button
@@ -224,7 +226,7 @@ import { TascaService } from '../../services/tasca.service';
                   *ngIf="!usuari?.verificat"
                   (click)="onVerificarProfessional(true)"
                   [disabled]="processantVerificacioAdmin">
-                  ✓ Aprovar Trucada i Verificar
+                  {{ 'PERFIL.ADMIN_APPROVE_VERIF' | translate }}
                 </button>
                 <button
                   type="button"
@@ -232,7 +234,7 @@ import { TascaService } from '../../services/tasca.service';
                   *ngIf="usuari?.verificat || usuari?.sollicitudVerificacio"
                   (click)="onVerificarProfessional(false)"
                   [disabled]="processantVerificacioAdmin">
-                  ✕ Rebutjar / Desverificar
+                  {{ 'PERFIL.ADMIN_REJECT_VERIF' | translate }}
                 </button>
               </div>
             </div>
@@ -240,15 +242,15 @@ import { TascaService } from '../../services/tasca.service';
 
           <!-- Targeta informativa de rol -->
           <article class="card info-card">
-            <h3>Informació del Rol</h3>
+            <h3>{{ 'PERFIL.ROLE_INFO_TITLE' | translate }}</h3>
             <div *ngIf="usuari?.rol === 'client'">
-              <p>Com a <strong>Client</strong>, pots publicar peticions i feines, rebre pressupostos i contractar serveis. Només necessites correu i contrasenya.</p>
+              <p>{{ 'PERFIL.ROLE_CLIENT_INFO' | translate }}</p>
             </div>
             <div *ngIf="usuari?.rol === 'professional'">
-              <p>Com a <strong>Professional</strong> (fill del client), disposes de totes les funcions del client (publicar feines) i a més disposes de telèfon per <strong>resoldre peticions</strong> i enviar pressupostos a altres usuaris.</p>
+              <p>{{ 'PERFIL.ROLE_PRO_INFO' | translate }}</p>
             </div>
             <div *ngIf="usuari?.rol === 'admin'">
-              <p>Com a <strong>Administrador</strong>, tens accés global de gestió d'usuaris, supervisió de tasques i configuració d'avisos.</p>
+              <p>{{ 'PERFIL.ROLE_ADMIN_INFO' | translate }}</p>
             </div>
           </article>
         </div>
@@ -257,27 +259,27 @@ import { TascaService } from '../../services/tasca.service';
       <!-- Vista per a perfil públic d'un altre professional o usuari -->
       <div class="perfil-grid" *ngIf="!isOwnProfile">
         <article class="card">
-          <h2>Dades de contacte i presentació</h2>
-          <p class="subtitle">Informació oficial del professional registrat a la plataforma AVISA.</p>
+          <h2>{{ 'PERFIL.PUBLIC_CONTACT_TITLE' | translate }}</h2>
+          <p class="subtitle">{{ 'PERFIL.PUBLIC_CONTACT_SUB' | translate }}</p>
 
           <div class="public-info-list">
             <div class="public-info-row" *ngIf="usuari?.telefon">
-              <span class="info-label">Telèfon directe:</span>
+              <span class="info-label">{{ 'PERFIL.DIRECT_PHONE' | translate }}</span>
               <strong class="info-value tel-value">{{ usuari?.telefon }}</strong>
             </div>
 
             <div class="public-info-row" *ngIf="usuari?.email">
-              <span class="info-label">Correu electrònic:</span>
+              <span class="info-label">{{ 'PERFIL.EMAIL' | translate }}:</span>
               <span class="info-value">{{ usuari?.email }}</span>
             </div>
 
             <div class="public-info-row" *ngIf="usuari?.percentil != null">
-              <span class="info-label">Comissió plataforma (Percentil):</span>
+              <span class="info-label">{{ 'PERFIL.COMMISSION_PERCENTILE_PUBLIC' | translate }}</span>
               <strong class="info-value" style="color: #ff1744;">{{ usuari?.percentil }}%</strong>
             </div>
 
             <div class="public-bio-box" *ngIf="usuari?.bio">
-              <span class="info-label">Biografia / Especialitat:</span>
+              <span class="info-label">{{ 'PERFIL.BIO_SPECIALTY' | translate }}</span>
               <p class="bio-text">{{ usuari?.bio }}</p>
             </div>
           </div>
@@ -296,7 +298,7 @@ import { TascaService } from '../../services/tasca.service';
                 </svg>
               </span>
               <div>
-                <h2>Verificació Professional</h2>
+                <h2>{{ 'PERFIL.VERIF_STATUS_TITLE' | translate }}</h2>
                 <span class="verif-status-pill" [ngClass]="getVerifStatusClass()">
                   {{ getVerifStatusLabel() }}
                 </span>
@@ -309,7 +311,7 @@ import { TascaService } from '../../services/tasca.service';
 
             <div *ngIf="isAdmin" class="admin-verif-actions" style="margin-top: 1rem; padding-top: 0.75rem; border-top: 1px dashed #cbd5e1;">
               <p style="font-size: 0.8rem; font-weight: 700; color: #475569; margin-bottom: 0.5rem;">
-                ★ Acció Administrador (Comprovació Trucada):
+                {{ 'PERFIL.ADMIN_VERIF_TITLE' | translate }}
               </p>
               <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
                 <button
@@ -318,7 +320,7 @@ import { TascaService } from '../../services/tasca.service';
                   *ngIf="!usuari?.verificat"
                   (click)="onVerificarProfessional(true)"
                   [disabled]="processantVerificacioAdmin">
-                  ✓ Aprovar Trucada i Verificar
+                  {{ 'PERFIL.ADMIN_APPROVE_VERIF' | translate }}
                 </button>
                 <button
                   type="button"
@@ -326,16 +328,16 @@ import { TascaService } from '../../services/tasca.service';
                   *ngIf="usuari?.verificat || usuari?.sollicitudVerificacio"
                   (click)="onVerificarProfessional(false)"
                   [disabled]="processantVerificacioAdmin">
-                  ✕ Desverificar / Rebutjar
+                  {{ 'PERFIL.ADMIN_REJECT_VERIF' | translate }}
                 </button>
               </div>
             </div>
           </article>
 
           <article class="card info-card">
-            <h3>Garantia AVISA</h3>
+            <h3>{{ 'PERFIL.GUARANTEE_TITLE' | translate }}</h3>
             <p>
-              Tots els professionals de la plataforma compten amb compte registrat, telèfon verificat i valoracions auditades per part de clients reals en finalitzar cada encàrrec.
+              {{ 'PERFIL.GUARANTEE_DESC' | translate }}
             </p>
           </article>
         </div>
@@ -345,16 +347,14 @@ import { TascaService } from '../../services/tasca.service';
       <section class="card reviews-profile-card" *ngIf="tasquesFinalitzades.length > 0">
         <div class="reviews-card-header">
           <div>
-            <h2>{{ usuari?.rol === 'professional' ? 'Tasques realitzades i valoracions' : 'Historial de tasques finalitzades' }}</h2>
+            <h2>{{ (usuari?.rol === 'professional' ? 'PERFIL.REVIEWS_TITLE_PRO' : 'PERFIL.REVIEWS_TITLE_CLIENT') | translate }}</h2>
             <p class="subtitle">
-              {{ usuari?.rol === 'professional' 
-                  ? 'Tasques completades a la plataforma AVISA amb la puntuació i opinió directa dels clients.' 
-                  : 'Historial de feines concloses amb èxit a la plataforma.' }}
+              {{ (usuari?.rol === 'professional' ? 'PERFIL.REVIEWS_SUB_PRO' : 'PERFIL.REVIEWS_SUB_CLIENT') | translate }}
             </p>
           </div>
           <div class="score-summary-pill" *ngIf="mitjanaPuntuacio">
             <span class="stars-gold">★ {{ mitjanaPuntuacio }}</span>
-            <span class="score-count">({{ totalValoracions }} {{ totalValoracions === 1 ? 'valoració' : 'valoracions' }})</span>
+            <span class="score-count">({{ totalValoracions }} {{ totalValoracions === 1 ? ('PERFIL.RATING_COUNT_SINGULAR' | translate) : ('PERFIL.RATING_COUNT_PLURAL' | translate) }})</span>
           </div>
         </div>
 
@@ -368,7 +368,7 @@ import { TascaService } from '../../services/tasca.service';
                 <div>
                   <strong class="reviewer-name">{{ t.clientNom || t.client || 'Client AVISA' }}</strong>
                   <div class="task-info-chips">
-                    <span class="badge-cat" *ngIf="t.categoria">{{ t.categoria }}</span>
+                    <span class="badge-cat" *ngIf="t.categoria">{{ t.categoria | translate }}</span>
                     <span class="badge-price" *ngIf="t.budget">{{ t.budget }}</span>
                     <span class="badge-origen" *ngIf="t.origenId">Ref: {{ t.origenId }}</span>
                   </div>
@@ -384,7 +384,7 @@ import { TascaService } from '../../services/tasca.service';
               <h4 class="task-work-title">{{ t.titol }}</h4>
               <p class="task-work-desc" *ngIf="t.descripcio && t.descripcio !== t.opinio">{{ t.descripcio }}</p>
               <div class="task-opinion-box" *ngIf="t.opinio">
-                <span class="opinion-quote-label">Opinió del client:</span>
+                <span class="opinion-quote-label">{{ 'PERFIL.CLIENT_OPINION' | translate }}</span>
                 <p class="review-item-comment">“{{ t.opinio }}”</p>
               </div>
             </div>
@@ -394,8 +394,8 @@ import { TascaService } from '../../services/tasca.service';
 
       <!-- Sense tasques finalitzades encara -->
       <section class="card reviews-profile-card empty-reviews" *ngIf="usuari?.rol === 'professional' && tasquesFinalitzades.length === 0">
-        <h3>Encara no té tasques finalitzades</h3>
-        <p class="subtitle">Aquest professional encara no ha conclòs cap tasca valorada a la plataforma AVISA.</p>
+        <h3>{{ 'PERFIL.NO_REVIEWS_TITLE' | translate }}</h3>
+        <p class="subtitle">{{ 'PERFIL.NO_REVIEWS_DESC' | translate }}</p>
       </section>
     </section>
   `,
@@ -1221,7 +1221,8 @@ export class PerfilComponent implements OnInit {
     private readonly usuariService: UsuariService,
     private readonly tascaService: TascaService,
     private readonly router: Router,
-    private readonly route: ActivatedRoute
+    private readonly route: ActivatedRoute,
+    private readonly translationService: TranslationService
   ) {}
 
   /**
@@ -1427,26 +1428,26 @@ export class PerfilComponent implements OnInit {
   }
 
   getVerifStatusLabel(): string {
-    if (this.usuari?.verificat) return 'Oficialment Verificat';
-    if (this.usuari?.sollicitudVerificacio) return 'Pendent de Trucada';
-    return 'No Verificat';
+    if (this.usuari?.verificat) return this.translationService.t('PERFIL.STATUS_OFFICIALLY_VERIFIED');
+    if (this.usuari?.sollicitudVerificacio) return this.translationService.t('PERFIL.STATUS_CALL_PENDING');
+    return this.translationService.t('PERFIL.STATUS_NOT_VERIFIED');
   }
 
   getVerifDescription(): string {
     if (this.usuari?.verificat) {
-      return "Enhorabona! L'equip d'administració d'AVISA ha verificat la teva identitat mitjançant trucada telefònica. Disposes del distintiu oficial a tot el mercat.";
+      return this.translationService.t('PERFIL.VERIF_OFFICIAL_DESC');
     }
     if (this.usuari?.sollicitudVerificacio) {
-      return "Hem rebut la teva sol·licitud. Un administrador et trucarà en breu al telèfon registrat per comprovar que ets tu i activar el teu distintiu.";
+      return this.translationService.t('PERFIL.VERIF_PENDING_DESC');
     }
-    return "Tots els professionals comencen sense verificar. Per obtindre el distintiu de confiança oficial, sol·licita la verificació: l'administrador et trucarà per validar la teva identitat.";
+    return this.translationService.t('PERFIL.GUARANTEE_DESC');
   }
 
   getPublicVerifDescription(): string {
     if (this.usuari?.verificat) {
-      return "Aquest professional ha estat contrastat oficialment mitjançant comprovació telefònica per l'administració d'AVISA.";
+      return this.translationService.t('PERFIL.VERIF_OFFICIAL_DESC');
     }
-    return "Aquest professional encara no ha completat la verificació telefònica oficial.";
+    return this.translationService.t('PERFIL.GUARANTEE_DESC');
   }
 
   onSollicitarVerificacio(): void {

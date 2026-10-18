@@ -9,6 +9,7 @@ import { PressupostService } from '../../../services/pressupost.service';
 import { ResenyaService } from '../../../services/resenya.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { ConfirmService } from '../../../core/services/confirm.service';
+import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { Tasca } from '../../../models/tasca.model';
 import { Oferta } from '../../../models/oferta.model';
 import { Pressupost } from '../../../models/pressupost.model';
@@ -23,7 +24,7 @@ import { Pressupost } from '../../../models/pressupost.model';
 @Component({
   selector: 'app-tasca-detall',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, TranslatePipe],
   template: `
     <section class="detall-container" *ngIf="tasca">
       <!-- Capçalera de la tasca o incidència -->
@@ -31,31 +32,31 @@ import { Pressupost } from '../../../models/pressupost.model';
         <div class="top-row">
           <div class="header-tags-group">
             <span class="nature-tag" [ngClass]="isTascaConvergida ? 'is-tasca' : 'is-incidencia'">
-              {{ isTascaConvergida ? 'TASCA CONVERGIDA' : 'INCIDÈNCIA OBERTA' }}
+              {{ (isTascaConvergida ? 'TASCA_DETALL.TAG_CONVERGED' : 'TASCA_DETALL.TAG_OPEN') | translate }}
             </span>
-            <span class="category-tag">{{ tasca.categoria }}</span>
+            <span class="category-tag">{{ tasca.categoria | translate }}</span>
           </div>
           <span class="status-badge" [ngClass]="getStatusClass(tasca.estat)">
-            {{ tasca.estat }}
+            {{ tasca.estat | translate }}
           </span>
         </div>
         <h1>{{ tasca.titol }}</h1>
         <div class="meta-row">
-          <span>Client: <strong><a [routerLink]="['/perfil', tasca.client]" class="user-profile-link" title="Veure perfil de {{ tasca.client }}">{{ tasca.client }}</a></strong></span>
+          <span>Client: <strong><a [routerLink]="['/perfil', tasca.client]" class="user-profile-link" title="Veure perfil">{{ tasca.client }}</a></strong></span>
           <span *ngIf="isTascaConvergida">
-            Professional assignat: <strong><a [routerLink]="['/perfil', assignedProfessional]" class="user-profile-link pro-link" title="Veure perfil de {{ assignedProfessional }}">{{ assignedProfessional }}</a></strong>
+            {{ 'TASCA_DETALL.PRO_ASSIGNED_LABEL' | translate }} <strong><a [routerLink]="['/perfil', assignedProfessional]" class="user-profile-link pro-link" title="Veure perfil">{{ assignedProfessional }}</a></strong>
           </span>
           <span *ngIf="!isTascaConvergida">
-            Professional: <em>Sense assignar (cercant pressupostos)</em>
+            {{ 'TASCA_DETALL.PRO_ASSIGNED_LABEL' | translate }} <em>{{ 'TASCA_DETALL.PRO_UNASSIGNED' | translate }}</em>
           </span>
-          <span>{{ isTascaConvergida ? 'Preu acordat:' : 'Pressupost orientatiu:' }} <strong>{{ tasca.budget }}</strong></span>
-          <span>Identificador: <code>{{ tasca.id }}</code></span>
+          <span>{{ (isTascaConvergida ? 'TASCA_DETALL.AGREED_PRICE' : 'TASCA_DETALL.ESTIMATED_BUDGET') | translate }} <strong>{{ tasca.budget }}</strong></span>
+          <span>{{ 'TASCA_DETALL.IDENTIFIER' | translate }} <code>{{ tasca.id }}</code></span>
         </div>
       </header>
 
       <!-- Descripció de la tasca -->
       <article class="card desc-card">
-        <h2>Descripció del treball</h2>
+        <h2>{{ 'TASCA_DETALL.WORK_DESC_TITLE' | translate }}</h2>
         <p class="description-text">{{ tasca.descripcio }}</p>
 
         <!-- Banner informatiu quan és una TASCA oficial en curs -->
@@ -65,15 +66,15 @@ import { Pressupost } from '../../../models/pressupost.model';
             <polyline points="22 4 12 14.01 9 11.01"></polyline>
           </svg>
           <div>
-            <strong>Tasca acordada:</strong>
-            <span> Client <strong>{{ tasca.client }}</strong> i Professional <strong>{{ assignedProfessional }}</strong> ja treballen plegats ({{ tasca.budget }}).</span>
+            <strong>{{ 'TASCA_DETALL.TAG_CONVERGED' | translate }}:</strong>
+            <span> {{ 'TASCA_DETALL.CONVERGED_BANNER' | translate }} ({{ tasca.budget }}).</span>
           </div>
         </div>
 
         <!-- Avís per al client mentre la feina està en curs -->
         <div *ngIf="isClientOwner && tasca.estat === 'En curs'" class="complete-box" style="background: rgba(59, 130, 246, 0.06); border-color: rgba(59, 130, 246, 0.25);">
           <p style="color: #1e40af; font-weight: 700;">
-            Treball en curs: El professional <strong>{{ assignedProfessional }}</strong> està realitzant el servei. Un cop finalitzada la feina, podràs avaluar-la aquí.
+            {{ 'TASCA_DETALL.IN_PROGRESS_CLIENT_NOTICE' | translate }}
           </p>
         </div>
 
@@ -82,19 +83,19 @@ import { Pressupost } from '../../../models/pressupost.model';
           <div class="evaluate-box-content">
             <span class="evaluate-icon">★</span>
             <div>
-              <h3>Tasca finalitzada! Com ha anat el servei?</h3>
-              <p>Valora la feina de <strong>{{ assignedProfessional }}</strong> per publicar la teva ressenya i ajudar altres usuaris.</p>
+              <h3>{{ 'TASCA_DETALL.EVALUATE_TITLE' | translate }}</h3>
+              <p>{{ 'TASCA_DETALL.EVALUATE_SUB' | translate }}</p>
             </div>
           </div>
           <button type="button" class="btn btn-evaluate" (click)="onCompleteTask()">
-            ★ Avaluar Professional
+            {{ 'TASCA_DETALL.BTN_EVALUATE' | translate }}
           </button>
         </div>
 
         <!-- Mostra la valoració registrada a la tasca finalitzada (només una vegada) -->
         <div *ngIf="tasca.estat === 'Finalitzada' && tasca.valoracio" class="review-display-card">
           <div class="review-display-header">
-            <span class="review-display-badge">VALORACIÓ DEL CLIENT (FINALITZADA)</span>
+            <span class="review-display-badge">{{ 'TASCA_DETALL.REVIEW_HEADER' | translate }}</span>
             <div class="stars-display">
               <span *ngFor="let s of [1, 2, 3, 4, 5]" class="star-glyph" [class.filled]="s <= (tasca.valoracio || 0)">★</span>
               <span class="score-text">{{ tasca.valoracio }}/5</span>
@@ -105,19 +106,19 @@ import { Pressupost } from '../../../models/pressupost.model';
 
         <!-- Botó per al professional assignat per donar per acabada la tasca -->
         <div *ngIf="isAssignedProfessional && !isClientOwner && tasca.estat === 'En curs'" class="complete-box pro-complete-box">
-          <p>Has acabat la feina o servei per a aquest client?</p>
+          <p>{{ 'TASCA_DETALL.PRO_FINISHED_QUESTION' | translate }}</p>
           <button type="button" class="btn btn-complete-pro" (click)="onCompleteTaskByPro()">
             <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 6px;">
               <polyline points="20 6 9 17 4 12"></polyline>
             </svg>
-            Donar tasca per Finalitzada
+            {{ 'TASCA_DETALL.BTN_COMPLETE_PRO' | translate }}
           </button>
         </div>
 
         <!-- Botó per a professionals si la incidència està oberta i sense professional -->
         <div *ngIf="isProfessional && !isTascaConvergida && tasca.estat === 'Oberta'" class="action-box">
           <a [routerLink]="['/professional/crear-oferta']" [queryParams]="{ taskId: tasca.id }" class="btn btn-primary">
-            Presentar oferta per a aquesta incidència
+            {{ 'TASCA_DETALL.BTN_BID_INCIDENCIA' | translate }}
           </a>
         </div>
       </article>
@@ -130,18 +131,18 @@ import { Pressupost } from '../../../models/pressupost.model';
       <!-- Llistat d'ofertes rebudes -->
       <section class="offers-section">
         <div class="section-header">
-          <h2>Ofertes i pressupostos rebuts ({{ ofertes.length }})</h2>
+          <h2>{{ 'TASCA_DETALL.OFFERS_RECEIVED_TITLE' | translate }} ({{ ofertes.length }})</h2>
         </div>
 
         <div *ngIf="ofertes.length === 0" class="empty-state">
-          <p>Encara no s'ha rebut cap oferta per a aquesta tasca.</p>
+          <p>{{ 'TASCA_DETALL.NO_OFFERS' | translate }}</p>
         </div>
 
         <div class="offers-grid" *ngIf="ofertes.length > 0">
           <article class="card offer-card" *ngFor="let offer of ofertes">
             <div class="offer-header">
               <h3>
-                <a [routerLink]="['/perfil', offer.professional]" class="user-profile-link" title="Veure perfil de {{ offer.professional }}">
+                <a [routerLink]="['/perfil', offer.professional]" class="user-profile-link" title="Veure perfil">
                   {{ offer.professional }}
                 </a>
               </h3>
@@ -150,7 +151,7 @@ import { Pressupost } from '../../../models/pressupost.model';
             <p class="offer-note">{{ offer.note }}</p>
 
             <div class="offer-footer">
-              <span class="price-tag">Pressupost: <strong>{{ offer.price }}</strong></span>
+              <span class="price-tag">{{ 'TASCA_DETALL.PROPOSED_PRICE' | translate }} <strong>{{ offer.price }}</strong></span>
 
               <!-- Accions sobre l'oferta: les ofertes no tenen estat, sols s'accepten o es borren -->
               <div class="offer-actions" *ngIf="tasca.estat !== 'Finalitzada'">
@@ -160,7 +161,7 @@ import { Pressupost } from '../../../models/pressupost.model';
                   class="btn btn-accept"
                   (click)="onAcceptOffer(offer.id)"
                 >
-                  Acceptar oferta
+                  {{ 'TASCA_DETALL.BTN_ACCEPT_QUOTE' | translate }}
                 </button>
                 <button
                   *ngIf="isClientOwner || isOfferOwner(offer)"
@@ -169,7 +170,7 @@ import { Pressupost } from '../../../models/pressupost.model';
                   (click)="onDeleteOffer(offer.id)"
                   title="Borrar aquesta oferta"
                 >
-                  Borrar oferta
+                  {{ 'TASCA_DETALL.BTN_REJECT_QUOTE' | translate }}
                 </button>
               </div>
             </div>
@@ -182,23 +183,23 @@ import { Pressupost } from '../../../models/pressupost.model';
         <div class="modal-dialog" (click)="$event.stopPropagation()">
           <header class="modal-header">
             <div>
-              <span class="modal-badge-tag">AVALUACIÓ DE SERVEI</span>
-              <h2>{{ tasca.estat === 'Finalitzada' ? (tasca.valoracio ? 'Modificar valoració del professional' : 'Avaluar servei professional') : 'Finalitzar tasca i avaluar professional' }}</h2>
+              <span class="modal-badge-tag">{{ 'TASCA_DETALL.REVIEW_HEADER' | translate }}</span>
+              <h2>{{ 'TASCA_DETALL.MODAL_EVALUATE_TITLE' | translate }}</h2>
             </div>
             <button type="button" class="btn-close-modal" (click)="tancarModalFinalitzar()" aria-label="Tancar">✕</button>
           </header>
 
           <div class="modal-body" *ngIf="tasca">
             <div class="modal-task-summary">
-              <span class="category-tag">{{ tasca.categoria }}</span>
+              <span class="category-tag">{{ tasca.categoria | translate }}</span>
               <h3>{{ tasca.titol }}</h3>
               <p class="summary-pro">
-                Professional assignat: <strong>{{ assignedProfessional }}</strong>
+                {{ 'TASCA_DETALL.PRO_ASSIGNED_LABEL' | translate }} <strong>{{ assignedProfessional }}</strong>
               </p>
             </div>
 
             <div class="rating-input-group">
-              <label class="rating-title">Puntuació general del servei (1 a 5 estrelles):</label>
+              <label class="rating-title">{{ 'TASCA_DETALL.MODAL_RATING_LABEL' | translate }}</label>
               <div class="stars-picker">
                 <button
                   type="button"
@@ -215,12 +216,12 @@ import { Pressupost } from '../../../models/pressupost.model';
             </div>
 
             <div class="comment-input-group">
-              <label for="ressenya-text-detall">Escriu la teva valoració sobre la feina:</label>
+              <label for="ressenya-text-detall">{{ 'TASCA_DETALL.MODAL_COMMENT_LABEL' | translate }}</label>
               <textarea
                 id="ressenya-text-detall"
                 [(ngModel)]="ressenyaDescripcio"
                 rows="4"
-                placeholder="Explica la teva valoració sobre la qualitat, puntualitat i acabats..."
+                [placeholder]="'TASCA_DETALL.MODAL_COMMENT_PLACEHOLDER' | translate"
               ></textarea>
             </div>
 
@@ -231,7 +232,7 @@ import { Pressupost } from '../../../models/pressupost.model';
                 (click)="confirmarFinalitzacioAmbRessenya()"
                 [disabled]="enviantRessenya"
               >
-                {{ enviantRessenya ? 'Enviant valoració...' : (tasca.estat === 'Finalitzada' ? '★ Guardar Valoració' : '★ Enviar Valoració i Finalitzar Tasca') }}
+                {{ 'TASCA_DETALL.BTN_SAVE_REVIEW' | translate }}
               </button>
               <button
                 *ngIf="tasca.estat !== 'Finalitzada'"
@@ -240,7 +241,7 @@ import { Pressupost } from '../../../models/pressupost.model';
                 (click)="finalitzarSenseRessenya()"
                 [disabled]="enviantRessenya"
               >
-                Finalitzar directament sense deixar valoració
+                {{ 'CONFIRM_MODAL.DEFAULT_CANCEL' | translate }}
               </button>
             </div>
           </div>
@@ -250,9 +251,9 @@ import { Pressupost } from '../../../models/pressupost.model';
 
     <!-- Estat de càrrega o no trobat -->
     <div *ngIf="!tasca && !loading" class="not-found card">
-      <h2>Tasca no trobada</h2>
+      <h2>{{ 'COMMON.NO_RESULTS' | translate }}</h2>
       <p>No s'ha pogut localitzar la tasca sol·licitada.</p>
-      <a routerLink="/" class="btn btn-primary">Tornar a l'inici</a>
+      <a routerLink="/" class="btn btn-primary">{{ 'NAV.HOME' | translate }}</a>
     </div>
   `,
   styles: [
@@ -1282,10 +1283,10 @@ export class TascaDetallComponent implements OnInit {
    */
   async onAcceptOffer(offerId: string): Promise<void> {
     const confirmacio = await this.confirmService.confirm({
-      title: 'Acceptar Pressupost',
-      message: 'Vols acceptar aquest pressupost? Aquesta acció acordarà el servei i generarà la tasca oficial.',
-      confirmText: 'Acceptar Pressupost',
-      cancelText: 'Cancel·lar',
+      title: 'CONFIRM_MODAL.ACCEPT_BUDGET_TITLE',
+      message: 'CONFIRM_MODAL.ACCEPT_BUDGET_MSG',
+      confirmText: 'CONFIRM_MODAL.DEFAULT_CONFIRM',
+      cancelText: 'CONFIRM_MODAL.DEFAULT_CANCEL',
       icon: 'success'
     });
     if (!confirmacio) return;
@@ -1323,10 +1324,10 @@ export class TascaDetallComponent implements OnInit {
    */
   async onDeleteOffer(offerId: string): Promise<void> {
     const confirmacio = await this.confirmService.confirm({
-      title: 'Descartar Proposta',
-      message: 'Vols descartar aquesta proposta? Aquesta acció no es pot desfer.',
-      confirmText: 'Descartar Proposta',
-      cancelText: 'Cancel·lar',
+      title: 'CONFIRM_MODAL.DELETE_OFFER_TITLE',
+      message: 'CONFIRM_MODAL.DELETE_OFFER_MSG',
+      confirmText: 'CONFIRM_MODAL.DEFAULT_CONFIRM',
+      cancelText: 'CONFIRM_MODAL.DEFAULT_CANCEL',
       isDanger: true,
       icon: 'danger'
     });
@@ -1367,10 +1368,10 @@ export class TascaDetallComponent implements OnInit {
   async onCompleteTaskByPro(): Promise<void> {
     if (!this.tasca) return;
     const confirmacio = await this.confirmService.confirm({
-      title: 'Concloure Tasca',
-      message: `Vols confirmar la conclusió de la tasca "${this.tasca.titol}"?\n\nAquesta acció registrarà la data de finalització del treball i notificarà al client per a la seva valoració.`,
-      confirmText: 'Confirmar Conclusió',
-      cancelText: 'Cancel·lar',
+      title: 'CONFIRM_MODAL.FINALIZE_TASK_TITLE',
+      message: 'CONFIRM_MODAL.FINALIZE_TASK_MSG',
+      confirmText: 'CONFIRM_MODAL.DEFAULT_CONFIRM',
+      cancelText: 'CONFIRM_MODAL.DEFAULT_CANCEL',
       icon: 'success'
     });
     if (!confirmacio) return;

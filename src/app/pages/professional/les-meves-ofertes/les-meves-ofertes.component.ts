@@ -5,6 +5,7 @@ import { OfertaService } from '../../../services/oferta.service';
 import { TascaService } from '../../../services/tasca.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { ConfirmService } from '../../../core/services/confirm.service';
+import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { Oferta } from '../../../models/oferta.model';
 import { Tasca } from '../../../models/tasca.model';
 
@@ -19,17 +20,17 @@ import { Tasca } from '../../../models/tasca.model';
 @Component({
   selector: 'app-les-meves-ofertes',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, TranslatePipe],
   template: `
     <div class="panell-container">
       <div class="panell-header">
         <div>
-          <h2>Els meus Pressupostos i Tasques</h2>
-          <p class="subtitle">Fes seguiment de les teves feines assignades i de les propostes enviades als clients.</p>
+          <h2>{{ 'LES_MEVES_OFERTES.TITLE' | translate }}</h2>
+          <p class="subtitle">{{ 'LES_MEVES_OFERTES.SUBTITLE' | translate }}</p>
         </div>
         <div>
           <a routerLink="/professional/crear-oferta" class="btn-crear">
-            + Nova oferta / Servei
+            {{ 'LES_MEVES_OFERTES.BTN_NEW_OFFER' | translate }}
           </a>
         </div>
       </div>
@@ -38,27 +39,27 @@ import { Tasca } from '../../../models/tasca.model';
       <section class="assigned-section" *ngIf="!loading && tasquesAssignades.length > 0">
         <div class="section-title-bar">
           <div class="title-with-badge">
-            <span class="pro-assigned-pill">TASQUES EN GESTIÓ</span>
-            <h3>Les meves feines actives & finalitzades ({{ tasquesAssignades.length }})</h3>
+            <span class="pro-assigned-pill">{{ 'LES_MEVES_OFERTES.ASSIGNED_SECTION_TAG' | translate }}</span>
+            <h3>{{ 'LES_MEVES_OFERTES.ASSIGNED_SECTION_TITLE' | translate }} ({{ tasquesAssignades.length }})</h3>
           </div>
-          <span class="section-badge-hint">Client + Tu (Professional assignat)</span>
+          <span class="section-badge-hint">{{ 'LES_MEVES_OFERTES.ASSIGNED_SECTION_HINT' | translate }}</span>
         </div>
 
         <div class="assigned-tasks-grid">
           <div *ngFor="let t of tasquesAssignades" class="assigned-task-card">
             <div class="card-header">
-              <span class="badge-nature">TASCA CONVERGIDA</span>
-              <span class="badge-estat" [ngClass]="getTaskEstatClass(t.estat)">{{ t.estat }}</span>
+              <span class="badge-nature">{{ 'MERCAT.AGREED_NATURE' | translate }}</span>
+              <span class="badge-estat" [ngClass]="getTaskEstatClass(t.estat)">{{ t.estat | translate }}</span>
             </div>
 
             <h4 class="tasca-titol">{{ t.titol }}</h4>
             <div class="assigned-meta">
               <div class="assigned-meta-item">
-                <span class="lbl">Client:</span>
+                <span class="lbl">{{ 'TASCA_DETALL.PRO_LABEL' | translate | slice:0:-1 }}:</span>
                 <strong><a [routerLink]="['/perfil', t.clientNom || t.client]" class="user-inline-link">{{ t.clientNom || t.client }}</a></strong>
               </div>
               <div class="assigned-meta-item">
-                <span class="lbl">Preu acordat:</span>
+                <span class="lbl">{{ 'LES_MEVES_TASQUES.AGREED_PRICE' | translate }}</span>
                 <span class="budget-highlight">{{ t.budget }}</span>
               </div>
             </div>
@@ -70,15 +71,15 @@ import { Tasca } from '../../../models/tasca.model';
                 type="button"
                 class="btn-action success"
                 (click)="finalitzarTascaComAProfessional(t)"
-                title="Donar la tasca per finalitzada com a professional"
+                [title]="'LES_MEVES_OFERTES.BTN_FINALIZE_TASK' | translate"
               >
                 <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 5px;">
                   <polyline points="20 6 9 17 4 12"></polyline>
                 </svg>
-                Finalitzar tasca
+                {{ 'LES_MEVES_OFERTES.BTN_FINALIZE_TASK' | translate }}
               </button>
               <a [routerLink]="['/tasca-detall', t.id]" class="btn-action primary">
-                Veure seguiment tasca
+                {{ 'LES_MEVES_OFERTES.BTN_VIEW_TRACKING' | translate }}
               </a>
             </div>
           </div>
@@ -90,14 +91,14 @@ import { Tasca } from '../../../models/tasca.model';
       <!-- Capçalera secció d'ofertes (les ofertes no tenen estat, sols s'accepten o es borren) -->
       <div class="propostes-section-header">
         <div class="title-with-badge">
-          <span class="pro-assigned-pill" style="background: rgba(255, 23, 68, 0.08); color: #ff1744; border-color: rgba(255, 23, 68, 0.25);">PROPOSTES ACTIVES</span>
-          <h3>Les teves ofertes i propostes enviades ({{ ofertes.length }})</h3>
+          <span class="pro-assigned-pill" style="background: rgba(255, 23, 68, 0.08); color: #ff1744; border-color: rgba(255, 23, 68, 0.25);">{{ 'LES_MEVES_OFERTES.PROPOSALS_SECTION_TAG' | translate }}</span>
+          <h3>{{ 'LES_MEVES_OFERTES.PROPOSALS_SECTION_TITLE' | translate }} ({{ ofertes.length }})</h3>
         </div>
-        <span class="section-badge-hint">Les ofertes sols s'accepten o es borren</span>
+        <span class="section-badge-hint">{{ 'LES_MEVES_OFERTES.PROPOSALS_SECTION_HINT' | translate }}</span>
       </div>
 
       <!-- Missatges d'estat i confirmació -->
-      <div *ngIf="loading" class="state-box">Carregant les teves ofertes...</div>
+      <div *ngIf="loading" class="state-box">{{ 'MERCAT.LOADING' | translate }}</div>
       <div *ngIf="successMsg" class="alert-success">{{ successMsg }}</div>
       <div *ngIf="errorMsg" class="alert-error">{{ errorMsg }}</div>
 
@@ -109,26 +110,26 @@ import { Tasca } from '../../../models/tasca.model';
           </div>
 
           <h3 class="tasca-titol">
-            {{ tasquesMap[of.tascaId]?.titol || 'Proposta de servei ' + of.id }}
+            {{ tasquesMap[of.tascaId]?.titol || 'Proposta ' + of.id }}
           </h3>
 
           <p class="tasca-desc" *ngIf="tasquesMap[of.tascaId]">
-            Client: <strong><a [routerLink]="['/perfil', tasquesMap[of.tascaId].clientNom || tasquesMap[of.tascaId].client]" class="user-inline-link" title="Veure perfil de {{ tasquesMap[of.tascaId].clientNom || tasquesMap[of.tascaId].client }}">{{ tasquesMap[of.tascaId].clientNom || tasquesMap[of.tascaId].client }}</a></strong> | Categoria: <em>{{ tasquesMap[of.tascaId].categoria }}</em>
+            Client: <strong><a [routerLink]="['/perfil', tasquesMap[of.tascaId].clientNom || tasquesMap[of.tascaId].client]" class="user-inline-link" title="Veure perfil">{{ tasquesMap[of.tascaId].clientNom || tasquesMap[of.tascaId].client }}</a></strong> | {{ 'MERCAT.MOBILE_CAT_LABEL' | translate }} <em>{{ tasquesMap[of.tascaId].categoria | translate }}</em>
           </p>
 
           <div class="preu-box">
             <div class="preu-item">
-              <span class="preu-label">El teu pressupost:</span>
+              <span class="preu-label">{{ 'LES_MEVES_OFERTES.YOUR_QUOTE' | translate }}</span>
               <span class="preu-value">{{ of.price }}</span>
             </div>
             <div class="preu-item" *ngIf="tasquesMap[of.tascaId]">
-              <span class="preu-label">Pressupost client:</span>
+              <span class="preu-label">{{ 'LES_MEVES_OFERTES.CLIENT_BUDGET' | translate }}</span>
               <span class="preu-value muted">{{ tasquesMap[of.tascaId].budget }}</span>
             </div>
           </div>
 
           <p class="oferta-nota" *ngIf="of.note">
-            <span class="nota-label">Nota adjunta:</span> "{{ of.note }}"
+            <span class="nota-label">{{ 'LES_MEVES_OFERTES.ATTACHED_NOTE' | translate }}</span> "{{ of.note }}"
           </p>
 
           <div class="card-actions">
@@ -136,20 +137,20 @@ import { Tasca } from '../../../models/tasca.model';
               type="button"
               class="btn-action danger"
               (click)="eliminarOferta(of.id)"
-              title="Borrar aquesta oferta de forma definitiva"
+              [title]="'LES_MEVES_OFERTES.BTN_DELETE_OFFER' | translate"
             >
               <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 5px;">
                 <polyline points="3 6 5 6 21 6"></polyline>
                 <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
               </svg>
-              Borrar oferta
+              {{ 'LES_MEVES_OFERTES.BTN_DELETE_OFFER' | translate }}
             </button>
             <a *ngIf="of.tascaId" [routerLink]="['/tasca-detall', of.tascaId]" class="btn-action primary">
               <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 5px;">
                 <circle cx="11" cy="11" r="8"></circle>
                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
               </svg>
-              Veure tasca
+              {{ 'MERCAT.DETALL' | translate }}
             </a>
           </div>
         </div>
@@ -163,9 +164,9 @@ import { Tasca } from '../../../models/tasca.model';
             <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
           </svg>
         </div>
-        <h3>No tens cap oferta activa</h3>
-        <p>Encara no has presentat cap oferta o les que tenies han estat acceptades o borrades.</p>
-        <a routerLink="/" class="btn-crear">Explora tasques i incidències disponibles</a>
+        <h3>{{ 'LES_MEVES_OFERTES.EMPTY_TITLE' | translate }}</h3>
+        <p>{{ 'LES_MEVES_OFERTES.EMPTY_DESC' | translate }}</p>
+        <a routerLink="/" class="btn-crear">{{ 'BLOG.BREADCRUMB_HOME' | translate }}</a>
       </div>
     </div>
   `,
@@ -689,10 +690,10 @@ export class LesMevesOfertesComponent implements OnInit {
    */
   async finalitzarTascaComAProfessional(t: Tasca): Promise<void> {
     const confirmacio = await this.confirmService.confirm({
-      title: 'Finalitzar Tasca',
-      message: `Segur que vols donar per finalitzada la feina de "${t.titol}"? El client rebrà un avís per a la valoració del servei.`,
-      confirmText: 'Finalitzar Feina',
-      cancelText: 'Cancel·lar',
+      title: 'CONFIRM_MODAL.FINALIZE_TASK_TITLE',
+      message: 'CONFIRM_MODAL.FINALIZE_TASK_MSG',
+      confirmText: 'CONFIRM_MODAL.DEFAULT_CONFIRM',
+      cancelText: 'CONFIRM_MODAL.DEFAULT_CANCEL',
       icon: 'success'
     });
     if (!confirmacio) return;
@@ -716,10 +717,10 @@ export class LesMevesOfertesComponent implements OnInit {
    */
   async eliminarOferta(id: string): Promise<void> {
     const confirmacio = await this.confirmService.confirm({
-      title: 'Borrar Oferta',
-      message: 'Estàs segur que vols borrar aquesta oferta? Aquesta acció eliminarà la teua proposta definitivament.',
-      confirmText: 'Borrar Oferta',
-      cancelText: 'Cancel·lar',
+      title: 'CONFIRM_MODAL.DELETE_OFFER_TITLE',
+      message: 'CONFIRM_MODAL.DELETE_OFFER_MSG',
+      confirmText: 'CONFIRM_MODAL.DEFAULT_CONFIRM',
+      cancelText: 'CONFIRM_MODAL.DEFAULT_CANCEL',
       isDanger: true,
       icon: 'danger'
     });
