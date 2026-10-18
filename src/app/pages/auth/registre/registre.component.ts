@@ -64,9 +64,9 @@ import { TermesModalComponent } from '../termes-modal/termes-modal.component';
           </div>
           <div *ngIf="registerForm.get('rol')?.value === 'professional'">
             ℹ️ Com a <strong>Professional</strong> (fill del client), podràs fer tot el que fa el client (publicar feines) i a més <strong>resoldre peticions</strong> d'altres usuaris. Requereix telèfon obligatori.
-            <div style="margin-top: 0.5rem; color: #166534; font-weight: 600; display: flex; align-items: center; gap: 0.35rem;">
+            <div style="margin-top: 0.5rem; color: #166534; font-weight: 600; display: flex; align-items: flex-start; gap: 0.35rem; line-height: 1.45;">
               <span>🎉</span>
-              <span><strong>Promoció de llançament:</strong> El teu primer any a AVISA és 100% gratuït (0€ quotes fixes i 0% comissions)!</span>
+              <span><strong>Promoció de llançament:</strong> El teu primer any a AVISA és 100% gratuït (0€ quotes fixes i 0% comissions). La plataforma es finança de la publicitat i, més endavant, dels plans i funcionalitats prèmium opcionals que s'hi adheriran!</span>
             </div>
           </div>
         </div>

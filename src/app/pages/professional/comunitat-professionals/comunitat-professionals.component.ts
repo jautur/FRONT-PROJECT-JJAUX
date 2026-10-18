@@ -179,6 +179,24 @@ import { GuiaProfessional, GUIES_PRO_VA, GUIES_PRO_ES, GUIES_PRO_EN } from '../.
         </div>
       </section>
 
+      <!-- SECCIÓ INTERMÈDIA: MODEL DE SOSTENIBILITAT I TRANSPARÈNCIA -->
+      <section class="transparency-section">
+        <div class="transparency-card">
+          <div class="transparency-icon">
+            <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+          </div>
+          <div class="transparency-text">
+            <span class="transparency-tag">{{ 'COMMUNITY_PRO.TRANSPARENCY_TAG' | translate }}</span>
+            <h3>{{ 'COMMUNITY_PRO.TRANSPARENCY_TITLE' | translate }}</h3>
+            <p>{{ 'COMMUNITY_PRO.TRANSPARENCY_DESC' | translate }}</p>
+          </div>
+        </div>
+      </section>
+
       <!-- SECCIÓ 2: TAULA COMPARATIVA: AVISA VS ALTRES WEBS -->
       <section class="comparison-section">
         <div class="section-heading">
@@ -579,6 +597,60 @@ import { GuiaProfessional, GUIES_PRO_VA, GUIES_PRO_ES, GUIES_PRO_EN } from '../.
       color: #09090c;
     }
 
+    /* Banner de transparència i sostenibilitat */
+    .transparency-section {
+      margin-bottom: 5rem;
+    }
+    .transparency-card {
+      background: linear-gradient(135deg, #ffffff 0%, #fffbf5 100%);
+      border: 1.5px solid #fed7aa;
+      border-radius: 20px;
+      padding: 2.2rem 2.5rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 1.75rem;
+      box-shadow: 0 8px 30px rgba(234, 88, 12, 0.05);
+      position: relative;
+      overflow: hidden;
+    }
+    .transparency-icon {
+      width: 58px;
+      height: 58px;
+      min-width: 58px;
+      border-radius: 16px;
+      background: #ffedd5;
+      color: #ea580c;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid #fdba74;
+    }
+    .transparency-text {
+      flex: 1;
+    }
+    .transparency-tag {
+      display: inline-block;
+      font-size: 0.76rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      color: #ea580c;
+      text-transform: uppercase;
+      margin-bottom: 0.45rem;
+    }
+    .transparency-text h3 {
+      font-size: 1.35rem;
+      font-weight: 900;
+      color: #09090c;
+      margin: 0 0 0.65rem;
+      letter-spacing: -0.01em;
+    }
+    .transparency-text p {
+      font-size: 0.98rem;
+      line-height: 1.65;
+      color: #4b5563;
+      margin: 0;
+    }
+
     /* Taula comparativa */
     .comparison-section {
       margin-bottom: 5rem;
@@ -938,8 +1010,17 @@ import { GuiaProfessional, GUIES_PRO_VA, GUIES_PRO_ES, GUIES_PRO_EN } from '../.
       .section-heading h2 {
         font-size: 1.5rem;
       }
-      .reasons-section, .comparison-section, .pro-blog-section, .testimonials-section {
-        margin-bottom: 3rem;
+      .reasons-section, .transparency-section, .comparison-section, .pro-blog-section, .testimonials-section {
+        margin-bottom: 2.75rem;
+      }
+      .transparency-card {
+        flex-direction: column;
+        padding: 1.6rem 1.25rem;
+        gap: 1.15rem;
+        border-radius: 14px;
+      }
+      .transparency-text h3 {
+        font-size: 1.2rem;
       }
       .reason-card {
         padding: 1.5rem 1.15rem;

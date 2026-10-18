@@ -189,3 +189,4 @@ export const GUIES_PRO_EN: GuiaProfessional[] = [
     destacat: "On AVISA, contractors with more than 8 completed tasks and a 4.8+ rating are featured prominently on the homepage and recommendation widgets."
   }
 ];
+
