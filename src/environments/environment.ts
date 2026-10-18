@@ -1,10 +1,10 @@
 /**
  * Configuració d'entorn per defecte / producció.
- * Utilitza l'amfitrió actual si està definit o localhost per defecte.
+ * Utilitza /api relatiu perquè les peticions passin a través del mateix amfitrió i port
+ * (mitjançant proxy de desenvolupament o proxy invers de producció),
+ * eliminant problemes de CORS i de Firewall en dispositius mòbils.
  */
-const host = typeof window !== 'undefined' && window.location.hostname ? window.location.hostname : 'localhost';
-
 export const environment = {
   production: true,
-  apiUrl: `http://${host}:8080/api`
+  apiUrl: '/api'
 };

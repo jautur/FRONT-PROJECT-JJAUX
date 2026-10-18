@@ -25,8 +25,7 @@ interface CategoriaFiltre {
  *    garantint la privadesa dels contractes.
  * 4. Permet cercar per text i filtrar per especialitat / gremi (lampisteria, electricitat, pintura, etc.).
  * 5. Permet obrir el modal de ressenyes d'un professional per consultar el seu historial de valoracions públiques.
- * 6. Disseny adaptable (responsive) optimitzat per a mòbils: carrusel lliscant de categories (chip-strip) en lloc
- *    de la columna vertical massiva, botons tàctils ergonòmics (44px), accions adaptades i inputs anti-zoom en iOS.
+ * 6. Disseny adaptable (responsive) optimitzat per a mòbils: selectors desplegables natius nets (sense barres de lliscament horitzontals molestes), botons tàctils ergonòmics (44px), accions adaptades i inputs anti-zoom en iOS.
  */
 @Component({
   selector: 'app-tasques-ofertes',
@@ -107,6 +106,38 @@ interface CategoriaFiltre {
             Les teues tasques ({{ tasquesFiltrades.length }})
           </button>
         </div>
+
+        <!-- Selectors de filtre exclusius per a mòbils (sense barres de lliscament horitzontals) -->
+        <div class="mobile-filter-selectors">
+          <div class="mobile-select-box">
+            <label class="mobile-select-label" for="mobile-categoria">Categoria:</label>
+            <select
+              id="mobile-categoria"
+              [(ngModel)]="categoriaSeleccionada"
+              (change)="seleccionarCategoria(categoriaSeleccionada)"
+              class="mobile-native-select"
+            >
+              <option value="totes">📁 Totes les categories ({{ totalElements }})</option>
+              <option *ngFor="let cat of categoriesLlista" [value]="cat.nom">
+                {{ cat.nom }} ({{ comptarElementsPerCategoria(cat.nom) }})
+              </option>
+            </select>
+          </div>
+
+          <div class="mobile-select-box">
+            <label class="mobile-select-label" for="mobile-tipus">Mostrar:</label>
+            <select
+              id="mobile-tipus"
+              [(ngModel)]="tipusFiltre"
+              class="mobile-native-select"
+            >
+              <option value="tots">📋 Tots els anuncis ({{ totalElements }})</option>
+              <option value="ofertes">💼 Ofertes de professionals ({{ ofertesFiltrades.length }})</option>
+              <option value="incidencies">🔧 Incidències de clients ({{ incidenciesFiltrades.length }})</option>
+              <option value="tasques">🤝 Les teues tasques ({{ tasquesFiltrades.length }})</option>
+            </select>
+          </div>
+        </div>
       </section>
 
       <!-- Avís del sistema (si escau) -->
@@ -114,39 +145,6 @@ interface CategoriaFiltre {
         <span>{{ noticeMessage }}</span>
         <button type="button" class="btn-dismiss" (click)="noticeMessage = ''" aria-label="Tancar avís">✕</button>
       </div>
-
-      <!-- Barra horitzontal de xips / categories en carrusel lliscant per a mòbils -->
-      <nav class="mobile-categories-strip" aria-label="Categories per a mòbil">
-        <button
-          type="button"
-          class="mobile-cat-chip"
-          [class.active]="categoriaSeleccionada === 'totes'"
-          (click)="seleccionarCategoria('totes')"
-        >
-          <span class="mobile-cat-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="3" y="3" width="7" height="7"></rect>
-              <rect x="14" y="3" width="7" height="7"></rect>
-              <rect x="14" y="14" width="7" height="7"></rect>
-              <rect x="3" y="14" width="7" height="7"></rect>
-            </svg>
-          </span>
-          <span class="mobile-cat-label">Totes</span>
-          <span class="mobile-cat-count">{{ totalElements }}</span>
-        </button>
-
-        <button
-          type="button"
-          *ngFor="let cat of categoriesLlista"
-          class="mobile-cat-chip"
-          [class.active]="categoriaSeleccionada.toLowerCase() === cat.nom.toLowerCase()"
-          (click)="seleccionarCategoria(cat.nom)"
-        >
-          <span class="mobile-cat-icon" aria-hidden="true" [innerHTML]="cat.icona"></span>
-          <span class="mobile-cat-label">{{ cat.nom }}</span>
-          <span class="mobile-cat-count">{{ comptarElementsPerCategoria(cat.nom) }}</span>
-        </button>
-      </nav>
 
       <!-- Disposició principal: Columna de Categories + Llistats -->
       <div class="market-layout">
@@ -657,73 +655,48 @@ interface CategoriaFiltre {
         border-color: #09090c;
       }
 
-      /* Barra horitzontal de categories per a mòbils (oculta en escriptori >= 961px) */
-      .mobile-categories-strip {
+      /* Selectors de filtre exclusius per a mòbils (sense barres de desplaçament horitzontals) */
+      .mobile-filter-selectors {
         display: none;
-        align-items: center;
-        gap: 0.5rem;
-        overflow-x: auto;
-        white-space: nowrap;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: none;
-        padding: 0.2rem 0.1rem 0.85rem;
-        margin-bottom: 0.85rem;
+        width: 100%;
+        gap: 0.75rem;
+        box-sizing: border-box;
       }
 
-      .mobile-categories-strip::-webkit-scrollbar {
-        display: none;
-      }
-
-      .mobile-cat-chip {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.45rem;
-        padding: 0.45rem 0.85rem;
-        border-radius: 9999px;
-        background: #ffffff;
-        border: 1px solid #dcd7cc;
-        color: #374151;
-        font-size: 0.82rem;
-        font-weight: 700;
-        cursor: pointer;
-        flex-shrink: 0;
-        transition: all 0.2s ease;
-        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
-      }
-
-      .mobile-cat-chip:active {
-        transform: scale(0.97);
-      }
-
-      .mobile-cat-chip .mobile-cat-icon {
+      .mobile-select-box {
         display: flex;
-        align-items: center;
-        color: #ff1744;
+        flex-direction: column;
+        gap: 0.35rem;
+        min-width: 0;
       }
 
-      .mobile-cat-chip .mobile-cat-count {
-        font-size: 0.72rem;
-        background: #eeeae0;
-        color: #55534c;
-        padding: 0.1rem 0.45rem;
-        border-radius: 9999px;
+      .mobile-select-label {
+        font-size: 0.75rem;
         font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #716e65;
       }
 
-      .mobile-cat-chip.active {
-        background: #09090c;
-        color: #ffffff;
+      .mobile-native-select {
+        width: 100%;
+        background-color: #faf8f4;
+        border: 1px solid #dcd7cc;
+        border-radius: 9px;
+        padding: 0.65rem 0.75rem;
+        font-size: 0.88rem;
+        font-weight: 700;
+        color: #111827;
+        outline: none;
+        box-sizing: border-box;
+        cursor: pointer;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+      }
+
+      .mobile-native-select:focus {
         border-color: #ff1744;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
-      }
-
-      .mobile-cat-chip.active .mobile-cat-icon {
-        color: #ff1744;
-      }
-
-      .mobile-cat-chip.active .mobile-cat-count {
-        background: #ff1744;
-        color: #ffffff;
+        background-color: #ffffff;
+        box-shadow: 0 0 0 3px rgba(255, 23, 68, 0.12);
       }
 
       /* Layout */
@@ -1501,17 +1474,25 @@ interface CategoriaFiltre {
       /* ============================================================== */
       @media (max-width: 960px) {
         .market-page {
-          padding: 0.5rem 0 3.5rem;
+          padding: 0.75rem 0.75rem 3.5rem;
         }
 
-        /* Oculta la columna vertical de categories en mòbils per no desplaçar el contingut cap avall */
+        /* Oculta la columna vertical de categories en mòbils */
         .categories-sidebar {
           display: none !important;
         }
 
-        /* Activa el carrusel horitzontal de xips de categoria */
-        .mobile-categories-strip {
-          display: flex;
+        /* Oculta les pastilles horitzontals en mòbil per evitar qualsevol barra de desplaçament */
+        .type-filter-pills {
+          display: none !important;
+        }
+
+        /* Mostra els selectors desplegables natius adaptats a mòbils */
+        .mobile-filter-selectors {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 0.65rem;
+          width: 100%;
         }
 
         .market-layout {
@@ -1525,16 +1506,16 @@ interface CategoriaFiltre {
           padding: 1.25rem 1rem;
           border-radius: 14px;
           margin-bottom: 1rem;
-          gap: 1rem;
+          gap: 0.85rem;
         }
 
         .market-header h1 {
-          font-size: 1.55rem;
+          font-size: 1.45rem;
           line-height: 1.25;
         }
 
         .market-subtitle {
-          font-size: 0.88rem;
+          font-size: 0.85rem;
           line-height: 1.45;
         }
 
@@ -1563,7 +1544,7 @@ interface CategoriaFiltre {
         .search-filter-bar {
           padding: 0.85rem 0.95rem;
           border-radius: 14px;
-          margin-bottom: 0.85rem;
+          margin-bottom: 1rem;
           gap: 0.75rem;
         }
 
@@ -1575,26 +1556,6 @@ interface CategoriaFiltre {
         .search-input-wrap input {
           font-size: 16px; /* Impedeix el zoom forçat a navegadors mòbils com iOS Safari */
           padding: 0.75rem 0;
-        }
-
-        .type-filter-pills {
-          overflow-x: auto;
-          flex-wrap: nowrap;
-          padding-bottom: 0.35rem;
-          -webkit-overflow-scrolling: touch;
-          scrollbar-width: none;
-          gap: 0.45rem;
-        }
-
-        .type-filter-pills::-webkit-scrollbar {
-          display: none;
-        }
-
-        .filter-pill {
-          white-space: nowrap;
-          flex-shrink: 0;
-          font-size: 0.8rem;
-          padding: 0.45rem 0.85rem;
         }
 
         .results-block {
@@ -1703,6 +1664,11 @@ interface CategoriaFiltre {
       }
 
       @media (max-width: 480px) {
+        .mobile-filter-selectors {
+          grid-template-columns: 1fr;
+          gap: 0.5rem;
+        }
+
         .market-header-actions {
           grid-template-columns: 1fr;
         }

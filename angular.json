@@ -36,7 +36,8 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "buildTarget": "front-project-jjaux-1:build"
+            "buildTarget": "front-project-jjaux-1:build",
+            "proxyConfig": "proxy.conf.json"
           }
         }
       }
