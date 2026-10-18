@@ -4,6 +4,8 @@ import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ArticleService } from '../../services/article.service';
 import { Article } from '../../models/article.model';
+import { TranslationService } from '../../core/services/translation.service';
+import { TranslatePipe } from '../../core/pipes/translate.pipe';
 
 /**
  * Pàgina dedicada al Blog i Guies Tècniques (/blog).
@@ -13,7 +15,7 @@ import { Article } from '../../models/article.model';
 @Component({
   selector: 'app-blog',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule],
+  imports: [CommonModule, RouterLink, FormsModule, TranslatePipe],
   template: `
     <div class="blog-page-container">
       <!-- Capçalera i Breadcrumbs -->
@@ -23,22 +25,21 @@ import { Article } from '../../models/article.model';
             <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
             <polyline points="9 22 9 12 15 12 15 22"></polyline>
           </svg>
-          Inici
+          {{ 'BLOG.BREADCRUMB_HOME' | translate }}
         </a>
         <span class="breadcrumb-separator">/</span>
-        <span class="breadcrumb-current">Blog i Guies Locals</span>
+        <span class="breadcrumb-current">{{ 'BLOG.BREADCRUMB_BLOG' | translate }}</span>
       </nav>
 
       <!-- Hero del Blog -->
       <header class="blog-hero">
         <div class="hero-badge">
           <span class="badge-dot"></span>
-          Coneixement comarcal i guies pràctiques 2026
+          {{ 'BLOG.HERO_BADGE' | translate }}
         </div>
-        <h1 class="hero-title">Blog d'Experts, Preus i Consells AVISA</h1>
+        <h1 class="hero-title">{{ 'BLOG.HERO_TITLE' | translate }}</h1>
         <p class="hero-subtitle">
-          Guies detallades, estimacions de pressupostos, tràmits municipals i recomanacions d'especialistes 
-          per a la Costera, la Vall d'Albaida, la Safor i la Ribera.
+          {{ 'BLOG.HERO_SUBTITLE' | translate }}
         </p>
 
         <!-- Barra de cerca i filtres -->
@@ -52,14 +53,14 @@ import { Article } from '../../models/article.model';
               type="text"
               class="search-input"
               [(ngModel)]="termeCerca"
-              placeholder="Cerca per títol, tema (p. ex. reformes, climatització, bany, Xàtiva, llicències)..."
+              [placeholder]="'BLOG.SEARCH_PLACEHOLDER' | translate"
               aria-label="Cercar articles al blog"
             />
             <button
               *ngIf="termeCerca"
               class="btn-clear-search"
               (click)="termeCerca = ''"
-              title="Netejar cerca"
+              [title]="'BLOG.CLEAR_SEARCH' | translate"
               type="button"
             >
               ✕
@@ -75,7 +76,7 @@ import { Article } from '../../models/article.model';
             [class.active]="categoriaSeleccionada === 'Totes'"
             (click)="seleccionarCategoria('Totes')"
           >
-            Tots els articles ({{ articles.length }})
+            {{ 'BLOG.ALL_ARTICLES' | translate }} ({{ articles.length }})
           </button>
           <button
             *ngFor="let cat of categoriesDisponibles"
@@ -84,7 +85,7 @@ import { Article } from '../../models/article.model';
             [class.active]="categoriaSeleccionada === cat"
             (click)="seleccionarCategoria(cat)"
           >
-            {{ cat }}
+            {{ cat | translate }}
           </button>
         </div>
       </header>
@@ -94,11 +95,11 @@ import { Article } from '../../models/article.model';
         <div class="featured-card">
           <div class="featured-media" [routerLink]="['/article', articleDestacat.id]">
             <img [src]="articleDestacat.imatge" [alt]="articleDestacat.titol" loading="lazy" />
-            <span class="featured-badge">Article Destacat</span>
+            <span class="featured-badge">{{ 'BLOG.FEATURED_BADGE' | translate }}</span>
           </div>
           <div class="featured-content">
             <div class="featured-meta">
-              <span class="category-tag">{{ articleDestacat.categoria }}</span>
+              <span class="category-tag">{{ articleDestacat.categoria | translate }}</span>
               <span class="meta-dot">•</span>
               <span class="meta-item">{{ articleDestacat.data }}</span>
               <span class="meta-dot">•</span>
@@ -117,7 +118,7 @@ import { Article } from '../../models/article.model';
                 </div>
               </div>
               <a [routerLink]="['/article', articleDestacat.id]" class="btn-read-featured">
-                <span>Llegir article complet</span>
+                <span>{{ 'HOME.READ_MORE' | translate }}</span>
                 <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                   <line x1="5" y1="12" x2="19" y2="12"></line>
                   <polyline points="12 5 19 12 12 19"></polyline>
@@ -137,9 +138,9 @@ import { Article } from '../../models/article.model';
           </h2>
           <span *ngIf="termeCerca || categoriaSeleccionada !== 'Totes'" class="active-filter-label">
             Filtres actius: 
-            <strong>{{ categoriaSeleccionada !== 'Totes' ? categoriaSeleccionada : '' }}</strong>
+            <strong>{{ categoriaSeleccionada !== 'Totes' ? (categoriaSeleccionada | translate) : '' }}</strong>
             <span *ngIf="termeCerca"> «{{ termeCerca }}»</span>
-            <button class="btn-reset-filters" (click)="resetFiltres()" type="button">Restablir</button>
+            <button class="btn-reset-filters" (click)="resetFiltres()" type="button">{{ 'TASQUES_OFERTES.RESET_FILTERS' | translate }}</button>
           </span>
         </div>
 
@@ -147,7 +148,7 @@ import { Article } from '../../models/article.model';
           <article class="article-card" *ngFor="let a of articlesFiltrats">
             <div class="card-media" [routerLink]="['/article', a.id]">
               <img [src]="a.imatge" [alt]="a.titol" loading="lazy" />
-              <span class="card-category-tag">{{ a.categoria }}</span>
+              <span class="card-category-tag">{{ a.categoria | translate }}</span>
             </div>
             <div class="card-body">
               <div class="card-meta">
@@ -178,7 +179,7 @@ import { Article } from '../../models/article.model';
                   <span class="author-mini-name">{{ a.autor.nom }}</span>
                 </div>
                 <a [routerLink]="['/article', a.id]" class="btn-read-more" title="Llegir article">
-                  Llegir →
+                  {{ 'COMMON.DETALL' | translate }} →
                 </a>
               </div>
             </div>
@@ -188,10 +189,10 @@ import { Article } from '../../models/article.model';
         <!-- Estat buit quan cap article coincideix amb la cerca -->
         <div class="empty-results-box" *ngIf="articlesFiltrats.length === 0">
           <div class="empty-icon" aria-hidden="true">🔍</div>
-          <h3>No s'ha trobat cap article</h3>
-          <p>No hi ha cap guia que coincideixi amb la teva cerca <strong>«{{ termeCerca }}»</strong> a la categoria <strong>{{ categoriaSeleccionada }}</strong>.</p>
+          <h3>{{ 'BLOG.NO_ARTICLES_TITLE' | translate }}</h3>
+          <p>{{ 'BLOG.NO_ARTICLES_SUB' | translate }}</p>
           <button type="button" class="btn-primary" (click)="resetFiltres()">
-            Veure tots els articles
+            {{ 'BLOG.RESET_SEARCH' | translate }}
           </button>
         </div>
       </section>
@@ -199,15 +200,14 @@ import { Article } from '../../models/article.model';
       <!-- Banner de crida a l'acció (CTA) cap a les tasques i ofertes -->
       <section class="blog-cta-banner">
         <div class="cta-content">
-          <span class="cta-tag">Tens un projecte o necessites reparacions?</span>
-          <h2>Troba professionals locals o publica la teva tasca ara mateix</h2>
+          <span class="cta-tag">{{ 'BLOG.CTA_BANNER_BADGE' | translate }}</span>
+          <h2>{{ 'BLOG.CTA_BANNER_TITLE' | translate }}</h2>
           <p>
-            Connectem veïns, comunitats i professionals de proximitat sense intermediaris complicats.
-            Demana pressupost gratuït o explora el mercat d'ofertes.
+            {{ 'BLOG.CTA_BANNER_DESC' | translate }}
           </p>
           <div class="cta-actions">
-            <a routerLink="/tasques-ofertes" [queryParams]="{ tipus: 'incidencies', accio: 'crear-incidencia' }" class="btn-cta-primary">Publicar incidència o tasca</a>
-            <a routerLink="/tasques-ofertes" class="btn-cta-secondary">Explorar ofertes i tasques</a>
+            <a routerLink="/tasques-ofertes" [queryParams]="{ tipus: 'incidencies', accio: 'crear-incidencia' }" class="btn-cta-primary">{{ 'BLOG.CTA_BANNER_BTN_TASK' | translate }}</a>
+            <a routerLink="/tasques-ofertes" class="btn-cta-secondary">{{ 'BLOG.CTA_BANNER_BTN_OFFERS' | translate }}</a>
           </div>
         </div>
       </section>
@@ -873,38 +873,38 @@ import { Article } from '../../models/article.model';
   `]
 })
 export class BlogComponent implements OnInit {
-  /** Llista completa d'articles obtinguts d'ArticleService */
-  articles: Article[] = [];
-  /** Article principal destacat */
-  articleDestacat?: Article;
   /** Categoria seleccionada pel filtre */
   categoriaSeleccionada = 'Totes';
   /** Terme de cerca introduït per l'usuari */
   termeCerca = '';
-  /** Llista de categories úniques detectades als articles */
-  categoriesDisponibles: string[] = [];
 
-  constructor(private readonly articleService: ArticleService) {}
+  constructor(
+    private readonly articleService: ArticleService,
+    private readonly translationService: TranslationService
+  ) {}
 
-  ngOnInit(): void {
-    this.articles = this.articleService.getArticles();
-    if (this.articles.length > 0) {
-      this.articleDestacat = this.articles[0];
-    }
-    this.carregarCategories();
+  ngOnInit(): void {}
+
+  /** Llista completa d'articles adaptats a l'idioma seleccionat */
+  get articles(): Article[] {
+    return this.articleService.getArticles();
   }
 
-  /**
-   * Extreu les categories úniques disponibles a la llista d'articles.
-   */
-  private carregarCategories(): void {
+  /** Article principal destacat */
+  get articleDestacat(): Article | undefined {
+    const list = this.articles;
+    return list.length > 0 ? list[0] : undefined;
+  }
+
+  /** Llista de categories úniques detectades als articles */
+  get categoriesDisponibles(): string[] {
     const cats = new Set<string>();
     for (const a of this.articles) {
       if (a.categoria) {
         cats.add(a.categoria);
       }
     }
-    this.categoriesDisponibles = Array.from(cats);
+    return Array.from(cats);
   }
 
   /**
@@ -915,7 +915,7 @@ export class BlogComponent implements OnInit {
 
     // Filtre per categoria
     if (this.categoriaSeleccionada !== 'Totes') {
-      result = result.filter(a => a.categoria === this.categoriaSeleccionada);
+      result = result.filter(a => a.categoria.toLowerCase() === this.categoriaSeleccionada.toLowerCase());
     }
 
     // Filtre per terme de cerca
@@ -964,12 +964,13 @@ export class BlogComponent implements OnInit {
    */
   getTitolResultats(): string {
     if (this.categoriaSeleccionada !== 'Totes') {
-      return `Articles de ${this.categoriaSeleccionada}`;
+      const translatedCat = this.translationService.translateCategory(this.categoriaSeleccionada);
+      return `${this.translationService.t('BLOG.ALL_ARTICLES')}: ${translatedCat}`;
     }
     if (this.termeCerca) {
-      return `Resultats de la cerca`;
+      return this.translationService.t('TASQUES_OFERTES.EYEBROW');
     }
-    return `Tots els articles`;
+    return this.translationService.t('BLOG.ALL_ARTICLES');
   }
 }
 

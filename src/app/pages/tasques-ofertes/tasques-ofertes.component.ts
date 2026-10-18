@@ -7,6 +7,7 @@ import { OfertaService } from '../../services/oferta.service';
 import { ResenyaService } from '../../services/resenya.service';
 import { UsuariService } from '../../services/usuari.service';
 import { AuthService } from '../../core/services/auth.service';
+import { TranslatePipe } from '../../core/pipes/translate.pipe';
 import { Resenya } from '../../models/resenya.model';
 import { Usuari } from '../../models/usuari.model';
 
@@ -30,24 +31,24 @@ interface CategoriaFiltre {
 @Component({
   selector: 'app-tasques-ofertes',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, TranslatePipe],
   template: `
     <div class="market-page">
       <!-- Capçalera de la pàgina -->
       <header class="market-header">
         <div class="market-title-group">
-          <span class="market-eyebrow">MERCAT D'ACTIVITAT AVISA</span>
-          <h1>Tasques i Ofertes</h1>
+          <span class="market-eyebrow">{{ 'TASQUES_OFERTES.EYEBROW' | translate }}</span>
+          <h1>{{ 'TASQUES_OFERTES.TITLE' | translate }}</h1>
           <p class="market-subtitle">
-            Explora totes les demandes de serveis i els pressupostos presentats per professionals a la teva zona.
+            {{ 'TASQUES_OFERTES.SUBTITLE' | translate }}
           </p>
         </div>
         <div class="market-header-actions">
           <button type="button" class="btn-create-task" (click)="onNovaIncidencia()">
-            + Publicar Incidència
+            {{ 'TASQUES_OFERTES.BTN_NOVA_INCIDENCIA' | translate }}
           </button>
           <button type="button" class="btn-create-offer" (click)="onNovaOferta()">
-            + Publicar Oferta / Servei
+            {{ 'TASQUES_OFERTES.BTN_NOVA_OFERTA' | translate }}
           </button>
         </div>
       </header>
@@ -64,10 +65,10 @@ interface CategoriaFiltre {
           <input
             type="text"
             [(ngModel)]="searchQuery"
-            placeholder="Cerca per nom, professional, client o paraula clau..."
-            aria-label="Cercar tasques i ofertes per nom"
+            [placeholder]="'TASQUES_OFERTES.SEARCH_PLACEHOLDER' | translate"
+            [attr.aria-label]="'TASQUES_OFERTES.SEARCH_PLACEHOLDER' | translate"
           />
-          <button *ngIf="searchQuery" type="button" class="btn-clear-search" (click)="searchQuery = ''" aria-label="Netejar cerca">
+          <button *ngIf="searchQuery" type="button" class="btn-clear-search" (click)="searchQuery = ''" [attr.aria-label]="'TASQUES_OFERTES.CLEAR_SEARCH' | translate">
             ✕
           </button>
         </div>
@@ -79,7 +80,7 @@ interface CategoriaFiltre {
             [class.active]="tipusFiltre === 'tots'"
             (click)="tipusFiltre = 'tots'"
           >
-            Tots els anuncis ({{ totalElements }})
+            {{ 'TASQUES_OFERTES.FILTER_ALL' | translate }} ({{ totalElements }})
           </button>
           <button
             type="button"
@@ -87,7 +88,7 @@ interface CategoriaFiltre {
             [class.active]="tipusFiltre === 'ofertes'"
             (click)="tipusFiltre = 'ofertes'"
           >
-            Ofertes de professionals ({{ ofertesFiltrades.length }})
+            {{ 'TASQUES_OFERTES.FILTER_OFFERS' | translate }} ({{ ofertesFiltrades.length }})
           </button>
           <button
             type="button"
@@ -95,7 +96,7 @@ interface CategoriaFiltre {
             [class.active]="tipusFiltre === 'incidencies'"
             (click)="tipusFiltre = 'incidencies'"
           >
-            Incidències de clients ({{ incidenciesFiltrades.length }})
+            {{ 'TASQUES_OFERTES.FILTER_INCIDENCIES' | translate }} ({{ incidenciesFiltrades.length }})
           </button>
           <button
             type="button"
@@ -103,38 +104,38 @@ interface CategoriaFiltre {
             [class.active]="tipusFiltre === 'tasques'"
             (click)="tipusFiltre = 'tasques'"
           >
-            Les teues tasques ({{ tasquesFiltrades.length }})
+            {{ 'TASQUES_OFERTES.FILTER_TASKS' | translate }} ({{ tasquesFiltrades.length }})
           </button>
         </div>
 
         <!-- Selectors de filtre exclusius per a mòbils (sense barres de lliscament horitzontals) -->
         <div class="mobile-filter-selectors">
           <div class="mobile-select-box">
-            <label class="mobile-select-label" for="mobile-categoria">Categoria:</label>
+            <label class="mobile-select-label" for="mobile-categoria">{{ 'TASQUES_OFERTES.MOBILE_CAT_LABEL' | translate }}</label>
             <select
               id="mobile-categoria"
               [(ngModel)]="categoriaSeleccionada"
               (change)="seleccionarCategoria(categoriaSeleccionada)"
               class="mobile-native-select"
             >
-              <option value="totes">📁 Totes les categories ({{ totalElements }})</option>
+              <option value="totes">📁 {{ 'TASQUES_OFERTES.ALL_CATEGORIES' | translate }} ({{ totalElements }})</option>
               <option *ngFor="let cat of categoriesLlista" [value]="cat.nom">
-                {{ cat.nom }} ({{ comptarElementsPerCategoria(cat.nom) }})
+                {{ cat.nom | translate }} ({{ comptarElementsPerCategoria(cat.nom) }})
               </option>
             </select>
           </div>
 
           <div class="mobile-select-box">
-            <label class="mobile-select-label" for="mobile-tipus">Mostrar:</label>
+            <label class="mobile-select-label" for="mobile-tipus">{{ 'TASQUES_OFERTES.MOBILE_SHOW_LABEL' | translate }}</label>
             <select
               id="mobile-tipus"
               [(ngModel)]="tipusFiltre"
               class="mobile-native-select"
             >
-              <option value="tots">📋 Tots els anuncis ({{ totalElements }})</option>
-              <option value="ofertes">💼 Ofertes de professionals ({{ ofertesFiltrades.length }})</option>
-              <option value="incidencies">🔧 Incidències de clients ({{ incidenciesFiltrades.length }})</option>
-              <option value="tasques">🤝 Les teues tasques ({{ tasquesFiltrades.length }})</option>
+              <option value="tots">📋 {{ 'TASQUES_OFERTES.FILTER_ALL' | translate }} ({{ totalElements }})</option>
+              <option value="ofertes">💼 {{ 'TASQUES_OFERTES.FILTER_OFFERS' | translate }} ({{ ofertesFiltrades.length }})</option>
+              <option value="incidencies">🔧 {{ 'TASQUES_OFERTES.FILTER_INCIDENCIES' | translate }} ({{ incidenciesFiltrades.length }})</option>
+              <option value="tasques">🤝 {{ 'TASQUES_OFERTES.FILTER_TASKS' | translate }} ({{ tasquesFiltrades.length }})</option>
             </select>
           </div>
         </div>
@@ -152,10 +153,10 @@ interface CategoriaFiltre {
         <aside class="categories-sidebar">
           <div class="categories-card">
             <div class="categories-card-header">
-              <h3>Categories</h3>
+              <h3>{{ 'TASQUES_OFERTES.CATEGORIES_TITLE' | translate }}</h3>
               <span class="cat-count-badge">{{ categoriesLlista.length }}</span>
             </div>
-            <p class="categories-card-desc">Filtra per l'especialitat que necessitis:</p>
+            <p class="categories-card-desc">{{ 'TASQUES_OFERTES.CATEGORIES_DESC' | translate }}</p>
 
             <div class="categories-table">
               <!-- Categoria: Totes -->
@@ -174,7 +175,7 @@ interface CategoriaFiltre {
                       <rect x="3" y="14" width="7" height="7"></rect>
                     </svg>
                   </span>
-                  <span class="cat-name">Totes les categories</span>
+                  <span class="cat-name">{{ 'TASQUES_OFERTES.ALL_CATEGORIES' | translate }}</span>
                 </div>
                 <span class="cat-badge">{{ totalElements }}</span>
               </button>
@@ -189,7 +190,7 @@ interface CategoriaFiltre {
               >
                 <div class="cat-info">
                   <span class="cat-icon" aria-hidden="true" [innerHTML]="cat.icona"></span>
-                  <span class="cat-name">{{ cat.nom }}</span>
+                  <span class="cat-name">{{ cat.nom | translate }}</span>
                 </div>
                 <span class="cat-badge">{{ comptarElementsPerCategoria(cat.nom) }}</span>
               </button>
@@ -201,7 +202,7 @@ interface CategoriaFiltre {
         <main class="market-results-area">
           <!-- Estat de càrrega -->
           <div *ngIf="loading" class="loading-state">
-            <p>Carregant tasques i ofertes del mercat AVISA...</p>
+            <p>{{ 'TASQUES_OFERTES.LOADING' | translate }}</p>
           </div>
 
           <!-- Estat d'error -->
@@ -225,34 +226,34 @@ interface CategoriaFiltre {
               </div>
               <ng-container [ngSwitch]="tipusFiltre">
                 <div *ngSwitchCase="'tasques'">
-                  <h3>No tens cap tasca acordada visible</h3>
+                  <h3>{{ 'TASQUES_OFERTES.EMPTY_TASKS_TITLE' | translate }}</h3>
                   <p>
-                    Les tasques acordades són privades i només són visibles per als 2 usuaris implicats (el client i el professional) i al panell de control.
-                    {{ !isLoggedIn ? 'Inicia sessió per consultar les teves tasques acordades.' : 'Quan contractis un servei o s’accepti una oferta, la teva tasca en curs apareixerà aquí.' }}
+                    {{ 'TASQUES_OFERTES.EMPTY_TASKS_DESC' | translate }}
+                    {{ !isLoggedIn ? ('TASQUES_OFERTES.EMPTY_TASKS_LOGIN' | translate) : ('TASQUES_OFERTES.EMPTY_TASKS_LOGGED' | translate) }}
                   </p>
                   <a *ngIf="!isLoggedIn" routerLink="/login" class="btn-reset-filters" style="display: inline-block; text-decoration: none; margin-top: 0.5rem;">
-                    Iniciar Sessió
+                    {{ 'NAV.INICIAR_SESSIO' | translate }}
                   </a>
                 </div>
                 <div *ngSwitchCase="'ofertes'">
-                  <h3>Cap oferta coincideix amb els teus filtres</h3>
-                  <p>Prova amb una altra paraula clau o selecciona una altra categoria per trobar serveis.</p>
+                  <h3>{{ 'TASQUES_OFERTES.EMPTY_OFFERS_TITLE' | translate }}</h3>
+                  <p>{{ 'TASQUES_OFERTES.EMPTY_SUB' | translate }}</p>
                   <button type="button" class="btn-reset-filters" (click)="resetFiltres()">
-                    Restablir filtres de cerca
+                    {{ 'TASQUES_OFERTES.RESET_FILTERS' | translate }}
                   </button>
                 </div>
                 <div *ngSwitchCase="'incidencies'">
-                  <h3>Cap incidència de client coincideix amb els teus filtres</h3>
-                  <p>Prova amb una altra paraula clau o selecciona una altra categoria per trobar peticions.</p>
+                  <h3>{{ 'TASQUES_OFERTES.EMPTY_INCIDENCIES_TITLE' | translate }}</h3>
+                  <p>{{ 'TASQUES_OFERTES.EMPTY_SUB' | translate }}</p>
                   <button type="button" class="btn-reset-filters" (click)="resetFiltres()">
-                    Restablir filtres de cerca
+                    {{ 'TASQUES_OFERTES.RESET_FILTERS' | translate }}
                   </button>
                 </div>
                 <div *ngSwitchDefault>
-                  <h3>Cap anunci coincideix amb els teus filtres</h3>
-                  <p>Prova amb una altra paraula clau o selecciona una altra categoria per trobar resultats.</p>
+                  <h3>{{ 'TASQUES_OFERTES.EMPTY_ALL_TITLE' | translate }}</h3>
+                  <p>{{ 'TASQUES_OFERTES.EMPTY_SUB' | translate }}</p>
                   <button type="button" class="btn-reset-filters" (click)="resetFiltres()">
-                    Restablir filtres de cerca
+                    {{ 'TASQUES_OFERTES.RESET_FILTERS' | translate }}
                   </button>
                 </div>
               </ng-container>
@@ -261,16 +262,16 @@ interface CategoriaFiltre {
             <!-- SECCIÓ D'OFERTES I PACKS DE SERVEIS PROFESSIONALS (SOLS PROFESSIONAL) -->
             <section class="results-block" *ngIf="(tipusFiltre === 'tots' || tipusFiltre === 'ofertes') && ofertesFiltrades.length > 0">
               <div class="results-block-header">
-                <h2>Ofertes i packs de servei professional</h2>
-                <span class="count-tag">{{ ofertesFiltrades.length }} disponibles</span>
+                <h2>{{ 'TASQUES_OFERTES.OFFERS_BLOCK_TITLE' | translate }}</h2>
+                <span class="count-tag">{{ ofertesFiltrades.length }} {{ 'TASQUES_OFERTES.AVAILABLE' | translate }}</span>
               </div>
 
               <div class="cards-grid">
                 <article class="market-card offer-card" *ngFor="let offer of ofertesFiltrades">
                   <div class="card-top-bar">
                     <div class="pills-group">
-                      <span class="nature-pill pro-nature">OFERTA DE SERVEI</span>
-                      <span class="cat-pill">{{ getOfertaCategoria(offer) }}</span>
+                      <span class="nature-pill pro-nature">{{ 'TASQUES_OFERTES.OFFER_NATURE' | translate }}</span>
+                      <span class="cat-pill">{{ getOfertaCategoria(offer) | translate }}</span>
                     </div>
                   </div>
 
@@ -278,34 +279,34 @@ interface CategoriaFiltre {
                   <p class="card-item-desc">{{ getOfertaDescripcio(offer) }}</p>
 
                   <div class="card-meta-line">
-                    <span class="meta-label">Professional que ofereix el servei:</span>
+                    <span class="meta-label">{{ 'TASQUES_OFERTES.PRO_WHO_OFFERS' | translate }}</span>
                     <a [routerLink]="['/perfil', getProfessionalIdentifier(offer.professional)]" class="user-profile-link pro-profile-link" title="Veure el perfil, descripció i ressenyes de {{ offer.professional }}">
                       <span class="user-avatar-mini pro-avatar-mini">{{ (offer.professional || 'P').charAt(0) }}</span>
                       <strong class="meta-value pro-name-val">{{ offer.professional }}</strong>
                     </a>
                     <span class="pro-rating-inline" *ngIf="getProfessionalRating(offer.professional) as ratingInfo">
                       <span class="stars-gold">★ {{ ratingInfo.mitjana }}</span>
-                      <span class="reviews-count">({{ ratingInfo.total }} valoracions)</span>
+                      <span class="reviews-count">({{ ratingInfo.total }} {{ 'TASQUES_OFERTES.VALORACIONS' | translate }})</span>
                       <button type="button" class="btn-view-reviews" (click)="obrirModalRessenyes(offer.professional)">
-                        Veure ressenyes
+                        {{ 'TASQUES_OFERTES.VEURE_RESSENYES' | translate }}
                       </button>
                     </span>
                   </div>
 
                   <div class="card-bottom-bar">
                     <div class="budget-wrap">
-                      <span class="budget-label">Tarifa del servei:</span>
+                      <span class="budget-label">{{ 'TASQUES_OFERTES.SERVICE_FEE' | translate }}</span>
                       <strong class="budget-value offer-price">{{ offer.price }}</strong>
                     </div>
                     <div class="card-actions">
-                      <button *ngIf="isOfferOwner(offer)" type="button" class="btn-action-delete-offer" (click)="onDeleteOferta(offer.id)" title="Borrar oferta">
-                        Borrar
+                      <button *ngIf="isOfferOwner(offer)" type="button" class="btn-action-delete-offer" (click)="onDeleteOferta(offer.id)" [attr.title]="'TASQUES_OFERTES.BORRAR' | translate">
+                        {{ 'TASQUES_OFERTES.BORRAR' | translate }}
                       </button>
                       <button type="button" class="btn-action-primary btn-contractar" (click)="onContractarOferta(offer)">
                         <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px; vertical-align: -2px;">
                           <polyline points="20 6 9 17 4 12"></polyline>
                         </svg>
-                        Contractar
+                        {{ 'TASQUES_OFERTES.CONTRACTAR' | translate }}
                       </button>
                     </div>
                   </div>
@@ -316,24 +317,24 @@ interface CategoriaFiltre {
             <!-- SECCIÓ D'INCIDÈNCIES DE CLIENTS (SOLS CLIENT, SENSE PROFESSIONAL ASSIGNAT) -->
             <section class="results-block" *ngIf="(tipusFiltre === 'tots' || tipusFiltre === 'incidencies') && incidenciesFiltrades.length > 0">
               <div class="results-block-header">
-                <h2>Incidències i peticions de clients</h2>
-                <span class="count-tag">{{ incidenciesFiltrades.length }} disponibles</span>
+                <h2>{{ 'TASQUES_OFERTES.INCIDENCIES_BLOCK_TITLE' | translate }}</h2>
+                <span class="count-tag">{{ incidenciesFiltrades.length }} {{ 'TASQUES_OFERTES.AVAILABLE' | translate }}</span>
               </div>
 
               <div class="cards-grid">
                 <article class="market-card task-card" *ngFor="let task of incidenciesFiltrades">
                   <div class="card-top-bar">
                     <div class="pills-group">
-                      <span class="nature-pill client-nature">INCIDÈNCIA</span>
-                      <span class="cat-pill">{{ task.categoria || 'Altres Serveis' }}</span>
+                      <span class="nature-pill client-nature">{{ 'TASQUES_OFERTES.TASK_NATURE' | translate }}</span>
+                      <span class="cat-pill">{{ (task.categoria || 'Altres Serveis') | translate }}</span>
                     </div>
                   </div>
 
                   <h3 class="card-item-title">{{ task.titol }}</h3>
-                  <p class="card-item-desc">{{ task.descripcio || 'Sense descripció addicional' }}</p>
+                  <p class="card-item-desc">{{ task.descripcio || ('TASQUES_OFERTES.NO_DESC' | translate) }}</p>
 
                   <div class="card-meta-line">
-                    <span class="meta-label">Client que demana ajuda:</span>
+                    <span class="meta-label">{{ 'TASQUES_OFERTES.CLIENT_WHO_ASKS' | translate }}</span>
                     <a [routerLink]="['/perfil', getClientIdentifier(task.client)]" class="user-profile-link" title="Veure el perfil i descripció de {{ task.client }}">
                       <span class="user-avatar-mini">{{ (task.client || 'C').charAt(0) }}</span>
                       <strong class="meta-value">{{ task.client }}</strong>
@@ -342,15 +343,15 @@ interface CategoriaFiltre {
 
                   <div class="card-bottom-bar">
                     <div class="budget-wrap">
-                      <span class="budget-label">Pressupost estimat client:</span>
+                      <span class="budget-label">{{ 'TASQUES_OFERTES.ESTIMATED_BUDGET' | translate }}</span>
                       <strong class="budget-value">{{ task.budget }}</strong>
                     </div>
                     <div class="card-actions">
                       <button type="button" class="btn-action-detail" (click)="onDetallTasca(task.id)">
-                        Detall
+                        {{ 'TASQUES_OFERTES.DETALL' | translate }}
                       </button>
                       <button type="button" class="btn-action-primary" (click)="onFerOferta(task.id)">
-                        Proposar pressupost
+                        {{ 'TASQUES_OFERTES.PROPOSAR_PRESSUPOST' | translate }}
                       </button>
                     </div>
                   </div>
@@ -361,35 +362,35 @@ interface CategoriaFiltre {
             <!-- SECCIÓ DE TASQUES ACORDADES (CONVERGEIXEN CLIENT I PROFESSIONAL OBLIGATORIS) -->
             <section class="results-block" *ngIf="(tipusFiltre === 'tots' || tipusFiltre === 'tasques') && tasquesFiltrades.length > 0">
               <div class="results-block-header">
-                <h2>Les teues tasques acordades (Client + Professional)</h2>
-                <span class="count-tag count-tag-tasca">{{ tasquesFiltrades.length }} acordades</span>
+                <h2>{{ 'TASQUES_OFERTES.TASKS_AGREED_TITLE' | translate }}</h2>
+                <span class="count-tag count-tag-tasca">{{ tasquesFiltrades.length }} {{ 'TASQUES_OFERTES.AGREED_TAG' | translate }}</span>
               </div>
 
               <div class="cards-grid">
                 <article class="market-card task-card converged-card" *ngFor="let task of tasquesFiltrades">
                   <div class="card-top-bar">
                     <div class="pills-group">
-                      <span class="nature-pill task-nature">TASCA CONVERGIDA</span>
-                      <span class="cat-pill">{{ task.categoria || 'Altres Serveis' }}</span>
+                      <span class="nature-pill task-nature">{{ 'TASQUES_OFERTES.AGREED_NATURE' | translate }}</span>
+                      <span class="cat-pill">{{ (task.categoria || 'Altres Serveis') | translate }}</span>
                     </div>
                     <span class="status-pill status-task" [ngClass]="getTaskStatusClass(task.estat)">
-                      {{ task.estat }}
+                      {{ task.estat | translate }}
                     </span>
                   </div>
 
                   <h3 class="card-item-title">{{ task.titol }}</h3>
-                  <p class="card-item-desc">{{ task.descripcio || 'Feina pactada entre client i professional.' }}</p>
+                  <p class="card-item-desc">{{ task.descripcio || ('TASQUES_OFERTES.NO_DESC' | translate) }}</p>
 
                   <div class="card-meta-dual">
                     <div class="card-meta-line">
-                      <span class="meta-label">Client:</span>
+                      <span class="meta-label">{{ 'COMMON.CLIENT' | translate }}:</span>
                       <a [routerLink]="['/perfil', getClientIdentifier(task.client)]" class="user-profile-link" title="Veure el perfil de {{ task.client }}">
                         <span class="user-avatar-mini">{{ (task.client || 'C').charAt(0) }}</span>
                         <strong class="meta-value">{{ task.client }}</strong>
                       </a>
                     </div>
                     <div class="card-meta-line" *ngIf="task.professional">
-                      <span class="meta-label">Professional assignat:</span>
+                      <span class="meta-label">{{ 'TASQUES_OFERTES.PRO_ASSIGNED' | translate }}</span>
                       <a [routerLink]="['/perfil', getProfessionalIdentifier(task.professional)]" class="user-profile-link pro-profile-link" title="Veure el perfil de {{ task.professional }}">
                         <span class="user-avatar-mini pro-avatar-mini">{{ (task.professional || 'P').charAt(0) }}</span>
                         <strong class="meta-value pro-name-val">{{ task.professional }}</strong>
@@ -399,12 +400,12 @@ interface CategoriaFiltre {
 
                   <div class="card-bottom-bar">
                     <div class="budget-wrap">
-                      <span class="budget-label">Preu acordat:</span>
+                      <span class="budget-label">{{ 'TASQUES_OFERTES.AGREED_PRICE' | translate }}</span>
                       <strong class="budget-value">{{ task.budget }}</strong>
                     </div>
                     <div class="card-actions">
                       <button type="button" class="btn-action-detail" (click)="onDetallTasca(task.id)">
-                        Veure seguiment & detall
+                        {{ 'TASQUES_OFERTES.VEURE_SEGUIMENT' | translate }}
                       </button>
                     </div>
                   </div>
@@ -418,14 +419,14 @@ interface CategoriaFiltre {
         <div class="modal-dialog" (click)="$event.stopPropagation()">
           <header class="modal-header">
             <div class="modal-header-info">
-              <span class="pro-tag-badge">PERFIL PROFESSIONAL</span>
+              <span class="pro-tag-badge">{{ 'TASQUES_OFERTES.MODAL_PRO_TAG' | translate }}</span>
               <h2>{{ modalProfessionalNom }}</h2>
               <div class="modal-rating-summary" *ngIf="modalProfessionalRating">
                 <span class="stars-gold">★ {{ modalProfessionalRating.mitjana }}</span>
-                <span class="rating-count">({{ modalProfessionalRating.total }} valoracions verificades)</span>
+                <span class="rating-count">({{ modalProfessionalRating.total }} {{ 'TASQUES_OFERTES.MODAL_REVIEWS_VERIFIED' | translate }})</span>
               </div>
             </div>
-            <button type="button" class="btn-close-modal" (click)="tancarModalRessenyes()" aria-label="Tancar">✕</button>
+            <button type="button" class="btn-close-modal" (click)="tancarModalRessenyes()" [attr.aria-label]="'COMMON.TANCAR' | translate">✕</button>
           </header>
 
           <div class="modal-body">
@@ -435,13 +436,13 @@ interface CategoriaFiltre {
                 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
                 </svg>
-                <span>Telèfon de contacte directe: <strong>{{ modalProfessionalTelefon }}</strong></span>
+                <span>{{ 'TASQUES_OFERTES.MODAL_PHONE_LABEL' | translate }} <strong>{{ modalProfessionalTelefon }}</strong></span>
               </div>
               <p class="pro-bio-text" *ngIf="modalProfessionalBio">{{ modalProfessionalBio }}</p>
             </div>
 
             <!-- Llista de ressenyes rebudes -->
-            <h3 class="reviews-title">Opinions i valoracions de clients ({{ modalReviews.length }})</h3>
+            <h3 class="reviews-title">{{ 'TASQUES_OFERTES.MODAL_REVIEWS_TITLE' | translate }} ({{ modalReviews.length }})</h3>
             <div class="reviews-list" *ngIf="modalReviews.length > 0">
               <div class="review-item" *ngFor="let r of modalReviews">
                 <div class="review-header">
@@ -463,15 +464,15 @@ interface CategoriaFiltre {
               </div>
             </div>
             <p class="no-reviews" *ngIf="modalReviews.length === 0">
-              Aquest professional encara no té ressenyes registrades.
+              {{ 'TASQUES_OFERTES.MODAL_NO_REVIEWS' | translate }}
             </p>
           </div>
 
           <footer class="modal-footer">
             <button type="button" class="btn-view-full-profile" *ngIf="modalProfessionalNom && getProfessionalUser(modalProfessionalNom)?.id as proId" (click)="anarPerfilProfessional(proId)">
-              Veure perfil complet
+              {{ 'TASQUES_OFERTES.MODAL_VIEW_PROFILE' | translate }}
             </button>
-            <button type="button" class="btn-primary-close" (click)="tancarModalRessenyes()">Tancar</button>
+            <button type="button" class="btn-primary-close" (click)="tancarModalRessenyes()">{{ 'COMMON.TANCAR' | translate }}</button>
           </footer>
         </div>
       </div>

@@ -7,8 +7,8 @@
         type="button"
         class="btn-menu-toggle"
         (click)="toggleMenu()"
-        aria-label="Obre el menú de navegació"
-        title="Menú"
+        [attr.aria-label]="'NAV.OBRE_MENU' | translate"
+        [title]="'NAV.MENU' | translate"
       >
         <span class="hamburger-icon" aria-hidden="true">
           <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -17,7 +17,7 @@
             <line x1="3" y1="18" x2="21" y2="18"></line>
           </svg>
         </span>
-        <span class="menu-label">Menú</span>
+        <span class="menu-label">{{ 'NAV.MENU' | translate }}</span>
       </button>
     </div>
 
@@ -28,31 +28,31 @@
       </div>
 
       <!-- Enllaços ràpids visibles directament a la barra de dalt -->
-      <nav class="topbar-links-inline" aria-label="Enllaços ràpids">
-        <a routerLink="/blog" routerLinkActive="active-top-link" class="top-nav-link" title="Blog i Guies">
+      <nav class="topbar-links-inline" [attr.aria-label]="'NAV.ENLLACS_RAPIDS' | translate">
+        <a routerLink="/blog" routerLinkActive="active-top-link" class="top-nav-link" [title]="'NAV.BLOG_GUIES' | translate">
           <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
             <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
           </svg>
-          <span>Blog</span>
+          <span>{{ 'NAV.BLOG' | translate }}</span>
         </a>
 
-        <a routerLink="/tasques-ofertes" routerLinkActive="active-top-link" class="top-nav-link" title="Tasques i Ofertes">
+        <a routerLink="/tasques-ofertes" routerLinkActive="active-top-link" class="top-nav-link" [title]="'NAV.TASQUES_OFERTES' | translate">
           <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
             <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
             <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
           </svg>
-          <span>Tasques i Ofertes</span>
+          <span>{{ 'NAV.TASQUES_OFERTES' | translate }}</span>
         </a>
 
-        <a routerLink="/comunitat-professionals" routerLinkActive="active-top-link" class="top-nav-link" title="Comunitat de Professionals">
+        <a routerLink="/comunitat-professionals" routerLinkActive="active-top-link" class="top-nav-link" [title]="'NAV.COMUNITAT_PROFESSIONALS' | translate">
           <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
             <circle cx="9" cy="7" r="4"></circle>
             <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
             <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
           </svg>
-          <span>Professionals</span>
+          <span>{{ 'NAV.PROFESSIONALS' | translate }}</span>
         </a>
       </nav>
     </div>
@@ -102,7 +102,7 @@
         class="quick-profile-btn"
         (click)="togglePerfilDropdown($event)"
         [attr.aria-expanded]="perfilDropdownObert"
-        title="Vista prèvia del perfil d'usuari"
+        [title]="'PROFILE.TITOL_VISTA_PREVIA' | translate"
       >
         <span class="profile-icon" aria-hidden="true">
           <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -110,7 +110,7 @@
             <circle cx="12" cy="7" r="4"></circle>
           </svg>
         </span>
-        <span class="profile-label">{{ authService.isLoggedIn() ? (authService.getCurrentUser()?.nom || 'Perfil') : 'Perfil' }}</span>
+        <span class="profile-label">{{ authService.isLoggedIn() ? (authService.getCurrentUser()?.nom || ('COMMON.PERFIL' | translate)) : ('COMMON.PERFIL' | translate) }}</span>
         <span class="profile-chevron" [class.rotated]="perfilDropdownObert" aria-hidden="true">
           <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="6 9 12 15 18 9"></polyline>
@@ -118,87 +118,83 @@
         </span>
       </button>
 
-      <!-- MODAL / VISTA PRÈVIA DE PERFIL CENTRADA EN MIG -->
-      <div class="profile-modal-backdrop" *ngIf="perfilDropdownObert" (click)="tancarPerfilDropdown()">
-        <div class="profile-dropdown-card" (click)="$event.stopPropagation()">
-          <button type="button" class="btn-close-profile-modal" (click)="tancarPerfilDropdown()" aria-label="Tancar perfil" title="Tancar perfil">✕</button>
+      <!-- MENÚ DESPLEGABLE ANCORAT SOTA EL BOTÓ DE PERFIL (NO AL MIG DE LA PANTALLA) -->
+      <div class="profile-dropdown-menu" *ngIf="perfilDropdownObert" (click)="$event.stopPropagation()">
+        <!-- Estat d'usuari connectat -->
+        <ng-container *ngIf="authService.isLoggedIn()">
+          <div class="dropdown-user-header">
+            <div class="dropdown-avatar" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+            </div>
+            <div class="dropdown-user-info">
+              <span class="dropdown-user-name">{{ authService.getCurrentUser()?.nom }}</span>
+              <span class="dropdown-user-email">{{ authService.getCurrentUser()?.email }}</span>
+              <span class="dropdown-role-badge" [ngClass]="authService.getCurrentUser()?.rol">
+                {{ authService.getCurrentUser()?.rol | uppercase }}
+              </span>
+            </div>
+          </div>
 
-          <!-- Estat d'usuari connectat -->
-          <ng-container *ngIf="authService.isLoggedIn()">
-            <div class="dropdown-user-header">
-              <div class="dropdown-avatar" aria-hidden="true">
-                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                  <circle cx="12" cy="7" r="4"></circle>
+          <!-- Accions de la vista prèvia: Editar perfil i Tancar sessió -->
+          <div class="dropdown-actions">
+            <a routerLink="/perfil" class="dropdown-action-btn edit-profile-btn" (click)="tancarPerfilDropdown()">
+              <span class="btn-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
                 </svg>
-              </div>
-              <div class="dropdown-user-info">
-                <span class="dropdown-user-name">{{ authService.getCurrentUser()?.nom }}</span>
-                <span class="dropdown-user-email">{{ authService.getCurrentUser()?.email }}</span>
-                <span class="dropdown-role-badge" [ngClass]="authService.getCurrentUser()?.rol">
-                  {{ authService.getCurrentUser()?.rol | uppercase }}
-                </span>
-              </div>
-            </div>
+              </span>
+              <span>{{ 'PROFILE.EDITAR_PERFIL' | translate }}</span>
+            </a>
 
-            <!-- Accions de la vista prèvia: Editar perfil i Tancar sessió -->
-            <div class="dropdown-actions">
-              <a routerLink="/perfil" class="dropdown-action-btn edit-profile-btn" (click)="tancarPerfilDropdown()">
-                <span class="btn-icon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                  </svg>
-                </span>
-                <span>Editar perfil</span>
-              </a>
+            <button type="button" class="dropdown-action-btn logout-btn" (click)="logout(); tancarPerfilDropdown()">
+              <span class="btn-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                  <polyline points="16 17 21 12 16 7"></polyline>
+                  <line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+              </span>
+              <span>{{ 'PROFILE.TANCAR_SESSIO' | translate }}</span>
+            </button>
+          </div>
+        </ng-container>
 
-              <button type="button" class="dropdown-action-btn logout-btn" (click)="logout(); tancarPerfilDropdown()">
-                <span class="btn-icon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                    <polyline points="16 17 21 12 16 7"></polyline>
-                    <line x1="21" y1="12" x2="9" y2="12"></line>
-                  </svg>
-                </span>
-                <span>Tancar sessió</span>
-              </button>
-            </div>
-          </ng-container>
+        <!-- Estat de visitant no connectat -->
+        <ng-container *ngIf="!authService.isLoggedIn()">
+          <div class="dropdown-guest-header">
+            <span class="guest-title">{{ 'PROFILE.ACCES_AVISA' | translate }}</span>
+            <p class="guest-desc">{{ 'PROFILE.DESC_GUEST' | translate }}</p>
+          </div>
 
-          <!-- Estat de visitant no connectat -->
-          <ng-container *ngIf="!authService.isLoggedIn()">
-            <div class="dropdown-guest-header">
-              <span class="guest-title">Accés a AVISA</span>
-              <p class="guest-desc">Inicia sessió o crea un compte per a gestionar tasques i ofertes.</p>
-            </div>
+          <div class="dropdown-actions">
+            <a routerLink="/login" class="dropdown-action-btn primary-action-btn" (click)="tancarPerfilDropdown()">
+              <span class="btn-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+                  <polyline points="10 17 15 12 10 7"></polyline>
+                  <line x1="15" y1="12" x2="3" y2="12"></line>
+                </svg>
+              </span>
+              <span>{{ 'NAV.INICIAR_SESSIO' | translate }}</span>
+            </a>
 
-            <div class="dropdown-actions">
-              <a routerLink="/login" class="dropdown-action-btn primary-action-btn" (click)="tancarPerfilDropdown()">
-                <span class="btn-icon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
-                    <polyline points="10 17 15 12 10 7"></polyline>
-                    <line x1="15" y1="12" x2="3" y2="12"></line>
-                  </svg>
-                </span>
-                <span>Iniciar sessió</span>
-              </a>
-
-              <a routerLink="/registre" class="dropdown-action-btn secondary-action-btn" (click)="tancarPerfilDropdown()">
-                <span class="btn-icon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                    <circle cx="8.5" cy="7" r="4"></circle>
-                    <line x1="20" y1="8" x2="20" y2="14"></line>
-                    <line x1="23" y1="11" x2="17" y2="11"></line>
-                  </svg>
-                </span>
-                <span>Crear compte / Registre</span>
-              </a>
-            </div>
-          </ng-container>
-        </div>
+            <a routerLink="/registre" class="dropdown-action-btn secondary-action-btn" (click)="tancarPerfilDropdown()">
+              <span class="btn-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="8.5" cy="7" r="4"></circle>
+                  <line x1="20" y1="8" x2="20" y2="14"></line>
+                  <line x1="23" y1="11" x2="17" y2="11"></line>
+                </svg>
+              </span>
+              <span>{{ 'NAV.CREAR_COMPTE_REGISTRE' | translate }}</span>
+            </a>
+          </div>
+        </ng-container>
       </div>
     </div>
   </div>
@@ -211,7 +207,7 @@
         <span class="brand-badge">AV</span>
         <span class="brand-text">AVISA</span>
       </div>
-      <button type="button" class="btn-close-sidebar" (click)="tancarMenu()" title="Ocultar menú" aria-label="Ocultar menú">
+      <button type="button" class="btn-close-sidebar" (click)="tancarMenu()" [title]="'NAV.OCULTAR_MENU' | translate" [attr.aria-label]="'NAV.OCULTAR_MENU' | translate">
         <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <line x1="18" y1="6" x2="6" y2="18"></line>
           <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -231,7 +227,7 @@
         <div class="user-name-row">
           <span class="user-name">{{ authService.getCurrentUser()?.nom }}</span>
           <!-- Accés directe a avisos al costat del nom -->
-          <a routerLink="/avisos" class="user-avisos-btn" (click)="tancarMenu()" title="Notificacions i avisos" aria-label="Notificacions i avisos">
+          <a routerLink="/avisos" class="user-avisos-btn" (click)="tancarMenu()" [title]="'AVISOS.NOTIFICACIONS' | translate" [attr.aria-label]="'AVISOS.NOTIFICACIONS' | translate">
             <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
               <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
@@ -247,7 +243,7 @@
 
     <!-- Llistat de seccions de la web -->
     <nav class="sidebar-nav">
-      <div class="nav-group-title">NAVEGACIÓ</div>
+      <div class="nav-group-title">{{ 'NAV.NAVEGACIO' | translate }}</div>
 
       <a routerLink="/" routerLinkActive="active-nav-item" [routerLinkActiveOptions]="{exact: true}" (click)="tancarMenu()">
         <span class="nav-icon" aria-hidden="true">
@@ -256,7 +252,7 @@
             <polyline points="9 22 9 12 15 12 15 22"></polyline>
           </svg>
         </span>
-        <span>Inici</span>
+        <span>{{ 'NAV.INICI' | translate }}</span>
       </a>
 
       <a routerLink="/tasques-ofertes" routerLinkActive="active-nav-item" (click)="tancarMenu()">
@@ -266,7 +262,7 @@
             <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
           </svg>
         </span>
-        <span>Tasques i Ofertes</span>
+        <span>{{ 'NAV.TASQUES_OFERTES' | translate }}</span>
       </a>
 
       <a routerLink="/comunitat-professionals" routerLinkActive="active-nav-item" (click)="tancarMenu()">
@@ -278,7 +274,7 @@
             <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
           </svg>
         </span>
-        <span>Comunitat Professionals</span>
+        <span>{{ 'NAV.COMUNITAT_PROFESSIONALS' | translate }}</span>
       </a>
 
       <a routerLink="/blog" routerLinkActive="active-nav-item" (click)="tancarMenu()">
@@ -288,12 +284,12 @@
             <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
           </svg>
         </span>
-        <span>Blog i Guies</span>
+        <span>{{ 'NAV.BLOG_GUIES' | translate }}</span>
       </a>
 
       <!-- Secció per a clients i professionals -->
       <ng-container *ngIf="authService.isLoggedIn() && isClient()">
-        <div class="nav-group-title">GESTIÓ DE FEINA</div>
+        <div class="nav-group-title">{{ 'NAV.GESTIO_FEINA' | translate }}</div>
         <a routerLink="/client/les-meves-tasques" routerLinkActive="active-nav-item" (click)="tancarMenu()">
           <span class="nav-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -303,7 +299,7 @@
               <line x1="9" y1="16" x2="15" y2="16"></line>
             </svg>
           </span>
-          <span>Les meves tasques</span>
+          <span>{{ 'NAV.LES_MEVES_TASQUES' | translate }}</span>
         </a>
         <a routerLink="/tasques-ofertes" [queryParams]="{ tipus: 'incidencies', accio: 'crear-incidencia' }" class="nav-cta-item" (click)="tancarMenu()">
           <span class="nav-icon" aria-hidden="true">
@@ -313,13 +309,13 @@
               <line x1="8" y1="12" x2="16" y2="12"></line>
             </svg>
           </span>
-          <span>Crear Incidència (al Mercat)</span>
+          <span>{{ 'NAV.CREAR_INCIDENCIA_MERCAT' | translate }}</span>
         </a>
       </ng-container>
 
       <!-- Secció per a professionals -->
       <ng-container *ngIf="authService.isLoggedIn() && isProfessional()">
-        <div class="nav-group-title">SERVEIS PROFESSIONALS</div>
+        <div class="nav-group-title">{{ 'NAV.SERVEIS_PROFESSIONALS' | translate }}</div>
         <a routerLink="/professional/les-meves-ofertes" routerLinkActive="active-nav-item" (click)="tancarMenu()">
           <span class="nav-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -327,7 +323,7 @@
               <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
             </svg>
           </span>
-          <span>Els meus pressupostos</span>
+          <span>{{ 'NAV.ELS_MEUS_PRESSUPOSTOS' | translate }}</span>
         </a>
         <a routerLink="/tasques-ofertes" [queryParams]="{ tipus: 'ofertes', accio: 'crear-oferta' }" class="nav-cta-item" (click)="tancarMenu()">
           <span class="nav-icon" aria-hidden="true">
@@ -338,26 +334,26 @@
               <line x1="16" y1="17" x2="8" y2="17"></line>
             </svg>
           </span>
-          <span>Publicar Oferta / Servei (al Mercat)</span>
+          <span>{{ 'NAV.PUBLICAR_OFERTA_MERCAT' | translate }}</span>
         </a>
       </ng-container>
 
       <!-- Secció Administració -->
       <ng-container *ngIf="authService.isLoggedIn() && isAdmin()">
-        <div class="nav-group-title">ADMINISTRACIÓ</div>
+        <div class="nav-group-title">{{ 'NAV.ADMINISTRACIO' | translate }}</div>
         <a routerLink="/admin/panell" routerLinkActive="active-nav-item" class="admin-nav-item" (click)="tancarMenu()">
           <span class="nav-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
             </svg>
           </span>
-          <span>Panell de Control Global</span>
+          <span>{{ 'NAV.PANELL_CONTROL_GLOBAL' | translate }}</span>
         </a>
       </ng-container>
 
       <!-- Accés per a visitants sense sessió iniciada -->
       <ng-container *ngIf="!authService.isLoggedIn()">
-        <div class="nav-group-title">ACCÉS</div>
+        <div class="nav-group-title">{{ 'NAV.ACCES' | translate }}</div>
         <a routerLink="/login" routerLinkActive="active-nav-item" (click)="tancarMenu()">
           <span class="nav-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -366,7 +362,7 @@
               <line x1="15" y1="12" x2="3" y2="12"></line>
             </svg>
           </span>
-          <span>Iniciar sessió</span>
+          <span>{{ 'NAV.INICIAR_SESSIO' | translate }}</span>
         </a>
         <a routerLink="/registre" routerLinkActive="active-nav-item" class="nav-cta-item" (click)="tancarMenu()">
           <span class="nav-icon" aria-hidden="true">
@@ -377,19 +373,19 @@
               <line x1="23" y1="11" x2="17" y2="11"></line>
             </svg>
           </span>
-          <span>Crear compte / Registre</span>
+          <span>{{ 'NAV.CREAR_COMPTE_REGISTRE' | translate }}</span>
         </a>
       </ng-container>
 
       <!-- Botó explícit per ocultar el menú lateral -->
-      <button type="button" class="btn-hide-menu" (click)="tancarMenu()" title="Ocultar menú lateral" aria-label="Ocultar menú lateral">
+      <button type="button" class="btn-hide-menu" (click)="tancarMenu()" [title]="'NAV.OCULTAR_MENU_LATERAL' | translate" [attr.aria-label]="'NAV.OCULTAR_MENU_LATERAL' | translate">
         <span class="nav-icon" aria-hidden="true">
           <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="11 17 6 12 11 7"></polyline>
             <polyline points="18 17 13 12 18 7"></polyline>
           </svg>
         </span>
-        <span>Ocultar menú</span>
+        <span>{{ 'NAV.OCULTAR_MENU' | translate }}</span>
       </button>
     </nav>
   </aside>
@@ -411,8 +407,8 @@
     <a
       routerLink="/avisos"
       class="floating-avisos-pill"
-      title="Tens {{ avisosPendents }} avís(os) pendent(s). Clica per obrir la teva safata d'avisos."
-      aria-label="Tens {{ avisosPendents }} avís(os) pendent(s). Clica per obrir la teva safata d'avisos."
+      [title]="'AVISOS.PENDENTS_TOOLTIP' | translate:{ count: avisosPendents }"
+      [attr.aria-label]="'AVISOS.PENDENTS_TOOLTIP' | translate:{ count: avisosPendents }"
     >
       <div class="floating-avisos-icon-box">
         <svg class="bell-swing" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
@@ -422,8 +418,8 @@
         <span class="floating-avisos-badge">{{ avisosPendents }}</span>
       </div>
       <div class="floating-avisos-info">
-        <span class="floating-avisos-title">Avisos</span>
-        <span class="floating-avisos-count">{{ avisosPendents }} nou{{ avisosPendents > 1 ? 's' : '' }}</span>
+        <span class="floating-avisos-title">{{ 'AVISOS.TITOL_FLOATING' | translate }}</span>
+        <span class="floating-avisos-count">{{ avisosPendents }} {{ avisosPendents > 1 ? ('AVISOS.NOU_PLURAL' | translate) : ('AVISOS.NOU_SINGULAR' | translate) }}</span>
       </div>
       <span class="floating-pulse-beacon" aria-hidden="true"></span>
     </a>

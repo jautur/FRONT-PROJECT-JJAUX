@@ -165,6 +165,12 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
                   <strong>Facturació:</strong> AVISA emetrà factura al professional per l'import de la comissió de gestió. El professional
                   és el responsable directe d'emetre la factura corresponent al client final pel servei realitzat.
                 </li>
+                <li>
+                  <strong>Finançament de la plataforma i plans prèmium:</strong> La plataforma AVISA es finança principalment mitjançant
+                  espais de publicitat i patrocini. Posteriorment, s'adheriran plans de subscripció i funcionalitats prèmium opcionals per a usuaris
+                  i professionals que requereixin serveis addicionals o eines avançades de gestió. Durant el període inicial de llançament
+                  (primer any), l'accés bàsic és 100% gratuït i exempt de quotes fixes obligatòries per a tots els professionals.
+                </li>
               </ul>
             </section>
 
