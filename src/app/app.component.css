@@ -328,82 +328,37 @@
 }
 
 /* ============================================================== */
-/* VISTA PRÈVIA / MODAL DE PERFIL D'USUARI EN MIG                */
+/* MENÚ DESPLEGABLE DE PERFIL D'USUARI ANCORAT SOTA EL BOTÓ       */
 /* ============================================================== */
 .profile-dropdown-container {
   position: relative;
 }
 
-.profile-modal-backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(9, 9, 12, 0.72);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  padding: 1.25rem;
-  animation: modalOverlayFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.profile-dropdown-card {
-  position: relative;
-  width: min(390px, 94vw);
+.profile-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 290px;
+  max-width: calc(100vw - 1.5rem);
   background: #0d0d12;
   border: 1px solid #232332;
-  border-radius: 20px;
-  padding: 1.6rem 1.4rem;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.9), 0 0 25px rgba(255, 23, 68, 0.25);
-  z-index: 1001;
+  border-radius: 14px;
+  padding: 1.25rem 1.15rem;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.85), 0 0 16px rgba(255, 23, 68, 0.15);
+  z-index: 1000;
   box-sizing: border-box;
-  animation: modalScaleIn 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: dropdownSlideDown 0.16s cubic-bezier(0.16, 1, 0.3, 1);
+  transform-origin: top right;
 }
 
-.btn-close-profile-modal {
-  position: absolute;
-  top: 1rem;
-  right: 1.1rem;
-  background: #181822;
-  border: 1px solid #2c2c3e;
-  color: #a09d94;
-  font-size: 1.1rem;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  line-height: 1;
-  transition: all 0.2s ease;
-}
-
-.btn-close-profile-modal:hover {
-  color: #ffffff;
-  background: #ff1744;
-  border-color: #ff1744;
-  transform: scale(1.08);
-}
-
-@keyframes modalOverlayFadeIn {
+@keyframes dropdownSlideDown {
   from {
     opacity: 0;
+    transform: translateY(-6px) scale(0.97);
   }
   to {
     opacity: 1;
-  }
-}
-
-@keyframes modalScaleIn {
-  from {
-    opacity: 0;
-    transform: scale(0.92) translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1) translateY(0);
+    transform: translateY(0) scale(1);
   }
 }
 
@@ -1261,10 +1216,11 @@
     z-index: 999;
   }
 
-  .profile-dropdown-card {
-    width: min(340px, 94vw);
-    padding: 1.25rem 1rem;
-    top: 58px;
+  .profile-dropdown-menu {
+    width: min(290px, calc(100vw - 1.5rem));
+    padding: 1.15rem 1rem;
+    top: calc(100% + 6px);
+    right: 0;
   }
 }
 
