@@ -23,6 +23,8 @@ export interface RegisterData {
   rol: 'client' | 'professional';
   password?: string;
   telefon?: string;
+  acceptedTerms?: boolean;
+  acceptedPrivacy?: boolean;
 }
 
 /**

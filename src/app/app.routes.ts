@@ -14,6 +14,7 @@ import { AdminPanellComponent } from './pages/admin/panell/admin-panell.componen
 import { ArticleDetallComponent } from './pages/article-detall/article-detall.component';
 import { BlogComponent } from './pages/blog/blog.component';
 import { ComunitatProfessionalsComponent } from './pages/professional/comunitat-professionals/comunitat-professionals.component';
+import { TermesModalComponent } from './pages/auth/termes-modal/termes-modal.component';
 import { authGuard } from './core/guards/auth.guard';
 import { adminGuard } from './core/guards/admin.guard';
 
@@ -55,5 +56,8 @@ export const appRoutes: Routes = [
   { path: 'blog/:id', redirectTo: 'article/:id' },
   { path: 'comunitat-professionals', component: ComunitatProfessionalsComponent },
   { path: 'professionals', redirectTo: 'comunitat-professionals' },
+  { path: 'termes', component: TermesModalComponent },
+  { path: 'termes-condicions', redirectTo: 'termes' },
+  { path: 'privacitat', component: TermesModalComponent },
   { path: '**', redirectTo: '' }
 ];
