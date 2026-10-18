@@ -2,18 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
-
-interface GuiaProfessional {
-  id: string;
-  titol: string;
-  subtitol: string;
-  categoria: string;
-  tempsLectura: string;
-  imatge: string;
-  puntsClau: string[];
-  contingut: string[];
-  destacat: string;
-}
+import { TranslationService } from '../../../core/services/translation.service';
+import { TranslatePipe } from '../../../core/pipes/translate.pipe';
+import { GuiaProfessional, GUIES_PRO_VA, GUIES_PRO_ES, GUIES_PRO_EN } from '../../../services/guies-pro-data';
 
 /**
  * Pàgina dedicada a la Comunitat de Professionals d'AVISA (/comunitat-professionals).
@@ -23,7 +14,7 @@ interface GuiaProfessional {
 @Component({
   selector: 'app-comunitat-professionals',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, TranslatePipe],
   template: `
     <div class="pro-community-page">
       <!-- Breadcrumbs de navegació -->
@@ -33,24 +24,23 @@ interface GuiaProfessional {
             <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
             <polyline points="9 22 9 12 15 12 15 22"></polyline>
           </svg>
-          Inici
+          {{ 'NAV.INICI' | translate }}
         </a>
         <span class="breadcrumb-separator">/</span>
-        <a routerLink="/tasques-ofertes" class="breadcrumb-link">Professionals</a>
+        <a routerLink="/tasques-ofertes" class="breadcrumb-link">{{ 'COMMUNITY_PRO.BREADCRUMB_PROS' | translate }}</a>
         <span class="breadcrumb-separator">/</span>
-        <span class="breadcrumb-current">Comunitat</span>
+        <span class="breadcrumb-current">{{ 'COMMUNITY_PRO.BREADCRUMB_COMMUNITY' | translate }}</span>
       </nav>
 
       <!-- Capçalera Hero -->
       <header class="pro-hero-section">
         <div class="hero-badge">
           <span class="badge-dot"></span>
-          COMUNITAT DE PROFESSIONALS AVISA
+          {{ 'COMMUNITY_PRO.HERO_BADGE' | translate }}
         </div>
-        <h1 class="hero-title">Fes créixer el teu negoci local amb feina real, tracte directe i màxima transparència</h1>
+        <h1 class="hero-title">{{ 'COMMUNITY_PRO.HERO_TITLE' | translate }}</h1>
         <p class="hero-lead">
-          Descobreix per què fusters, lampistes, electricistes, pintors i paletes de la Costera, la Vall d'Albaida, la Safor i la Ribera (Xàtiva, Ontinyent, Gandia, Alzira...)
-          escullen AVISA per gestionar la seva feina sense quotes mensuals fixes ni intermediaris abusius.
+          {{ 'COMMUNITY_PRO.HERO_LEAD' | translate }}
         </p>
 
         <div class="hero-cta-group">
@@ -61,10 +51,10 @@ interface GuiaProfessional {
               <line x1="20" y1="8" x2="20" y2="14"></line>
               <line x1="23" y1="11" x2="17" y2="11"></line>
             </svg>
-            <span>Adherir-me a la Comunitat (Gratuït)</span>
+            <span>{{ 'COMMUNITY_PRO.HERO_BTN_JOIN' | translate }}</span>
           </button>
           <a routerLink="/tasques-ofertes" [queryParams]="{ tipus: 'tasques' }" class="btn-hero-secondary">
-            <span>Explorar tasques obertes a la zona</span>
+            <span>{{ 'COMMUNITY_PRO.HERO_BTN_EXPLORE' | translate }}</span>
             <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
               <line x1="5" y1="12" x2="19" y2="12"></line>
               <polyline points="12 5 19 12 12 19"></polyline>
@@ -75,20 +65,20 @@ interface GuiaProfessional {
         <!-- Mètriques ràpides -->
         <div class="pro-stats-strip">
           <div class="stat-item">
-            <span class="stat-number">3%</span>
-            <span class="stat-label">Comissió transparent de manteniment (0€ quotes fixes)</span>
+            <span class="stat-number">{{ 'COMMUNITY_PRO.STAT_COMMISSION_NUM' | translate }}</span>
+            <span class="stat-label">{{ 'COMMUNITY_PRO.STAT_COMMISSION_LABEL' | translate }}</span>
           </div>
           <div class="stat-item">
-            <span class="stat-number">100%</span>
-            <span class="stat-label">Tracte i telèfon directe amb el client</span>
+            <span class="stat-number">{{ 'COMMUNITY_PRO.STAT_DIRECT_NUM' | translate }}</span>
+            <span class="stat-label">{{ 'COMMUNITY_PRO.STAT_DIRECT_LABEL' | translate }}</span>
           </div>
           <div class="stat-item">
-            <span class="stat-number">2 en 1</span>
-            <span class="stat-label">Incidències a mida + Publicació d'ofertes</span>
+            <span class="stat-number">{{ 'COMMUNITY_PRO.STAT_DUAL_NUM' | translate }}</span>
+            <span class="stat-label">{{ 'COMMUNITY_PRO.STAT_DUAL_LABEL' | translate }}</span>
           </div>
           <div class="stat-item">
-            <span class="stat-number">4.9 / 5</span>
-            <span class="stat-label">Valoració mitjana de la comunitat</span>
+            <span class="stat-number">{{ 'COMMUNITY_PRO.STAT_RATING_NUM' | translate }}</span>
+            <span class="stat-label">{{ 'COMMUNITY_PRO.STAT_RATING_LABEL' | translate }}</span>
           </div>
         </div>
       </header>
@@ -96,11 +86,10 @@ interface GuiaProfessional {
       <!-- SECCIÓ 1: ELS 6 PILARS DE LA COMUNITAT -->
       <section class="reasons-section">
         <div class="section-heading">
-          <span class="section-tag">ELS NOSTRES PILARS</span>
-          <h2>Per què AVISA és diferent de qualsevol altra aplicació?</h2>
+          <span class="section-tag">{{ 'COMMUNITY_PRO.PILLARS_TAG' | translate }}</span>
+          <h2>{{ 'COMMUNITY_PRO.PILLARS_TITLE' | translate }}</h2>
           <p>
-            Hem dissenyat la plataforma escoltant els greuges tradicionals dels professionals autònoms:
-            quotes abusives, competència deslleial i comissions opaques.
+            {{ 'COMMUNITY_PRO.PILLARS_INTRO' | translate }}
           </p>
         </div>
 
@@ -114,10 +103,9 @@ interface GuiaProfessional {
                 <line x1="12" y1="16" x2="12" y2="18"></line>
               </svg>
             </div>
-            <h3>1. Sense quotes ni pagaments per contacte</h3>
+            <h3>{{ 'COMMUNITY_PRO.PILLAR_1_TITLE' | translate }}</h3>
             <p>
-              Oblida't de pagar per veure telèfons de clients que després no responen. A AVISA només s'aplica una mínima
-              reserva transparent del 3% per al servei i manteniment de la xarxa en feines tancades.
+              {{ 'COMMUNITY_PRO.PILLAR_1_DESC' | translate }}
             </p>
           </div>
 
@@ -129,11 +117,9 @@ interface GuiaProfessional {
                 <line x1="9" y1="14" x2="15" y2="14"></line>
               </svg>
             </div>
-            <h3>2. Doble via d'ingressos: Incidències i Ofertes</h3>
+            <h3>{{ 'COMMUNITY_PRO.PILLAR_2_TITLE' | translate }}</h3>
             <p>
-              Aprofita la simetria de la plataforma:
-              <strong>Mode Incidència</strong> per respondre a urgències o feines a mida,
-              i <strong>Mode Oferta</strong> per anunciar packs tancats i cobrir buits d'agenda.
+              {{ 'COMMUNITY_PRO.PILLAR_2_DESC' | translate }}
             </p>
           </div>
 
@@ -143,10 +129,9 @@ interface GuiaProfessional {
                 <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
               </svg>
             </div>
-            <h3>3. "Colecciona" Tasques i guanya prestigi</h3>
+            <h3>{{ 'COMMUNITY_PRO.PILLAR_3_TITLE' | translate }}</h3>
             <p>
-              A AVISA, cada tasca que finalitzes amb èxit queda registrada al teu perfil amb valoracions reals de clients.
-              Aquest historial demostrable és el teu millor aval davant nous clients de la comarca.
+              {{ 'COMMUNITY_PRO.PILLAR_3_DESC' | translate }}
             </p>
           </div>
 
@@ -156,10 +141,9 @@ interface GuiaProfessional {
                 <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
               </svg>
             </div>
-            <h3>4. Contacte telefònic immediat</h3>
+            <h3>{{ 'COMMUNITY_PRO.PILLAR_4_TITLE' | translate }}</h3>
             <p>
-              Tan bon punt el client accepta la teva proposta econòmica, es desbloqueja el contacte telefònic directe.
-              Parleu de tu a tu, acordeu la visita d'obra o inici de feina i resolgueu qualsevol detall sense barreres.
+              {{ 'COMMUNITY_PRO.PILLAR_4_DESC' | translate }}
             </p>
           </div>
 
@@ -172,10 +156,9 @@ interface GuiaProfessional {
                 <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
               </svg>
             </div>
-            <h3>5. Herència de rol: Tu també ets client</h3>
+            <h3>{{ 'COMMUNITY_PRO.PILLAR_5_TITLE' | translate }}</h3>
             <p>
-              Com a professional verificat gaudeixes de la màxima capacitat: pots enviar pressupostos a clients
-              i, alhora, publicar tasques personals per contractar altres especialistes per a reformes pròpies.
+              {{ 'COMMUNITY_PRO.PILLAR_5_DESC' | translate }}
             </p>
           </div>
 
@@ -188,10 +171,9 @@ interface GuiaProfessional {
                 <line x1="3" y1="10" x2="21" y2="10"></line>
               </svg>
             </div>
-            <h3>6. Tu decideixes el teu horari i zona</h3>
+            <h3>{{ 'COMMUNITY_PRO.PILLAR_6_TITLE' | translate }}</h3>
             <p>
-              Zero permanències i llibertat absoluta d'organització. Tu tries quines feines t'interessen,
-              a quins pobles o barris vols desplaçar-te i quin volum de feina vols agafar cada setmana.
+              {{ 'COMMUNITY_PRO.PILLAR_6_DESC' | translate }}
             </p>
           </div>
         </div>
@@ -200,44 +182,44 @@ interface GuiaProfessional {
       <!-- SECCIÓ 2: TAULA COMPARATIVA: AVISA VS ALTRES WEBS -->
       <section class="comparison-section">
         <div class="section-heading">
-          <span class="section-tag">COMPARATIVA TRANSPARENT</span>
-          <h2>AVISA davant les plataformes tradicionals d'intermediaris</h2>
+          <span class="section-tag">{{ 'COMMUNITY_PRO.COMP_TAG' | translate }}</span>
+          <h2>{{ 'COMMUNITY_PRO.COMP_TITLE' | translate }}</h2>
         </div>
 
         <div class="table-responsive">
           <table class="comparison-table">
             <thead>
               <tr>
-                <th>Característica</th>
-                <th class="col-avisa">Comunitat AVISA</th>
-                <th>Altres plataformes (Habitissimo, TaskRabbit...)</th>
+                <th>{{ 'COMMUNITY_PRO.COMP_COL_FEATURE' | translate }}</th>
+                <th class="col-avisa">{{ 'COMMUNITY_PRO.COMP_COL_AVISA' | translate }}</th>
+                <th>{{ 'COMMUNITY_PRO.COMP_COL_OTHERS' | translate }}</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td><strong>Model de cobrament</strong></td>
-                <td class="col-avisa"><span class="badge-win">Mínim 3% (Sense quotes fixes)</span></td>
-                <td>15% - 25% comissió o pagar 150€/mes</td>
+                <td><strong>{{ 'COMMUNITY_PRO.COMP_ROW_MODEL' | translate }}</strong></td>
+                <td class="col-avisa"><span class="badge-win">{{ 'COMMUNITY_PRO.COMP_ROW_MODEL_AVISA' | translate }}</span></td>
+                <td>{{ 'COMMUNITY_PRO.COMP_ROW_MODEL_OTHERS' | translate }}</td>
               </tr>
               <tr>
-                <td><strong>Pagament per contacte / Lead</strong></td>
-                <td class="col-avisa"><span class="badge-win">0 € (100% gratuït contactar)</span></td>
-                <td>Entre 10€ i 40€ per cada telèfon</td>
+                <td><strong>{{ 'COMMUNITY_PRO.COMP_ROW_LEAD' | translate }}</strong></td>
+                <td class="col-avisa"><span class="badge-win">{{ 'COMMUNITY_PRO.COMP_ROW_LEAD_AVISA' | translate }}</span></td>
+                <td>{{ 'COMMUNITY_PRO.COMP_ROW_LEAD_OTHERS' | translate }}</td>
               </tr>
               <tr>
-                <td><strong>Accés al telèfon del client</strong></td>
-                <td class="col-avisa"><span class="badge-win">Immediat en acceptar la proposta</span></td>
-                <td>Opac, filtrat o de pagament previ</td>
+                <td><strong>{{ 'COMMUNITY_PRO.COMP_ROW_PHONE' | translate }}</strong></td>
+                <td class="col-avisa"><span class="badge-win">{{ 'COMMUNITY_PRO.COMP_ROW_PHONE_AVISA' | translate }}</span></td>
+                <td>{{ 'COMMUNITY_PRO.COMP_ROW_PHONE_OTHERS' | translate }}</td>
               </tr>
               <tr>
-                <td><strong>Publicació d'ofertes pròpies</strong></td>
-                <td class="col-avisa"><span class="badge-win">Inclosa il·limitada per als membres</span></td>
-                <td>Quota mensual o paquet d'anuncis</td>
+                <td><strong>{{ 'COMMUNITY_PRO.COMP_ROW_OFFERS' | translate }}</strong></td>
+                <td class="col-avisa"><span class="badge-win">{{ 'COMMUNITY_PRO.COMP_ROW_OFFERS_AVISA' | translate }}</span></td>
+                <td>{{ 'COMMUNITY_PRO.COMP_ROW_OFFERS_OTHERS' | translate }}</td>
               </tr>
               <tr>
-                <td><strong>Focalització territorial</strong></td>
-                <td class="col-avisa">Negoci local i comarcal directe (La Costera, Safor...)</td>
-                <td>Empreses grans i multinacionals de fora</td>
+                <td><strong>{{ 'COMMUNITY_PRO.COMP_ROW_TERRITORY' | translate }}</strong></td>
+                <td class="col-avisa">{{ 'COMMUNITY_PRO.COMP_ROW_TERRITORY_AVISA' | translate }}</td>
+                <td>{{ 'COMMUNITY_PRO.COMP_ROW_TERRITORY_OTHERS' | translate }}</td>
               </tr>
             </tbody>
           </table>
@@ -247,9 +229,9 @@ interface GuiaProfessional {
       <!-- SECCIÓ 3: BLOG I GUIES TÈCNIQUES PER A PROFESSIONALS -->
       <section class="pro-blog-section">
         <div class="section-heading">
-          <span class="section-tag">BLOG DEL PROFESSIONAL</span>
-          <h2>Consells d'estratègia per maximitzar la teva activitat a la comarca</h2>
-          <p>Llegeix els nostres articles especialitzats sobre com augmentar la conversió de pressupostos i fidelitzar clients.</p>
+          <span class="section-tag">{{ 'COMMUNITY_PRO.BLOG_TAG' | translate }}</span>
+          <h2>{{ 'COMMUNITY_PRO.BLOG_TITLE' | translate }}</h2>
+          <p>{{ 'COMMUNITY_PRO.BLOG_SUB' | translate }}</p>
         </div>
 
         <div class="guides-accordion">
@@ -262,7 +244,7 @@ interface GuiaProfessional {
               <h3>{{ guia.titol }}</h3>
               <p class="guide-subtitle">{{ guia.subtitol }}</p>
               <div class="guide-toggle-btn">
-                <span>{{ guiaOberta === guia.id ? 'Tancar consells' : 'Llegir article complet' }}</span>
+                <span>{{ guiaOberta === guia.id ? ('COMMUNITY_PRO.GUIDE_CLOSE' | translate) : ('COMMUNITY_PRO.GUIDE_READ' | translate) }}</span>
                 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" [class.rotated]="guiaOberta === guia.id">
                   <polyline points="6 9 12 15 18 9"></polyline>
                 </svg>
@@ -278,7 +260,7 @@ interface GuiaProfessional {
 
               <!-- Punts clau -->
               <div class="guide-checklist">
-                <strong>Claus per aplicar avui mateix:</strong>
+                <strong>{{ 'COMMUNITY_PRO.GUIDE_KEYS_TITLE' | translate }}</strong>
                 <ul>
                   <li *ngFor="let pt of guia.puntsClau">✓ {{ pt }}</li>
                 </ul>
@@ -286,7 +268,7 @@ interface GuiaProfessional {
 
               <div class="guide-callout">
                 <span class="callout-icon">💡</span>
-                <p><strong>Consell AVISA:</strong> {{ guia.destacat }}</p>
+                <p><strong>{{ 'COMMUNITY_PRO.GUIDE_TIP_TITLE' | translate }}</strong> {{ guia.destacat }}</p>
               </div>
             </div>
           </article>
@@ -296,52 +278,43 @@ interface GuiaProfessional {
       <!-- SECCIÓ 4: TESTIMONIS REALS DE LA COMUNITAT -->
       <section class="testimonials-section">
         <div class="section-heading">
-          <span class="section-tag">CASOS D'ÈXIT REALS</span>
-          <h2>Què diuen els professionals que ja utilitzen AVISA?</h2>
+          <span class="section-tag">{{ 'COMMUNITY_PRO.TESTI_TAG' | translate }}</span>
+          <h2>{{ 'COMMUNITY_PRO.TESTI_TITLE' | translate }}</h2>
         </div>
 
         <div class="testimonials-grid">
           <div class="testi-card">
             <div class="testi-stars">★★★★★</div>
-            <p class="testi-quote">
-              "Abans gastava més de 150€ al mes comprant contactes a altres plataformes que després mai responien.
-              A AVISA, el client veu el meu perfil, veu les fotos de les meves feines i em contacta sabent el que faig. En 3 mesos he tancat 6 reformes completes."
-            </p>
+            <p class="testi-quote">{{ 'COMMUNITY_PRO.TESTI_1_QUOTE' | translate }}</p>
             <div class="testi-author">
               <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=120&q=80" alt="Jordi Romero" class="testi-avatar" />
               <div>
-                <strong>Jordi Romero</strong>
-                <span>Constructor i Paleta (15 anys d'experiència)</span>
+                <strong>{{ 'COMMUNITY_PRO.TESTI_1_AUTHOR' | translate }}</strong>
+                <span>{{ 'COMMUNITY_PRO.TESTI_1_ROLE' | translate }}</span>
               </div>
             </div>
           </div>
 
           <div class="testi-card">
             <div class="testi-stars">★★★★★</div>
-            <p class="testi-quote">
-              "La combinació d'incidències urgents i ofertes és perfecta. Si una tarda se'm cancel·la una feina,
-              obro AVISA, miro les peticions de fuites o calderes de la zona i en pocs minuts tinc la tarda coberta a preu just."
-            </p>
+            <p class="testi-quote">{{ 'COMMUNITY_PRO.TESTI_2_QUOTE' | translate }}</p>
             <div class="testi-author">
               <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=120&q=80" alt="Pere Font" class="testi-avatar" />
               <div>
-                <strong>Pere Font</strong>
-                <span>Lampista Homologat i Tècnic d'Aigua</span>
+                <strong>{{ 'COMMUNITY_PRO.TESTI_2_AUTHOR' | translate }}</strong>
+                <span>{{ 'COMMUNITY_PRO.TESTI_2_ROLE' | translate }}</span>
               </div>
             </div>
           </div>
 
           <div class="testi-card">
             <div class="testi-stars">★★★★★</div>
-            <p class="testi-quote">
-              "Publicar ofertes de quadres elèctrics nous i butlletins m'ha donat una estabilitat que abans no tenia.
-              Les valoracions que em deixen els clients després de cada feina són la meva millor carta de presentació."
-            </p>
+            <p class="testi-quote">{{ 'COMMUNITY_PRO.TESTI_3_QUOTE' | translate }}</p>
             <div class="testi-author">
               <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=120&q=80" alt="Marc Soler" class="testi-avatar" />
               <div>
-                <strong>Marc Soler</strong>
-                <span>Instal·lador Elèctric Autoritzat</span>
+                <strong>{{ 'COMMUNITY_PRO.TESTI_3_AUTHOR' | translate }}</strong>
+                <span>{{ 'COMMUNITY_PRO.TESTI_3_ROLE' | translate }}</span>
               </div>
             </div>
           </div>
@@ -351,17 +324,16 @@ interface GuiaProfessional {
       <!-- SECCIÓ 5: CRIDA FINAL A L'ACCIÓ -->
       <section class="final-pro-cta">
         <div class="cta-inner-card">
-          <span class="cta-mini-tag">COMUNITAT LOCAL D'AVISA</span>
-          <h2>Fes el pas avui mateix i suma't a la comunitat d'oficis líder de la zona</h2>
+          <span class="cta-mini-tag">{{ 'COMMUNITY_PRO.FINAL_TAG' | translate }}</span>
+          <h2>{{ 'COMMUNITY_PRO.FINAL_TITLE' | translate }}</h2>
           <p>
-            El registre triga menys de 2 minuts. Només necessites el teu nom, correu i telèfon per començar a
-            rebre peticions de clients de la teva comarca.
+            {{ 'COMMUNITY_PRO.FINAL_DESC' | translate }}
           </p>
           <div class="cta-actions">
             <button type="button" class="btn-register-pro-big" (click)="anarRegistrePro()">
-              Registrar-me com a Professional ara
+              {{ 'COMMUNITY_PRO.FINAL_BTN' | translate }}
             </button>
-            <a routerLink="/" class="link-back-main">← Tornar a la pàgina principal</a>
+            <a routerLink="/" class="link-back-main">{{ 'COMMUNITY_PRO.FINAL_BACK' | translate }}</a>
           </div>
         </div>
       </section>
@@ -1014,69 +986,17 @@ interface GuiaProfessional {
 export class ComunitatProfessionalsComponent implements OnInit {
   guiaOberta: string = 'guia-1';
 
-  guiesProfessionals: GuiaProfessional[] = [
-    {
-      id: 'guia-1',
-      titol: 'Com convertir incidències en tasques rendibles: L\'estratègia del pressupost clar',
-      subtitol: 'Claus per redactar propostes que transmetin confiança i aconseguir un 80% d\'acceptació del client.',
-      categoria: 'Estratègia de Negoci',
-      tempsLectura: '4 min de lectura',
-      imatge: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=1000&q=80',
-      contingut: [
-        'Quan un client publica una incidència a AVISA (per exemple, una avaria de termo, un curtcircuit o una humitat), normalment busca tres coses: rapidesa de resposta, professionalitat i certesa en el cost final.',
-        'Molts professionals cometen l\'error d\'enviar pressupostos amb una sola xifra sense cap detall. A AVISA hem comprovat que les ofertes que desglossen breument la mà d\'obra, el tipus de peces que s\'utilitzaran i el termini estimat d\'arribada tenen una taxa d\'acceptació quatre vegades superior.',
-        'A més, un cop acceptada la proposta, la incidència es converteix en una TAREA oficial: això et garanteix que el client s\'ha compromès amb tu i que podràs contactar-lo immediatament per telèfon.'
-      ],
-      puntsClau: [
-        'Indica sempre si el desplaçament està inclòs en el preu de l\'oferta.',
-        'Explica la marca o qualitat dels materials que faràs servir per donar valor afegit.',
-        'Ofereix garantia per escrit de la feina (per exemple, 2 anys en canonades o quadres).'
-      ],
-      destacat: 'Ser dels tres primers a enviar una proposta realista sobre una incidència oberta multiplica un 70% les teves opcions de ser l\'escollit.'
-    },
-    {
-      id: 'guia-2',
-      titol: 'Publicar Ofertes fixes: La fórmula per omplir els forats d\'agenda',
-      subtitol: 'Per què crear packs de serveis tancats atreu clients que no volen esperar pressupostos llargs.',
-      categoria: 'Captació Proactiva',
-      tempsLectura: '3 min de lectura',
-      imatge: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=1000&q=80',
-      contingut: [
-        'El gran avantatge d\'AVISA és que no estàs limitat a esperar que algú publiqui una feina. El professional pot crear de manera proactiva les seves pròpies OFERTES públiques al mercat.',
-        'Pensa en serveis recurrents amb preu tancat: "Revisió oficial de caldera i neteja de filtres (75€)", "Instal·lació de 5 portes lacades (980€)" o "Pintura de pis blanc llis 3 habitacions (750€)".',
-        'Quan un client navega pel mercat i veu un pack que encaixa amb el que necessita, pot sol·licitar directament la teva oferta per convertir-la en TAREA. És una entrada contínua de feina sense haver de competir en una licitació oberta.'
-      ],
-      puntsClau: [
-        'Posa títols clars amb el preu aproximat o tancat per generar atracció.',
-        'Descriu exactament què inclou el servei (metres quadrats, capes de pintura, etc.).',
-        'Mantingues les ofertes actualitzades segons la temporada (aire condicionat a l\'estiu, calefacció a la tardor).'
-      ],
-      destacat: 'Els professionals que mantenen 2 o 3 ofertes actives al mercat reben una mitjana de 4 contactes directes al mes sense necessitat de fer prospecció.'
-    },
-    {
-      id: 'guia-3',
-      titol: 'El poder de les ressenyes verificades: El teu millor anunci de pagament',
-      subtitol: 'Com "coleccionar" tasques finalitzades per convertir-te en el professional de referència de la comarca.',
-      categoria: 'Reputació Digital',
-      tempsLectura: '4 min de lectura',
-      imatge: 'https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=1000&q=80',
-      contingut: [
-        'Avui dia, el 92% dels clients particulars consulten les opinions a internet abans de deixar entrar un paleta, lampista o electricista a casa seva.',
-        'A diferència d\'altres directoris on qualsevol pot escriure ressenyes falses, a AVISA les valoracions estan 100% blindades: només un client que ha tingut una TAREA real finalitzada amb tu pot puntuar-te i escriure un comentari.',
-        'Aquest sistema protegeix el teu prestigi contra atacs i converteix el teu perfil en un aparador irrebatible. Un perfil amb 10 ressenyes de 5 estrelles pot cobrar un 20% més de marge perquè el client prioritza la tranquil·litat i la confiança.'
-      ],
-      puntsClau: [
-        'En acabar la feina, demana amablement al client que marqui la tasca com a Finalitzada des del seu panell.',
-        'La puntualitat i la neteja de la zona de treball després de la reforma són els dos punts més valorats a les ressenyes.',
-        'Respon sempre amb agraïment a les bones valoracions per mostrar professionalitat.'
-      ],
-      destacat: 'A AVISA, un professional amb més de 8 tasques finalitzades i 4.8 d\'estrelles apareix de forma destacada a la portada de la web i als suggeriments recomanats.'
-    }
-  ];
+  get guiesProfessionals(): GuiaProfessional[] {
+    const lang = this.translationService.getLanguage();
+    if (lang === 'ES') return GUIES_PRO_ES;
+    if (lang === 'EN') return GUIES_PRO_EN;
+    return GUIES_PRO_VA;
+  }
 
   constructor(
     private readonly authService: AuthService,
-    private readonly router: Router
+    private readonly router: Router,
+    private readonly translationService: TranslationService
   ) {}
 
   ngOnInit(): void {
