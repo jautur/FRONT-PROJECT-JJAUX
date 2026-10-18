@@ -2,3 +2,4 @@
 // Aquí es centralitza la importació dels serveis transversals de l’aplicació.
 // Des de aquí es pot reutilitzar AuthService al llarg del frontend.
 export * from './auth.service';
+export * from './translation.service';

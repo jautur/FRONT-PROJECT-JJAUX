@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet, NavigationEnd } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { AuthService } from './core/services/auth.service';
+import { TranslationService } from './core/services/translation.service';
+import { TranslatePipe } from './core/pipes/translate.pipe';
 import { AvisService } from './services/avis.service';
 
 /**
@@ -17,7 +19,7 @@ import { AvisService } from './services/avis.service';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive, TranslatePipe],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
@@ -25,8 +27,10 @@ export class AppComponent implements OnInit, OnDestroy {
   /** Nombre d'avisos pendents */
   avisosPendents = 0;
 
-  /** Idioma actiu de la plataforma ('VA' per defecte, 'ES', 'EN') */
-  currentLang: 'EN' | 'VA' | 'ES' = 'VA';
+  /** Idioma actiu de la plataforma delegat en TranslationService */
+  get currentLang(): 'EN' | 'VA' | 'ES' {
+    return this.translationService.currentLang();
+  }
 
   /** Indica si la pàgina actual és la de safata d'avisos */
   isAvisosPage = false;
@@ -57,6 +61,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
   constructor(
     public readonly authService: AuthService,
+    public readonly translationService: TranslationService,
     private readonly avisService: AvisService,
     private readonly router: Router
   ) {
@@ -85,12 +90,6 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    if (typeof localStorage !== 'undefined') {
-      const savedLang = localStorage.getItem('avisa_lang') as 'EN' | 'VA' | 'ES' | null;
-      if (savedLang && (savedLang === 'EN' || savedLang === 'VA' || savedLang === 'ES')) {
-        this.currentLang = savedLang;
-      }
-    }
     this.actualitzarAvisos();
     this.checkScroll();
 
@@ -185,16 +184,13 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Canvia l'idioma seleccionat (EN, VA, ES) i el desa a localStorage.
+   * Canvia l'idioma seleccionat (EN, VA, ES) mitjançant el servei reactiu TranslationService.
    */
   setLanguage(lang: 'EN' | 'VA' | 'ES', event?: Event): void {
     if (event) {
       event.stopPropagation();
     }
-    this.currentLang = lang;
-    if (typeof localStorage !== 'undefined') {
-      localStorage.setItem('avisa_lang', lang);
-    }
+    this.translationService.setLanguage(lang);
   }
 
   /**
