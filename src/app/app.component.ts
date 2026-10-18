@@ -25,6 +25,9 @@ export class AppComponent implements OnInit, OnDestroy {
   /** Nombre d'avisos pendents */
   avisosPendents = 0;
 
+  /** Idioma actiu de la plataforma ('VA' per defecte, 'ES', 'EN') */
+  currentLang: 'EN' | 'VA' | 'ES' = 'VA';
+
   /** Indica si la pàgina actual és la de safata d'avisos */
   isAvisosPage = false;
 
@@ -82,6 +85,12 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    if (typeof localStorage !== 'undefined') {
+      const savedLang = localStorage.getItem('avisa_lang') as 'EN' | 'VA' | 'ES' | null;
+      if (savedLang && (savedLang === 'EN' || savedLang === 'VA' || savedLang === 'ES')) {
+        this.currentLang = savedLang;
+      }
+    }
     this.actualitzarAvisos();
     this.checkScroll();
 
@@ -173,6 +182,19 @@ export class AppComponent implements OnInit, OnDestroy {
   tancarMenu(): void {
     this.menuObert = false;
     this.menuOcultatPerUsuari = true;
+  }
+
+  /**
+   * Canvia l'idioma seleccionat (EN, VA, ES) i el desa a localStorage.
+   */
+  setLanguage(lang: 'EN' | 'VA' | 'ES', event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
+    this.currentLang = lang;
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem('avisa_lang', lang);
+    }
   }
 
   /**
