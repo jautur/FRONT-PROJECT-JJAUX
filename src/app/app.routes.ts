@@ -1,14 +1,55 @@
 import { Routes } from '@angular/router';
+import { LoginComponent } from './pages/auth/login/login.component';
+import { RegistreComponent } from './pages/auth/registre/registre.component';
+import { MainComponent } from './pages/main/main.component';
+import { PerfilComponent } from './pages/perfil/perfil.component';
+import { CrearTascaComponent } from './pages/client/crear-tasca/crear-tasca.component';
+import { CrearOfertaComponent } from './pages/professional/crear-oferta/crear-oferta.component';
+import { TascaDetallComponent } from './pages/client/tasca-detall/tasca-detall.component';
+import { AvisosComponent } from './pages/avisos/avisos.component';
+import { LesMevesTasquesComponent } from './pages/client/les-meves-tasques/les-meves-tasques.component';
+import { LesMevesOfertesComponent } from './pages/professional/les-meves-ofertes/les-meves-ofertes.component';
+import { TasquesOfertesComponent } from './pages/tasques-ofertes/tasques-ofertes.component';
+import { AdminPanellComponent } from './pages/admin/panell/admin-panell.component';
+import { ArticleDetallComponent } from './pages/article-detall/article-detall.component';
+import { ComunitatProfessionalsComponent } from './pages/professional/comunitat-professionals/comunitat-professionals.component';
+import { authGuard } from './core/guards/auth.guard';
+import { adminGuard } from './core/guards/admin.guard';
 
-// Aquest fitxer defineix les rutes globals de l'aplicació.
-// Ha de tenir la configuració del flux d'autenticació:
-// - /login i /registre per a usuaris no autenticats
-// - /client/* per al dashboard i tasques del client
-// - /professional/* per al dashboard, ofertes i tasques del professional
-// - /admin/* per a la gestió administrativa
-// - redirecció a /login si la ruta no existeix
-// El backend associat ha d'exposar endpoints com /api/auth/login, /api/auth/register i /api/users/*.
+/**
+ * Configuració global de rutes de la plataforma AVISA.
+ * - '': Vista prèvia de tasques i ofertes públiques (Dashboard).
+ * - 'tasques-ofertes': Mercat complet de tasques i ofertes amb cerca i categories.
+ * - 'login': Inici de sessió d'usuaris.
+ * - 'registre': Registre de nous usuaris (clients, professionals o ambdós).
+ * - 'perfil': Consulta i modificació de dades de l'usuari connectat.
+ * - 'avisos': Safata d'entrada de notificacions personals.
+ * - 'client/les-meves-tasques': Panell de tasques creades pel client connectat.
+ * - 'client/crear-tasca': Publicació de noves tasques per part de clients.
+ * - 'professional/les-meves-ofertes': Panell d'ofertes presentades pel professional connectat.
+ * - 'professional/crear-oferta': Enviament de pressupostos per part de professionals.
+ * - 'tasca-detall/:id': Vista detallada d'una tasca, acceptació/rebuig d'ofertes i finalització.
+ * - 'admin/panell': Panell de supervisió global amb llistat complet de tasques, ofertes i usuaris (només admin).
+ */
 export const appRoutes: Routes = [
-  { path: '', redirectTo: '/login', pathMatch: 'full' },
-  { path: '**', redirectTo: '/login' }
+  { path: '', component: MainComponent },
+  { path: 'tasques-ofertes', component: TasquesOfertesComponent },
+  { path: 'login', component: LoginComponent },
+  { path: 'registre', component: RegistreComponent },
+  { path: 'perfil', component: PerfilComponent, canActivate: [authGuard] },
+  { path: 'perfil/:id', component: PerfilComponent },
+  { path: 'avisos', component: AvisosComponent, canActivate: [authGuard] },
+  { path: 'client/les-meves-tasques', component: LesMevesTasquesComponent, canActivate: [authGuard] },
+  { path: 'client/crear-tasca', component: CrearTascaComponent, canActivate: [authGuard] },
+  { path: 'client/crear-incidencia', redirectTo: 'client/crear-tasca' },
+  { path: 'professional/les-meves-ofertes', component: LesMevesOfertesComponent, canActivate: [authGuard] },
+  { path: 'professional/crear-oferta', component: CrearOfertaComponent, canActivate: [authGuard] },
+  { path: 'professional/publicar-oferta', redirectTo: 'professional/crear-oferta' },
+  { path: 'tasca-detall/:id', component: TascaDetallComponent, canActivate: [authGuard] },
+  { path: 'admin/panell', component: AdminPanellComponent, canActivate: [adminGuard] },
+  { path: 'article/:id', component: ArticleDetallComponent },
+  { path: 'blog/:id', redirectTo: 'article/:id' },
+  { path: 'comunitat-professionals', component: ComunitatProfessionalsComponent },
+  { path: 'professionals', redirectTo: 'comunitat-professionals' },
+  { path: '**', redirectTo: '' }
 ];

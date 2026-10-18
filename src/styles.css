@@ -1,10 +1,135 @@
-/* Global styles */
+/* ============================================================== */
+/* PALETA DE COLORS MODERNA: BLANC BRUT #f7f3ed, NEGRE I NEÓ ROIG  */
+/* TIPOGRAFIA EN NEGRETA I DISSENY MINIMALISTA D'ALT IMPACTE      */
+/* ============================================================== */
+
 :root {
-  color-scheme: light;
-  font-family: Inter, Arial, sans-serif;
+  /* Fons de pàgina blanc brut */
+  --bg-page: #f7f3ed;
+  --bg-card: #ffffff;
+  --bg-surface: #faf8f4;
+  --border-subtle: #e5e0d7;
+
+  /* Negres per a la barra superior i menú lateral */
+  --bg-black: #09090c;
+  --bg-sidebar: #0d0d12;
+  --border-dark: #23232f;
+
+  /* Colors de text per al fons blanc brut */
+  --color-text: #09090c;
+  --color-text-muted: #57554e;
+  --color-text-dim: #7d7a72;
+
+  /* Blancs per a la barra i menú negres */
+  --color-bone: #f5f4ef;
+  --color-bone-muted: #bab8ae;
+  --color-bone-dim: #737168;
+
+  /* ÚNIC COLOR NEÓ LLAMATIU: NEÓ ROIG (Electric Neon Red) */
+  --neon: #ff1744;
+  --neon-hover: #d5002e;
+  --neon-glow: 0 0 18px rgba(255, 23, 68, 0.45);
+  --neon-glow-lg: 0 0 32px rgba(255, 23, 68, 0.65);
+  --neon-bg: rgba(255, 23, 68, 0.12);
+  --neon-border: rgba(255, 23, 68, 0.5);
+
+  /* Tipografia per a títols d'alt impacte */
+  --font-title: 'Boldonse', 'Climate Crisis', sans-serif;
+
+  /* Tipografia en negreta per defecte */
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  letter-spacing: -0.015em;
+}
+
+* {
+  box-sizing: border-box;
 }
 
 body {
   margin: 0;
-  background: #f5f7fb;
+  padding: 0;
+  background-color: var(--bg-page, #f7f3ed);
+  color: var(--color-text, #09090c);
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* Tipografia global en negreta */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--color-text, #09090c);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  margin-top: 0;
+}
+
+h1 {
+  font-weight: 900;
+  letter-spacing: -0.04em;
+}
+
+b, strong {
+  font-weight: 800;
+  color: var(--color-text, #09090c);
+}
+
+p {
+  color: var(--color-text-muted, #57554e);
+  line-height: 1.6;
+}
+
+a {
+  color: var(--neon, #ff1744);
+  text-decoration: none;
+  font-weight: 700;
+  transition: all 0.2s ease;
+}
+
+a:hover {
+  text-shadow: 0 0 10px rgba(255, 23, 68, 0.5);
+}
+
+/* Botons globals amb estil d'impacte */
+button, .btn {
+  font-family: inherit;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Inputs i formularis en estil clar i net */
+input, select, textarea {
+  font-family: inherit;
+  background-color: #ffffff;
+  color: #09090c;
+  border: 1px solid #dcd7ce;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--neon, #ff1744);
+  box-shadow: 0 0 0 3px rgba(255, 23, 68, 0.15), var(--neon-glow);
+}
+
+/* Scrollbars modernes */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #f7f3ed;
+}
+::-webkit-scrollbar-thumb {
+  background: #d8d3c9;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--neon, #ff1744);
 }
