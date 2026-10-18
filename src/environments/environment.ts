@@ -1,9 +1,10 @@
-// Configuració d'entorn de producció.
-// Aquí s'ha de definir la URL base del backend, per exemple:
-// - apiUrl: 'https://api.jjaux.com'
-// - credentials: 'include' si s'utilitzen cookies de sessió
-// - flags de producció per activar o desactivar logs i mesures
+/**
+ * Configuració d'entorn per defecte / producció.
+ * Utilitza l'amfitrió actual si està definit o localhost per defecte.
+ */
+const host = typeof window !== 'undefined' && window.location.hostname ? window.location.hostname : 'localhost';
+
 export const environment = {
   production: true,
-  apiUrl: 'http://localhost:8080/api'
+  apiUrl: `http://${host}:8080/api`
 };

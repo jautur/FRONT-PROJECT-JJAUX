@@ -1,10 +1,12 @@
-// Configuració d'entorn de desenvolupament.
-// És l'URL que apuntarà el frontend al backend local durant el desenvolupament.
-// Exemple:
-// - API local: http://localhost:8080/api
-// - web local: http://localhost:4200
-// Aquest fitxer permet provar endpoints sense afectar la producció.
+/**
+ * Configuració d'entorn de desenvolupament.
+ * Detecta dinàmicament l'amfitrió (host) per permetre connexions locals tant
+ * des del navegador de l'ordinador (localhost) com des de dispositius mòbils
+ * connectats a la mateixa xarxa Wi-Fi (ex: 192.168.1.200:4200 connectant a 192.168.1.200:8080).
+ */
+const host = typeof window !== 'undefined' && window.location.hostname ? window.location.hostname : 'localhost';
+
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:8080/api'
+  apiUrl: `http://${host}:8080/api`
 };
