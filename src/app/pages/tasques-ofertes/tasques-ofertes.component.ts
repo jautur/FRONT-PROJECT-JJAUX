@@ -25,6 +25,8 @@ interface CategoriaFiltre {
  *    garantint la privadesa dels contractes.
  * 4. Permet cercar per text i filtrar per especialitat / gremi (lampisteria, electricitat, pintura, etc.).
  * 5. Permet obrir el modal de ressenyes d'un professional per consultar el seu historial de valoracions públiques.
+ * 6. Disseny adaptable (responsive) optimitzat per a mòbils: carrusel lliscant de categories (chip-strip) en lloc
+ *    de la columna vertical massiva, botons tàctils ergonòmics (44px), accions adaptades i inputs anti-zoom en iOS.
  */
 @Component({
   selector: 'app-tasques-ofertes',
@@ -63,7 +65,7 @@ interface CategoriaFiltre {
           <input
             type="text"
             [(ngModel)]="searchQuery"
-            placeholder="Cerca per nom de tasca, professional, client o paraula clau..."
+            placeholder="Cerca per nom, professional, client o paraula clau..."
             aria-label="Cercar tasques i ofertes per nom"
           />
           <button *ngIf="searchQuery" type="button" class="btn-clear-search" (click)="searchQuery = ''" aria-label="Netejar cerca">
@@ -112,6 +114,39 @@ interface CategoriaFiltre {
         <span>{{ noticeMessage }}</span>
         <button type="button" class="btn-dismiss" (click)="noticeMessage = ''" aria-label="Tancar avís">✕</button>
       </div>
+
+      <!-- Barra horitzontal de xips / categories en carrusel lliscant per a mòbils -->
+      <nav class="mobile-categories-strip" aria-label="Categories per a mòbil">
+        <button
+          type="button"
+          class="mobile-cat-chip"
+          [class.active]="categoriaSeleccionada === 'totes'"
+          (click)="seleccionarCategoria('totes')"
+        >
+          <span class="mobile-cat-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="7" height="7"></rect>
+              <rect x="14" y="3" width="7" height="7"></rect>
+              <rect x="14" y="14" width="7" height="7"></rect>
+              <rect x="3" y="14" width="7" height="7"></rect>
+            </svg>
+          </span>
+          <span class="mobile-cat-label">Totes</span>
+          <span class="mobile-cat-count">{{ totalElements }}</span>
+        </button>
+
+        <button
+          type="button"
+          *ngFor="let cat of categoriesLlista"
+          class="mobile-cat-chip"
+          [class.active]="categoriaSeleccionada.toLowerCase() === cat.nom.toLowerCase()"
+          (click)="seleccionarCategoria(cat.nom)"
+        >
+          <span class="mobile-cat-icon" aria-hidden="true" [innerHTML]="cat.icona"></span>
+          <span class="mobile-cat-label">{{ cat.nom }}</span>
+          <span class="mobile-cat-count">{{ comptarElementsPerCategoria(cat.nom) }}</span>
+        </button>
+      </nav>
 
       <!-- Disposició principal: Columna de Categories + Llistats -->
       <div class="market-layout">
@@ -622,6 +657,75 @@ interface CategoriaFiltre {
         border-color: #09090c;
       }
 
+      /* Barra horitzontal de categories per a mòbils (oculta en escriptori >= 961px) */
+      .mobile-categories-strip {
+        display: none;
+        align-items: center;
+        gap: 0.5rem;
+        overflow-x: auto;
+        white-space: nowrap;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        padding: 0.2rem 0.1rem 0.85rem;
+        margin-bottom: 0.85rem;
+      }
+
+      .mobile-categories-strip::-webkit-scrollbar {
+        display: none;
+      }
+
+      .mobile-cat-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        padding: 0.45rem 0.85rem;
+        border-radius: 9999px;
+        background: #ffffff;
+        border: 1px solid #dcd7cc;
+        color: #374151;
+        font-size: 0.82rem;
+        font-weight: 700;
+        cursor: pointer;
+        flex-shrink: 0;
+        transition: all 0.2s ease;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+      }
+
+      .mobile-cat-chip:active {
+        transform: scale(0.97);
+      }
+
+      .mobile-cat-chip .mobile-cat-icon {
+        display: flex;
+        align-items: center;
+        color: #ff1744;
+      }
+
+      .mobile-cat-chip .mobile-cat-count {
+        font-size: 0.72rem;
+        background: #eeeae0;
+        color: #55534c;
+        padding: 0.1rem 0.45rem;
+        border-radius: 9999px;
+        font-weight: 800;
+      }
+
+      .mobile-cat-chip.active {
+        background: #09090c;
+        color: #ffffff;
+        border-color: #ff1744;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+      }
+
+      .mobile-cat-chip.active .mobile-cat-icon {
+        color: #ff1744;
+      }
+
+      .mobile-cat-chip.active .mobile-cat-count {
+        background: #ff1744;
+        color: #ffffff;
+      }
+
       /* Layout */
       .market-layout {
         display: grid;
@@ -1100,74 +1204,7 @@ interface CategoriaFiltre {
         font-weight: bold;
       }
 
-      @media (max-width: 960px) {
-        .market-layout {
-          grid-template-columns: 1fr;
-          gap: 1.25rem;
-        }
 
-        .market-header {
-          flex-direction: column;
-          align-items: flex-start;
-          gap: 1rem;
-        }
-
-        .market-header-actions {
-          width: 100%;
-          display: flex;
-          flex-direction: column;
-          gap: 0.5rem;
-        }
-
-        .btn-create-task, .btn-create-offer {
-          width: 100%;
-          text-align: center;
-        }
-
-        .type-filter-pills {
-          overflow-x: auto;
-          flex-wrap: nowrap;
-          padding-bottom: 0.4rem;
-          -webkit-overflow-scrolling: touch;
-        }
-
-        .filter-pill {
-          white-space: nowrap;
-          flex-shrink: 0;
-        }
-
-        .categories-table {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-          gap: 0.35rem;
-        }
-
-        .market-card {
-          padding: 1.15rem 1rem;
-        }
-
-        .card-bottom-bar {
-          flex-direction: column;
-          align-items: flex-start;
-          gap: 0.75rem;
-        }
-
-        .card-actions {
-          width: 100%;
-          display: flex;
-        }
-
-        .btn-action-detail, .btn-action-primary {
-          flex: 1;
-          text-align: center;
-        }
-      }
-
-      @media (max-width: 480px) {
-        .categories-table {
-          grid-template-columns: 1fr;
-        }
-      }
 
       .pro-rating-row {
         display: flex;
@@ -1457,6 +1494,260 @@ interface CategoriaFiltre {
       .btn-action-delete-offer:hover {
         background: #fee2e2;
         border-color: #dc2626;
+      }
+
+      /* ============================================================== */
+      /* ADAPTACIÓ RESPONSIVE I USABILITAT PER A DISPOSITIUS MÒBILS    */
+      /* ============================================================== */
+      @media (max-width: 960px) {
+        .market-page {
+          padding: 0.5rem 0 3.5rem;
+        }
+
+        /* Oculta la columna vertical de categories en mòbils per no desplaçar el contingut cap avall */
+        .categories-sidebar {
+          display: none !important;
+        }
+
+        /* Activa el carrusel horitzontal de xips de categoria */
+        .mobile-categories-strip {
+          display: flex;
+        }
+
+        .market-layout {
+          grid-template-columns: 1fr;
+          gap: 1rem;
+        }
+
+        .market-header {
+          flex-direction: column;
+          align-items: stretch;
+          padding: 1.25rem 1rem;
+          border-radius: 14px;
+          margin-bottom: 1rem;
+          gap: 1rem;
+        }
+
+        .market-header h1 {
+          font-size: 1.55rem;
+          line-height: 1.25;
+        }
+
+        .market-subtitle {
+          font-size: 0.88rem;
+          line-height: 1.45;
+        }
+
+        .market-header-actions {
+          width: 100%;
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 0.5rem;
+        }
+
+        .btn-create-task,
+        .btn-create-offer {
+          width: 100%;
+          text-align: center;
+          padding: 0.65rem 0.5rem;
+          font-size: 0.82rem;
+          white-space: normal;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          box-sizing: border-box;
+          min-height: 44px;
+          border-radius: 9px;
+        }
+
+        .search-filter-bar {
+          padding: 0.85rem 0.95rem;
+          border-radius: 14px;
+          margin-bottom: 0.85rem;
+          gap: 0.75rem;
+        }
+
+        .search-input-wrap {
+          border-radius: 9px;
+          padding: 0 0.85rem;
+        }
+
+        .search-input-wrap input {
+          font-size: 16px; /* Impedeix el zoom forçat a navegadors mòbils com iOS Safari */
+          padding: 0.75rem 0;
+        }
+
+        .type-filter-pills {
+          overflow-x: auto;
+          flex-wrap: nowrap;
+          padding-bottom: 0.35rem;
+          -webkit-overflow-scrolling: touch;
+          scrollbar-width: none;
+          gap: 0.45rem;
+        }
+
+        .type-filter-pills::-webkit-scrollbar {
+          display: none;
+        }
+
+        .filter-pill {
+          white-space: nowrap;
+          flex-shrink: 0;
+          font-size: 0.8rem;
+          padding: 0.45rem 0.85rem;
+        }
+
+        .results-block {
+          margin-bottom: 2rem;
+        }
+
+        .results-block-header {
+          margin-bottom: 0.85rem;
+          flex-wrap: wrap;
+          gap: 0.4rem;
+        }
+
+        .results-block-header h2 {
+          font-size: 1.15rem;
+        }
+
+        .market-card {
+          padding: 1.15rem 1rem;
+          border-radius: 12px;
+          gap: 0.75rem;
+        }
+
+        .card-top-bar {
+          gap: 0.4rem;
+        }
+
+        .card-item-title {
+          font-size: 1.08rem;
+        }
+
+        .card-item-desc {
+          font-size: 0.88rem;
+          line-height: 1.48;
+        }
+
+        .card-meta-line {
+          font-size: 0.82rem;
+          flex-wrap: wrap;
+          gap: 0.35rem 0.5rem;
+        }
+
+        .pro-rating-inline {
+          margin-left: 0;
+          width: 100%;
+          display: flex;
+          align-items: center;
+          gap: 0.35rem;
+          margin-top: 0.25rem;
+          font-size: 0.82rem;
+        }
+
+        .card-bottom-bar {
+          flex-direction: column;
+          align-items: stretch;
+          gap: 0.65rem;
+          padding-top: 0.75rem;
+        }
+
+        .budget-wrap {
+          flex-direction: row;
+          justify-content: space-between;
+          align-items: center;
+          background: #faf8f4;
+          padding: 0.5rem 0.75rem;
+          border-radius: 8px;
+          border: 1px solid #eeeae0;
+        }
+
+        .budget-label {
+          font-size: 0.72rem;
+        }
+
+        .budget-value {
+          font-size: 1.05rem;
+        }
+
+        .card-actions {
+          width: 100%;
+          display: flex;
+          gap: 0.5rem;
+        }
+
+        .btn-action-detail,
+        .btn-action-primary,
+        .btn-action-delete-offer {
+          flex: 1;
+          text-align: center;
+          padding: 0.65rem 0.85rem;
+          font-size: 0.85rem;
+          min-height: 42px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          box-sizing: border-box;
+          border-radius: 8px;
+        }
+
+        .btn-action-delete-offer {
+          flex: 0 0 auto;
+          padding: 0.65rem 0.95rem;
+        }
+
+        .empty-state {
+          padding: 2.25rem 1.25rem;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .market-header-actions {
+          grid-template-columns: 1fr;
+        }
+
+        .btn-create-task,
+        .btn-create-offer {
+          font-size: 0.85rem;
+        }
+
+        .market-header h1 {
+          font-size: 1.4rem;
+        }
+
+        .modal-backdrop {
+          padding: 0;
+          align-items: flex-end;
+        }
+
+        .modal-dialog {
+          width: 100%;
+          max-height: 90vh;
+          border-radius: 18px 18px 0 0;
+        }
+
+        .modal-header {
+          padding: 1rem 1.15rem;
+        }
+
+        .modal-body {
+          padding: 1rem 1.15rem;
+        }
+
+        .modal-footer {
+          padding: 0.75rem 1.15rem;
+          flex-direction: column;
+          gap: 0.5rem;
+        }
+
+        .btn-view-full-profile,
+        .btn-primary-close {
+          width: 100%;
+          margin: 0;
+          text-align: center;
+          padding: 0.75rem 1rem;
+        }
       }
     `
   ]
