@@ -40,8 +40,14 @@ import { TascaService } from '../../services/tasca.service';
             <span class="role-badge" [ngClass]="usuari?.rol">
               {{ usuari?.rol | uppercase }}
             </span>
-            <span class="verified-badge" *ngIf="usuari?.rol === 'professional'">
+            <span class="verified-badge" *ngIf="usuari?.rol === 'professional' && usuari?.verificat">
               ✓ Professional Verificat AVISA
+            </span>
+            <span class="pending-badge" *ngIf="usuari?.rol === 'professional' && !usuari?.verificat && usuari?.sollicitudVerificacio">
+              ⏳ Verificació Pendent (Trucada)
+            </span>
+            <span class="unverified-badge" *ngIf="usuari?.rol === 'professional' && !usuari?.verificat && !usuari?.sollicitudVerificacio">
+              ⚠️ No verificat
             </span>
           </div>
         </div>
@@ -142,6 +148,96 @@ import { TascaService } from '../../services/tasca.service';
             </form>
           </article>
 
+          <!-- Targeta de Verificació Professional Oficial -->
+          <article class="card verification-card" *ngIf="usuari?.rol === 'professional'">
+            <div class="verif-card-header">
+              <span class="verif-icon" [class.verified]="usuari?.verificat">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                  <polyline points="9 12 11 14 15 10" *ngIf="usuari?.verificat"></polyline>
+                  <line x1="12" y1="8" x2="12" y2="12" *ngIf="!usuari?.verificat"></line>
+                  <line x1="12" y1="16" x2="12.01" y2="16" *ngIf="!usuari?.verificat"></line>
+                </svg>
+              </span>
+              <div>
+                <h2>Estat de Verificació</h2>
+                <span class="verif-status-pill" [ngClass]="getVerifStatusClass()">
+                  {{ getVerifStatusLabel() }}
+                </span>
+              </div>
+            </div>
+
+            <p class="subtitle" style="margin-top: 0.65rem;">
+              {{ getVerifDescription() }}
+            </p>
+
+            <div class="verif-checklist">
+              <div class="check-item" [class.valid]="!!usuari?.email">
+                <span class="check-icon">{{ !!usuari?.email ? '✓' : '✗' }}</span>
+                <span>Email registrat: <strong>{{ usuari?.email || 'Mancant' }}</strong></span>
+              </div>
+              <div class="check-item" [class.valid]="!!usuari?.telefon">
+                <span class="check-icon">{{ !!usuari?.telefon ? '✓' : '✗' }}</span>
+                <span>Telèfon de trucada: <strong>{{ usuari?.telefon || 'Cal afegir un telèfon' }}</strong></span>
+              </div>
+            </div>
+
+            <!-- Botó per sol·licitar verificació -->
+            <div *ngIf="!usuari?.verificat && !usuari?.sollicitudVerificacio" style="margin-top: 0.85rem;">
+              <button
+                type="button"
+                class="btn btn-verif"
+                (click)="onSollicitarVerificacio()"
+                [disabled]="sollicitantVerificacio || !usuari?.telefon">
+                {{ sollicitantVerificacio ? 'Enviant sol·licitud...' : '📞 Sol·licitar Verificació per Trucada' }}
+              </button>
+              <small *ngIf="!usuari?.telefon" class="field-error-text" style="display:block; margin-top: 0.35rem;">
+                * Cal que desis un telèfon de contacte abans de poder sol·licitar la verificació.
+              </small>
+            </div>
+
+            <!-- Avís si la sol·licitud està pendent de trucada -->
+            <div *ngIf="!usuari?.verificat && usuari?.sollicitudVerificacio" class="pending-notice-box" style="margin-top: 0.85rem;">
+              <span class="notice-icon">📞</span>
+              <div>
+                <strong>Sol·licitud en curs:</strong> L'administrador d'AVISA es posarà en contacte amb tu en breu al telèfon <strong>{{ usuari?.telefon }}</strong> per comprovar la teva identitat.
+              </div>
+            </div>
+
+            <!-- Avís si ja està verificat -->
+            <div *ngIf="usuari?.verificat" class="verified-notice-box" style="margin-top: 0.85rem;">
+              <span class="notice-icon">✓</span>
+              <div>
+                <strong>Compte Oficialment Verificat:</strong> La teva identitat i telèfon han estat comprovats telefònicament. Disposes del distintiu visible al mercat.
+              </div>
+            </div>
+
+            <!-- Accions de l'Administrador -->
+            <div *ngIf="isAdmin" class="admin-verif-actions" style="margin-top: 1.15rem; padding-top: 0.85rem; border-top: 1px dashed #cbd5e1;">
+              <p style="font-size: 0.8rem; font-weight: 700; color: #475569; margin-bottom: 0.5rem;">
+                ★ Acció Administrador (Comprovació Trucada):
+              </p>
+              <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                <button
+                  type="button"
+                  class="btn btn-success-sm"
+                  *ngIf="!usuari?.verificat"
+                  (click)="onVerificarProfessional(true)"
+                  [disabled]="processantVerificacioAdmin">
+                  ✓ Aprovar Trucada i Verificar
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-danger-sm"
+                  *ngIf="usuari?.verificat || usuari?.sollicitudVerificacio"
+                  (click)="onVerificarProfessional(false)"
+                  [disabled]="processantVerificacioAdmin">
+                  ✕ Rebutjar / Desverificar
+                </button>
+              </div>
+            </div>
+          </article>
+
           <!-- Targeta informativa de rol -->
           <article class="card info-card">
             <h3>Informació del Rol</h3>
@@ -188,6 +284,54 @@ import { TascaService } from '../../services/tasca.service';
         </article>
 
         <div class="side-column">
+          <!-- Targeta de verificació en perfil públic -->
+          <article class="card verification-card" *ngIf="usuari?.rol === 'professional'">
+            <div class="verif-card-header">
+              <span class="verif-icon" [class.verified]="usuari?.verificat">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                  <polyline points="9 12 11 14 15 10" *ngIf="usuari?.verificat"></polyline>
+                  <line x1="12" y1="8" x2="12" y2="12" *ngIf="!usuari?.verificat"></line>
+                  <line x1="12" y1="16" x2="12.01" y2="16" *ngIf="!usuari?.verificat"></line>
+                </svg>
+              </span>
+              <div>
+                <h2>Verificació Professional</h2>
+                <span class="verif-status-pill" [ngClass]="getVerifStatusClass()">
+                  {{ getVerifStatusLabel() }}
+                </span>
+              </div>
+            </div>
+
+            <p class="subtitle" style="margin-top: 0.65rem;">
+              {{ getPublicVerifDescription() }}
+            </p>
+
+            <div *ngIf="isAdmin" class="admin-verif-actions" style="margin-top: 1rem; padding-top: 0.75rem; border-top: 1px dashed #cbd5e1;">
+              <p style="font-size: 0.8rem; font-weight: 700; color: #475569; margin-bottom: 0.5rem;">
+                ★ Acció Administrador (Comprovació Trucada):
+              </p>
+              <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                <button
+                  type="button"
+                  class="btn btn-success-sm"
+                  *ngIf="!usuari?.verificat"
+                  (click)="onVerificarProfessional(true)"
+                  [disabled]="processantVerificacioAdmin">
+                  ✓ Aprovar Trucada i Verificar
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-danger-sm"
+                  *ngIf="usuari?.verificat || usuari?.sollicitudVerificacio"
+                  (click)="onVerificarProfessional(false)"
+                  [disabled]="processantVerificacioAdmin">
+                  ✕ Desverificar / Rebutjar
+                </button>
+              </div>
+            </div>
+          </article>
+
           <article class="card info-card">
             <h3>Garantia AVISA</h3>
             <p>
@@ -388,6 +532,205 @@ import { TascaService } from '../../services/tasca.service';
         border: 1px solid #a7f3d0;
         padding: 0.2rem 0.55rem;
         border-radius: 9999px;
+      }
+
+      .pending-badge {
+        font-size: 0.75rem;
+        font-weight: 700;
+        background: #fffbeb;
+        color: #b45309;
+        border: 1px solid #fde68a;
+        padding: 0.2rem 0.55rem;
+        border-radius: 9999px;
+      }
+
+      .unverified-badge {
+        font-size: 0.75rem;
+        font-weight: 700;
+        background: #f1f5f9;
+        color: #64748b;
+        border: 1px solid #cbd5e1;
+        padding: 0.2rem 0.55rem;
+        border-radius: 9999px;
+      }
+
+      /* Estils de la Targeta de Verificació */
+      .verification-card {
+        border-color: #cbd5e1;
+      }
+
+      .verif-card-header {
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+      }
+
+      .verif-icon {
+        width: 44px;
+        height: 44px;
+        min-width: 44px;
+        border-radius: 12px;
+        background: #f1f5f9;
+        color: #64748b;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #cbd5e1;
+      }
+
+      .verif-icon.verified {
+        background: #ecfdf5;
+        color: #059669;
+        border-color: #a7f3d0;
+      }
+
+      .verif-card-header h2, .verif-card-header h3 {
+        margin: 0;
+        font-size: 1.15rem;
+        font-weight: 800;
+        color: #09090c;
+      }
+
+      .verif-status-pill {
+        display: inline-block;
+        font-size: 0.72rem;
+        font-weight: 800;
+        padding: 0.2rem 0.6rem;
+        border-radius: 9999px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        margin-top: 0.25rem;
+      }
+
+      .verif-status-pill.status-verified {
+        background: #ecfdf5;
+        color: #065f46;
+        border: 1px solid #a7f3d0;
+      }
+
+      .verif-status-pill.status-pending {
+        background: #fffbeb;
+        color: #92400e;
+        border: 1px solid #fde68a;
+      }
+
+      .verif-status-pill.status-unverified {
+        background: #f8fafc;
+        color: #64748b;
+        border: 1px solid #e2e8f0;
+      }
+
+      .verif-checklist {
+        display: flex;
+        flex-direction: column;
+        gap: 0.45rem;
+        margin: 0.85rem 0 0.5rem;
+        padding: 0.75rem;
+        background: #f8fafc;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+      }
+
+      .check-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.84rem;
+        color: #64748b;
+      }
+
+      .check-item.valid {
+        color: #0f172a;
+      }
+
+      .check-item .check-icon {
+        font-weight: 800;
+      }
+
+      .check-item.valid .check-icon {
+        color: #059669;
+      }
+
+      .check-item:not(.valid) .check-icon {
+        color: #dc2626;
+      }
+
+      .btn-verif {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        background: #09090c;
+        color: #ffffff;
+        border: none;
+        border-radius: 10px;
+        font-weight: 800;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .btn-verif:hover:not(:disabled) {
+        background: #ff1744;
+      }
+
+      .btn-verif:disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
+      }
+
+      .pending-notice-box {
+        display: flex;
+        gap: 0.65rem;
+        padding: 0.75rem 0.9rem;
+        background: #fffbeb;
+        border: 1px solid #fde68a;
+        border-radius: 8px;
+        font-size: 0.84rem;
+        color: #92400e;
+        line-height: 1.45;
+      }
+
+      .verified-notice-box {
+        display: flex;
+        gap: 0.65rem;
+        padding: 0.75rem 0.9rem;
+        background: #ecfdf5;
+        border: 1px solid #a7f3d0;
+        border-radius: 8px;
+        font-size: 0.84rem;
+        color: #065f46;
+        line-height: 1.45;
+      }
+
+      .btn-success-sm {
+        padding: 0.4rem 0.75rem;
+        background: #059669;
+        color: #ffffff;
+        border: none;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+
+      .btn-success-sm:hover:not(:disabled) {
+        background: #047857;
+      }
+
+      .btn-danger-sm {
+        padding: 0.4rem 0.75rem;
+        background: #dc2626;
+        color: #ffffff;
+        border: none;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+
+      .btn-danger-sm:hover:not(:disabled) {
+        background: #b91c1c;
       }
 
       .public-info-list {
@@ -1069,6 +1412,87 @@ export class PerfilComponent implements OnInit {
       error: () => {
         this.changingPassword = false;
         this.errorMessage = 'No s’ha pogut actualitzar la contrasenya. Comprova la connexió amb el servidor.';
+      }
+    });
+  }
+
+  /** Estat de la petició de sol·licitud de verificació */
+  sollicitantVerificacio = false;
+  processantVerificacioAdmin = false;
+
+  getVerifStatusClass(): string {
+    if (this.usuari?.verificat) return 'status-verified';
+    if (this.usuari?.sollicitudVerificacio) return 'status-pending';
+    return 'status-unverified';
+  }
+
+  getVerifStatusLabel(): string {
+    if (this.usuari?.verificat) return 'Oficialment Verificat';
+    if (this.usuari?.sollicitudVerificacio) return 'Pendent de Trucada';
+    return 'No Verificat';
+  }
+
+  getVerifDescription(): string {
+    if (this.usuari?.verificat) {
+      return "Enhorabona! L'equip d'administració d'AVISA ha verificat la teva identitat mitjançant trucada telefònica. Disposes del distintiu oficial a tot el mercat.";
+    }
+    if (this.usuari?.sollicitudVerificacio) {
+      return "Hem rebut la teva sol·licitud. Un administrador et trucarà en breu al telèfon registrat per comprovar que ets tu i activar el teu distintiu.";
+    }
+    return "Tots els professionals comencen sense verificar. Per obtindre el distintiu de confiança oficial, sol·licita la verificació: l'administrador et trucarà per validar la teva identitat.";
+  }
+
+  getPublicVerifDescription(): string {
+    if (this.usuari?.verificat) {
+      return "Aquest professional ha estat contrastat oficialment mitjançant comprovació telefònica per l'administració d'AVISA.";
+    }
+    return "Aquest professional encara no ha completat la verificació telefònica oficial.";
+  }
+
+  onSollicitarVerificacio(): void {
+    if (!this.usuari) return;
+    if (!this.usuari.telefon || !this.usuari.telefon.trim()) {
+      this.errorMessage = 'Cal registrar un telèfon de contacte abans de sol·licitar la verificació.';
+      return;
+    }
+    this.sollicitantVerificacio = true;
+    this.clearAlerts();
+    this.usuariService.sollicitarVerificacio(this.usuari.id).subscribe({
+      next: (updatedUser) => {
+        this.sollicitantVerificacio = false;
+        this.usuari = updatedUser;
+        if (this.isOwnProfile) {
+          this.authService.setCurrentUser(updatedUser);
+        }
+        this.successMessage = 'Sol·licitud de verificació enviada correctament! L\'administrador es posarà en contacte amb tu via trucada telefònica.';
+      },
+      error: (err) => {
+        this.sollicitantVerificacio = false;
+        const msg = err?.error?.message || 'Error en sol·licitar la verificació.';
+        this.errorMessage = msg;
+      }
+    });
+  }
+
+  onVerificarProfessional(estat: boolean): void {
+    if (!this.usuari) return;
+    this.processantVerificacioAdmin = true;
+    this.clearAlerts();
+    this.usuariService.verificarProfessional(this.usuari.id, estat).subscribe({
+      next: (updatedUser) => {
+        this.processantVerificacioAdmin = false;
+        this.usuari = updatedUser;
+        if (this.isOwnProfile) {
+          this.authService.setCurrentUser(updatedUser);
+        }
+        this.successMessage = estat
+          ? 'El professional ha estat verificat oficialment després de la comprovació telefònica.'
+          : 'L\'estat de verificació ha estat actualitzat.';
+      },
+      error: (err) => {
+        this.processantVerificacioAdmin = false;
+        const msg = err?.error?.message || 'Error en verificar el professional.';
+        this.errorMessage = msg;
       }
     });
   }

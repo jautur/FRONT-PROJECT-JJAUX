@@ -294,7 +294,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
             </ul>
             <div class="pro-role-actions">
               <button type="button" class="btn-role-action pro-btn" (click)="onPublicarOferta()">{{ 'HOME.ROLES_PRO_BTN' | translate }}</button>
-              <a routerLink="/comunitat-professionals" class="btn-community-link">
+              <a routerLink="/sobre-nosaltres" class="btn-community-link">
                 <span>{{ 'HOME.ROLES_PRO_COMMUNITY' | translate }}</span>
                 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                   <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -433,7 +433,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
                 <li><a routerLink="/tasques-ofertes">{{ 'NAV.TASQUES_OFERTES' | translate }}</a></li>
                 <li><a routerLink="/tasques-ofertes" [queryParams]="{ tipus: 'incidencies' }">{{ 'TASQUES_OFERTES.FILTER_INCIDENCIES' | translate }}</a></li>
                 <li><a routerLink="/tasques-ofertes" [queryParams]="{ tipus: 'ofertes' }">{{ 'TASQUES_OFERTES.FILTER_OFFERS' | translate }}</a></li>
-                <li><a routerLink="/comunitat-professionals">{{ 'NAV.COMUNITAT_PROFESSIONALS' | translate }}</a></li>
+                <li><a routerLink="/sobre-nosaltres">{{ 'NAV.COMUNITAT_PROFESSIONALS' | translate }}</a></li>
                 <li><a routerLink="/registre" [queryParams]="{ rol: 'professional' }">{{ 'COMMON.PROFESSIONAL' | translate }}</a></li>
                 <li><a routerLink="/registre" [queryParams]="{ rol: 'client' }">{{ 'COMMON.CLIENT' | translate }}</a></li>
                 <li><a routerLink="/blog">{{ 'NAV.BLOG' | translate }}</a></li>
