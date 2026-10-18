@@ -1,19 +1,20 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 
 /**
  * Component d'Inici de Sessió (/login).
  * Permet a clients, professionals i administradors autenticar-se a la plataforma AVISA
  * amb les seves credencials (correu electrònic i contrasenya).
- * Gestiona missatges informatius, errors d'autenticació i redirecció posterior mitjançant returnUrl.
+ * Gestiona missatges informatius, errors d'autenticació, redirecció posterior mitjançant returnUrl
+ * i enllaç directe cap al registre (/registre) per a nous usuaris.
  */
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   template: `
     <section class="auth-card">
       <h1>Inici de sessió</h1>
@@ -32,6 +33,10 @@ import { AuthService } from '../../../core/services/auth.service';
           {{ loading ? 'Entrant...' : 'Entrar' }}
         </button>
         <p *ngIf="error" class="error">{{ error }}</p>
+
+        <p class="footer-hint">
+          Encara no tens compte? <a routerLink="/registre" [queryParams]="returnUrl !== '/' ? { returnUrl: returnUrl } : null">Registra't aquí</a>
+        </p>
       </form>
     </section>
   `,
@@ -128,6 +133,23 @@ import { AuthService } from '../../../core/services/auth.service';
         font-size: 0.875rem;
         margin: 0;
       }
+      .footer-hint {
+        text-align: center;
+        font-size: 0.88rem;
+        color: #57554e;
+        margin: 0.65rem 0 0;
+        font-weight: 600;
+      }
+      .footer-hint a {
+        color: #ff1744;
+        text-decoration: none;
+        font-weight: 800;
+        transition: all 0.15s ease;
+      }
+      .footer-hint a:hover {
+        color: #09090c;
+        text-decoration: underline;
+      }
       @media (max-width: 480px) {
         .auth-card {
           padding: 1.5rem 1.25rem;
@@ -143,7 +165,7 @@ export class LoginComponent implements OnInit {
   loading = false;
   error = '';
   message = '';
-  private returnUrl = '/';
+  returnUrl = '/';
 
   constructor(
     private readonly authService: AuthService,
