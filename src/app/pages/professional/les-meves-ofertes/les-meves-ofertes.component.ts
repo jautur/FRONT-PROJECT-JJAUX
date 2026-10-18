@@ -4,6 +4,7 @@ import { Router, RouterLink } from '@angular/router';
 import { OfertaService } from '../../../services/oferta.service';
 import { TascaService } from '../../../services/tasca.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { ConfirmService } from '../../../core/services/confirm.service';
 import { Oferta } from '../../../models/oferta.model';
 import { Tasca } from '../../../models/tasca.model';
 
@@ -624,6 +625,7 @@ export class LesMevesOfertesComponent implements OnInit {
     private readonly ofertaService: OfertaService,
     private readonly tascaService: TascaService,
     private readonly authService: AuthService,
+    private readonly confirmService: ConfirmService,
     private readonly router: Router
   ) {}
 
@@ -685,10 +687,15 @@ export class LesMevesOfertesComponent implements OnInit {
    * Permet al professional assignat donar per finalitzada una tasca en curs.
    * El backend notificarà al client perquè pugui valorar la feina.
    */
-  finalitzarTascaComAProfessional(t: Tasca): void {
-    if (!confirm(`Segur que vols donar per finalitzada la feina de "${t.titol}"? El client rebrà un avís per a la valoració del servei.`)) {
-      return;
-    }
+  async finalitzarTascaComAProfessional(t: Tasca): Promise<void> {
+    const confirmacio = await this.confirmService.confirm({
+      title: 'Finalitzar Tasca',
+      message: `Segur que vols donar per finalitzada la feina de "${t.titol}"? El client rebrà un avís per a la valoració del servei.`,
+      confirmText: 'Finalitzar Feina',
+      cancelText: 'Cancel·lar',
+      icon: 'success'
+    });
+    if (!confirmacio) return;
 
     this.tascaService.complete(t.id).subscribe({
       next: () => {
@@ -698,7 +705,7 @@ export class LesMevesOfertesComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error finalitzant la tasca:', err);
-        alert('No s\'ha pogut marcar la tasca com a finalitzada.');
+        this.confirmService.alert('No s\'ha pogut marcar la tasca com a finalitzada.', 'Error');
       }
     });
   }
@@ -707,10 +714,16 @@ export class LesMevesOfertesComponent implements OnInit {
    * Elimina/borra una oferta del professional.
    * Les ofertes no tenen estat: sols s'accepten o es borren.
    */
-  eliminarOferta(id: string): void {
-    if (!confirm('Estàs segur que vols borrar aquesta oferta? Aquesta acció eliminarà la teua proposta definitivament.')) {
-      return;
-    }
+  async eliminarOferta(id: string): Promise<void> {
+    const confirmacio = await this.confirmService.confirm({
+      title: 'Borrar Oferta',
+      message: 'Estàs segur que vols borrar aquesta oferta? Aquesta acció eliminarà la teua proposta definitivament.',
+      confirmText: 'Borrar Oferta',
+      cancelText: 'Cancel·lar',
+      isDanger: true,
+      icon: 'danger'
+    });
+    if (!confirmacio) return;
 
     this.ofertaService.delete(id).subscribe({
       next: () => {
@@ -720,7 +733,7 @@ export class LesMevesOfertesComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error eliminant l\'oferta:', err);
-        alert('No s\'ha pogut borrar l\'oferta.');
+        this.confirmService.alert('No s\'ha pogut borrar l\'oferta.', 'Error');
       }
     });
   }

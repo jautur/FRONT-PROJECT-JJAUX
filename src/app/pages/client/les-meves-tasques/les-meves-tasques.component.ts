@@ -9,6 +9,7 @@ import { IncidenciaService } from '../../../services/incidencia.service';
 import { OfertaService } from '../../../services/oferta.service';
 import { ResenyaService } from '../../../services/resenya.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { ConfirmService } from '../../../core/services/confirm.service';
 import { Tasca } from '../../../models/tasca.model';
 
 /**
@@ -923,6 +924,7 @@ export class LesMevesTasquesComponent implements OnInit {
     private readonly ofertaService: OfertaService,
     private readonly resenyaService: ResenyaService,
     private readonly authService: AuthService,
+    private readonly confirmService: ConfirmService,
     private readonly router: Router
   ) {}
 
@@ -1185,8 +1187,16 @@ export class LesMevesTasquesComponent implements OnInit {
    * Elimina una tasca o incidència de la base de dades.
    * @param id Identificador de l'element a suprimir
    */
-  eliminarTasca(id: string): void {
-    if (!confirm('Estàs segur d’eliminar aquesta petició? Aquesta acció no es pot desfer.')) return;
+  async eliminarTasca(id: string): Promise<void> {
+    const confirmacio = await this.confirmService.confirm({
+      title: 'Eliminar Petició',
+      message: 'Estàs segur d’eliminar aquesta petició? Aquesta acció no es pot desfer.',
+      confirmText: 'Eliminar',
+      cancelText: 'Cancel·lar',
+      isDanger: true,
+      icon: 'danger'
+    });
+    if (!confirmacio) return;
 
     const delete$ = id.startsWith('I-')
       ? this.incidenciaService.delete(id)

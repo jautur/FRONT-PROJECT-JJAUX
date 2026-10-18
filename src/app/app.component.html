@@ -422,5 +422,39 @@
       <span class="floating-pulse-beacon" aria-hidden="true"></span>
     </a>
   </aside>
+
+  <!-- MODAL DE CONFIRMACIÓ I AVISOS ELEGANT D'AVISA (SENSE "localhost dice...") -->
+  <div class="custom-confirm-overlay" *ngIf="confirmService.isOpen()" (click)="confirmService.onCancel()" role="dialog" aria-modal="true">
+    <div class="custom-confirm-card" (click)="$event.stopPropagation()">
+      <div class="confirm-icon-badge" [ngClass]="confirmService.icon()">
+        <span *ngIf="confirmService.icon() === 'question'">🤝</span>
+        <span *ngIf="confirmService.icon() === 'success'">✓</span>
+        <span *ngIf="confirmService.icon() === 'warning'">⚠️</span>
+        <span *ngIf="confirmService.icon() === 'danger'">🗑️</span>
+      </div>
+
+      <h3 class="confirm-modal-title">{{ confirmService.title() }}</h3>
+      <div class="confirm-modal-message-box">
+        <p class="confirm-modal-message">{{ confirmService.message() }}</p>
+      </div>
+
+      <div class="confirm-modal-actions">
+        <button
+          type="button"
+          class="btn-confirm-cancel"
+          *ngIf="!confirmService.isAlert()"
+          (click)="confirmService.onCancel()">
+          {{ confirmService.cancelText() }}
+        </button>
+        <button
+          type="button"
+          class="btn-confirm-accept"
+          [class.btn-danger]="confirmService.isDanger()"
+          (click)="confirmService.onAccept()">
+          {{ confirmService.confirmText() }}
+        </button>
+      </div>
+    </div>
+  </div>
 </div>
 

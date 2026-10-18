@@ -8,6 +8,7 @@ import { AuthService } from '../../core/services/auth.service';
 import { Resenya } from '../../models/resenya.model';
 import { ArticleService } from '../../services/article.service';
 import { Article } from '../../models/article.model';
+import { ConfirmService } from '../../core/services/confirm.service';
 
 import { TranslatePipe } from '../../core/pipes/translate.pipe';
 
@@ -2055,6 +2056,7 @@ export class MainComponent implements OnInit {
     private readonly resenyaService: ResenyaService,
     private readonly authService: AuthService,
     private readonly articleService: ArticleService,
+    private readonly confirmService: ConfirmService,
     private readonly router: Router
   ) {}
 
@@ -2285,13 +2287,17 @@ export class MainComponent implements OnInit {
     this.onNavegarTasquesOfertes('ofertes');
   }
 
-  onContractarOferta(offer: any): void {
+  async onContractarOferta(offer: any): Promise<void> {
     if (!this.requireLogin(`contractar el servei de ${offer.professional}`, '/')) return;
     if (this.authService.isClient()) {
       const currentUserName = this.authService.getCurrentUser()?.nom || 'Client';
-      const confirmacio = confirm(
-        `Vols contractar el servei de ${offer.professional} per ${offer.price}?\n\nEs convertirà directament en una tasca en curs per coordinar el treball.`
-      );
+      const confirmacio = await this.confirmService.confirm({
+        title: 'Contractar Servei',
+        message: `Vols contractar el servei de ${offer.professional} per ${offer.price}?\n\nEs convertirà directament en una tasca en curs per coordinar el treball.`,
+        confirmText: 'Contractar Servei',
+        cancelText: 'Cancel·lar',
+        icon: 'question'
+      });
       if (!confirmacio) return;
 
       this.ofertaService.contractar(offer.id, currentUserName).subscribe({

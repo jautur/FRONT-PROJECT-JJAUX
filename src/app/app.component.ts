@@ -6,6 +6,7 @@ import { AuthService } from './core/services/auth.service';
 import { TranslationService } from './core/services/translation.service';
 import { TranslatePipe } from './core/pipes/translate.pipe';
 import { AvisService } from './services/avis.service';
+import { ConfirmService } from './core/services/confirm.service';
 
 /**
  * Component principal arrel de l'aplicació AVISA.
@@ -62,6 +63,7 @@ export class AppComponent implements OnInit, OnDestroy {
   constructor(
     public readonly authService: AuthService,
     public readonly translationService: TranslationService,
+    public readonly confirmService: ConfirmService,
     private readonly avisService: AvisService,
     private readonly router: Router
   ) {

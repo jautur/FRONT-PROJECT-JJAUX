@@ -8,6 +8,7 @@ import { ResenyaService } from '../../services/resenya.service';
 import { UsuariService } from '../../services/usuari.service';
 import { AuthService } from '../../core/services/auth.service';
 import { TranslatePipe } from '../../core/pipes/translate.pipe';
+import { ConfirmService } from '../../core/services/confirm.service';
 import { Resenya } from '../../models/resenya.model';
 import { Usuari } from '../../models/usuari.model';
 
@@ -1793,6 +1794,7 @@ export class TasquesOfertesComponent implements OnInit {
     private readonly resenyaService: ResenyaService,
     private readonly usuariService: UsuariService,
     private readonly authService: AuthService,
+    private readonly confirmService: ConfirmService,
     private readonly router: Router,
     private readonly route: ActivatedRoute
   ) {}
@@ -2278,7 +2280,7 @@ export class TasquesOfertesComponent implements OnInit {
   /**
    * Contractar una oferta d'un professional i convertir-la directament en TASCA ('OFERTA to TAREA').
    */
-  onContractarOferta(offer: any): void {
+  async onContractarOferta(offer: any): Promise<void> {
     const pro = offer.professional || 'aquest professional';
     if (!this.requireLogin(`contractar l'oferta de ${pro}`, '/tasques-ofertes')) return;
     const user = this.authService.getCurrentUser();
@@ -2288,10 +2290,13 @@ export class TasquesOfertesComponent implements OnInit {
     }
 
     const preu = offer.price || '';
-    const confirmacio = confirm(
-      `Vols contractar el servei de ${pro} per ${preu}?\n\n` +
-      `Aquesta acció generarà automàticament una nova TASCA en curs al teu panell i notificarà al professional.`
-    );
+    const confirmacio = await this.confirmService.confirm({
+      title: 'Contractar Servei',
+      message: `Vols contractar el servei de ${pro} per ${preu}?\n\nAquesta acció generarà automàticament una nova TASCA en curs al teu panell i notificarà al professional.`,
+      confirmText: 'Contractar Servei',
+      cancelText: 'Cancel·lar',
+      icon: 'question'
+    });
     if (!confirmacio) return;
 
     this.ofertaService.contractar(offer.id, user ? user.nom : 'Client AVISA').subscribe({
@@ -2315,8 +2320,16 @@ export class TasquesOfertesComponent implements OnInit {
     return pro === curNom || pro === curId;
   }
 
-  onDeleteOferta(offerId: string): void {
-    if (!confirm('Vols borrar aquesta oferta? Aquesta acció no es pot desfer.')) return;
+  async onDeleteOferta(offerId: string): Promise<void> {
+    const confirmacio = await this.confirmService.confirm({
+      title: 'Eliminar Oferta',
+      message: 'Vols borrar aquesta oferta? Aquesta acció no es pot desfer.',
+      confirmText: 'Borrar Oferta',
+      cancelText: 'Cancel·lar',
+      isDanger: true,
+      icon: 'danger'
+    });
+    if (!confirmacio) return;
     this.ofertaService.delete(offerId).subscribe({
       next: () => {
         this.noticeMessage = 'Oferta esborrada correctament.';

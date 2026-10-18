@@ -12,6 +12,7 @@ import { Oferta } from '../../../models/oferta.model';
 import { Incidencia } from '../../../models/incidencia.model';
 import { Usuari } from '../../../models/usuari.model';
 import { AuthService } from '../../../core/services/auth.service';
+import { ConfirmService } from '../../../core/services/confirm.service';
 
 /**
  * Pestanya activa al panell d'administració.
@@ -1393,7 +1394,8 @@ export class AdminPanellComponent implements OnInit {
     private readonly incidenciaService: IncidenciaService,
     private readonly usuariService: UsuariService,
     private readonly avisService: AvisService,
-    private readonly authService: AuthService
+    private readonly authService: AuthService,
+    private readonly confirmService: ConfirmService
   ) {}
 
   /**
@@ -1526,8 +1528,15 @@ export class AdminPanellComponent implements OnInit {
    * Acció d'administrador: finalitza una tasca canviant el seu estat a 'Finalitzada'.
    * @param id Identificador de la tasca
    */
-  finalitzarTasca(id: string): void {
-    if (!confirm(`Com a Administrador, segur que vols marcar la tasca ${id} com a finalitzada?`)) return;
+  async finalitzarTasca(id: string): Promise<void> {
+    const confirmacio = await this.confirmService.confirm({
+      title: 'Finalitzar Tasca (Admin)',
+      message: `Com a Administrador, segur que vols marcar la tasca ${id} com a finalitzada?`,
+      confirmText: 'Finalitzar Tasca',
+      cancelText: 'Cancel·lar',
+      icon: 'question'
+    });
+    if (!confirmacio) return;
 
     this.tascaService.complete(id).subscribe({
       next: () => {
@@ -1544,8 +1553,16 @@ export class AdminPanellComponent implements OnInit {
    * Acció d'administrador: elimina una tasca del sistema.
    * @param id Identificador de la tasca a suprimir
    */
-  eliminarTasca(id: string): void {
-    if (!confirm(`ATENCIÓ: Vols eliminar definitivament la tasca ${id} i totes les seves ofertes?`)) return;
+  async eliminarTasca(id: string): Promise<void> {
+    const confirmacio = await this.confirmService.confirm({
+      title: 'Eliminar Tasca (Admin)',
+      message: `ATENCIÓ: Vols eliminar definitivament la tasca ${id} i totes les seves ofertes? Aquesta acció no es pot desfer.`,
+      confirmText: 'Eliminar Tasca',
+      cancelText: 'Cancel·lar',
+      isDanger: true,
+      icon: 'danger'
+    });
+    if (!confirmacio) return;
 
     this.tascaService.delete(id).subscribe({
       next: () => {
@@ -1578,8 +1595,16 @@ export class AdminPanellComponent implements OnInit {
    * Les ofertes no tenen estat: s'accepten o es borren.
    * @param offerId Identificador de l'oferta
    */
-  eliminarOferta(offerId: string): void {
-    if (!confirm(`Segur que vols eliminar/borrar definitivament l'oferta ${offerId}?`)) return;
+  async eliminarOferta(offerId: string): Promise<void> {
+    const confirmacio = await this.confirmService.confirm({
+      title: 'Eliminar Oferta (Admin)',
+      message: `Segur que vols eliminar/borrar definitivament l'oferta ${offerId}?`,
+      confirmText: 'Borrar Oferta',
+      cancelText: 'Cancel·lar',
+      isDanger: true,
+      icon: 'danger'
+    });
+    if (!confirmacio) return;
 
     this.ofertaService.delete(offerId).subscribe({
       next: () => {
@@ -1596,8 +1621,16 @@ export class AdminPanellComponent implements OnInit {
    * Les incidències no tenen estat: o es mantenen actives o es borren / passen a tasca.
    * @param id Identificador de la incidència
    */
-  eliminarIncidencia(id: string): void {
-    if (!confirm(`ATENCIÓ: Vols eliminar definitivament la incidència ${id}?`)) return;
+  async eliminarIncidencia(id: string): Promise<void> {
+    const confirmacio = await this.confirmService.confirm({
+      title: 'Eliminar Incidència (Admin)',
+      message: `ATENCIÓ: Vols eliminar definitivament la incidència ${id}? Aquesta acció no es pot desfer.`,
+      confirmText: 'Eliminar Incidència',
+      cancelText: 'Cancel·lar',
+      isDanger: true,
+      icon: 'danger'
+    });
+    if (!confirmacio) return;
 
     this.incidenciaService.delete(id).subscribe({
       next: () => {
@@ -1740,9 +1773,9 @@ export class AdminPanellComponent implements OnInit {
    * Protegeix el compte d'administrador principal contra eliminació accidental.
    * @param u Usuari seleccionat per a ser donat de baixa
    */
-  eliminarUsuari(u: Usuari): void {
+  async eliminarUsuari(u: Usuari): Promise<void> {
     if (u.id === 'u-admin' || u.email?.toLowerCase() === 'admin@admin' || u.email?.toLowerCase() === 'admin@admin.es') {
-      alert("No es pot eliminar el compte d'administrador principal del sistema.");
+      this.confirmService.alert("No es pot eliminar el compte d'administrador principal del sistema.", "Acció no permesa");
       return;
     }
 
@@ -1750,7 +1783,15 @@ export class AdminPanellComponent implements OnInit {
       `Es cancel·larà el seu accés i s'esborraran els seus avisos associats.\n` +
       `Aquesta acció no es pot desfer. Vols continuar?`;
 
-    if (!confirm(confirmMsg)) return;
+    const confirmacio = await this.confirmService.confirm({
+      title: 'Eliminar Usuari (Admin)',
+      message: confirmMsg,
+      confirmText: 'Eliminar Usuari',
+      cancelText: 'Cancel·lar',
+      isDanger: true,
+      icon: 'danger'
+    });
+    if (!confirmacio) return;
 
     this.usuariService.delete(u.id).subscribe({
       next: () => {

@@ -8,6 +8,7 @@ import { OfertaService } from '../../../services/oferta.service';
 import { PressupostService } from '../../../services/pressupost.service';
 import { ResenyaService } from '../../../services/resenya.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { ConfirmService } from '../../../core/services/confirm.service';
 import { Tasca } from '../../../models/tasca.model';
 import { Oferta } from '../../../models/oferta.model';
 import { Pressupost } from '../../../models/pressupost.model';
@@ -1110,7 +1111,8 @@ export class TascaDetallComponent implements OnInit {
     private readonly ofertaService: OfertaService,
     private readonly pressupostService: PressupostService,
     private readonly resenyaService: ResenyaService,
-    private readonly authService: AuthService
+    private readonly authService: AuthService,
+    private readonly confirmService: ConfirmService
   ) {}
 
   get assignedProfessional(): string {
@@ -1278,10 +1280,16 @@ export class TascaDetallComponent implements OnInit {
    * Accepta un pressupost o oferta seleccionada pel client.
    * Transaccionalment crea la tasca en curs i elimina la incidència de les publicacions.
    */
-  onAcceptOffer(offerId: string): void {
-    if (!confirm('Vols acceptar aquest pressupost? Aquesta acció acordarà el servei i generarà la tasca oficial.')) {
-      return;
-    }
+  async onAcceptOffer(offerId: string): Promise<void> {
+    const confirmacio = await this.confirmService.confirm({
+      title: 'Acceptar Pressupost',
+      message: 'Vols acceptar aquest pressupost? Aquesta acció acordarà el servei i generarà la tasca oficial.',
+      confirmText: 'Acceptar Pressupost',
+      cancelText: 'Cancel·lar',
+      icon: 'success'
+    });
+    if (!confirmacio) return;
+
     this.pressupostService.accept(offerId).subscribe({
       next: (tascaCreada) => {
         this.noticeMessage = 'Pressupost acceptat correctament! La incidència ha passat a ser una Tasca oficial en curs.';
@@ -1313,8 +1321,17 @@ export class TascaDetallComponent implements OnInit {
   /**
    * Borra / descarta una oferta o pressupost.
    */
-  onDeleteOffer(offerId: string): void {
-    if (!confirm('Vols descartar aquesta proposta? Aquesta acció no es pot desfer.')) return;
+  async onDeleteOffer(offerId: string): Promise<void> {
+    const confirmacio = await this.confirmService.confirm({
+      title: 'Descartar Proposta',
+      message: 'Vols descartar aquesta proposta? Aquesta acció no es pot desfer.',
+      confirmText: 'Descartar Proposta',
+      cancelText: 'Cancel·lar',
+      isDanger: true,
+      icon: 'danger'
+    });
+    if (!confirmacio) return;
+
     this.pressupostService.reject(offerId).subscribe({
       next: () => {
         this.noticeMessage = 'La proposta s’ha descartat correctament.';
@@ -1347,12 +1364,15 @@ export class TascaDetallComponent implements OnInit {
   /**
    * El professional assignat finalitza la tasca un cop completada la feina.
    */
-  onCompleteTaskByPro(): void {
+  async onCompleteTaskByPro(): Promise<void> {
     if (!this.tasca) return;
-    const confirmacio = confirm(
-      `Vols confirmar la conclusió de la tasca "${this.tasca.titol}"?\n\n` +
-      `Aquesta acció registrarà la data de finalització del treball i notificarà al client per a la seva valoració.`
-    );
+    const confirmacio = await this.confirmService.confirm({
+      title: 'Concloure Tasca',
+      message: `Vols confirmar la conclusió de la tasca "${this.tasca.titol}"?\n\nAquesta acció registrarà la data de finalització del treball i notificarà al client per a la seva valoració.`,
+      confirmText: 'Confirmar Conclusió',
+      cancelText: 'Cancel·lar',
+      icon: 'success'
+    });
     if (!confirmacio) return;
 
     this.tascaService.complete(this.tasca.id).subscribe({
