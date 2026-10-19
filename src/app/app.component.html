@@ -1,4 +1,4 @@
-<div class="shell" [class.has-solid-header]="isScrolled" [class.sidebar-open]="menuObert && isScrolled" [class.not-home-page]="!isHomePage">
+<div class="shell" [class.has-solid-header]="isScrolled" [class.sidebar-open]="menuObert && isScrolled" [class.not-home-page]="!isHomePage" [class.has-bottom-nav]="showBottomNav">
   <!-- Capçalera superior que es mostra exclusivament després de fer scroll cap avall o en pàgines secundàries -->
   <header class="topbar" [class.visible-bar]="!isHomePage || isScrolled" [class.solid-header]="isScrolled || !isHomePage">
     <!-- Botó per obrir/tancar el menú a l'esquerra -->
@@ -24,19 +24,11 @@
     <!-- TÍTOL I ENLLAÇOS AL COSTAT A LA BARRA DE DALT -->
     <div class="topbar-center-group">
       <div class="brand-centered">
-        <a routerLink="/" class="brand-title">AVISA</a>
+        <a routerLink="/inici" class="brand-title">AVISA</a>
       </div>
 
       <!-- Enllaços ràpids visibles directament a la barra de dalt -->
       <nav class="topbar-links-inline" [attr.aria-label]="'NAV.ENLLACS_RAPIDS' | translate">
-        <a routerLink="/blog" routerLinkActive="active-top-link" class="top-nav-link" [title]="'NAV.BLOG_GUIES' | translate">
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
-            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
-          </svg>
-          <span>{{ 'NAV.BLOG' | translate }}</span>
-        </a>
-
         <a routerLink="/tasques-ofertes" routerLinkActive="active-top-link" class="top-nav-link" [title]="'NAV.TASQUES_OFERTES' | translate">
           <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
             <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
@@ -52,6 +44,14 @@
             <line x1="12" y1="8" x2="12.01" y2="8"></line>
           </svg>
           <span>{{ 'NAV.PROFESSIONALS' | translate }}</span>
+        </a>
+
+        <a routerLink="/blog" routerLinkActive="active-top-link" class="top-nav-link" [title]="'NAV.BLOG_GUIES' | translate">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+          </svg>
+          <span>{{ 'NAV.BLOG' | translate }}</span>
         </a>
       </nav>
     </div>
@@ -95,7 +95,7 @@
         </button>
       </div>
 
-      <div class="profile-dropdown-container">
+      <div class="profile-dropdown-container" *ngIf="showTopProfileBtn">
         <button
         type="button"
         class="quick-profile-btn"
@@ -244,7 +244,7 @@
     <nav class="sidebar-nav">
       <div class="nav-group-title">{{ 'NAV.NAVEGACIO' | translate }}</div>
 
-      <a routerLink="/" routerLinkActive="active-nav-item" [routerLinkActiveOptions]="{exact: true}" (click)="tancarMenu()">
+      <a routerLink="/inici" routerLinkActive="active-nav-item" [routerLinkActiveOptions]="{exact: true}" (click)="tancarMenu()">
         <span class="nav-icon" aria-hidden="true">
           <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
@@ -396,9 +396,9 @@
     <router-outlet />
   </main>
 
-  <!-- Botó / Icona flotant d'avisos baix a la dreta si l'usuari en té algun pendent -->
+  <!-- Botó / Icona flotant d'avisos baix a la dreta si l'usuari en té algun pendent i no es mostra la barra inferior -->
   <aside
-    *ngIf="authService.isLoggedIn() && avisosPendents > 0 && !isAvisosPage"
+    *ngIf="authService.isLoggedIn() && avisosPendents > 0 && !isAvisosPage && !showBottomNav"
     class="floating-avisos-wrapper"
     aria-label="Avisos pendents"
   >
@@ -459,6 +459,75 @@
 
   <!-- GUIA D'INSTAL·LACIÓ PWA ('AÑADIR A PANTALLA DE INICIO' / NATIVE PROMPT / IOS SAFARI) -->
   <app-pwa-install-prompt></app-pwa-install-prompt>
+
+  <!-- BARRA DE NAVEGACIÓ INFERIOR PER A L'ENTORN DE L'APLICACIÓ (INICI / TASQUES / AVISOS / PERFIL) -->
+  <nav class="app-bottom-nav" *ngIf="showBottomNav" aria-label="Menú principal de l'aplicació">
+    <a
+      routerLink="/inici"
+      class="bottom-nav-item"
+      [class.active-bottom-tab]="isIniciActive()"
+      [attr.aria-current]="isIniciActive() ? 'page' : null"
+      (click)="onIniciClick($event)"
+    >
+      <span class="bottom-nav-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          <polyline points="9 22 9 12 15 12 15 22"></polyline>
+        </svg>
+      </span>
+      <span class="bottom-nav-label">{{ 'NAV.INICI' | translate }}</span>
+      <span class="active-indicator" aria-hidden="true"></span>
+    </a>
+
+    <a
+      routerLink="/tasques-ofertes"
+      class="bottom-nav-item"
+      [class.active-bottom-tab]="isTasquesActive()"
+      [attr.aria-current]="isTasquesActive() ? 'page' : null"
+    >
+      <span class="bottom-nav-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+          <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+        </svg>
+      </span>
+      <span class="bottom-nav-label">{{ 'NAV.TASQUES' | translate }}</span>
+      <span class="active-indicator" aria-hidden="true"></span>
+    </a>
+
+    <a
+      routerLink="/avisos"
+      class="bottom-nav-item"
+      [class.active-bottom-tab]="isAvisosActive()"
+      [attr.aria-current]="isAvisosActive() ? 'page' : null"
+    >
+      <span class="bottom-nav-icon" aria-hidden="true" style="position: relative;">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+          <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+        </svg>
+        <span class="bottom-nav-badge" *ngIf="avisosPendents > 0">{{ avisosPendents }}</span>
+      </span>
+      <span class="bottom-nav-label">{{ 'COMMON.AVISOS' | translate }}</span>
+      <span class="active-indicator" aria-hidden="true"></span>
+    </a>
+
+    <a
+      routerLink="/perfil"
+      class="bottom-nav-item"
+      [class.active-bottom-tab]="isPerfilActive()"
+      [attr.aria-current]="isPerfilActive() ? 'page' : null"
+    >
+      <span class="bottom-nav-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
+        </svg>
+      </span>
+      <span class="bottom-nav-label">{{ 'COMMON.PERFIL' | translate }}</span>
+      <span class="active-indicator" aria-hidden="true"></span>
+    </a>
+  </nav>
 </div>
 
 

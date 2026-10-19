@@ -7,6 +7,7 @@ import { TranslationService } from './core/services/translation.service';
 import { TranslatePipe } from './core/pipes/translate.pipe';
 import { AvisService } from './services/avis.service';
 import { ConfirmService } from './core/services/confirm.service';
+import { PwaService } from './core/services/pwa.service';
 import { PwaInstallPromptComponent } from './shared/components/pwa-install-prompt/pwa-install-prompt.component';
 
 /**
@@ -56,6 +57,15 @@ export class AppComponent implements OnInit, OnDestroy {
   /** Estat del desplegable de vista prèvia de perfil */
   perfilDropdownObert = false;
 
+  /** Controla la visibilitat de la barra de navegació inferior de l'aplicació (/app) */
+  showBottomNav = false;
+
+  /** Indica si la sessió de l'usuari està en mode aplicació interactiva */
+  isAppMode = false;
+
+  /** Indica si la ruta actual és la secció /app */
+  isAppPage = false;
+
   /** Interval de refresc automàtic dels avisos en segon pla */
   private avisosInterval: any;
 
@@ -66,6 +76,7 @@ export class AppComponent implements OnInit, OnDestroy {
     public readonly authService: AuthService,
     public readonly translationService: TranslationService,
     public readonly confirmService: ConfirmService,
+    public readonly pwaService: PwaService,
     private readonly avisService: AvisService,
     private readonly router: Router
   ) {
@@ -73,8 +84,37 @@ export class AppComponent implements OnInit, OnDestroy {
       if (event instanceof NavigationEnd) {
         this.perfilDropdownObert = false;
         const url = event.urlAfterRedirects || '';
-        this.isHomePage = url === '/' || url === '' || url.startsWith('/?');
+        this.isHomePage = (url === '/' || url === '' || url.startsWith('/?') || url === '/inici' || url.startsWith('/inici?') || url.startsWith('/inici#')) && url.includes('landing=true');
         this.isAvisosPage = url.startsWith('/avisos');
+        this.isAppPage = url.startsWith('/app');
+
+        // Detecció d'estat d'aplicació /inici, /app i rutes operatives de la plataforma
+        const isAppRoute = url.startsWith('/app') ||
+                           url.startsWith('/inici') ||
+                           url === '/' ||
+                           url.startsWith('/tasques-ofertes') ||
+                           url.startsWith('/perfil') ||
+                           url.startsWith('/avisos') ||
+                           url.startsWith('/client/les-meves-tasques') ||
+                           url.startsWith('/client/crear-tasca') ||
+                           url.startsWith('/professional/les-meves-ofertes') ||
+                           url.startsWith('/professional/crear-oferta') ||
+                           url.startsWith('/tasca-detall');
+
+        const hasAppStorage = typeof window !== 'undefined' && (sessionStorage.getItem('avisa_app_mode') === 'true' || localStorage.getItem('avisa_app_mode') === 'true');
+
+        if (url.startsWith('/app') || this.pwaService.isStandalone() || this.pwaService.checkIfStandalone()) {
+          this.isAppMode = true;
+          if (typeof window !== 'undefined') {
+            try { sessionStorage.setItem('avisa_app_mode', 'true'); } catch {}
+          }
+        } else if (hasAppStorage) {
+          this.isAppMode = true;
+        }
+
+        // Mostra la barra inferior d'app a les rutes operatives o quan el mode app està actiu
+        this.showBottomNav = isAppRoute || this.isAppMode;
+
         this.actualitzarAvisos();
         if (!this.isHomePage) {
           // A les pàgines secundàries la barra superior està disponible directament
@@ -271,5 +311,70 @@ export class AppComponent implements OnInit, OnDestroy {
     this.authService.logout();
     this.avisosPendents = 0;
     this.router.navigate(['/login'], { queryParams: { message: 'Sessió tancada correctament.' } });
+  }
+
+  /**
+   * Determina si la pestanya 'TASQUES' està activa (/tasques-ofertes o gestió de tasques).
+   */
+  isTasquesActive(): boolean {
+    const url = this.router.url || '';
+    return url.startsWith('/tasques-ofertes') ||
+           url.startsWith('/client/les-meves-tasques') ||
+           url.startsWith('/professional/les-meves-ofertes') ||
+           url.startsWith('/tasca-detall');
+  }
+
+  /**
+   * Determina si la pestanya 'PERFIL' està activa (/perfil).
+   */
+  isPerfilActive(): boolean {
+    const url = this.router.url || '';
+    return url.startsWith('/perfil');
+  }
+
+  /**
+   * Determina si la pestanya 'INICI' està activa (/app, /inici o arrel).
+   */
+  isIniciActive(): boolean {
+    const url = this.router.url || '';
+    return url === '/' ||
+           url === '/app' ||
+           url.startsWith('/app?') ||
+           url.startsWith('/app#') ||
+           url === '/inici' ||
+           url.startsWith('/inici?') ||
+           url.startsWith('/inici#');
+  }
+
+  /**
+   * Determina si la pestanya 'AVISOS' està activa (/avisos).
+   */
+  isAvisosActive(): boolean {
+    const url = this.router.url || '';
+    return url.startsWith('/avisos');
+  }
+
+  /**
+   * Gestiona el clic al botó inferior d'INICI per fer lliscar suaument cap a dalt si ja s'està a Inici.
+   */
+  onIniciClick(event?: MouseEvent): void {
+    const url = this.router.url || '';
+    if (url === '/inici' || url === '/' || url.startsWith('/inici?') || url.startsWith('/inici#')) {
+      if (typeof window !== 'undefined') {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+  }
+
+  /**
+   * Determina si s'ha de mostrar el botó superior d'usuari/perfil a la capçalera.
+   * A la secció /app i a l'entorn de l'aplicació interactiva (on ja hi ha la barra de navegació
+   * inferior amb accés directe a PERFIL), el botó superior d'usuari s'elimina.
+   */
+  get showTopProfileBtn(): boolean {
+    if (this.showBottomNav) {
+      return false;
+    }
+    return !this.isHomePage;
   }
 }

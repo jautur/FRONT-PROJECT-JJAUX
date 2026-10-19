@@ -862,16 +862,12 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
       }
       .filter-tabs {
         gap: 0.4rem;
-        overflow-x: auto;
         padding-bottom: 0.5rem;
-        flex-wrap: nowrap;
-        -webkit-overflow-scrolling: touch;
+        flex-wrap: wrap;
       }
       .tab-btn {
-        white-space: nowrap;
         padding: 0.45rem 0.85rem;
         font-size: 0.8rem;
-        flex-shrink: 0;
       }
       .tasques-grid {
         grid-template-columns: 1fr;

@@ -25,9 +25,9 @@ export const pwaFlowGuard: CanActivateFn = (route) => {
   const authService = inject(AuthService);
   const router = inject(Router);
 
-  // Si s'especifica expressament el paràmetre 'landing', no es redirigeix
+  // Si s'especifica expressament el paràmetre 'landing', redirigeix a la pàgina d'inici
   if (route.queryParamMap.has('landing')) {
-    return true;
+    return router.createUrlTree(['/inici']);
   }
 
   const isStandalone = pwaService.checkIfStandalone();
@@ -36,7 +36,7 @@ export const pwaFlowGuard: CanActivateFn = (route) => {
   // 1. App instal·lada (PWA standalone): entra directe a l'àrea operativa o a login
   if (isStandalone) {
     if (isLoggedIn) {
-      return router.createUrlTree(['/app']);
+      return router.createUrlTree(['/inici']);
     } else {
       return router.createUrlTree(['/login'], {
         queryParams: {
@@ -46,12 +46,7 @@ export const pwaFlowGuard: CanActivateFn = (route) => {
     }
   }
 
-  // 2. Usuari recurrent amb sessió activa
-  if (isLoggedIn) {
-    return router.createUrlTree(['/app']);
-  }
-
-  // 3. Visitant públic -> Mostra Landing Page
-  return true;
+  // 2. Navegador web estàndard: sempre a la pàgina d'inici (/inici)
+  return router.createUrlTree(['/inici']);
 };
 

@@ -1294,6 +1294,7 @@ export class TascaDetallComponent implements OnInit {
     this.pressupostService.accept(offerId).subscribe({
       next: (tascaCreada) => {
         this.noticeMessage = 'Pressupost acceptat correctament! La incidència ha passat a ser una Tasca oficial en curs.';
+        this.ofertes = [];
         if (tascaCreada && tascaCreada.id) {
           setTimeout(() => {
             this.router.navigate(['/tasca-detall', tascaCreada.id]);
@@ -1307,6 +1308,7 @@ export class TascaDetallComponent implements OnInit {
         this.ofertaService.accept(offerId).subscribe({
           next: () => {
             this.noticeMessage = 'Oferta acceptada amb èxit! La tasca ha passat a estat "En curs".';
+            this.ofertes = [];
             if (this.tasca) {
               this.loadTask(this.tasca.id);
             }

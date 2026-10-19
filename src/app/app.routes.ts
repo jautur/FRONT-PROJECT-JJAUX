@@ -36,8 +36,9 @@ import { pwaFlowGuard } from './core/guards/pwa-flow.guard';
  * - 'admin/panell': Panell de supervisió global amb llistat complet de tasques, ofertes i usuaris (només admin).
  */
 export const appRoutes: Routes = [
-  { path: '', component: MainComponent, canActivate: [pwaFlowGuard] },
-  { path: 'app', component: TasquesOfertesComponent },
+  { path: '', pathMatch: 'full', canActivate: [pwaFlowGuard], redirectTo: 'inici' },
+  { path: 'inici', component: MainComponent },
+  { path: 'app', component: MainComponent },
   { path: 'tasques-ofertes', component: TasquesOfertesComponent },
   { path: 'login', component: LoginComponent },
   { path: 'registre', component: RegistreComponent },
@@ -65,5 +66,5 @@ export const appRoutes: Routes = [
   { path: 'termes', component: TermesModalComponent },
   { path: 'termes-condicions', redirectTo: 'termes' },
   { path: 'privacitat', component: TermesModalComponent },
-  { path: '**', redirectTo: '' }
+  { path: '**', redirectTo: 'inici' }
 ];

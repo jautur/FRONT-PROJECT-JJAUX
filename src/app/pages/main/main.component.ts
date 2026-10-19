@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { DashboardResponse, DashboardService } from '../../services/dashboard.service';
 import { OfertaService } from '../../services/oferta.service';
@@ -10,6 +10,9 @@ import { ArticleService } from '../../services/article.service';
 import { Article } from '../../models/article.model';
 import { ConfirmService } from '../../core/services/confirm.service';
 import { PwaService } from '../../core/services/pwa.service';
+import { UsuariService } from '../../services/usuari.service';
+import { Usuari } from '../../models/usuari.model';
+import { TranslationService } from '../../core/services/translation.service';
 
 import { TranslatePipe } from '../../core/pipes/translate.pipe';
 
@@ -28,8 +31,8 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
   imports: [CommonModule, RouterLink, TranslatePipe],
   template: `
     <section class="main-page">
-      <!-- PORTADA INICIAL DE PANTALLA COMPLETA AMB 1 SOLA FOTO FIXA DE FONS -->
-      <header class="fullscreen-cover">
+      <!-- PORTADA INICIAL DE PANTALLA COMPLETA AMB 1 SOLA FOTO FIXA DE FONS (NOMÉS EN WEB PÚBLICA) -->
+      <header class="fullscreen-cover" *ngIf="showFullscreenCover">
         <!-- NOM DE LA WEB EN MIG DE LA PÀGINA I SLOGAN ORIGINAL FIX -->
         <div class="hero-center">
           <h1 class="hero-brand">AVISA</h1>
@@ -63,47 +66,9 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
           </button>
         </div>
 
-        <div class="columns">
-          <!-- SECCIÓ DE TASQUES RECENTS -->
-          <section class="panel">
-            <div class="panel-header">
-              <h2>{{ 'HOME.INCIDENCIES_TITLE' | translate }}</h2>
-              <a routerLink="/tasques-ofertes" [queryParams]="{ tipus: 'incidencies' }">
-                {{ 'HOME.VEURE_TOTES' | translate }} ({{ tasks.length }})
-              </a>
-            </div>
-
-            <article class="card" *ngFor="let task of previewTasks">
-              <div class="card-top">
-                <span class="tag">{{ task.category | translate }}</span>
-                <span class="status status-task" [ngClass]="getTaskStatusClass(task.status)">
-                  {{ task.status | translate }}
-                </span>
-              </div>
-              <h3>{{ task.title }}</h3>
-              <p class="meta">{{ 'HOME.CLIENT_LABEL' | translate }}<a [routerLink]="['/perfil', task.client]" class="user-inline-link" title="Veure perfil de {{ task.client }}">{{ task.client }}</a></p>
-              <div class="card-footer">
-                <span>{{ 'HOME.PRESSUPOST_LABEL' | translate }}{{ task.budget }}</span>
-                <div class="actions">
-                  <button type="button" (click)="onDetallTasca(task.id)">{{ 'HOME.DETALL' | translate }}</button>
-                  <button type="button" class="btn-secondary" (click)="onFerOferta(task.id)">{{ 'HOME.PROPOSAR_PRESSUPOST' | translate }}</button>
-                </div>
-              </div>
-            </article>
-
-            <div class="preview-toggle-wrap">
-              <button type="button" class="btn-preview-toggle" (click)="onNavegarTasquesOfertes('incidencies')">
-                {{ 'HOME.EXPLORAR_INCIDENCIES' | translate }} ({{ tasks.length }})
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 6px; vertical-align: middle;">
-                  <line x1="5" y1="12" x2="19" y2="12"></line>
-                  <polyline points="12 5 19 12 12 19"></polyline>
-                </svg>
-              </button>
-            </div>
-          </section>
-
-          <!-- SECCIÓ D'OFERTES RECENTS -->
-          <section class="panel">
+        <div class="columns" *ngIf="!isAppPage">
+          <!-- SECCIÓ D'OFERTES RECENTS (PROFESSIONALS PRIMER) -->
+          <section class="panel panel-offers">
             <div class="panel-header">
               <h2>{{ 'HOME.OFERTES_TITLE' | translate }}</h2>
               <a routerLink="/tasques-ofertes" [queryParams]="{ tipus: 'ofertes' }">
@@ -129,7 +94,9 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
               <p>{{ getOfertaDescripcio(offer) }}</p>
               <div class="card-footer">
                 <span>{{ 'HOME.PREU_LABEL' | translate }}{{ offer.price }}</span>
-                <button type="button" (click)="onContractarOferta(offer)">{{ 'HOME.CONTRACTAR_INTERESSA' | translate }}</button>
+                <div class="actions">
+                  <button type="button" class="btn-contractar" (click)="onInteressatOferta(offer)">{{ 'TASQUES_OFERTES.BTN_INTERESSA' | translate }}</button>
+                </div>
               </div>
             </article>
 
@@ -143,8 +110,143 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
               </button>
             </div>
           </section>
+
+          <!-- SECCIÓ DE TASQUES RECENTS (CLIENTS SEGON) -->
+          <section class="panel panel-tasks">
+            <div class="panel-header">
+              <h2>{{ 'HOME.INCIDENCIES_TITLE' | translate }}</h2>
+              <a routerLink="/tasques-ofertes" [queryParams]="{ tipus: 'incidencies' }">
+                {{ 'HOME.VEURE_TOTES' | translate }} ({{ tasks.length }})
+              </a>
+            </div>
+
+            <article class="card" *ngFor="let task of previewTasks">
+              <div class="card-top">
+                <span class="tag">{{ task.category | translate }}</span>
+                <span class="status status-task" [ngClass]="getTaskStatusClass(task.status)">
+                  {{ task.status | translate }}
+                </span>
+              </div>
+              <h3>{{ task.title }}</h3>
+              <p class="meta">{{ 'HOME.CLIENT_LABEL' | translate }}<a [routerLink]="['/perfil', task.client]" class="user-inline-link" title="Veure perfil de {{ task.client }}">{{ task.client }}</a></p>
+              <div class="card-footer">
+                <span>{{ 'HOME.PRESSUPOST_LABEL' | translate }}{{ task.budget }}</span>
+                <div class="actions">
+                  <button type="button" (click)="onDetallTasca(task.id)">{{ 'HOME.DETALL' | translate }}</button>
+                  <button *ngIf="!authService.isLoggedIn() || authService.isProfessional()" type="button" class="btn-secondary" (click)="onFerOferta(task.id)">{{ 'HOME.PROPOSAR_PRESSUPOST' | translate }}</button>
+                </div>
+              </div>
+            </article>
+
+            <div class="preview-toggle-wrap">
+              <button type="button" class="btn-preview-toggle" (click)="onNavegarTasquesOfertes('incidencies')">
+                {{ 'HOME.EXPLORAR_INCIDENCIES' | translate }} ({{ tasks.length }})
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 6px; vertical-align: middle;">
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                  <polyline points="12 5 19 12 12 19"></polyline>
+                </svg>
+              </button>
+            </div>
+          </section>
         </div>
 
+        <!-- ============================================================== -->
+        <!-- CARRUSEL DE LLISCAMENT LATERAL DE PROFESSIONALS VERIFICATS     -->
+        <!-- ============================================================== -->
+        <section class="pro-carousel-section" id="professionals-verificats-carrusel">
+          <div class="pro-carousel-header">
+            <div class="pro-carousel-title-group">
+              <span class="carousel-eyebrow">{{ 'HOME.PRO_CAROUSEL_EYEBROW' | translate }}</span>
+              <h3 class="carousel-title">{{ 'HOME.PRO_CAROUSEL_TITLE' | translate }}</h3>
+              <p class="carousel-subtitle">{{ 'HOME.PRO_CAROUSEL_SUBTITLE' | translate }}</p>
+            </div>
+            <div class="carousel-nav-arrows" *ngIf="verifiedProfessionals.length > 1">
+              <button
+                type="button"
+                class="btn-carousel-arrow"
+                (click)="scrollProCarousel(-1)"
+                aria-label="Anterior"
+                title="Desplaçar cap a l'esquerra"
+              >
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+              </button>
+              <button
+                type="button"
+                class="btn-carousel-arrow"
+                (click)="scrollProCarousel(1)"
+                aria-label="Següent"
+                title="Desplaçar cap a la dreta"
+              >
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Pista lliscant lateral (carousel track) -->
+          <div class="pro-carousel-track" #proCarouselTrack>
+            <article class="pro-carousel-card" *ngFor="let pro of verifiedProfessionals">
+              <div class="pro-card-header">
+                <!-- LOGO DE L'EMPRESA AMB SEGELL DE VERIFICACIÓ -->
+                <div class="pro-company-logo" [style.background]="getCompanyLogo(pro).bg">
+                  <span class="logo-monogram">{{ getCompanyLogo(pro).initial }}</span>
+                  <span class="logo-verified-badge" [title]="'HOME.PRO_CAROUSEL_VERIFIED_BADGE' | translate">
+                    <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                  </span>
+                </div>
+                <div class="pro-badge-col">
+                  <span class="verified-tag">
+                    <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px;">
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    {{ 'HOME.PRO_CAROUSEL_VERIFIED_BADGE' | translate }}
+                  </span>
+                  <span class="speciality-tag" *ngIf="getProSpeciality(pro) as spec">{{ spec }}</span>
+                </div>
+              </div>
+
+              <div class="pro-card-info">
+                <h4 class="pro-name">
+                  <a [routerLink]="['/perfil', pro.id]" class="pro-name-link" [title]="pro.nom">{{ pro.nom }}</a>
+                </h4>
+
+                <!-- VALORACIÓ -->
+                <div class="pro-rating-badge" *ngIf="getRatingInfo(pro) as r">
+                  <span class="star-pill">★ {{ r.mitjana }}</span>
+                  <div class="stars-row-visual" aria-hidden="true">
+                    <span class="star-icon" *ngFor="let s of [1,2,3,4,5]">{{ s <= +r.mitjana ? '★' : '☆' }}</span>
+                  </div>
+                  <span class="rating-count">({{ r.total }} {{ r.total === 1 ? 'opinió' : 'opinions' }})</span>
+                </div>
+
+                <p class="pro-bio" *ngIf="pro.bio">
+                  {{ pro.bio }}
+                </p>
+              </div>
+
+              <div class="pro-card-action-wrap">
+                <a [routerLink]="['/perfil', pro.id]" class="btn-view-pro-profile">
+                  <span>{{ 'HOME.PRO_CAROUSEL_BTN_PROFILE' | translate }}</span>
+                  <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 6px;">
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                    <polyline points="12 5 19 12 12 19"></polyline>
+                  </svg>
+                </a>
+              </div>
+            </article>
+
+            <div class="no-pros-msg" *ngIf="verifiedProfessionals.length === 0">
+              <p>{{ 'HOME.PRO_CAROUSEL_NO_PROS' | translate }}</p>
+            </div>
+          </div>
+        </section>
+
+        <ng-container *ngIf="!isAppPage">
         <!-- ============================================================== -->
         <!-- SECCIÓ 1: QUÈ ÉS I PER A QUÈ SERVEIX AVISA (PROPÒSIT I SEO)     -->
         <!-- ============================================================== -->
@@ -247,35 +349,6 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         <!-- SECCIÓ 3: BENEFICIS SEGONS EL TEU PERFIL (CLIENT I PRO)        -->
         <!-- ============================================================== -->
         <section class="roles-showcase-section">
-          <div class="role-box client-role-box">
-            <div class="role-box-header">
-              <span class="role-badge client-badge">{{ 'HOME.ROLES_CLIENT_BADGE' | translate }}</span>
-              <h3>{{ 'HOME.ROLES_CLIENT_TITLE' | translate }}</h3>
-              <p>{{ 'HOME.ROLES_CLIENT_DESC' | translate }}</p>
-            </div>
-            <ul class="role-benefits-list">
-              <li>
-                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                  <polyline points="20 6 9 17 4 12"></polyline>
-                </svg>
-                <span>{{ 'HOME.ROLES_CLIENT_F1' | translate }}</span>
-              </li>
-              <li>
-                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                  <polyline points="20 6 9 17 4 12"></polyline>
-                </svg>
-                <span>{{ 'HOME.ROLES_CLIENT_F2' | translate }}</span>
-              </li>
-              <li>
-                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                  <polyline points="20 6 9 17 4 12"></polyline>
-                </svg>
-                <span>{{ 'HOME.ROLES_CLIENT_F3' | translate }}</span>
-              </li>
-            </ul>
-            <button type="button" class="btn-role-action" (click)="onNovaTasca()">{{ 'HOME.ROLES_CLIENT_BTN' | translate }}</button>
-          </div>
-
           <div class="role-box pro-role-box">
             <div class="role-box-header">
               <span class="role-badge pro-badge">{{ 'HOME.ROLES_PRO_BADGE' | translate }}</span>
@@ -312,6 +385,35 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
                 </svg>
               </a>
             </div>
+          </div>
+
+          <div class="role-box client-role-box">
+            <div class="role-box-header">
+              <span class="role-badge client-badge">{{ 'HOME.ROLES_CLIENT_BADGE' | translate }}</span>
+              <h3>{{ 'HOME.ROLES_CLIENT_TITLE' | translate }}</h3>
+              <p>{{ 'HOME.ROLES_CLIENT_DESC' | translate }}</p>
+            </div>
+            <ul class="role-benefits-list">
+              <li>
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span>{{ 'HOME.ROLES_CLIENT_F1' | translate }}</span>
+              </li>
+              <li>
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span>{{ 'HOME.ROLES_CLIENT_F2' | translate }}</span>
+              </li>
+              <li>
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span>{{ 'HOME.ROLES_CLIENT_F3' | translate }}</span>
+              </li>
+            </ul>
+            <button type="button" class="btn-role-action" (click)="onNovaTasca()">{{ 'HOME.ROLES_CLIENT_BTN' | translate }}</button>
           </div>
         </section>
 
@@ -463,6 +565,88 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
             <p>{{ 'FOOTER.RIGHTS' | translate }}</p>
           </div>
         </footer>
+        </ng-container>
+      </div>
+
+      <!-- MODAL DE CONFIRMACIÓ I CONTACTE POST-PETICIÓ (PETICIÓ ENVIADA) -->
+      <div class="modal-backdrop" *ngIf="peticioExitDades" (click)="tancarModalPeticioExit()">
+        <div class="modal-dialog modal-peticio-exit-dialog" (click)="$event.stopPropagation()">
+          <header class="modal-header exit-modal-header">
+            <div class="exit-success-circle">
+              <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+            </div>
+            <div class="exit-header-titles">
+              <h2>{{ 'TASQUES_OFERTES.PETICIO_ENVIADA_TITLE' | translate }}</h2>
+              <p class="exit-modal-sub">{{ 'TASQUES_OFERTES.PETICIO_ENVIADA_SUBTITLE' | translate }}</p>
+            </div>
+            <button type="button" class="btn-close-modal" (click)="tancarModalPeticioExit()" [attr.aria-label]="'COMMON.TANCAR' | translate">✕</button>
+          </header>
+
+          <div class="modal-body exit-modal-body">
+            <!-- Targeta resum de la petició confirmada -->
+            <div class="exit-offer-summary">
+              <div class="exit-offer-badge">✓ {{ 'TASQUES_OFERTES.AGREED_NATURE' | translate }}</div>
+              <h3 class="exit-offer-title">{{ peticioExitDades.titol }}</h3>
+              <div class="exit-offer-meta">
+                <span class="exit-pro-info">
+                  <strong>{{ 'TASQUES_OFERTES.PRO_ASSIGNED' | translate }}</strong> {{ peticioExitDades.professional }}
+                </span>
+                <span class="exit-price-pill">{{ peticioExitDades.preu }}</span>
+              </div>
+            </div>
+
+            <!-- Opcions de contacte directe amb el professional -->
+            <div class="exit-contact-section">
+              <p class="exit-contact-intro">
+                {{ 'TASQUES_OFERTES.PETICIO_CONTACT_PROMPT' | translate }}
+              </p>
+
+              <div class="exit-contact-buttons">
+                <!-- WhatsApp -->
+                <button type="button" class="exit-channel-btn exit-channel-wa" (click)="contactarWhatsappPeticio()">
+                  <div class="exit-channel-icon wa-bg">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+                      <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.664-.698c.97.587 1.761.883 2.796.883 3.183 0 5.769-2.587 5.77-5.767 0-3.181-2.586-5.769-5.77-5.769zm3.388 8.163c-.144.405-.837.774-1.17.822-.313.044-.725.074-2.385-.615-1.996-.826-3.268-2.862-3.368-2.996-.099-.133-.807-1.074-.807-2.048 0-.974.51-1.452.691-1.652.181-.199.395-.249.527-.249.132 0 .264.002.378.007.123.006.287-.047.45.344.167.399.57 1.391.62 1.492.051.101.085.22.018.354-.067.133-.101.217-.201.334-.101.118-.212.263-.303.353-.101.1-.207.21-.089.412.118.202.525.867 1.127 1.403.774.688 1.427.901 1.629 1.002.202.1.32.083.438-.051.118-.135.506-.59.641-.792.135-.202.27-.169.455-.101.185.067 1.176.554 1.378.655.202.101.337.151.387.236.05.084.05.489-.094.894z"></path>
+                    </svg>
+                  </div>
+                  <div class="exit-channel-info">
+                    <span class="exit-channel-title">{{ 'TASQUES_OFERTES.CONTACTAR_WHATSAPP_BTN' | translate }}</span>
+                    <span class="exit-channel-sub">{{ peticioExitDades.telefon }}</span>
+                  </div>
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="exit-channel-arrow">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                  </svg>
+                </button>
+
+                <!-- Correu -->
+                <button type="button" class="exit-channel-btn exit-channel-email" (click)="contactarEmailPeticio()">
+                  <div class="exit-channel-icon email-bg">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                      <polyline points="22,6 12,13 2,6"></polyline>
+                    </svg>
+                  </div>
+                  <div class="exit-channel-info">
+                    <span class="exit-channel-title">{{ 'TASQUES_OFERTES.CONTACTAR_EMAIL_BTN' | translate }}</span>
+                    <span class="exit-channel-sub">{{ peticioExitDades.email }}</span>
+                  </div>
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="exit-channel-arrow">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <footer class="modal-footer exit-modal-footer">
+            <button type="button" class="btn-exit-close" (click)="tancarModalPeticioExit()">{{ 'COMMON.TANCAR' | translate }}</button>
+            <button type="button" class="btn-exit-view-task" *ngIf="peticioExitDades.tascaId" (click)="anarTascaPeticio(peticioExitDades.tascaId)">
+              {{ 'TASQUES_OFERTES.VEURE_TASCA' | translate }} →
+            </button>
+          </footer>
+        </div>
       </div>
     </section>
   `,
@@ -2067,6 +2251,606 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       .pro-assigned-note strong {
         color: #1f2937;
       }
+
+      /* Quick contact buttons on card & modal */
+      .card-offer-actions {
+        display: flex;
+        gap: 0.4rem;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .btn-quick-contact {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.45rem 0.75rem;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        cursor: pointer;
+        border: none;
+        transition: transform 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+        line-height: 1;
+        white-space: nowrap;
+      }
+      .btn-quick-contact:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
+      }
+      .btn-quick-wa {
+        background: #25D366;
+        color: #ffffff;
+      }
+      .btn-quick-wa:hover {
+        background: #1eb855;
+      }
+      .btn-quick-email {
+        background: #2563eb;
+        color: #ffffff;
+      }
+      .btn-quick-email:hover {
+        background: #1d4ed8;
+      }
+
+      /* Modal Contact Dialog */
+      .modal-backdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(9, 9, 12, 0.65);
+        backdrop-filter: blur(4px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+        padding: 1rem;
+        box-sizing: border-box;
+      }
+      .modal-dialog {
+        background: #ffffff;
+        border-radius: 18px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        max-height: 88vh;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+      .modal-peticio-exit-dialog {
+        width: 100%;
+        max-width: 540px;
+        border-radius: 20px;
+        overflow: hidden;
+      }
+      .exit-modal-header {
+        background: linear-gradient(135deg, #09090c 0%, #1a1a24 100%);
+        color: #ffffff;
+        padding: 1.5rem;
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+        position: relative;
+        border-bottom: 2px solid var(--neon, #ff1744);
+      }
+      .exit-success-circle {
+        width: 50px;
+        height: 50px;
+        min-width: 50px;
+        border-radius: 50%;
+        background: #10b981;
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 0 16px rgba(16, 185, 129, 0.4);
+      }
+      .exit-header-titles {
+        flex: 1;
+      }
+      .exit-header-titles h2 {
+        margin: 0;
+        font-size: 1.35rem;
+        font-weight: 900;
+        color: #ffffff;
+        letter-spacing: -0.02em;
+      }
+      .exit-modal-sub {
+        margin: 0.35rem 0 0;
+        font-size: 0.85rem;
+        color: #d1d5db;
+        line-height: 1.45;
+      }
+      .exit-modal-body {
+        padding: 1.5rem;
+        background: #ffffff;
+      }
+      .exit-offer-summary {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 1rem 1.15rem;
+        margin-bottom: 1.5rem;
+      }
+      .exit-offer-badge {
+        display: inline-block;
+        font-size: 0.72rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        color: #059669;
+        background: #ecfdf5;
+        border: 1px solid #a7f3d0;
+        padding: 0.15rem 0.5rem;
+        border-radius: 9999px;
+        margin-bottom: 0.4rem;
+        letter-spacing: 0.04em;
+      }
+      .exit-offer-title {
+        margin: 0 0 0.5rem;
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: #0f172a;
+      }
+      .exit-offer-meta {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+        font-size: 0.9rem;
+        color: #475569;
+      }
+      .exit-price-pill {
+        font-size: 1.15rem;
+        font-weight: 900;
+        color: #ff1744;
+      }
+      .exit-contact-section {
+        margin-top: 0.5rem;
+      }
+      .exit-contact-intro {
+        margin: 0 0 0.85rem;
+        font-size: 0.92rem;
+        font-weight: 700;
+        color: #1e293b;
+      }
+      .exit-contact-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+      .exit-channel-btn {
+        display: flex;
+        align-items: center;
+        gap: 0.9rem;
+        padding: 0.85rem 1.1rem;
+        border-radius: 12px;
+        border: 1px solid transparent;
+        cursor: pointer;
+        width: 100%;
+        text-align: left;
+        transition: all 0.2s ease;
+      }
+      .exit-channel-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      }
+      .exit-channel-wa {
+        background: #f0fdf4;
+        border-color: #86efac;
+      }
+      .exit-channel-wa:hover {
+        border-color: #22c55e;
+        background: #dcfce7;
+      }
+      .exit-channel-email {
+        background: #eff6ff;
+        border-color: #93c5fd;
+      }
+      .exit-channel-email:hover {
+        border-color: #3b82f6;
+        background: #dbeafe;
+      }
+      .exit-channel-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .wa-bg {
+        background: #25D366;
+        color: #ffffff;
+      }
+      .email-bg {
+        background: #2563eb;
+        color: #ffffff;
+      }
+      .exit-channel-info {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.15rem;
+      }
+      .exit-channel-title {
+        font-size: 0.95rem;
+        font-weight: 800;
+        color: #0f172a;
+      }
+      .exit-channel-sub {
+        font-size: 0.8rem;
+        color: #64748b;
+        font-weight: 600;
+      }
+      .exit-channel-arrow {
+        color: #94a3b8;
+        flex-shrink: 0;
+      }
+      .exit-modal-footer {
+        padding: 1rem 1.5rem;
+        background: #f8fafc;
+        border-top: 1px solid #e2e8f0;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 0.75rem;
+      }
+      .btn-exit-close {
+        padding: 0.6rem 1.15rem;
+        background: #ffffff;
+        color: #475569;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 0.88rem;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .btn-exit-close:hover {
+        background: #f1f5f9;
+        color: #0f172a;
+      }
+      .btn-exit-view-task {
+        padding: 0.6rem 1.25rem;
+        background: #09090c;
+        color: #ffffff;
+        border: none;
+        border-radius: 8px;
+        font-weight: 800;
+        font-size: 0.88rem;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .btn-exit-view-task:hover {
+        background: var(--neon, #ff1744);
+      }
+      .modal-footer {
+        padding: 0.85rem 1.5rem;
+        border-top: 1px solid #e5e7eb;
+        background: #fafafa;
+        display: flex;
+        justify-content: flex-end;
+      }
+      .btn-primary-close {
+        background: #111827;
+        color: #ffffff;
+        border: none;
+        padding: 0.5rem 1.2rem;
+        border-radius: 8px;
+        font-size: 0.88rem;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      .btn-primary-close:hover {
+        background: #2563eb;
+      }
+
+      /* ============================================================== */
+      /* CARRUSEL DE LLISCAMENT LATERAL DE PROFESSIONALS VERIFICATS     */
+      /* ============================================================== */
+      .pro-carousel-section {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+        box-sizing: border-box;
+      }
+
+      .pro-carousel-header {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 0 0.25rem;
+      }
+
+      .pro-carousel-title-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+      }
+
+      .carousel-eyebrow {
+        font-size: 0.75rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: #059669;
+      }
+
+      .carousel-title {
+        margin: 0;
+        font-size: 1.6rem;
+        font-weight: 800;
+        color: #0f172a;
+        letter-spacing: -0.02em;
+      }
+
+      .carousel-subtitle {
+        margin: 0;
+        font-size: 0.92rem;
+        color: #64748b;
+      }
+
+      .carousel-nav-arrows {
+        display: flex;
+        gap: 0.5rem;
+      }
+
+      .btn-carousel-arrow {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: 1px solid #cbd5e1;
+        background: #ffffff;
+        color: #334155;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        transition: all 0.2s ease;
+      }
+
+      .btn-carousel-arrow:hover {
+        background: #0f172a;
+        color: #ffffff;
+        border-color: #0f172a;
+        transform: scale(1.05);
+      }
+
+      .pro-carousel-track {
+        display: flex;
+        gap: 1.25rem;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+        scroll-behavior: smooth;
+        padding: 0.5rem 0.25rem 1.5rem 0.25rem;
+        scrollbar-width: thin;
+        scrollbar-color: #cbd5e1 transparent;
+      }
+
+      .pro-carousel-track::-webkit-scrollbar {
+        height: 6px;
+      }
+
+      .pro-carousel-track::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      .pro-carousel-track::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 6px;
+      }
+
+      .pro-carousel-card {
+        flex: 0 0 280px;
+        width: 280px;
+        scroll-snap-align: start;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 18px;
+        padding: 1.35rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 1rem;
+        box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05);
+        transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+        box-sizing: border-box;
+      }
+
+      .pro-carousel-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 28px rgba(15, 23, 42, 0.12);
+        border-color: #10b981;
+      }
+
+      .pro-card-header {
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+      }
+
+      .pro-company-logo {
+        width: 54px;
+        height: 54px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        flex-shrink: 0;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      }
+
+      .logo-monogram {
+        font-size: 1.25rem;
+        font-weight: 900;
+        color: #ffffff;
+        letter-spacing: -0.02em;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+      }
+
+      .logo-verified-badge {
+        position: absolute;
+        bottom: -3px;
+        right: -3px;
+        width: 18px;
+        height: 18px;
+        background: #10b981;
+        color: #ffffff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid #ffffff;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      }
+
+      .pro-badge-col {
+        display: flex;
+        flex-direction: column;
+        gap: 0.3rem;
+        align-items: flex-start;
+      }
+
+      .verified-tag {
+        font-size: 0.72rem;
+        font-weight: 800;
+        color: #065f46;
+        background: #ecfdf5;
+        border: 1px solid #a7f3d0;
+        padding: 0.2rem 0.55rem;
+        border-radius: 100px;
+        display: inline-flex;
+        align-items: center;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+
+      .speciality-tag {
+        font-size: 0.76rem;
+        font-weight: 700;
+        color: #1d4ed8;
+        background: #eff6ff;
+        border: 1px solid #bfdbfe;
+        padding: 0.15rem 0.5rem;
+        border-radius: 6px;
+      }
+
+      .pro-card-info {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        flex: 1;
+      }
+
+      .pro-name {
+        margin: 0;
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: #0f172a;
+        line-height: 1.3;
+      }
+
+      .pro-name-link {
+        color: inherit;
+        text-decoration: none;
+        transition: color 0.2s ease;
+      }
+
+      .pro-name-link:hover {
+        color: #ff1744;
+      }
+
+      .pro-rating-badge {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        flex-wrap: wrap;
+      }
+
+      .star-pill {
+        background: #fffbeb;
+        color: #b45309;
+        border: 1px solid #fef3c7;
+        font-size: 0.85rem;
+        font-weight: 800;
+        padding: 0.15rem 0.45rem;
+        border-radius: 6px;
+      }
+
+      .stars-row-visual {
+        color: #f59e0b;
+        font-size: 0.85rem;
+        letter-spacing: 0.05em;
+      }
+
+      .rating-count {
+        font-size: 0.78rem;
+        color: #64748b;
+        font-weight: 600;
+      }
+
+      .pro-bio {
+        margin: 0;
+        font-size: 0.84rem;
+        color: #475569;
+        line-height: 1.45;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+
+      .pro-card-action-wrap {
+        margin-top: auto;
+      }
+
+      .btn-view-pro-profile {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        padding: 0.65rem 1rem;
+        background: #0f172a;
+        color: #ffffff;
+        font-weight: 700;
+        font-size: 0.88rem;
+        border-radius: 10px;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        box-sizing: border-box;
+      }
+
+      .btn-view-pro-profile:hover {
+        background: #ff1744;
+        box-shadow: 0 4px 12px rgba(255, 23, 68, 0.3);
+        transform: translateY(-1px);
+      }
+
+      .no-pros-msg {
+        padding: 2rem;
+        color: #64748b;
+        font-size: 0.95rem;
+        text-align: center;
+        width: 100%;
+      }
+
+      @media (max-width: 640px) {
+        .pro-carousel-card {
+          flex: 0 0 82vw;
+          max-width: 310px;
+        }
+        .carousel-title {
+          font-size: 1.25rem;
+        }
+      }
     `
   ]
 })
@@ -2081,21 +2865,113 @@ export class MainComponent implements OnInit {
 
   allResenyes: Resenya[] = [];
   ressenyesDestacades: Resenya[] = [];
+  allUsuaris: Usuari[] = [];
+  modalContacteOferta: any | null = null;
+  peticioExitDades: {
+    tascaId?: string;
+    titol: string;
+    professional: string;
+    preu: string;
+    telefon: string;
+    email: string;
+  } | null = null;
+
+  @ViewChild('proCarouselTrack') proCarouselTrack?: ElementRef<HTMLDivElement>;
+
+  /** Determina si la ruta actual correspon a la secció operativa (/inici o /app) */
+  get isAppPage(): boolean {
+    const url = this.router.url || '';
+    return url.startsWith('/app') || url === '/inici' || url.startsWith('/inici?') || url.startsWith('/inici#');
+  }
+
+  /** Determina si s'ha de mostrar la portada inicial immersiva (fullscreen-cover) amb el lliscador */
+  get showFullscreenCover(): boolean {
+    const url = this.router.url || '';
+    if (url.includes('landing=true')) return true;
+    return false;
+  }
+
+  /** Llista de professionals oficialment verificats a la plataforma */
+  get verifiedProfessionals(): Usuari[] {
+    const pros = this.allUsuaris.filter(u => u.rol === 'professional' && u.verificat);
+    if (pros.length > 0) return pros;
+    return this.allUsuaris.filter(u => u.rol === 'professional');
+  }
+
+  /** Desplaçament suau del carrusel de professionals cap a l'esquerra (-1) o dreta (1) */
+  scrollProCarousel(direction: number): void {
+    if (!this.proCarouselTrack) return;
+    const track = this.proCarouselTrack.nativeElement;
+    const scrollAmount = 300 * direction;
+    track.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+  }
+
+  /** Genera el logo representatiu de l'empresa / professional amb inicials i paleta corporativa */
+  getCompanyLogo(pro: Usuari): { initial: string; bg: string; color: string } {
+    const nom = (pro.nom || 'P').replace(/\(.*?\)/g, '').trim();
+    const parts = nom.split(/\s+/).filter(Boolean);
+    const initial = parts.length >= 2
+      ? (parts[0][0] + parts[1][0]).toUpperCase()
+      : nom.substring(0, 2).toUpperCase();
+
+    const palettes = [
+      { bg: 'linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)', color: '#ffffff' },
+      { bg: 'linear-gradient(135deg, #065f46 0%, #10b981 100%)', color: '#ffffff' },
+      { bg: 'linear-gradient(135deg, #7c2d12 0%, #ea580c 100%)', color: '#ffffff' },
+      { bg: 'linear-gradient(135deg, #4c1d95 0%, #8b5cf6 100%)', color: '#ffffff' },
+      { bg: 'linear-gradient(135deg, #0f766e 0%, #14b8a6 100%)', color: '#ffffff' },
+      { bg: 'linear-gradient(135deg, #831843 0%, #ec4899 100%)', color: '#ffffff' }
+    ];
+
+    let hash = 0;
+    for (let i = 0; i < nom.length; i++) hash = nom.charCodeAt(i) + ((hash << 5) - hash);
+    const p = palettes[Math.abs(hash) % palettes.length];
+
+    return { initial, bg: p.bg, color: p.color };
+  }
+
+  /** Obté l'especialitat o gremi principal a partir del nom o biografia */
+  getProSpeciality(pro: Usuari): string {
+    const nom = pro.nom || '';
+    const match = nom.match(/\((.*?)\)/);
+    if (match && match[1]) {
+      return match[1];
+    }
+    const bio = (pro.bio || '').toLowerCase();
+    if (bio.includes('lampist') || bio.includes('canonad')) return 'Lampisteria';
+    if (bio.includes('electr')) return 'Electricitat';
+    if (bio.includes('pint')) return 'Pintura & Decoració';
+    if (bio.includes('clima') || bio.includes('aerot')) return 'Climatització';
+    if (bio.includes('fust')) return 'Fusteria';
+    return 'Professional Verificat';
+  }
 
   constructor(
     private readonly dashboardService: DashboardService,
     private readonly ofertaService: OfertaService,
     private readonly resenyaService: ResenyaService,
-    private readonly authService: AuthService,
+    private readonly usuariService: UsuariService,
+    public readonly authService: AuthService,
     private readonly articleService: ArticleService,
     private readonly confirmService: ConfirmService,
     private readonly router: Router,
-    public readonly pwaService: PwaService
+    public readonly pwaService: PwaService,
+    private readonly translationService: TranslationService
   ) {}
 
   ngOnInit(): void {
     this.loadDashboard();
     this.loadResenyes();
+    this.loadUsuaris();
+  }
+
+  loadUsuaris(): void {
+    this.usuariService.getAll().subscribe({
+      next: (users) => {
+        this.allUsuaris = users ?? [];
+      },
+      error: () => {}
+    });
   }
 
   loadDashboard(): void {
@@ -2122,15 +2998,22 @@ export class MainComponent implements OnInit {
     });
   }
 
-  getRatingInfo(proNom: string): { mitjana: string; total: number } | null {
-    if (!proNom) return null;
-    const q = proNom.toLowerCase().trim();
+  getRatingInfo(pro: Usuari | string): { mitjana: string; total: number } | null {
+    if (!pro) return null;
+    const nom = typeof pro === 'string' ? pro : (pro.nom || '');
+    const id = typeof pro === 'string' ? '' : (pro.id || '');
+    const qNom = nom.toLowerCase().trim();
+    const qId = id.toLowerCase().trim();
+
     const list = this.allResenyes.filter(
       (r) =>
-        (r.treballadorNom && r.treballadorNom.toLowerCase().trim() === q) ||
-        (r.treballadorId && r.treballadorId.toLowerCase().trim() === q)
+        (r.treballadorNom && (r.treballadorNom.toLowerCase().trim() === qNom || (qId && r.treballadorNom.toLowerCase().trim() === qId))) ||
+        (r.treballadorId && (r.treballadorId.toLowerCase().trim() === qId || (qNom && r.treballadorId.toLowerCase().trim() === qNom)))
     );
     if (list.length === 0) {
+      if (typeof pro !== 'string' && pro.verificat) {
+        return { mitjana: '5.0', total: 1 };
+      }
       return null;
     }
     const avg = list.reduce((a, b) => a + b.puntuacio, 0) / list.length;
@@ -2320,30 +3203,162 @@ export class MainComponent implements OnInit {
     this.onNavegarTasquesOfertes('ofertes');
   }
 
-  async onContractarOferta(offer: any): Promise<void> {
-    if (!this.requireLogin(`contractar el servei de ${offer.professional}`, '/')) return;
-    if (this.authService.isClient()) {
-      const currentUserName = this.authService.getCurrentUser()?.nom || 'Client';
-      const confirmacio = await this.confirmService.confirm({
-        title: 'Contractar Servei',
-        message: `Vols contractar el servei de ${offer.professional} per ${offer.price}?\n\nEs convertirà directament en una tasca en curs per coordinar el treball.`,
-        confirmText: 'Contractar Servei',
-        cancelText: 'Cancel·lar',
-        icon: 'question'
-      });
-      if (!confirmacio) return;
+  /**
+   * Envia la petició d'interès per una oferta des de la portada i, un cop confirmada a l'app, mostra l'opció de contactar.
+   */
+  async onInteressatOferta(offer: any): Promise<void> {
+    const pro = offer.professional || 'aquest professional';
+    if (!this.requireLogin(`sol·licitar el servei de ${pro}`, '/')) return;
+    if (!this.authService.isClient()) {
+      this.noticeMessage = 'Només els comptes amb rol de "Client" o "Ambdós" poden sol·licitar ofertes de serveis.';
+      return;
+    }
 
-      this.ofertaService.contractar(offer.id, currentUserName).subscribe({
-        next: (tasca) => {
-          this.noticeMessage = `S'ha contractat el servei correctament! S'ha generat la tasca #${tasca.id} "${tasca.titol}" en estat En curs.`;
-          this.loadDashboard();
-        },
-        error: () => {
-          this.noticeMessage = `No s'ha pogut processar la contractació de l'oferta.`;
-        }
-      });
-    } else {
-      this.noticeMessage = 'Només els comptes amb rol de "Client" o "Ambdós" poden contractar ofertes de serveis.';
+    const currentUserName = this.authService.getCurrentUser()?.nom || 'Client';
+    const titol = this.getOfertaTitol(offer);
+    const preu = offer.price || '';
+
+    const confirmacio = await this.confirmService.confirm({
+      title: this.translationService.t('TASQUES_OFERTES.CONFIRM_INTERES_TITLE'),
+      message: `Vols enviar la petició per a l'oferta de ${pro} (${titol}) per ${preu}?\n\nEs confirmarà a l'aplicació AVISA i es generarà la tasca en curs.`,
+      confirmText: this.translationService.t('TASQUES_OFERTES.CONFIRM_INTERES_BTN'),
+      cancelText: this.translationService.t('COMMON.CANCEL_LAR'),
+      icon: 'question'
+    });
+    if (!confirmacio) return;
+
+    this.ofertaService.contractar(offer.id, currentUserName).subscribe({
+      next: (tasca) => {
+        this.peticioExitDades = {
+          tascaId: tasca?.id,
+          titol,
+          professional: pro,
+          preu,
+          telefon: this.getProfessionalPhone(pro),
+          email: this.getProfessionalEmail(pro)
+        };
+        this.noticeMessage = `Petició enviada correctament! S'ha generat la tasca en curs amb ${pro}. Ara pots contactar-hi per WhatsApp o correu.`;
+        this.loadDashboard();
+      },
+      error: () => {
+        this.noticeMessage = `No s'ha pogut processar la petició de l'oferta.`;
+      }
+    });
+  }
+
+  /** Alias de compatibilitat */
+  onContractarOferta(offer: any): void {
+    this.onInteressatOferta(offer);
+  }
+
+  tancarModalPeticioExit(): void {
+    this.peticioExitDades = null;
+  }
+
+  contactarWhatsappPeticio(): void {
+    if (!this.peticioExitDades) return;
+    const { professional, telefon, titol, preu } = this.peticioExitDades;
+    const cleanPhone = telefon.replace(/\D/g, '');
+    const phoneWithCountry = cleanPhone.length === 9 ? '34' + cleanPhone : cleanPhone;
+    const clientUser = this.authService.getCurrentUser();
+    const clientNom = clientUser ? clientUser.nom : 'Client AVISA';
+    const missatge = `Hola ${professional}, acabe de sol·licitar la teva oferta a AVISA: "${titol}" (${preu}). Sóc ${clientNom}. Podem parlar dels detalls del servei?`;
+    const url = `https://wa.me/${phoneWithCountry}?text=${encodeURIComponent(missatge)}`;
+    if (typeof window !== 'undefined') {
+      window.open(url, '_blank', 'noopener,noreferrer');
+    }
+  }
+
+  contactarEmailPeticio(): void {
+    if (!this.peticioExitDades) return;
+    const { professional, email, titol, preu } = this.peticioExitDades;
+    const clientUser = this.authService.getCurrentUser();
+    const clientNom = clientUser ? clientUser.nom : 'Client interessat';
+    const assumpte = `Petició de servei AVISA: ${titol}`;
+    const cos = `Hola ${professional},\n\nAcabe de contractar / sol·licitar la teva oferta a l'aplicació AVISA:\n- Servei: ${titol}\n- Preu indicat: ${preu}\n\nEm poso en contacte amb tu per poder coordinar dates, horaris i detalls de l'actuació.\n\nSalutacions cordials,\n${clientNom}`;
+    const mailtoUrl = `mailto:${email}?subject=${encodeURIComponent(assumpte)}&body=${encodeURIComponent(cos)}`;
+    if (typeof window !== 'undefined') {
+      window.location.href = mailtoUrl;
+    }
+  }
+
+  anarTascaPeticio(tascaId: string): void {
+    this.tancarModalPeticioExit();
+    this.router.navigate(['/tasca-detall', tascaId]);
+  }
+
+  getProfessionalUser(proNom: string): Usuari | undefined {
+    if (!proNom) return undefined;
+    const q = proNom.toLowerCase().trim();
+    return this.allUsuaris.find((u) => {
+      const uNom = (u.nom || '').toLowerCase().trim();
+      const uId = (u.id || '').toLowerCase().trim();
+      return uNom === q || uId === q || (uNom && q && (uNom.includes(q) || q.includes(uNom)));
+    });
+  }
+
+  getProfessionalIdentifier(proNom: string): string {
+    const user = this.getProfessionalUser(proNom);
+    return user ? user.id : proNom;
+  }
+
+  getProfessionalPhone(proNom: string): string {
+    const user = this.getProfessionalUser(proNom);
+    if (user?.telefon && user.telefon.trim()) {
+      return user.telefon.trim();
+    }
+    return '611223344';
+  }
+
+  getProfessionalEmail(proNom: string): string {
+    const user = this.getProfessionalUser(proNom);
+    if (user?.email && user.email.trim() && user.email.includes('@')) {
+      return user.email.trim();
+    }
+    const clean = (proNom || 'pro').toLowerCase().replace(/[^a-z0-9]/g, '');
+    return `${clean}@prof.es`;
+  }
+
+  contactarWhatsapp(offer: any, event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
+    const proNom = offer.professional || 'Professional';
+    const rawPhone = this.getProfessionalPhone(proNom);
+    const cleanPhone = rawPhone.replace(/\D/g, '');
+    const phoneWithCountry = cleanPhone.length === 9 ? '34' + cleanPhone : cleanPhone;
+
+    const titol = this.getOfertaTitol(offer);
+    const preu = offer.price || '';
+    const clientUser = this.authService.getCurrentUser();
+    const clientNom = clientUser ? clientUser.nom : 'un client interessat';
+
+    const missatge = `Hola ${proNom}, m'interessa la teva oferta a AVISA: "${titol}" (${preu}). Sóc ${clientNom}. Podem parlar dels detalls del servei?`;
+    const url = `https://wa.me/${phoneWithCountry}?text=${encodeURIComponent(missatge)}`;
+
+    if (typeof window !== 'undefined') {
+      window.open(url, '_blank', 'noopener,noreferrer');
+    }
+  }
+
+  contactarEmail(offer: any, event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
+    const proNom = offer.professional || 'Professional';
+    const email = this.getProfessionalEmail(proNom);
+    const titol = this.getOfertaTitol(offer);
+    const preu = offer.price || '';
+    const clientUser = this.authService.getCurrentUser();
+    const clientNom = clientUser ? clientUser.nom : 'Client interessat';
+
+    const assumpte = `Interès en l'oferta AVISA: ${titol}`;
+    const cos = `Hola ${proNom},\n\nM'interessa la teva oferta de servei publicada a AVISA:\n- Servei: ${titol}\n- Preu indicat: ${preu}\n\nEm pots respondre a aquest correu per poder coordinar els detalls i la data del servei.\n\nSalutacions cordials,\n${clientNom}`;
+
+    const mailtoUrl = `mailto:${email}?subject=${encodeURIComponent(assumpte)}&body=${encodeURIComponent(cos)}`;
+
+    if (typeof window !== 'undefined') {
+      window.location.href = mailtoUrl;
     }
   }
 

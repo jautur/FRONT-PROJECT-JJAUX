@@ -11,6 +11,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
 import { ConfirmService } from '../../core/services/confirm.service';
 import { Resenya } from '../../models/resenya.model';
 import { Usuari } from '../../models/usuari.model';
+import { TranslationService } from '../../core/services/translation.service';
 
 interface CategoriaFiltre {
   id: string;
@@ -45,10 +46,10 @@ interface CategoriaFiltre {
           </p>
         </div>
         <div class="market-header-actions">
-          <button type="button" class="btn-create-task" (click)="onNovaIncidencia()">
+          <button *ngIf="!authService.isLoggedIn() || isClient()" type="button" class="btn-create-task" (click)="onNovaIncidencia()">
             {{ 'TASQUES_OFERTES.BTN_NOVA_INCIDENCIA' | translate }}
           </button>
-          <button type="button" class="btn-create-offer" (click)="onNovaOferta()">
+          <button *ngIf="!authService.isLoggedIn() || isProfessional()" type="button" class="btn-create-offer" (click)="onNovaOferta()">
             {{ 'TASQUES_OFERTES.BTN_NOVA_OFERTA' | translate }}
           </button>
         </div>
@@ -303,11 +304,12 @@ interface CategoriaFiltre {
                       <button *ngIf="isOfferOwner(offer)" type="button" class="btn-action-delete-offer" (click)="onDeleteOferta(offer.id)" [attr.title]="'TASQUES_OFERTES.BORRAR' | translate">
                         {{ 'TASQUES_OFERTES.BORRAR' | translate }}
                       </button>
-                      <button type="button" class="btn-action-primary btn-contractar" (click)="onContractarOferta(offer)">
+
+                      <button type="button" class="btn-action-primary btn-contractar" (click)="onInteressatOferta(offer)">
                         <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px; vertical-align: -2px;">
-                          <polyline points="20 6 9 17 4 12"></polyline>
+                          <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
                         </svg>
-                        {{ 'TASQUES_OFERTES.CONTRACTAR' | translate }}
+                        {{ 'TASQUES_OFERTES.BTN_INTERESSA' | translate }}
                       </button>
                     </div>
                   </div>
@@ -351,7 +353,7 @@ interface CategoriaFiltre {
                       <button type="button" class="btn-action-detail" (click)="onDetallTasca(task.id)">
                         {{ 'TASQUES_OFERTES.DETALL' | translate }}
                       </button>
-                      <button type="button" class="btn-action-primary" (click)="onFerOferta(task.id)">
+                      <button *ngIf="!authService.isLoggedIn() || isProfessional()" type="button" class="btn-action-primary" (click)="onFerOferta(task.id)">
                         {{ 'TASQUES_OFERTES.PROPOSAR_PRESSUPOST' | translate }}
                       </button>
                     </div>
@@ -438,6 +440,14 @@ interface CategoriaFiltre {
                   <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
                 </svg>
                 <span>{{ 'TASQUES_OFERTES.MODAL_PHONE_LABEL' | translate }} <strong>{{ modalProfessionalTelefon }}</strong></span>
+                <div class="pro-modal-quick-actions" style="margin-left: auto; display: inline-flex; gap: 0.35rem;">
+                  <button type="button" class="btn-quick-contact btn-quick-wa" (click)="contactarWhatsappDirecte(modalProfessionalNom, modalProfessionalTelefon)" [attr.title]="'TASQUES_OFERTES.CONTACTAR_WHATSAPP' | translate">
+                    <span>WhatsApp</span>
+                  </button>
+                  <button type="button" class="btn-quick-contact btn-quick-email" (click)="contactarEmailDirecte(modalProfessionalNom)" [attr.title]="'TASQUES_OFERTES.CONTACTAR_EMAIL' | translate">
+                    <span>Correu</span>
+                  </button>
+                </div>
               </div>
               <p class="pro-bio-text" *ngIf="modalProfessionalBio">{{ modalProfessionalBio }}</p>
             </div>
@@ -474,6 +484,87 @@ interface CategoriaFiltre {
               {{ 'TASQUES_OFERTES.MODAL_VIEW_PROFILE' | translate }}
             </button>
             <button type="button" class="btn-primary-close" (click)="tancarModalRessenyes()">{{ 'COMMON.TANCAR' | translate }}</button>
+          </footer>
+        </div>
+      </div>
+
+      <!-- MODAL DE CONFIRMACIÓ I CONTACTE POST-PETICIÓ (PETICIÓ ENVIADA) -->
+      <div class="modal-backdrop" *ngIf="peticioExitDades" (click)="tancarModalPeticioExit()">
+        <div class="modal-dialog modal-peticio-exit-dialog" (click)="$event.stopPropagation()">
+          <header class="modal-header exit-modal-header">
+            <div class="exit-success-circle">
+              <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+            </div>
+            <div class="exit-header-titles">
+              <h2>{{ 'TASQUES_OFERTES.PETICIO_ENVIADA_TITLE' | translate }}</h2>
+              <p class="exit-modal-sub">{{ 'TASQUES_OFERTES.PETICIO_ENVIADA_SUBTITLE' | translate }}</p>
+            </div>
+            <button type="button" class="btn-close-modal" (click)="tancarModalPeticioExit()" [attr.aria-label]="'COMMON.TANCAR' | translate">✕</button>
+          </header>
+
+          <div class="modal-body exit-modal-body">
+            <!-- Targeta resum de la petició confirmada -->
+            <div class="exit-offer-summary">
+              <div class="exit-offer-badge">✓ {{ 'TASQUES_OFERTES.AGREED_NATURE' | translate }}</div>
+              <h3 class="exit-offer-title">{{ peticioExitDades.titol }}</h3>
+              <div class="exit-offer-meta">
+                <span class="exit-pro-info">
+                  <strong>{{ 'TASQUES_OFERTES.PRO_ASSIGNED' | translate }}</strong> {{ peticioExitDades.professional }}
+                </span>
+                <span class="exit-price-pill">{{ peticioExitDades.preu }}</span>
+              </div>
+            </div>
+
+            <!-- Opcions de contacte directe amb el professional -->
+            <div class="exit-contact-section">
+              <p class="exit-contact-intro">
+                {{ 'TASQUES_OFERTES.PETICIO_CONTACT_PROMPT' | translate }}
+              </p>
+
+              <div class="exit-contact-buttons">
+                <!-- WhatsApp -->
+                <button type="button" class="exit-channel-btn exit-channel-wa" (click)="contactarWhatsappPeticio()">
+                  <div class="exit-channel-icon wa-bg">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+                      <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.664-.698c.97.587 1.761.883 2.796.883 3.183 0 5.769-2.587 5.77-5.767 0-3.181-2.586-5.769-5.77-5.769zm3.388 8.163c-.144.405-.837.774-1.17.822-.313.044-.725.074-2.385-.615-1.996-.826-3.268-2.862-3.368-2.996-.099-.133-.807-1.074-.807-2.048 0-.974.51-1.452.691-1.652.181-.199.395-.249.527-.249.132 0 .264.002.378.007.123.006.287-.047.45.344.167.399.57 1.391.62 1.492.051.101.085.22.018.354-.067.133-.101.217-.201.334-.101.118-.212.263-.303.353-.101.1-.207.21-.089.412.118.202.525.867 1.127 1.403.774.688 1.427.901 1.629 1.002.202.1.32.083.438-.051.118-.135.506-.59.641-.792.135-.202.27-.169.455-.101.185.067 1.176.554 1.378.655.202.101.337.151.387.236.05.084.05.489-.094.894z"></path>
+                    </svg>
+                  </div>
+                  <div class="exit-channel-info">
+                    <span class="exit-channel-title">{{ 'TASQUES_OFERTES.CONTACTAR_WHATSAPP_BTN' | translate }}</span>
+                    <span class="exit-channel-sub">{{ peticioExitDades.telefon }}</span>
+                  </div>
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="exit-channel-arrow">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                  </svg>
+                </button>
+
+                <!-- Correu -->
+                <button type="button" class="exit-channel-btn exit-channel-email" (click)="contactarEmailPeticio()">
+                  <div class="exit-channel-icon email-bg">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                      <polyline points="22,6 12,13 2,6"></polyline>
+                    </svg>
+                  </div>
+                  <div class="exit-channel-info">
+                    <span class="exit-channel-title">{{ 'TASQUES_OFERTES.CONTACTAR_EMAIL_BTN' | translate }}</span>
+                    <span class="exit-channel-sub">{{ peticioExitDades.email }}</span>
+                  </div>
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="exit-channel-arrow">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <footer class="modal-footer exit-modal-footer">
+            <button type="button" class="btn-exit-close" (click)="tancarModalPeticioExit()">{{ 'COMMON.TANCAR' | translate }}</button>
+            <button type="button" class="btn-exit-view-task" *ngIf="peticioExitDades.tascaId" (click)="anarTascaPeticio(peticioExitDades.tascaId)">
+              {{ 'TASQUES_OFERTES.VEURE_TASCA' | translate }} →
+            </button>
           </footer>
         </div>
       </div>
@@ -1717,6 +1808,256 @@ interface CategoriaFiltre {
           padding: 0.75rem 1rem;
         }
       }
+
+      /* Quick contact buttons on card & modal */
+      .btn-quick-contact {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.45rem 0.75rem;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        cursor: pointer;
+        border: none;
+        transition: transform 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+        line-height: 1;
+        white-space: nowrap;
+      }
+      .btn-quick-contact:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
+      }
+      .btn-quick-wa {
+        background: #25D366;
+        color: #ffffff;
+      }
+      .btn-quick-wa:hover {
+        background: #1eb855;
+      }
+      .btn-quick-email {
+        background: #2563eb;
+        color: #ffffff;
+      }
+      .btn-quick-email:hover {
+        background: #1d4ed8;
+      }
+      .pro-modal-quick-actions {
+        display: inline-flex;
+        gap: 0.35rem;
+        margin-left: auto;
+      }
+
+      /* Modal Petició Enviada & Contacte Post-Confirmació */
+      .modal-peticio-exit-dialog {
+        max-width: 540px;
+        border-radius: 20px;
+        overflow: hidden;
+      }
+      .exit-modal-header {
+        background: linear-gradient(135deg, #09090c 0%, #1a1a24 100%);
+        color: #ffffff;
+        padding: 1.5rem;
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+        position: relative;
+        border-bottom: 2px solid var(--neon, #ff1744);
+      }
+      .exit-success-circle {
+        width: 50px;
+        height: 50px;
+        min-width: 50px;
+        border-radius: 50%;
+        background: #10b981;
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 0 16px rgba(16, 185, 129, 0.4);
+      }
+      .exit-header-titles {
+        flex: 1;
+      }
+      .exit-header-titles h2 {
+        margin: 0;
+        font-size: 1.35rem;
+        font-weight: 900;
+        color: #ffffff;
+        letter-spacing: -0.02em;
+      }
+      .exit-modal-sub {
+        margin: 0.35rem 0 0;
+        font-size: 0.85rem;
+        color: #d1d5db;
+        line-height: 1.45;
+      }
+      .exit-modal-body {
+        padding: 1.5rem;
+        background: #ffffff;
+      }
+      .exit-offer-summary {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 1rem 1.15rem;
+        margin-bottom: 1.5rem;
+      }
+      .exit-offer-badge {
+        display: inline-block;
+        font-size: 0.72rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        color: #059669;
+        background: #ecfdf5;
+        border: 1px solid #a7f3d0;
+        padding: 0.15rem 0.5rem;
+        border-radius: 9999px;
+        margin-bottom: 0.4rem;
+        letter-spacing: 0.04em;
+      }
+      .exit-offer-title {
+        margin: 0 0 0.5rem;
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: #0f172a;
+      }
+      .exit-offer-meta {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+        font-size: 0.9rem;
+        color: #475569;
+      }
+      .exit-price-pill {
+        font-size: 1.15rem;
+        font-weight: 900;
+        color: #ff1744;
+      }
+      .exit-contact-section {
+        margin-top: 0.5rem;
+      }
+      .exit-contact-intro {
+        margin: 0 0 0.85rem;
+        font-size: 0.92rem;
+        font-weight: 700;
+        color: #1e293b;
+      }
+      .exit-contact-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+      .exit-channel-btn {
+        display: flex;
+        align-items: center;
+        gap: 0.9rem;
+        padding: 0.85rem 1.1rem;
+        border-radius: 12px;
+        border: 1px solid transparent;
+        cursor: pointer;
+        width: 100%;
+        text-align: left;
+        transition: all 0.2s ease;
+      }
+      .exit-channel-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      }
+      .exit-channel-wa {
+        background: #f0fdf4;
+        border-color: #86efac;
+      }
+      .exit-channel-wa:hover {
+        border-color: #22c55e;
+        background: #dcfce7;
+      }
+      .exit-channel-email {
+        background: #eff6ff;
+        border-color: #93c5fd;
+      }
+      .exit-channel-email:hover {
+        border-color: #3b82f6;
+        background: #dbeafe;
+      }
+      .exit-channel-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .wa-bg {
+        background: #25D366;
+        color: #ffffff;
+      }
+      .email-bg {
+        background: #2563eb;
+        color: #ffffff;
+      }
+      .exit-channel-info {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.15rem;
+      }
+      .exit-channel-title {
+        font-size: 0.95rem;
+        font-weight: 800;
+        color: #0f172a;
+      }
+      .exit-channel-sub {
+        font-size: 0.8rem;
+        color: #64748b;
+        font-weight: 600;
+      }
+      .exit-channel-arrow {
+        color: #94a3b8;
+        flex-shrink: 0;
+      }
+      .exit-modal-footer {
+        padding: 1rem 1.5rem;
+        background: #f8fafc;
+        border-top: 1px solid #e2e8f0;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 0.75rem;
+      }
+      .btn-exit-close {
+        padding: 0.6rem 1.15rem;
+        background: #ffffff;
+        color: #475569;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 0.88rem;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .btn-exit-close:hover {
+        background: #f1f5f9;
+        color: #0f172a;
+      }
+      .btn-exit-view-task {
+        padding: 0.6rem 1.25rem;
+        background: #09090c;
+        color: #ffffff;
+        border: none;
+        border-radius: 8px;
+        font-weight: 800;
+        font-size: 0.88rem;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .btn-exit-view-task:hover {
+        background: var(--neon, #ff1744);
+      }
     `
   ]
 })
@@ -1787,17 +2128,35 @@ export class TasquesOfertesComponent implements OnInit {
   modalProfessionalTelefon: string | null = null;
   modalProfessionalRating: { mitjana: string; total: number } | null = null;
   modalReviews: Resenya[] = [];
+  modalContacteOferta: any | null = null;
+  peticioExitDades: {
+    tascaId?: string;
+    titol: string;
+    professional: string;
+    preu: string;
+    telefon: string;
+    email: string;
+  } | null = null;
 
   constructor(
     private readonly dashboardService: DashboardService,
     private readonly ofertaService: OfertaService,
     private readonly resenyaService: ResenyaService,
     private readonly usuariService: UsuariService,
-    private readonly authService: AuthService,
+    public readonly authService: AuthService,
     private readonly confirmService: ConfirmService,
     private readonly router: Router,
-    private readonly route: ActivatedRoute
+    private readonly route: ActivatedRoute,
+    private readonly translationService: TranslationService
   ) {}
+
+  isClient(): boolean {
+    return this.authService.isClient();
+  }
+
+  isProfessional(): boolean {
+    return this.authService.isProfessional();
+  }
 
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
@@ -1806,6 +2165,9 @@ export class TasquesOfertesComponent implements OnInit {
         if (t === 'tasques' || t === 'incidencies' || t === 'ofertes' || t === 'tots') {
           this.tipusFiltre = t as 'tots' | 'incidencies' | 'ofertes' | 'tasques';
         }
+      } else if (this.authService.isLoggedIn() && this.authService.isClient() && !this.authService.isProfessional()) {
+        // Els usuaris clients han de visualitzar abans els professionals i les seves ofertes
+        this.tipusFiltre = 'ofertes';
       }
       if (params['categoria']) {
         this.categoriaSeleccionada = params['categoria'];
@@ -1875,11 +2237,11 @@ export class TasquesOfertesComponent implements OnInit {
   getProfessionalUser(proNom: string): Usuari | undefined {
     if (!proNom) return undefined;
     const q = proNom.toLowerCase().trim();
-    return this.allUsuaris.find(
-      (u) =>
-        (u.nom && u.nom.toLowerCase().trim() === q) ||
-        (u.id && u.id.toLowerCase().trim() === q)
-    );
+    return this.allUsuaris.find((u) => {
+      const uNom = (u.nom || '').toLowerCase().trim();
+      const uId = (u.id || '').toLowerCase().trim();
+      return uNom === q || uId === q || (uNom && q && (uNom.includes(q) || q.includes(uNom)));
+    });
   }
 
   getClientIdentifier(clientNom: string): string {
@@ -1896,6 +2258,99 @@ export class TasquesOfertesComponent implements OnInit {
   getProfessionalIdentifier(proNom: string): string {
     const user = this.getProfessionalUser(proNom);
     return user ? user.id : proNom;
+  }
+
+  getProfessionalPhone(proNom: string): string {
+    const user = this.getProfessionalUser(proNom);
+    if (user?.telefon && user.telefon.trim()) {
+      return user.telefon.trim();
+    }
+    return '611223344';
+  }
+
+  getProfessionalEmail(proNom: string): string {
+    const user = this.getProfessionalUser(proNom);
+    if (user?.email && user.email.trim() && user.email.includes('@')) {
+      return user.email.trim();
+    }
+    const clean = (proNom || 'pro').toLowerCase().replace(/[^a-z0-9]/g, '');
+    return `${clean}@prof.es`;
+  }
+
+  obrirModalContacte(offer: any): void {
+    this.modalContacteOferta = offer;
+  }
+
+  tancarModalContacte(): void {
+    this.modalContacteOferta = null;
+  }
+
+  contactarWhatsapp(offer: any, event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
+    const proNom = offer.professional || 'Professional';
+    const rawPhone = this.getProfessionalPhone(proNom);
+    const cleanPhone = rawPhone.replace(/\D/g, '');
+    const phoneWithCountry = cleanPhone.length === 9 ? '34' + cleanPhone : cleanPhone;
+
+    const titol = this.getOfertaTitol(offer);
+    const preu = offer.price || '';
+    const clientUser = this.authService.getCurrentUser();
+    const clientNom = clientUser ? clientUser.nom : 'un client interessat';
+
+    const missatge = `Hola ${proNom}, m'interessa la teva oferta a AVISA: "${titol}" (${preu}). Sóc ${clientNom}. Podem parlar dels detalls del servei?`;
+    const url = `https://wa.me/${phoneWithCountry}?text=${encodeURIComponent(missatge)}`;
+
+    if (typeof window !== 'undefined') {
+      window.open(url, '_blank', 'noopener,noreferrer');
+    }
+  }
+
+  contactarEmail(offer: any, event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
+    const proNom = offer.professional || 'Professional';
+    const email = this.getProfessionalEmail(proNom);
+    const titol = this.getOfertaTitol(offer);
+    const preu = offer.price || '';
+    const clientUser = this.authService.getCurrentUser();
+    const clientNom = clientUser ? clientUser.nom : 'Client interessat';
+
+    const assumpte = `Interès en l'oferta AVISA: ${titol}`;
+    const cos = `Hola ${proNom},\n\nM'interessa la teva oferta de servei publicada a AVISA:\n- Servei: ${titol}\n- Preu indicat: ${preu}\n\nEm pots respondre a aquest correu per poder coordinar els detalls i la data del servei.\n\nSalutacions cordials,\n${clientNom}`;
+
+    const mailtoUrl = `mailto:${email}?subject=${encodeURIComponent(assumpte)}&body=${encodeURIComponent(cos)}`;
+
+    if (typeof window !== 'undefined') {
+      window.location.href = mailtoUrl;
+    }
+  }
+
+  contactarWhatsappDirecte(proNom: string | null, telefon: string | null): void {
+    const rawPhone = telefon || this.getProfessionalPhone(proNom || '');
+    const cleanPhone = rawPhone.replace(/\D/g, '');
+    const phoneWithCountry = cleanPhone.length === 9 ? '34' + cleanPhone : cleanPhone;
+    const clientUser = this.authService.getCurrentUser();
+    const clientNom = clientUser ? clientUser.nom : 'un client interessat';
+    const missatge = `Hola ${proNom || 'Professional'}, t'he vist a AVISA. Sóc ${clientNom}. M'agradaria consultar-te sobre els teus serveis professionals.`;
+    const url = `https://wa.me/${phoneWithCountry}?text=${encodeURIComponent(missatge)}`;
+    if (typeof window !== 'undefined') {
+      window.open(url, '_blank', 'noopener,noreferrer');
+    }
+  }
+
+  contactarEmailDirecte(proNom: string | null): void {
+    const email = this.getProfessionalEmail(proNom || '');
+    const clientUser = this.authService.getCurrentUser();
+    const clientNom = clientUser ? clientUser.nom : 'Client interessat';
+    const assumpte = `Consulta de serveis a través d'AVISA`;
+    const cos = `Hola ${proNom || 'Professional'},\n\nT'he trobat a la comunitat AVISA i m'agradaria demanar-te informació i disponibilitat per a una feina.\n\nSalutacions cordials,\n${clientNom}`;
+    const mailtoUrl = `mailto:${email}?subject=${encodeURIComponent(assumpte)}&body=${encodeURIComponent(cos)}`;
+    if (typeof window !== 'undefined') {
+      window.location.href = mailtoUrl;
+    }
   }
 
   obrirModalRessenyes(proNom: string): void {
@@ -2278,36 +2733,86 @@ export class TasquesOfertesComponent implements OnInit {
   }
 
   /**
-   * Contractar una oferta d'un professional i convertir-la directament en TASCA ('OFERTA to TAREA').
+   * Envia la petició d'interès per una oferta i, un cop confirmada a l'app, mostra l'opció de contactar.
    */
-  async onContractarOferta(offer: any): Promise<void> {
+  async onInteressatOferta(offer: any): Promise<void> {
     const pro = offer.professional || 'aquest professional';
-    if (!this.requireLogin(`contractar l'oferta de ${pro}`, '/tasques-ofertes')) return;
+    if (!this.requireLogin(`sol·licitar l'oferta de ${pro}`, '/tasques-ofertes')) return;
     const user = this.authService.getCurrentUser();
     if (!this.authService.isClient()) {
-      this.noticeMessage = 'Només els comptes amb rol de "Client" o "Ambdós" poden contractar ofertes de professionals.';
+      this.noticeMessage = 'Només els comptes amb rol de "Client" o "Ambdós" poden sol·licitar ofertes de professionals.';
       return;
     }
 
     const preu = offer.price || '';
+    const titol = this.getOfertaTitol(offer);
     const confirmacio = await this.confirmService.confirm({
-      title: 'Contractar Servei',
-      message: `Vols contractar el servei de ${pro} per ${preu}?\n\nAquesta acció generarà automàticament una nova TASCA en curs al teu panell i notificarà al professional.`,
-      confirmText: 'Contractar Servei',
-      cancelText: 'Cancel·lar',
+      title: this.translationService.t('TASQUES_OFERTES.CONFIRM_INTERES_TITLE'),
+      message: `Vols enviar la petició per a l'oferta de ${pro} (${titol}) per ${preu}?\n\nEs confirmarà a l'aplicació AVISA i es generarà la tasca en curs al teu panell.`,
+      confirmText: this.translationService.t('TASQUES_OFERTES.CONFIRM_INTERES_BTN'),
+      cancelText: this.translationService.t('COMMON.CANCEL_LAR'),
       icon: 'question'
     });
     if (!confirmacio) return;
 
     this.ofertaService.contractar(offer.id, user ? user.nom : 'Client AVISA').subscribe({
       next: (tascaCreada) => {
-        this.noticeMessage = `Enhorabona! Has contractat l'oferta de ${pro} (${preu}). S'ha generat la teva nova TASCA en curs!`;
+        this.peticioExitDades = {
+          tascaId: tascaCreada?.id,
+          titol,
+          professional: pro,
+          preu,
+          telefon: this.getProfessionalPhone(pro),
+          email: this.getProfessionalEmail(pro)
+        };
+        this.noticeMessage = `Petició enviada correctament! S'ha generat la tasca en curs amb ${pro}. Ara pots contactar-hi per WhatsApp o correu.`;
         this.carregarDades();
       },
       error: () => {
-        this.noticeMessage = 'No s’ha pogut completar la contractació de l’oferta. Si us plau, torna-ho a provar.';
+        this.noticeMessage = 'No s’ha pogut completar la petició de l’oferta. Si us plau, torna-ho a provar.';
       }
     });
+  }
+
+  /** Alias de compatibilitat */
+  onContractarOferta(offer: any): void {
+    this.onInteressatOferta(offer);
+  }
+
+  tancarModalPeticioExit(): void {
+    this.peticioExitDades = null;
+  }
+
+  contactarWhatsappPeticio(): void {
+    if (!this.peticioExitDades) return;
+    const { professional, telefon, titol, preu } = this.peticioExitDades;
+    const cleanPhone = telefon.replace(/\D/g, '');
+    const phoneWithCountry = cleanPhone.length === 9 ? '34' + cleanPhone : cleanPhone;
+    const clientUser = this.authService.getCurrentUser();
+    const clientNom = clientUser ? clientUser.nom : 'Client AVISA';
+    const missatge = `Hola ${professional}, acabe de sol·licitar la teva oferta a AVISA: "${titol}" (${preu}). Sóc ${clientNom}. Podem parlar dels detalls del servei?`;
+    const url = `https://wa.me/${phoneWithCountry}?text=${encodeURIComponent(missatge)}`;
+    if (typeof window !== 'undefined') {
+      window.open(url, '_blank', 'noopener,noreferrer');
+    }
+  }
+
+  contactarEmailPeticio(): void {
+    if (!this.peticioExitDades) return;
+    const { professional, email, titol, preu } = this.peticioExitDades;
+    const clientUser = this.authService.getCurrentUser();
+    const clientNom = clientUser ? clientUser.nom : 'Client interessat';
+    const assumpte = `Petició de servei AVISA: ${titol}`;
+    const cos = `Hola ${professional},\n\nAcabe de contractar / sol·licitar la teva oferta a l'aplicació AVISA:\n- Servei: ${titol}\n- Preu indicat: ${preu}\n\nEm poso en contacte amb tu per poder coordinar dates, horaris i detalls de l'actuació.\n\nSalutacions cordials,\n${clientNom}`;
+    const mailtoUrl = `mailto:${email}?subject=${encodeURIComponent(assumpte)}&body=${encodeURIComponent(cos)}`;
+    if (typeof window !== 'undefined') {
+      window.location.href = mailtoUrl;
+    }
+  }
+
+  anarTascaPeticio(tascaId: string): void {
+    this.tancarModalPeticioExit();
+    this.router.navigate(['/tasca-detall', tascaId]);
   }
 
   isOfferOwner(offer: any): boolean {

@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AVISA - Connectar Dispositius Mobils</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #09090c;
+      --card-bg: #121218;
+      --card-border: #232330;
+      --neon: #ff1744;
+      --bone: #f7f3ed;
+      --muted: #94a3b8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      background-color: var(--bg);
+      color: var(--bone);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+    }
+    .container {
+      max-width: 820px;
+      width: 100%;
+      text-align: center;
+    }
+    .badge {
+      display: inline-block;
+      background: rgba(255, 23, 68, 0.15);
+      color: var(--neon);
+      border: 1px solid rgba(255, 23, 68, 0.35);
+      padding: 0.35rem 0.85rem;
+      border-radius: 9999px;
+      font-size: 0.82rem;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+    h1 {
+      font-size: 2.4rem;
+      font-weight: 900;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.5rem;
+      color: #ffffff;
+    }
+    h1 span {
+      color: var(--neon);
+      text-shadow: 0 0 20px rgba(255, 23, 68, 0.5);
+    }
+    .subtitle {
+      font-size: 1.05rem;
+      color: var(--muted);
+      margin-bottom: 2rem;
+      line-height: 1.5;
+    }
+    .wifi-notice {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.65rem;
+      background: #181822;
+      border: 1px solid #2e2e42;
+      border-radius: 12px;
+      padding: 0.85rem 1.25rem;
+      margin-bottom: 2rem;
+      color: #e2e8f0;
+      font-weight: 700;
+      font-size: 0.92rem;
+    }
+    .wifi-icon {
+      font-size: 1.3rem;
+    }
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2.5rem;
+      text-align: left;
+    }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      padding: 1.75rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      transition: all 0.25s ease;
+    }
+    .card:hover {
+      border-color: rgba(255, 23, 68, 0.5);
+      transform: translateY(-4px);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7), 0 0 20px rgba(255, 23, 68, 0.15);
+    }
+    .card-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #ffffff;
+      margin-bottom: 0.35rem;
+    }
+    .card-desc {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-bottom: 1.25rem;
+    }
+    .qr-wrapper {
+      background: #ffffff;
+      padding: 12px;
+      border-radius: 14px;
+      display: inline-flex;
+      margin-bottom: 1.25rem;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.3);
+    }
+    .qr-wrapper img {
+      width: 220px;
+      height: 220px;
+      display: block;
+    }
+    .url-badge {
+      display: block;
+      background: #09090c;
+      border: 1px solid #282836;
+      color: #38bdf8;
+      font-family: monospace;
+      font-size: 0.95rem;
+      font-weight: 700;
+      padding: 0.65rem 1rem;
+      border-radius: 8px;
+      text-decoration: none;
+      word-break: break-all;
+      width: 100%;
+      transition: all 0.2s ease;
+    }
+    .url-badge:hover {
+      background: rgba(255, 23, 68, 0.12);
+      border-color: var(--neon);
+      color: #ffffff;
+    }
+    .instructions-box {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 1.75rem;
+      text-align: left;
+      margin-top: 1rem;
+    }
+    .instructions-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #ffffff;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .steps-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.25rem;
+    }
+    .step-item {
+      background: #161620;
+      border: 1px solid #272738;
+      border-radius: 12px;
+      padding: 1.15rem;
+    }
+    .step-header {
+      font-weight: 800;
+      font-size: 0.95rem;
+      color: var(--neon);
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .step-text {
+      font-size: 0.85rem;
+      color: #cbd5e1;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="badge">Connexió Local Mòbil</div>
+    <h1>Desplegament Mòbil <span>AVISA</span></h1>
+    <p class="subtitle">Connecta qualsevol telèfon o tauleta a la teva xarxa Wi-Fi local per provar l'aplicació en temps real.</p>
+
+    <div class="wifi-notice">
+      <span class="wifi-icon">📶</span>
+      <span>Important: El telèfon mòbil ha d'estar connectat a la <strong>mateixa xarxa Wi-Fi</strong> que aquest ordinador.</span>
+    </div>
+
+    <div class="cards-grid">
+      <!-- TARGETA 1: WEB PRINCIPAL -->
+      <div class="card">
+        <h2 class="card-title">1. Versió Web (Inici)</h2>
+        <p class="card-desc">Portada pública d'informació, captació i registre</p>
+        <div class="qr-wrapper">
+          <img src="data:image/png;base64,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" alt="Codi QR Web">
+        </div>
+        <a href="http://192.168.1.200:4300/inici" target="_blank" class="url-badge">http://192.168.1.200:4300/inici</a>
+      </div>
+
+      <!-- TARGETA 2: APP PWA STANDALONE -->
+      <div class="card">
+        <h2 class="card-title">2. Versió App (PWA)</h2>
+        <p class="card-desc">Panell operatiu directe de tasques i encàrrecs</p>
+        <div class="qr-wrapper">
+          <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAYAAAB5fY51AAAAAklEQVR4AewaftIAAAb+SURBVO3BgY0cCQ4EwSxi/He5Xg7oQOBb6OVsRqR/IEkHDJJ0xCBJRwySdMQgSUcMknTEIElHDJJ0xCBJRwySdMQgSUcMknTEIElHDJJ0xCBJRwySdMQgSUcMknTEIElHDJJ0xCBJR3z4B5Kg/9aWJyXhaW3ZSMJWWzaSsNGWtyRB/60tTxok6YhBko4YJOmIQZKOGCTpiEGSjhgk6YhBko4YJOmIQZKO+PCytnyLJDwtCRtteVoSNtqylYSNtjwtCRtteVpbvkUS3jJI0hGDJB0xSNIRgyQdMUjSEYMkHTFI0hGDJB0xSNIRH45Iwlva8pa2bCThgrZsJOFpbfnpkvCWtvx0gyQdMUjSEYMkHTFI0hGDJB0xSNIRgyQdMUjSEYMkHfFBv05bNpKwkYSntWUjCfo9Bkk6YpCkIwZJOmKQpCMGSTpikKQjBkk6YpCkIwZJOmKQpCM+6EdLwlvaspGErbY8qS1bSdhoi36mQZKOGCTpiEGSjhgk6YhBko4YJOmIQZKOGCTpiEGSjvhwRFt+o7ZsJOEtbdlKwkZbNpKw1Zafri36u0GSjhgk6YhBko4YJOmIQZKOGCTpiEGSjhgk6YhBko748LIk6O+SsNGWrSRstGUjCVtt2UjCRlu2krDRlqclQf+/QZKOGCTpiEGSjhgk6YhBko4YJOmIQZKOGCTpiEGSjhgk6Yj0D3ReErbaspGEp7XlSUnYaotuGyTpiEGSjhgk6YhBko4YJOmIQZKOGCTpiEGSjhgk6YgP/0ASttqykYSNtmwlYaMtG0nYastvlISNtmy0ZSsJG215SxI22vK0JGy05S2DJB0xSNIRgyQdMUjSEYMkHTFI0hGDJB0xSNIRgyQd8eEfaMsFbdlIwkZbtpKw0Rb9XRK22vLTteUtbdlIwlZbnjRI0hGDJB0xSNIRgyQdMUjSEYMkHTFI0hGDJB0xSNIRgyQd8eHLJOEtSXhaEjbackFbNpKw0ZanJWGjLRck4VsMknTEIElHDJJ0xCBJRwySdMQgSUcMknTEIElHDJJ0RPoHD0vCVls2kvC0tnyLJLylLW9JwlZbnpSErbb8dEnYaMtbBkk6YpCkIwZJOmKQpCMGSTpikKQjBkk6YpCkIwZJOuLDP9CWrSRstGUjCW9JwlZbntSWrSRstGUjCb9RW56WhKe15UlJ2GrLkwZJOmKQpCMGSTpikKQjBkk6YpCkIwZJOmKQpCMGSTpikKQjPnyZtmwl4Ult2UrCRlue1paNJGy05S1J2ErCRls2kvC0tmwk4Wlt2UjCWwZJOmKQpCMGSTpikKQjBkk6YpCkIwZJOmKQpCMGSTriwz+QhK22bCThLW3ZSMLTkrDRlqe1ZSMJW215S1ve0pYntWUrCd9ikKQjBkk6YpCkIwZJOmKQpCMGSTpikKQjBkk6YpCkI9I/eFES3tKWb5GErbZsJGGjLVtJeFJbtpKw0ZanJWGjLRtJ2GrLRhI22vKWQZKOGCTpiEGSjhgk6YhBko4YJOmIQZKOGCTpiEGSjhgk6Yj0Dx6WhK22bCThm7TlWyRhqy0bSdhoy1YSvkVbfqNBko4YJOmIQZKOGCTpiEGSjhgk6YhBko4YJOmIQZKOSP9AP1YSNtqylYQntWUrCRtt2UjC09ryliQ8rS0bSXhaW540SNIRgyQdMUjSEYMkHTFI0hGDJB0xSNIRgyQdMUjSER/+gSTov7Vloy1vactGErbaspGEjbZsJeFJSdhqy5PaspWEbzFI0hGDJB0xSNIRgyQdMUjSEYMkHTFI0hGDJB0xSNIRgyQd8eFlbfkWSXhLErbaspGEt7Tlp2vLW5Lwlra8ZZCkIwZJOmKQpCMGSTpikKQjBkk6YpCkIwZJOmKQpCM+HJGEt7TlLUn46dryliQ8LQnfpC0bSdhIwlZbnjRI0hGDJB0xSNIRgyQdMUjSEYMkHTFI0hGDJB0xSNIRH/SjteVpSfjpkvBN2rKRhI22vKUtbxkk6YhBko4YJOmIQZKOGCTpiEGSjhgk6YhBko4YJOmIQZKO+KAfLQlPa8uTkrDVlre0ZSMJT0vCRls2krDVlo22bCRhqy1PGiTpiEGSjhgk6YhBko4YJOmIQZKOGCTpiEGSjhgk6YgPR7TlN2rL05LwliRstGUjCVtJeFJbnpaEjbZsJeFJbXnLIElHDJJ0xCBJRwySdMQgSUcMknTEIElHDJJ0xCBJR3x4WRL0d0n46dryGyXhgrZsJGEjCVttedIgSUcMknTEIElHDJJ0xCBJRwySdMQgSUcMknTEIElHDJJ0RPoHknTAIElHDJJ0xCBJRwySdMQgSUcMknTEIElHDJJ0xCBJRwySdMQgSUcMknTEIElHDJJ0xCBJRwySdMQgSUcMknTEIElH/A/IA8hVAlGeEAAAAABJRU5ErkJggg==" alt="Codi QR App">
+        </div>
+        <a href="http://192.168.1.200:4300/app" target="_blank" class="url-badge">http://192.168.1.200:4300/app</a>
+      </div>
+    </div>
+
+    <div class="instructions-box">
+      <h3 class="instructions-title">📲 Com instal·lar AVISA al telèfon com a App Nativa</h3>
+      <div class="steps-list">
+        <div class="step-item">
+          <div class="step-header">🍏 iPhone (iOS / Safari)</div>
+          <p class="step-text">
+            1. Obre la càmera i escaneja el codi QR.<br>
+            2. Obre l'enllaç amb <strong>Safari</strong>.<br>
+            3. Prem el botó <strong>Compartir</strong> (icona quadrada amb fletxa cap amunt).<br>
+            4. Tria <strong>"Afegeix a la pantalla d'inici"</strong>.
+          </p>
+        </div>
+        <div class="step-item">
+          <div class="step-header">🤖 Android (Google Chrome)</div>
+          <p class="step-text">
+            1. Obre la càmera i escaneja el codi QR.<br>
+            2. Obre l'enllaç amb <strong>Chrome</strong>.<br>
+            3. Prem el botó de la barra superior o els <strong>3 punts</strong> de la dreta.<br>
+            4. Tria <strong>"Instal·la l'aplicació"</strong> o <strong>"Afegeix a pantalla d'inici"</strong>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

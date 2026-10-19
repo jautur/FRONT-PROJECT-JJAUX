@@ -441,14 +441,12 @@ type FiltreAvisos = 'totes' | 'pendents' | 'llegides';
         text-align: center;
       }
       .filter-tabs {
-        overflow-x: auto;
-        flex-wrap: nowrap;
         padding-bottom: 0.5rem;
-        -webkit-overflow-scrolling: touch;
+        flex-wrap: wrap;
       }
       .tab-btn {
-        white-space: nowrap;
-        flex-shrink: 0;
+        padding: 0.45rem 0.85rem;
+        font-size: 0.82rem;
       }
       .avis-card {
         flex-direction: column;
