@@ -133,3 +133,4 @@ export class PwaInstallPromptComponent {
     this.pwaService.dismissPrompt();
   }
 }
+
