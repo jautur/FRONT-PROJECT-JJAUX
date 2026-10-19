@@ -675,5 +675,16 @@ export const va = {
     "ACCEPT_BUDGET_MSG": "Vols acceptar el pressupost de {{pro}} per {{preu}}?\n\nAquesta acció convertirà la incidència en una TASCA en curs i desbloquejarà el contacte telefònic directe.",
     "FINALIZE_TASK_TITLE": "Finalitzar Tasca",
     "FINALIZE_TASK_MSG": "Vols marcar aquesta tasca com a completada per part teva com a professional?"
+  },
+  "PWA": {
+    "INSTALL_PROMPT_TITLE": "Instal·la AVISA",
+    "INSTALL_PROMPT_DESC": "Accedeix ràpidament des de la pantalla d'inici amb una experiència nativa i sense barres de navegador.",
+    "INSTALL_BTN": "Instal·lar AVISA",
+    "LATER_BTN": "Més tard",
+    "IOS_TITLE": "Afegeix AVISA a la pantalla d'inici",
+    "IOS_STEP_1": "Prem el botó de Compartir a Safari (a la barra inferior)",
+    "IOS_STEP_2": "Desplaça cap avall i selecciona 'Afegir a pantalla d'inici'",
+    "IOS_STEP_3": "Toca 'Afegir' a la cantonada superior dreta",
+    "IOS_CLOSE": "Entès"
   }
 };

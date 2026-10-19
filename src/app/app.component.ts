@@ -7,6 +7,7 @@ import { TranslationService } from './core/services/translation.service';
 import { TranslatePipe } from './core/pipes/translate.pipe';
 import { AvisService } from './services/avis.service';
 import { ConfirmService } from './core/services/confirm.service';
+import { PwaInstallPromptComponent } from './shared/components/pwa-install-prompt/pwa-install-prompt.component';
 
 /**
  * Component principal arrel de l'aplicació AVISA.
@@ -16,11 +17,12 @@ import { ConfirmService } from './core/services/confirm.service';
  * 3. En fer scroll, canvi del fons del títol a color llis.
  * 4. Obertura i ocultació del menú a l'esquerra amb els apartats necessaris.
  * 5. Indicador i botó flotant d'avisos pendents a baix a la dreta.
+ * 6. Guia interactiva d'instal·lació PWA ('Añadir a pantalla de inicio').
  */
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive, TranslatePipe],
+  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive, TranslatePipe, PwaInstallPromptComponent],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })

@@ -17,10 +17,12 @@ import { ComunitatProfessionalsComponent } from './pages/professional/comunitat-
 import { TermesModalComponent } from './pages/auth/termes-modal/termes-modal.component';
 import { authGuard } from './core/guards/auth.guard';
 import { adminGuard } from './core/guards/admin.guard';
+import { pwaFlowGuard } from './core/guards/pwa-flow.guard';
 
 /**
  * Configuració global de rutes de la plataforma AVISA.
- * - '': Vista prèvia de tasques i ofertes públiques (Dashboard).
+ * - '': Vista prèvia / Landing informativa (protegida amb pwaFlowGuard per desviar PWA instal·lades o usuaris recurrents a /app).
+ * - 'app': Panel principal / àrea operativa de tasques i encàrrecs.
  * - 'tasques-ofertes': Mercat complet de tasques i ofertes amb cerca i categories.
  * - 'login': Inici de sessió d'usuaris.
  * - 'registre': Registre de nous usuaris (clients, professionals o ambdós).
@@ -34,7 +36,8 @@ import { adminGuard } from './core/guards/admin.guard';
  * - 'admin/panell': Panell de supervisió global amb llistat complet de tasques, ofertes i usuaris (només admin).
  */
 export const appRoutes: Routes = [
-  { path: '', component: MainComponent },
+  { path: '', component: MainComponent, canActivate: [pwaFlowGuard] },
+  { path: 'app', component: TasquesOfertesComponent },
   { path: 'tasques-ofertes', component: TasquesOfertesComponent },
   { path: 'login', component: LoginComponent },
   { path: 'registre', component: RegistreComponent },

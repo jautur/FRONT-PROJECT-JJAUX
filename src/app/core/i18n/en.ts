@@ -675,5 +675,16 @@ export const en = {
     "ACCEPT_BUDGET_MSG": "Do you want to accept the quote from {{pro}} for {{preu}}?\n\nThis will convert the incident into an in-progress TASK and unlock direct phone contact.",
     "FINALIZE_TASK_TITLE": "Complete Task",
     "FINALIZE_TASK_MSG": "Do you want to mark this task as completed on your end as a contractor?"
+  },
+  "PWA": {
+    "INSTALL_PROMPT_TITLE": "Install AVISA",
+    "INSTALL_PROMPT_DESC": "Quickly access from your home screen with a fast, native app experience without browser address bars.",
+    "INSTALL_BTN": "Install AVISA",
+    "LATER_BTN": "Later",
+    "IOS_TITLE": "Add AVISA to Home Screen",
+    "IOS_STEP_1": "Tap the Share button in Safari (at the bottom)",
+    "IOS_STEP_2": "Scroll down and select 'Add to Home Screen'",
+    "IOS_STEP_3": "Tap 'Add' in the top right corner",
+    "IOS_CLOSE": "Got it"
   }
 };

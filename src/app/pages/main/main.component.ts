@@ -9,6 +9,7 @@ import { Resenya } from '../../models/resenya.model';
 import { ArticleService } from '../../services/article.service';
 import { Article } from '../../models/article.model';
 import { ConfirmService } from '../../core/services/confirm.service';
+import { PwaService } from '../../core/services/pwa.service';
 
 import { TranslatePipe } from '../../core/pipes/translate.pipe';
 
@@ -230,6 +231,14 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
             <div class="sync-actions">
               <button type="button" class="btn-sync-action" (click)="onNovaTasca()">{{ 'NAV.TASQUES_OFERTES' | translate }}</button>
               <button type="button" class="btn-sync-secondary" (click)="onAnarRegistreClient()">{{ 'NAV.CREAR_COMPTE_REGISTRE' | translate }}</button>
+              <button *ngIf="!pwaService.isStandalone()" type="button" class="btn-sync-pwa" (click)="pwaService.openInstallGuide()">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px; vertical-align: middle;">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="7 10 12 15 17 10"></polyline>
+                  <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                <span>{{ 'PWA.INSTALL_BTN' | translate }}</span>
+              </button>
             </div>
           </div>
         </section>
@@ -1164,6 +1173,29 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         color: #ff1744;
       }
 
+      .btn-sync-pwa {
+        background: rgba(255, 23, 68, 0.12);
+        color: #ff5252;
+        border: 1px solid rgba(255, 23, 68, 0.4);
+        padding: 0.8rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 800;
+        font-size: 0.92rem;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.2s ease;
+      }
+
+      .btn-sync-pwa:hover {
+        background: #ff1744;
+        color: #ffffff;
+        border-color: #ff1744;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 14px rgba(255, 23, 68, 0.4);
+      }
+
       /* ============================================================== */
       /* SECCIÓ 3: ROLES BENEFICIS                                      */
       /* ============================================================== */
@@ -2057,7 +2089,8 @@ export class MainComponent implements OnInit {
     private readonly authService: AuthService,
     private readonly articleService: ArticleService,
     private readonly confirmService: ConfirmService,
-    private readonly router: Router
+    private readonly router: Router,
+    public readonly pwaService: PwaService
   ) {}
 
   ngOnInit(): void {
