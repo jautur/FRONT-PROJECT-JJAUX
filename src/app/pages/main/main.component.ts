@@ -53,7 +53,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
             <span class="eyebrow-tag">{{ 'HOME.PLATAFORMA_AVISA' | translate }}</span>
             <h2 class="dashboard-title">{{ 'HOME.DASHBOARD_TITLE' | translate }}</h2>
           </div>
-          <a routerLink="/tasques-ofertes" class="btn-create-task">{{ 'HOME.PUBLICAR_BTN' | translate }}</a>
+          <a [routerLink]="getNavUrl('/tasques-ofertes')" class="btn-create-task">{{ 'HOME.PUBLICAR_BTN' | translate }}</a>
         </div>
 
         <div *ngIf="noticeMessage" class="notice-banner">
@@ -66,12 +66,12 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
           </button>
         </div>
 
-        <div class="columns" *ngIf="!isAppPage">
+        <div class="columns">
           <!-- SECCIÓ D'OFERTES RECENTS (PROFESSIONALS PRIMER) -->
           <section class="panel panel-offers">
             <div class="panel-header">
               <h2>{{ 'HOME.OFERTES_TITLE' | translate }}</h2>
-              <a routerLink="/tasques-ofertes" [queryParams]="{ tipus: 'ofertes' }">
+              <a [routerLink]="getNavUrl('/tasques-ofertes')" [queryParams]="{ tipus: 'ofertes' }">
                 {{ 'HOME.VEURE_TOTES' | translate }} ({{ offers.length }})
               </a>
             </div>
@@ -85,7 +85,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
               </div>
               <h3>{{ getOfertaTitol(offer) }}</h3>
               <p class="meta">
-                {{ 'HOME.PRO_LABEL' | translate }}<a [routerLink]="['/perfil', offer.professional]" class="user-inline-link pro-title-link" title="Veure perfil de {{ offer.professional }}">{{ offer.professional }}</a>
+                {{ 'HOME.PRO_LABEL' | translate }}<a [routerLink]="[getNavUrl('/perfil'), offer.professional]" class="user-inline-link pro-title-link" title="Veure perfil de {{ offer.professional }}">{{ offer.professional }}</a>
                 <span class="pro-preview-rating" *ngIf="getRatingInfo(offer.professional) as r" style="display: inline-flex; margin-left: 0.5rem;">
                   <span class="stars-gold">★ {{ r.mitjana }}</span>
                   <span class="reviews-count">({{ r.total }})</span>
@@ -115,7 +115,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
           <section class="panel panel-tasks">
             <div class="panel-header">
               <h2>{{ 'HOME.INCIDENCIES_TITLE' | translate }}</h2>
-              <a routerLink="/tasques-ofertes" [queryParams]="{ tipus: 'incidencies' }">
+              <a [routerLink]="getNavUrl('/tasques-ofertes')" [queryParams]="{ tipus: 'incidencies' }">
                 {{ 'HOME.VEURE_TOTES' | translate }} ({{ tasks.length }})
               </a>
             </div>
@@ -128,7 +128,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
                 </span>
               </div>
               <h3>{{ task.title }}</h3>
-              <p class="meta">{{ 'HOME.CLIENT_LABEL' | translate }}<a [routerLink]="['/perfil', task.client]" class="user-inline-link" title="Veure perfil de {{ task.client }}">{{ task.client }}</a></p>
+              <p class="meta">{{ 'HOME.CLIENT_LABEL' | translate }}<a [routerLink]="[getNavUrl('/perfil'), task.client]" class="user-inline-link" title="Veure perfil de {{ task.client }}">{{ task.client }}</a></p>
               <div class="card-footer">
                 <span>{{ 'HOME.PRESSUPOST_LABEL' | translate }}{{ task.budget }}</span>
                 <div class="actions">
@@ -212,7 +212,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
 
               <div class="pro-card-info">
                 <h4 class="pro-name">
-                  <a [routerLink]="['/perfil', pro.id]" class="pro-name-link" [title]="pro.nom">{{ pro.nom }}</a>
+                  <a [routerLink]="[getNavUrl('/perfil'), pro.id]" class="pro-name-link" [title]="pro.nom">{{ pro.nom }}</a>
                 </h4>
 
                 <!-- VALORACIÓ -->
@@ -230,7 +230,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
               </div>
 
               <div class="pro-card-action-wrap">
-                <a [routerLink]="['/perfil', pro.id]" class="btn-view-pro-profile">
+                <a [routerLink]="[getNavUrl('/perfil'), pro.id]" class="btn-view-pro-profile">
                   <span>{{ 'HOME.PRO_CAROUSEL_BTN_PROFILE' | translate }}</span>
                   <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 6px;">
                     <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -813,6 +813,36 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         color: #ffffff;
         border-color: #09090c;
         box-shadow: 0 6px 22px rgba(0, 0, 0, 0.25);
+        transform: translateY(-2px);
+      }
+
+      .dashboard-header-actions {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+      }
+
+      .btn-dashboard-logout {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: #fff0f0;
+        border: 1px solid #ffd4d4;
+        color: #d32f2f;
+        padding: 0.8rem 1.25rem;
+        border-radius: 8px;
+        font-weight: 800;
+        font-size: 0.88rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .btn-dashboard-logout:hover {
+        background: #ff1744;
+        color: #ffffff;
+        border-color: #ff1744;
+        box-shadow: 0 4px 16px rgba(255, 23, 68, 0.35);
         transform: translateY(-2px);
       }
 
@@ -2015,8 +2045,18 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         .feature-grid,
         .roles-showcase-section,
         .blog-grid,
+        .reviews-home-grid,
         .footer-grid {
-          grid-template-columns: 1fr;
+          grid-template-columns: 1fr !important;
+        }
+
+        .reviews-feature-section {
+          padding: 2.25rem 1rem !important;
+        }
+
+        .reviews-home-grid {
+          grid-template-columns: 1fr !important;
+          gap: 1rem;
         }
 
         .cta-buttons-row,
@@ -2878,10 +2918,22 @@ export class MainComponent implements OnInit {
 
   @ViewChild('proCarouselTrack') proCarouselTrack?: ElementRef<HTMLDivElement>;
 
-  /** Determina si la ruta actual correspon a la secció operativa (/inici o /app) */
+  /** Determina si la ruta actual correspon a la secció exclusiva de l'app mòbil (/app) */
   get isAppPage(): boolean {
     const url = this.router.url || '';
-    return url.startsWith('/app') || url === '/inici' || url.startsWith('/inici?') || url.startsWith('/inici#');
+    return url.startsWith('/app');
+  }
+
+  /**
+   * Retorna la ruta adaptada a l'entorn actiu (/app per a l'aplicació o ruta estàndard per a web)
+   */
+  getNavUrl(path: string): string {
+    if (this.isAppPage) {
+      if (path === '/' || path === '/inici' || path === '/app') return '/app';
+      if (path.startsWith('/app/')) return path;
+      return path.startsWith('/') ? `/app${path}` : `/app/${path}`;
+    }
+    return path;
   }
 
   /** Determina si s'ha de mostrar la portada inicial immersiva (fullscreen-cover) amb el lliscador */
@@ -3175,14 +3227,14 @@ export class MainComponent implements OnInit {
   }
 
   onNovaTasca(): void {
-    this.router.navigate(['/tasques-ofertes'], { queryParams: { tipus: 'incidencies', accio: 'crear-incidencia' } });
+    this.router.navigate([this.getNavUrl('/tasques-ofertes')], { queryParams: { tipus: 'incidencies', accio: 'crear-incidencia' } });
   }
 
   onNavegarTasquesOfertes(tipus: 'tots' | 'tasques' | 'ofertes' | 'incidencies' = 'tots'): void {
     if (tipus !== 'tots') {
-      this.router.navigate(['/tasques-ofertes'], { queryParams: { tipus } });
+      this.router.navigate([this.getNavUrl('/tasques-ofertes')], { queryParams: { tipus } });
     } else {
-      this.router.navigate(['/tasques-ofertes']);
+      this.router.navigate([this.getNavUrl('/tasques-ofertes')]);
     }
   }
 
@@ -3192,11 +3244,11 @@ export class MainComponent implements OnInit {
 
   onDetallTasca(taskId: string): void {
     if (!this.requireLogin(`veure el detall de la tasca ${taskId}`, `/tasca-detall/${taskId}`)) return;
-    this.router.navigate(['/tasca-detall', taskId]);
+    this.router.navigate([this.getNavUrl('/tasca-detall'), taskId]);
   }
 
   onFerOferta(taskId: string): void {
-    this.router.navigate(['/tasques-ofertes'], { queryParams: { taskId } });
+    this.router.navigate([this.getNavUrl('/tasques-ofertes')], { queryParams: { taskId } });
   }
 
   onVeureTotesOfertes(): void {
@@ -3284,7 +3336,7 @@ export class MainComponent implements OnInit {
 
   anarTascaPeticio(tascaId: string): void {
     this.tancarModalPeticioExit();
-    this.router.navigate(['/tasca-detall', tascaId]);
+    this.router.navigate([this.getNavUrl('/tasca-detall'), tascaId]);
   }
 
   getProfessionalUser(proNom: string): Usuari | undefined {
@@ -3363,7 +3415,7 @@ export class MainComponent implements OnInit {
   }
 
   onPublicarOferta(): void {
-    this.router.navigate(['/tasques-ofertes'], { queryParams: { tipus: 'ofertes', accio: 'crear-oferta' } });
+    this.router.navigate([this.getNavUrl('/tasques-ofertes')], { queryParams: { tipus: 'ofertes', accio: 'crear-oferta' } });
   }
 
   onAcceptarOferta(offerId: string): void {
@@ -3396,7 +3448,7 @@ export class MainComponent implements OnInit {
 
   obrirArticle(article: any): void {
     if (article?.id) {
-      this.router.navigate(['/article', article.id]);
+      this.router.navigate([this.getNavUrl('/article'), article.id]);
     }
   }
 
@@ -3406,6 +3458,14 @@ export class MainComponent implements OnInit {
 
   onAnarRegistreProfessional(): void {
     this.router.navigate(['/registre'], { queryParams: { rol: 'professional' } });
+  }
+
+  /**
+   * Tanca la sessió actual des del tauler d'inici i redirigeix al login
+   */
+  onLogout(): void {
+    this.authService.logout();
+    this.router.navigate(['/login'], { queryParams: { message: 'Sessió tancada correctament.' } });
   }
 }
 

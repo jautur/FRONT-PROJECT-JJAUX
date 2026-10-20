@@ -37,6 +37,7 @@ export const va = {
     "COMUNITAT_PROFESSIONALS": "Sobre Nosaltres",
     "ENLLACS_RAPIDS": "Enllaços ràpids",
     "NAVEGACIO": "NAVEGACIÓ",
+    "EL_MEU_COMPTE": "EL MEU COMPTE",
     "GESTIO_FEINA": "GESTIÓ DE FEINA",
     "LES_MEVES_TASQUES": "Les meves tasques",
     "CREAR_INCIDENCIA_MERCAT": "Crear Incidència (al Mercat)",

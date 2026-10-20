@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
 /**
  * Component de Termes i Condicions i Política de Privacitat d'AVISA.
@@ -269,7 +269,7 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
           <button *ngIf="isModal" type="button" class="btn-accept" (click)="onAcceptClick()">
             ✓ {{ 'AUTH.TERMES_MODAL.ACCEPT_DOC' | translate }}
           </button>
-          <a *ngIf="!isModal" routerLink="/registre" class="btn-accept" style="text-decoration: none;">
+          <a *ngIf="!isModal" [routerLink]="getNavUrl('/registre')" class="btn-accept" style="text-decoration: none;">
             {{ 'AUTH.REGISTER.TITLE' | translate }}
           </a>
         </footer>
@@ -594,7 +594,24 @@ export class TermesModalComponent implements OnInit {
   /** Event emès quan l'usuari accepta el document legal visualitzat */
   @Output() accept = new EventEmitter<'termes' | 'privacitat'>();
 
-  constructor(private readonly route: ActivatedRoute) {}
+  constructor(
+    private readonly route: ActivatedRoute,
+    private readonly router: Router
+  ) {}
+
+  get isAppPage(): boolean {
+    const url = this.router.url || '';
+    return url.startsWith('/app');
+  }
+
+  getNavUrl(path: string): string {
+    if (this.isAppPage) {
+      if (path === '/' || path === '/inici' || path === '/app') return '/app';
+      if (path.startsWith('/app/')) return path;
+      return path.startsWith('/') ? `/app${path}` : `/app/${path}`;
+    }
+    return path;
+  }
 
   ngOnInit(): void {
     // Si s'accedeix com a ruta directa /privacitat o queryParam ?tab=privacitat

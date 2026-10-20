@@ -33,10 +33,10 @@ export const pwaFlowGuard: CanActivateFn = (route) => {
   const isStandalone = pwaService.checkIfStandalone();
   const isLoggedIn = authService.isLoggedIn();
 
-  // 1. App instal·lada (PWA standalone): entra directe a l'àrea operativa o a login
+  // 1. App instal·lada (PWA standalone): entra directe a l'àrea operativa (/app) o a login
   if (isStandalone) {
     if (isLoggedIn) {
-      return router.createUrlTree(['/inici']);
+      return router.createUrlTree(['/app']);
     } else {
       return router.createUrlTree(['/login'], {
         queryParams: {

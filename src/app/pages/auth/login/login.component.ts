@@ -71,7 +71,7 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
         </div>
 
         <p class="footer-hint">
-          {{ 'AUTH.LOGIN.NO_ACCOUNT' | translate }} <a routerLink="/registre" [queryParams]="returnUrl !== '/' ? { returnUrl: returnUrl } : null">{{ 'AUTH.LOGIN.REGISTER_HERE' | translate }}</a>
+          {{ 'AUTH.LOGIN.NO_ACCOUNT' | translate }} <a [routerLink]="getNavUrl('/registre')" [queryParams]="returnUrl !== '/' ? { returnUrl: returnUrl } : null">{{ 'AUTH.LOGIN.REGISTER_HERE' | translate }}</a>
         </p>
       </form>
     </section>
@@ -272,6 +272,20 @@ export class LoginComponent implements OnInit {
     this.onSubmit();
   }
 
+  get isAppPage(): boolean {
+    const url = this.router.url || '';
+    return url.startsWith('/app');
+  }
+
+  getNavUrl(path: string): string {
+    if (this.isAppPage) {
+      if (path === '/' || path === '/inici' || path === '/app') return '/app';
+      if (path.startsWith('/app/')) return path;
+      return path.startsWith('/') ? `/app${path}` : `/app/${path}`;
+    }
+    return path;
+  }
+
   onSubmit(): void {
     const cleanEmail = (this.email || '').trim();
     const cleanPassword = (this.password || '').trim();
@@ -286,7 +300,8 @@ export class LoginComponent implements OnInit {
     this.authService.login({ email: cleanEmail, password: cleanPassword }).subscribe({
       next: () => {
         this.loading = false;
-        this.router.navigateByUrl(this.returnUrl);
+        const target = (this.isAppPage && (this.returnUrl === '/' || this.returnUrl === '/inici')) ? '/app' : this.returnUrl;
+        this.router.navigateByUrl(target);
       },
       error: (err) => {
         this.loading = false;

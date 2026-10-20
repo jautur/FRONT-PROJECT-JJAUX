@@ -40,7 +40,7 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
           <p class="subtitle">{{ 'LES_MEVES_TASQUES.SUBTITLE' | translate }}</p>
         </div>
         <div>
-          <a routerLink="/client/crear-tasca" class="btn-crear">
+          <a [routerLink]="getNavUrl('/client/crear-tasca')" class="btn-crear">
             {{ 'LES_MEVES_TASQUES.BTN_NEW_INCIDENCIA' | translate }}
           </a>
         </div>
@@ -112,7 +112,7 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
                   <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                   <circle cx="12" cy="7" r="4"></circle>
                 </svg>
-                <a [routerLink]="['/perfil', t.professionalNom || t.professional]" class="user-inline-link">
+                <a [routerLink]="[getNavUrl('/perfil'), t.professionalNom || t.professional]" class="user-inline-link">
                   <strong>{{ t.professionalNom || t.professional }}</strong>
                 </a>
               </span>
@@ -145,7 +145,7 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
           </div>
 
           <div class="card-actions">
-            <a [routerLink]="['/tasca-detall', t.id]" class="btn-action primary">
+            <a [routerLink]="[getNavUrl('/tasca-detall'), t.id]" class="btn-action primary">
               <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 5px;">
                 <circle cx="11" cy="11" r="8"></circle>
                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
@@ -188,7 +188,7 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
         </div>
         <h3>{{ 'LES_MEVES_TASQUES.EMPTY_TITLE' | translate }}</h3>
         <p>{{ 'LES_MEVES_TASQUES.EMPTY_DESC' | translate }}</p>
-        <a routerLink="/client/crear-tasca" class="btn-crear">{{ 'LES_MEVES_TASQUES.BTN_NEW_INCIDENCIA' | translate }}</a>
+        <a [routerLink]="getNavUrl('/client/crear-tasca')" class="btn-crear">{{ 'LES_MEVES_TASQUES.BTN_NEW_INCIDENCIA' | translate }}</a>
       </div>
 
       <!-- MODAL D'AVALUACIÓ I FINALITZACIÓ DE TASCA -->
@@ -209,7 +209,7 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
               <p class="summary-pro">
                 {{ 'LES_MEVES_TASQUES.PRO_ASSIGNED' | translate }} 
                 <strong>
-                  <a *ngIf="professionalPerFinalitzar; else noProModal" [routerLink]="['/perfil', professionalPerFinalitzar]" class="user-inline-link" title="Veure perfil de {{ professionalPerFinalitzar }}">
+                  <a *ngIf="professionalPerFinalitzar; else noProModal" [routerLink]="[getNavUrl('/perfil'), professionalPerFinalitzar]" class="user-inline-link" title="Veure perfil de {{ professionalPerFinalitzar }}">
                     {{ professionalPerFinalitzar }}
                   </a>
                   <ng-template #noProModal>Professional AVISA</ng-template>
@@ -926,6 +926,20 @@ export class LesMevesTasquesComponent implements OnInit {
     private readonly router: Router
   ) {}
 
+  get isAppPage(): boolean {
+    const url = this.router.url || '';
+    return url.startsWith('/app');
+  }
+
+  getNavUrl(path: string): string {
+    if (this.isAppPage) {
+      if (path === '/' || path === '/inici' || path === '/app') return '/app';
+      if (path.startsWith('/app/')) return path;
+      return path.startsWith('/') ? `/app${path}` : `/app/${path}`;
+    }
+    return path;
+  }
+
   /**
    * Cicle de vida inicial del component: carrega les tasques del client connectat.
    */
@@ -987,7 +1001,7 @@ export class LesMevesTasquesComponent implements OnInit {
     const user = this.authService.getCurrentUser();
 
     if (!user) {
-      this.router.navigate(['/login']);
+      this.router.navigate([this.getNavUrl('/login')]);
       return;
     }
 

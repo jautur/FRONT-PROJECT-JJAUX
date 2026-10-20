@@ -473,7 +473,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
             >
               {{ 'PERFIL.FILTER_TAB_FINALITZADA' | translate }} ({{ countTasquesFinalitzades() }})
             </button>
-            <a *ngIf="isOwnProfile" routerLink="/client/crear-tasca" class="btn-tab-create">
+            <a *ngIf="isOwnProfile" [routerLink]="getNavUrl('/client/crear-tasca')" class="btn-tab-create">
               {{ 'PERFIL.BTN_CREAR_TASCA_PERFIL' | translate }}
             </a>
           </div>
@@ -508,7 +508,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
             </div>
 
             <div class="task-card-actions">
-              <a [routerLink]="['/tasca-detall', t.id]" class="btn-task-detail">
+              <a [routerLink]="[getNavUrl('/tasca-detall'), t.id]" class="btn-task-detail">
                 <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                   <circle cx="11" cy="11" r="8"></circle>
                   <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
@@ -524,7 +524,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
           <span class="empty-tab-icon">📋</span>
           <h4>{{ 'PERFIL.NO_TASQUES_USER' | translate }}</h4>
           <p class="subtitle">{{ 'PERFIL.NO_TASQUES_FILTER' | translate }}</p>
-          <a *ngIf="isOwnProfile" routerLink="/client/crear-tasca" class="btn-create-tab">
+          <a *ngIf="isOwnProfile" [routerLink]="getNavUrl('/client/crear-tasca')" class="btn-create-tab">
             {{ 'PERFIL.BTN_CREAR_TASCA_PERFIL' | translate }}
           </a>
         </div>
@@ -540,7 +540,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
             <p>{{ 'LES_MEVES_OFERTES.PROPOSALS_SECTION_HINT' | translate }}</p>
           </div>
 
-          <a *ngIf="isOwnProfile && (usuari?.rol === 'professional' || isAdmin)" routerLink="/professional/crear-oferta" class="btn-tab-create">
+          <a *ngIf="isOwnProfile && (usuari?.rol === 'professional' || isAdmin)" [routerLink]="getNavUrl('/professional/crear-oferta')" class="btn-tab-create">
             {{ 'PERFIL.BTN_CREAR_OFERTA_PERFIL' | translate }}
           </a>
         </div>
@@ -584,7 +584,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
                 <span>{{ 'TASCA_DETALL.BTN_ACCEPT_QUOTE' | translate }}</span>
               </button>
 
-              <a *ngIf="o.tascaId" [routerLink]="['/tasca-detall', o.tascaId]" class="btn-task-detail">
+              <a *ngIf="o.tascaId" [routerLink]="[getNavUrl('/tasca-detall'), o.tascaId]" class="btn-task-detail">
                 <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                   <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
                   <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
@@ -600,7 +600,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
           <span class="empty-tab-icon">💶</span>
           <h4>{{ 'PERFIL.NO_PRESSUPOSTOS_USER' | translate }}</h4>
           <p class="subtitle">{{ 'PERFIL.NO_PRESSUPOSTOS_USER' | translate }}</p>
-          <a *ngIf="isOwnProfile && (usuari?.rol === 'professional' || isAdmin)" routerLink="/professional/crear-oferta" class="btn-create-tab">
+          <a *ngIf="isOwnProfile && (usuari?.rol === 'professional' || isAdmin)" [routerLink]="getNavUrl('/professional/crear-oferta')" class="btn-create-tab">
             {{ 'PERFIL.BTN_CREAR_OFERTA_PERFIL' | translate }}
           </a>
         </div>
@@ -699,6 +699,28 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
         box-sizing: border-box;
         max-width: 100%;
+      }
+
+      .btn-perfil-logout {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: #fff0f0;
+        border: 1px solid #ffd4d4;
+        color: #d32f2f;
+        padding: 0.65rem 1.15rem;
+        border-radius: 12px;
+        font-weight: 800;
+        font-size: 0.88rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      .btn-perfil-logout:hover {
+        background: #ff1744;
+        color: #ffffff;
+        border-color: #ff1744;
+        box-shadow: 0 4px 14px rgba(255, 23, 68, 0.25);
+        transform: translateY(-1px);
       }
 
       /* =========================================================================
@@ -2002,6 +2024,28 @@ export class PerfilComponent implements OnInit {
     private readonly route: ActivatedRoute,
     public readonly translationService: TranslationService
   ) {}
+
+  get isAppPage(): boolean {
+    const url = this.router.url || '';
+    return url.startsWith('/app');
+  }
+
+  getNavUrl(path: string): string {
+    if (this.isAppPage) {
+      if (path === '/' || path === '/inici' || path === '/app') return '/app';
+      if (path.startsWith('/app/')) return path;
+      return path.startsWith('/') ? `/app${path}` : `/app/${path}`;
+    }
+    return path;
+  }
+
+  /**
+   * Tanca la sessió actual de l'usuari i redirigeix al formulari d'inici de sessió.
+   */
+  tancarSessio(): void {
+    this.authService.logout();
+    this.router.navigate(['/login'], { queryParams: { message: 'Sessió tancada correctament.' } });
+  }
 
   /**
    * Comprova si l'usuari connectat és administrador.

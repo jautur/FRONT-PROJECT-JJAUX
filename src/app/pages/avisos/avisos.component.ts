@@ -156,7 +156,7 @@ type FiltreAvisos = 'totes' | 'pendents' | 'llegides';
         </div>
         <h3>{{ 'AVISOS_PAGE.EMPTY_TITLE' | translate }}</h3>
         <p>{{ 'AVISOS_PAGE.EMPTY_DESC' | translate }}</p>
-        <a routerLink="/" class="btn-primary">{{ 'NAV.HOME' | translate }}</a>
+        <a [routerLink]="getNavUrl('/inici')" class="btn-primary">{{ 'NAV.HOME' | translate }}</a>
       </div>
     </div>
   `,
@@ -478,6 +478,20 @@ export class AvisosComponent implements OnInit {
     private readonly router: Router
   ) {}
 
+  get isAppPage(): boolean {
+    const url = this.router.url || '';
+    return url.startsWith('/app');
+  }
+
+  getNavUrl(path: string): string {
+    if (this.isAppPage) {
+      if (path === '/' || path === '/inici' || path === '/app') return '/app';
+      if (path.startsWith('/app/')) return path;
+      return path.startsWith('/') ? `/app${path}` : `/app/${path}`;
+    }
+    return path;
+  }
+
   /**
    * Navega a l'apartat corresponent a l'avís i el marca com a llegit si no ho estava.
    * @param a Notificació clicada
@@ -488,7 +502,7 @@ export class AvisosComponent implements OnInit {
     }
     const ruta = this.getDestinacioAvis(a);
     if (ruta) {
-      this.router.navigateByUrl(ruta);
+      this.router.navigateByUrl(this.getNavUrl(ruta));
     }
   }
 

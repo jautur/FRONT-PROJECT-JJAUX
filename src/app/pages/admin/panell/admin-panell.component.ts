@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { TascaService } from '../../../services/tasca.service';
 import { OfertaService } from '../../../services/oferta.service';
 import { IncidenciaService } from '../../../services/incidencia.service';
@@ -247,7 +247,7 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'usuaris';
                   <div class="table-desc">{{ t.descripcio }}</div>
                 </td>
                 <td>
-                  <a [routerLink]="['/perfil', t.clientNom || t.client]" class="user-inline-link" title="Veure perfil">
+                  <a [routerLink]="[getNavUrl('/perfil'), t.clientNom || t.client]" class="user-inline-link" title="Veure perfil">
                     {{ t.clientNom || t.client }}
                   </a>
                 </td>
@@ -260,7 +260,7 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'usuaris';
                 </td>
                 <td>
                   <div class="action-buttons">
-                    <a [routerLink]="['/tasca-detall', t.id]" class="btn-sm btn-info" title="Revisar detall">
+                    <a [routerLink]="[getNavUrl('/tasca-detall'), t.id]" class="btn-sm btn-info" title="Revisar detall">
                       <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;">
                         <circle cx="11" cy="11" r="8"></circle>
                         <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
@@ -333,13 +333,13 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'usuaris';
               <tr *ngFor="let o of ofertesFiltrades">
                 <td class="font-mono"><strong>{{ o.id }}</strong></td>
                 <td>
-                  <a *ngIf="o.tascaId" [routerLink]="['/tasca-detall', o.tascaId]" class="link-ref">
+                  <a *ngIf="o.tascaId" [routerLink]="[getNavUrl('/tasca-detall'), o.tascaId]" class="link-ref">
                     {{ o.tascaId }}
                   </a>
                   <span *ngIf="!o.tascaId">-</span>
                 </td>
                 <td>
-                  <a [routerLink]="['/perfil', o.professionalNom || o.professional]" class="user-inline-link" title="Veure perfil">
+                  <a [routerLink]="[getNavUrl('/perfil'), o.professionalNom || o.professional]" class="user-inline-link" title="Veure perfil">
                     <strong>{{ o.professionalNom || o.professional }}</strong>
                   </a>
                 </td>
@@ -370,7 +370,7 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'usuaris';
                       </svg>
                       {{ 'ADMIN.BTN_DELETE' | translate }}
                     </button>
-                    <a *ngIf="o.tascaId" [routerLink]="['/tasca-detall', o.tascaId]" class="btn-sm btn-info" title="Anar a la tasca">
+                    <a *ngIf="o.tascaId" [routerLink]="[getNavUrl('/tasca-detall'), o.tascaId]" class="btn-sm btn-info" title="Anar a la tasca">
                       <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;">
                         <circle cx="11" cy="11" r="8"></circle>
                         <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
@@ -422,7 +422,7 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'usuaris';
                   <div class="table-desc">{{ inc.descripcio }}</div>
                 </td>
                 <td>
-                  <a [routerLink]="['/perfil', inc.clientNom || inc.client]" class="user-inline-link" title="Veure perfil">
+                  <a [routerLink]="[getNavUrl('/perfil'), inc.clientNom || inc.client]" class="user-inline-link" title="Veure perfil">
                     {{ inc.clientNom || inc.client }}
                   </a>
                 </td>
@@ -430,7 +430,7 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'usuaris';
                 <td><strong>{{ inc.budget }}</strong></td>
                 <td>
                   <div class="action-buttons">
-                    <a [routerLink]="['/tasca-detall', inc.id]" class="btn-sm btn-info" title="Revisar incidència">
+                    <a [routerLink]="[getNavUrl('/tasca-detall'), inc.id]" class="btn-sm btn-info" title="Revisar incidència">
                       <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;">
                         <circle cx="11" cy="11" r="8"></circle>
                         <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
@@ -497,7 +497,7 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'usuaris';
               <tr *ngFor="let u of usuarisFiltrats">
                 <td class="font-mono"><strong>{{ u.id }}</strong></td>
                 <td>
-                  <a [routerLink]="['/perfil', u.id]" class="user-inline-link" title="Veure perfil">
+                  <a [routerLink]="[getNavUrl('/perfil'), u.id]" class="user-inline-link" title="Veure perfil">
                     <strong>{{ u.nom }}</strong>
                   </a>
                 </td>
@@ -511,7 +511,7 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'usuaris';
                 <td class="bio-cell">{{ u.bio || '-' }}</td>
                 <td>
                   <div class="action-buttons">
-                    <a [routerLink]="['/perfil', u.id]" class="btn-sm btn-info" title="Veure perfil">
+                    <a [routerLink]="[getNavUrl('/perfil'), u.id]" class="btn-sm btn-info" title="Veure perfil">
                       <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;">
                         <circle cx="12" cy="7" r="4"></circle>
                         <path d="M5.5 21a6.5 6.5 0 0 1 13 0"></path>
@@ -1395,8 +1395,23 @@ export class AdminPanellComponent implements OnInit {
     private readonly usuariService: UsuariService,
     private readonly avisService: AvisService,
     private readonly authService: AuthService,
-    private readonly confirmService: ConfirmService
+    private readonly confirmService: ConfirmService,
+    private readonly router: Router
   ) {}
+
+  get isAppPage(): boolean {
+    const url = this.router.url || '';
+    return url.startsWith('/app');
+  }
+
+  getNavUrl(path: string): string {
+    if (this.isAppPage) {
+      if (path === '/' || path === '/inici' || path === '/app') return '/app';
+      if (path.startsWith('/app/')) return path;
+      return path.startsWith('/') ? `/app${path}` : `/app/${path}`;
+    }
+    return path;
+  }
 
   /**
    * Cicle de vida inicial del component: obté totes les dades del backend.

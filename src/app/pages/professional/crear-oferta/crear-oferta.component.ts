@@ -130,7 +130,7 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
           <button type="submit" class="btn btn-primary" [disabled]="submitting">
             {{ submitting ? ('CREAR_OFERTA.SUBMITTING_OFFER' | translate) : ('CREAR_OFERTA.SUBMIT_OFFER_BTN' | translate) }}
           </button>
-          <a routerLink="/" class="btn btn-cancel">{{ 'COMMON.CANCEL_LAR' | translate }}</a>
+          <a [routerLink]="getNavUrl('/tasques-ofertes')" class="btn btn-cancel">{{ 'COMMON.CANCEL_LAR' | translate }}</a>
         </div>
       </form>
 
@@ -203,7 +203,7 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
           <button type="submit" class="btn btn-primary" [disabled]="submitting || availableTasks.length === 0">
             {{ submitting ? ('CREAR_OFERTA.SUBMITTING_BUDGET' | translate) : ('CREAR_OFERTA.SUBMIT_BUDGET_BTN' | translate) }}
           </button>
-          <a routerLink="/" class="btn btn-cancel">{{ 'COMMON.CANCEL_LAR' | translate }}</a>
+          <a [routerLink]="getNavUrl('/tasques-ofertes')" class="btn btn-cancel">{{ 'COMMON.CANCEL_LAR' | translate }}</a>
         </div>
       </form>
     </section>
@@ -650,13 +650,27 @@ export class CrearOfertaComponent implements OnInit {
     private readonly router: Router
   ) {}
 
+  get isAppPage(): boolean {
+    const url = this.router.url || '';
+    return url.startsWith('/app');
+  }
+
+  getNavUrl(path: string): string {
+    if (this.isAppPage) {
+      if (path === '/' || path === '/inici' || path === '/app') return '/app';
+      if (path.startsWith('/app/')) return path;
+      return path.startsWith('/') ? `/app${path}` : `/app/${path}`;
+    }
+    return path;
+  }
+
   /**
    * Càrrega d'incidències i tasques obertes i comprovació de paràmetres d'URL.
    */
   ngOnInit(): void {
     const origen = this.route.snapshot.queryParams['origen'] || (typeof history !== 'undefined' ? history.state?.origen : null);
     if (origen !== 'tasques-ofertes') {
-      this.router.navigate(['/tasques-ofertes'], {
+      this.router.navigate([this.getNavUrl('/tasques-ofertes')], {
         queryParams: {
           avís: 'Per a publicar una oferta o pressupost cal accedir des de la secció de Tasques i Ofertes.'
         }
@@ -789,7 +803,7 @@ export class CrearOfertaComponent implements OnInit {
         this.submitting = false;
         this.successMessage = 'Oferta de servei publicada al mercat amb èxit! Els clients ja poden contractar-la directament.';
         setTimeout(() => {
-          this.router.navigate(['/tasques-ofertes'], { queryParams: { tipus: 'ofertes' } });
+          this.router.navigate([this.getNavUrl('/tasques-ofertes')], { queryParams: { tipus: 'ofertes' } });
         }, 1200);
       },
       error: () => {
@@ -829,7 +843,7 @@ export class CrearOfertaComponent implements OnInit {
         this.submitting = false;
         this.successMessage = 'Pressupost enviat al client correctament! Quan el client l\'accepti, passarà a ser una Tasca en curs.';
         setTimeout(() => {
-          this.router.navigate(['/tasques-ofertes'], { queryParams: { tipus: 'ofertes' } });
+          this.router.navigate([this.getNavUrl('/tasques-ofertes')], { queryParams: { tipus: 'ofertes' } });
         }, 1200);
       },
       error: () => {

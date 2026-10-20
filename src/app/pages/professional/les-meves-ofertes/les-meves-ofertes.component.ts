@@ -29,7 +29,7 @@ import { Tasca } from '../../../models/tasca.model';
           <p class="subtitle">{{ 'LES_MEVES_OFERTES.SUBTITLE' | translate }}</p>
         </div>
         <div>
-          <a routerLink="/professional/crear-oferta" class="btn-crear">
+          <a [routerLink]="getNavUrl('/professional/crear-oferta')" class="btn-crear">
             {{ 'LES_MEVES_OFERTES.BTN_NEW_OFFER' | translate }}
           </a>
         </div>
@@ -56,7 +56,7 @@ import { Tasca } from '../../../models/tasca.model';
             <div class="assigned-meta">
               <div class="assigned-meta-item">
                 <span class="lbl">{{ 'TASCA_DETALL.PRO_LABEL' | translate | slice:0:-1 }}:</span>
-                <strong><a [routerLink]="['/perfil', t.clientNom || t.client]" class="user-inline-link">{{ t.clientNom || t.client }}</a></strong>
+                <strong><a [routerLink]="[getNavUrl('/perfil'), t.clientNom || t.client]" class="user-inline-link">{{ t.clientNom || t.client }}</a></strong>
               </div>
               <div class="assigned-meta-item">
                 <span class="lbl">{{ 'LES_MEVES_TASQUES.AGREED_PRICE' | translate }}</span>
@@ -78,7 +78,7 @@ import { Tasca } from '../../../models/tasca.model';
                 </svg>
                 {{ 'LES_MEVES_OFERTES.BTN_FINALIZE_TASK' | translate }}
               </button>
-              <a [routerLink]="['/tasca-detall', t.id]" class="btn-action primary">
+              <a [routerLink]="[getNavUrl('/tasca-detall'), t.id]" class="btn-action primary">
                 {{ 'LES_MEVES_OFERTES.BTN_VIEW_TRACKING' | translate }}
               </a>
             </div>
@@ -114,7 +114,7 @@ import { Tasca } from '../../../models/tasca.model';
           </h3>
 
           <p class="tasca-desc" *ngIf="tasquesMap[of.tascaId]">
-            Client: <strong><a [routerLink]="['/perfil', tasquesMap[of.tascaId].clientNom || tasquesMap[of.tascaId].client]" class="user-inline-link" title="Veure perfil">{{ tasquesMap[of.tascaId].clientNom || tasquesMap[of.tascaId].client }}</a></strong> | {{ 'MERCAT.MOBILE_CAT_LABEL' | translate }} <em>{{ tasquesMap[of.tascaId].categoria | translate }}</em>
+            Client: <strong><a [routerLink]="[getNavUrl('/perfil'), tasquesMap[of.tascaId].clientNom || tasquesMap[of.tascaId].client]" class="user-inline-link" title="Veure perfil">{{ tasquesMap[of.tascaId].clientNom || tasquesMap[of.tascaId].client }}</a></strong> | {{ 'MERCAT.MOBILE_CAT_LABEL' | translate }} <em>{{ tasquesMap[of.tascaId].categoria | translate }}</em>
           </p>
 
           <div class="preu-box">
@@ -145,7 +145,7 @@ import { Tasca } from '../../../models/tasca.model';
               </svg>
               {{ 'LES_MEVES_OFERTES.BTN_DELETE_OFFER' | translate }}
             </button>
-            <a *ngIf="of.tascaId" [routerLink]="['/tasca-detall', of.tascaId]" class="btn-action primary">
+            <a *ngIf="of.tascaId" [routerLink]="[getNavUrl('/tasca-detall'), of.tascaId]" class="btn-action primary">
               <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 5px;">
                 <circle cx="11" cy="11" r="8"></circle>
                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
@@ -166,7 +166,7 @@ import { Tasca } from '../../../models/tasca.model';
         </div>
         <h3>{{ 'LES_MEVES_OFERTES.EMPTY_TITLE' | translate }}</h3>
         <p>{{ 'LES_MEVES_OFERTES.EMPTY_DESC' | translate }}</p>
-        <a routerLink="/" class="btn-crear">{{ 'BLOG.BREADCRUMB_HOME' | translate }}</a>
+        <a [routerLink]="getNavUrl('/inici')" class="btn-crear">{{ 'BLOG.BREADCRUMB_HOME' | translate }}</a>
       </div>
     </div>
   `,
@@ -630,6 +630,20 @@ export class LesMevesOfertesComponent implements OnInit {
     private readonly router: Router
   ) {}
 
+  get isAppPage(): boolean {
+    const url = this.router.url || '';
+    return url.startsWith('/app');
+  }
+
+  getNavUrl(path: string): string {
+    if (this.isAppPage) {
+      if (path === '/' || path === '/inici' || path === '/app') return '/app';
+      if (path.startsWith('/app/')) return path;
+      return path.startsWith('/') ? `/app${path}` : `/app/${path}`;
+    }
+    return path;
+  }
+
   /**
    * Inicialització del component: carrega les ofertes del professional connectat.
    */
@@ -646,7 +660,7 @@ export class LesMevesOfertesComponent implements OnInit {
     const user = this.authService.getCurrentUser();
 
     if (!user) {
-      this.router.navigate(['/login']);
+      this.router.navigate([this.getNavUrl('/login')]);
       return;
     }
 

@@ -19,7 +19,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
     <main class="article-page-container">
       <!-- Barra superior de navegació i fil d'Ariadna -->
       <nav class="breadcrumb-nav" aria-label="Fil d'Ariadna">
-        <a routerLink="/" class="breadcrumb-link">
+        <a [routerLink]="getNavUrl('/inici')" class="breadcrumb-link">
           <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
             <polyline points="9 22 9 12 15 12 15 22"></polyline>
@@ -27,14 +27,14 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
           {{ 'BLOG.BREADCRUMB_HOME' | translate }}
         </a>
         <span class="breadcrumb-separator">/</span>
-        <a routerLink="/blog" class="breadcrumb-link">{{ 'BLOG.BREADCRUMB_CONSELLS' | translate }}</a>
+        <a [routerLink]="getNavUrl('/blog')" class="breadcrumb-link">{{ 'BLOG.BREADCRUMB_CONSELLS' | translate }}</a>
         <span class="breadcrumb-separator">/</span>
         <span class="breadcrumb-current">{{ article?.categoria | translate }}</span>
       </nav>
 
       <!-- Botó de retorn ràpid -->
       <div class="back-action-bar">
-        <a routerLink="/blog" class="btn-back">
+        <a [routerLink]="getNavUrl('/blog')" class="btn-back">
           <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <line x1="19" y1="12" x2="5" y2="12"></line>
             <polyline points="12 19 5 12 12 5"></polyline>
@@ -188,7 +188,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
                 </svg>
                 <span>{{ 'BLOG.CTA_BANNER_BTN_TASK' | translate }}</span>
               </button>
-              <a routerLink="/tasques-ofertes" class="btn-cta-secondary">
+              <a [routerLink]="getNavUrl('/tasques-ofertes')" class="btn-cta-secondary">
                 <span>{{ 'BLOG.CTA_BANNER_BTN_OFFERS' | translate }}</span>
                 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                   <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -203,10 +203,10 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         <section class="related-articles-section" *ngIf="articlesRelacionats.length > 0">
           <div class="related-header">
             <h3>{{ 'BLOG.RELATED_ARTICLES_TITLE' | translate }}</h3>
-            <a routerLink="/blog" class="link-all-articles">{{ 'HOME.VIEW_ALL_ARTICLES' | translate }}</a>
+            <a [routerLink]="getNavUrl('/blog')" class="link-all-articles">{{ 'HOME.VIEW_ALL_ARTICLES' | translate }}</a>
           </div>
           <div class="related-grid">
-            <article class="related-card" *ngFor="let rel of articlesRelacionats" [routerLink]="['/article', rel.id]" (click)="carregarArticle(rel.id)">
+            <article class="related-card" *ngFor="let rel of articlesRelacionats" [routerLink]="[getNavUrl('/article'), rel.id]" (click)="carregarArticle(rel.id)">
               <div class="related-media">
                 <img [src]="rel.imatge" [alt]="rel.titol" loading="lazy" />
                 <span class="related-cat">{{ rel.categoria | translate }}</span>
@@ -228,7 +228,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
           <div class="not-found-icon">🔍</div>
           <h2>{{ 'BLOG.NOT_FOUND_TITLE' | translate }}</h2>
           <p>{{ 'BLOG.NOT_FOUND_DESC' | translate }}</p>
-          <a routerLink="/" class="btn-back-home">{{ 'NAV.INICI' | translate }}</a>
+          <a [routerLink]="getNavUrl('/inici')" class="btn-back-home">{{ 'NAV.INICI' | translate }}</a>
         </div>
       </ng-template>
     </main>
@@ -901,6 +901,20 @@ export class ArticleDetallComponent implements OnInit {
     private readonly authService: AuthService
   ) {}
 
+  get isAppPage(): boolean {
+    const url = this.router.url || '';
+    return url.startsWith('/app');
+  }
+
+  getNavUrl(path: string): string {
+    if (this.isAppPage) {
+      if (path === '/' || path === '/inici' || path === '/app') return '/app';
+      if (path.startsWith('/app/')) return path;
+      return path.startsWith('/') ? `/app${path}` : `/app/${path}`;
+    }
+    return path;
+  }
+
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
       const id = params.get('id');
@@ -931,15 +945,15 @@ export class ArticleDetallComponent implements OnInit {
 
   anarCrearTasca(): void {
     if (!this.authService.isLoggedIn()) {
-      this.router.navigate(['/login'], {
+      this.router.navigate([this.getNavUrl('/login')], {
         queryParams: {
           message: 'Inicia sessió o crea un compte per publicar la teva tasca.',
-          returnUrl: '/client/crear-tasca'
+          returnUrl: this.getNavUrl('/client/crear-tasca')
         }
       });
       return;
     }
-    this.router.navigate(['/client/crear-tasca']);
+    this.router.navigate([this.getNavUrl('/client/crear-tasca')]);
   }
 }
 

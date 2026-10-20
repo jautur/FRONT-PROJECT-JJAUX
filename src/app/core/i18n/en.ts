@@ -37,6 +37,7 @@ export const en = {
     "COMUNITAT_PROFESSIONALS": "About Us",
     "ENLLACS_RAPIDS": "Quick links",
     "NAVEGACIO": "NAVIGATION",
+    "EL_MEU_COMPTE": "MY ACCOUNT",
     "GESTIO_FEINA": "WORK MANAGEMENT",
     "LES_MEVES_TASQUES": "My tasks",
     "CREAR_INCIDENCIA_MERCAT": "Create Ticket (in Market)",

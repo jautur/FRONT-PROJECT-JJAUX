@@ -42,9 +42,9 @@ import { Pressupost } from '../../../models/pressupost.model';
         </div>
         <h1>{{ tasca.titol }}</h1>
         <div class="meta-row">
-          <span>Client: <strong><a [routerLink]="['/perfil', tasca.client]" class="user-profile-link" title="Veure perfil">{{ tasca.client }}</a></strong></span>
+          <span>Client: <strong><a [routerLink]="[getNavUrl('/perfil'), tasca.client]" class="user-profile-link" title="Veure perfil">{{ tasca.client }}</a></strong></span>
           <span *ngIf="isTascaConvergida">
-            {{ 'TASCA_DETALL.PRO_ASSIGNED_LABEL' | translate }} <strong><a [routerLink]="['/perfil', assignedProfessional]" class="user-profile-link pro-link" title="Veure perfil">{{ assignedProfessional }}</a></strong>
+            {{ 'TASCA_DETALL.PRO_ASSIGNED_LABEL' | translate }} <strong><a [routerLink]="[getNavUrl('/perfil'), assignedProfessional]" class="user-profile-link pro-link" title="Veure perfil">{{ assignedProfessional }}</a></strong>
           </span>
           <span *ngIf="!isTascaConvergida">
             {{ 'TASCA_DETALL.PRO_ASSIGNED_LABEL' | translate }} <em>{{ 'TASCA_DETALL.PRO_UNASSIGNED' | translate }}</em>
@@ -117,7 +117,7 @@ import { Pressupost } from '../../../models/pressupost.model';
 
         <!-- Botó per a professionals si la incidència està oberta i sense professional -->
         <div *ngIf="isProfessional && !isTascaConvergida && tasca.estat === 'Oberta'" class="action-box">
-          <a [routerLink]="['/professional/crear-oferta']" [queryParams]="{ taskId: tasca.id }" class="btn btn-primary">
+          <a [routerLink]="[getNavUrl('/professional/crear-oferta')]" [queryParams]="{ taskId: tasca.id }" class="btn btn-primary">
             {{ 'TASCA_DETALL.BTN_BID_INCIDENCIA' | translate }}
           </a>
         </div>
@@ -142,7 +142,7 @@ import { Pressupost } from '../../../models/pressupost.model';
           <article class="card offer-card" *ngFor="let offer of ofertes">
             <div class="offer-header">
               <h3>
-                <a [routerLink]="['/perfil', offer.professional]" class="user-profile-link" title="Veure perfil">
+                <a [routerLink]="[getNavUrl('/perfil'), offer.professional]" class="user-profile-link" title="Veure perfil">
                   {{ offer.professional }}
                 </a>
               </h3>
@@ -253,7 +253,7 @@ import { Pressupost } from '../../../models/pressupost.model';
     <div *ngIf="!tasca && !loading" class="not-found card">
       <h2>{{ 'COMMON.NO_RESULTS' | translate }}</h2>
       <p>No s'ha pogut localitzar la tasca sol·licitada.</p>
-      <a routerLink="/" class="btn btn-primary">{{ 'NAV.HOME' | translate }}</a>
+      <a [routerLink]="getNavUrl('/inici')" class="btn btn-primary">{{ 'NAV.HOME' | translate }}</a>
     </div>
   `,
   styles: [
@@ -1116,6 +1116,20 @@ export class TascaDetallComponent implements OnInit {
     private readonly confirmService: ConfirmService
   ) {}
 
+  get isAppPage(): boolean {
+    const url = this.router.url || '';
+    return url.startsWith('/app');
+  }
+
+  getNavUrl(path: string): string {
+    if (this.isAppPage) {
+      if (path === '/' || path === '/inici' || path === '/app') return '/app';
+      if (path.startsWith('/app/')) return path;
+      return path.startsWith('/') ? `/app${path}` : `/app/${path}`;
+    }
+    return path;
+  }
+
   get assignedProfessional(): string {
     if (this.tasca?.professionalNom || this.tasca?.professional) {
       return (this.tasca.professionalNom || this.tasca.professional)!;
@@ -1297,7 +1311,7 @@ export class TascaDetallComponent implements OnInit {
         this.ofertes = [];
         if (tascaCreada && tascaCreada.id) {
           setTimeout(() => {
-            this.router.navigate(['/tasca-detall', tascaCreada.id]);
+            this.router.navigate([this.getNavUrl('/tasca-detall'), tascaCreada.id]);
           }, 1200);
         } else if (this.tasca) {
           this.loadTask(this.tasca.id);

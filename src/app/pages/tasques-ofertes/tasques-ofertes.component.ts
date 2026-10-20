@@ -233,7 +233,7 @@ interface CategoriaFiltre {
                     {{ 'TASQUES_OFERTES.EMPTY_TASKS_DESC' | translate }}
                     {{ !isLoggedIn ? ('TASQUES_OFERTES.EMPTY_TASKS_LOGIN' | translate) : ('TASQUES_OFERTES.EMPTY_TASKS_LOGGED' | translate) }}
                   </p>
-                  <a *ngIf="!isLoggedIn" routerLink="/login" class="btn-reset-filters" style="display: inline-block; text-decoration: none; margin-top: 0.5rem;">
+                  <a *ngIf="!isLoggedIn" [routerLink]="getNavUrl('/login')" class="btn-reset-filters" style="display: inline-block; text-decoration: none; margin-top: 0.5rem;">
                     {{ 'NAV.INICIAR_SESSIO' | translate }}
                   </a>
                 </div>
@@ -282,7 +282,7 @@ interface CategoriaFiltre {
 
                   <div class="card-meta-line">
                     <span class="meta-label">{{ 'TASQUES_OFERTES.PRO_WHO_OFFERS' | translate }}</span>
-                    <a [routerLink]="['/perfil', getProfessionalIdentifier(offer.professional)]" class="user-profile-link pro-profile-link" title="Veure el perfil, descripció i ressenyes de {{ offer.professional }}">
+                    <a [routerLink]="[getNavUrl('/perfil'), getProfessionalIdentifier(offer.professional)]" class="user-profile-link pro-profile-link" title="Veure el perfil, descripció i ressenyes de {{ offer.professional }}">
                       <span class="user-avatar-mini pro-avatar-mini">{{ (offer.professional || 'P').charAt(0) }}</span>
                       <strong class="meta-value pro-name-val">{{ offer.professional }}</strong>
                     </a>
@@ -338,7 +338,7 @@ interface CategoriaFiltre {
 
                   <div class="card-meta-line">
                     <span class="meta-label">{{ 'TASQUES_OFERTES.CLIENT_WHO_ASKS' | translate }}</span>
-                    <a [routerLink]="['/perfil', getClientIdentifier(task.client)]" class="user-profile-link" title="Veure el perfil i descripció de {{ task.client }}">
+                    <a [routerLink]="[getNavUrl('/perfil'), getClientIdentifier(task.client)]" class="user-profile-link" title="Veure el perfil i descripció de {{ task.client }}">
                       <span class="user-avatar-mini">{{ (task.client || 'C').charAt(0) }}</span>
                       <strong class="meta-value">{{ task.client }}</strong>
                     </a>
@@ -387,14 +387,14 @@ interface CategoriaFiltre {
                   <div class="card-meta-dual">
                     <div class="card-meta-line">
                       <span class="meta-label">{{ 'COMMON.CLIENT' | translate }}:</span>
-                      <a [routerLink]="['/perfil', getClientIdentifier(task.client)]" class="user-profile-link" title="Veure el perfil de {{ task.client }}">
+                      <a [routerLink]="[getNavUrl('/perfil'), getClientIdentifier(task.client)]" class="user-profile-link" title="Veure el perfil de {{ task.client }}">
                         <span class="user-avatar-mini">{{ (task.client || 'C').charAt(0) }}</span>
                         <strong class="meta-value">{{ task.client }}</strong>
                       </a>
                     </div>
                     <div class="card-meta-line" *ngIf="task.professional">
                       <span class="meta-label">{{ 'TASQUES_OFERTES.PRO_ASSIGNED' | translate }}</span>
-                      <a [routerLink]="['/perfil', getProfessionalIdentifier(task.professional)]" class="user-profile-link pro-profile-link" title="Veure el perfil de {{ task.professional }}">
+                      <a [routerLink]="[getNavUrl('/perfil'), getProfessionalIdentifier(task.professional)]" class="user-profile-link pro-profile-link" title="Veure el perfil de {{ task.professional }}">
                         <span class="user-avatar-mini pro-avatar-mini">{{ (task.professional || 'P').charAt(0) }}</span>
                         <strong class="meta-value pro-name-val">{{ task.professional }}</strong>
                       </a>
@@ -460,7 +460,7 @@ interface CategoriaFiltre {
                   <div class="reviewer-info">
                     <span class="reviewer-avatar">{{ (r.clientNom || 'C').charAt(0) }}</span>
                     <div>
-                      <a [routerLink]="['/perfil', r.clientId || r.clientNom]" (click)="tancarModalRessenyes()" class="user-profile-link reviewer-link" title="Veure el perfil de {{ r.clientNom }}">
+                      <a [routerLink]="[getNavUrl('/perfil'), r.clientId || r.clientNom]" (click)="tancarModalRessenyes()" class="user-profile-link reviewer-link" title="Veure el perfil de {{ r.clientNom }}">
                         <strong class="reviewer-name">{{ r.clientNom || 'Client AVISA' }}</strong>
                       </a>
                       <span class="review-date" *ngIf="r.createdAt">{{ r.createdAt | slice:0:10 }}</span>
@@ -2367,13 +2367,27 @@ export class TasquesOfertesComponent implements OnInit {
     this.modalProfessionalRating = this.getProfessionalRating(proNom);
   }
 
+  get isAppPage(): boolean {
+    const url = this.router.url || '';
+    return url.startsWith('/app');
+  }
+
+  getNavUrl(path: string): string {
+    if (this.isAppPage) {
+      if (path === '/' || path === '/inici' || path === '/app') return '/app';
+      if (path.startsWith('/app/')) return path;
+      return path.startsWith('/') ? `/app${path}` : `/app/${path}`;
+    }
+    return path;
+  }
+
   tancarModalRessenyes(): void {
     this.modalProfessionalNom = null;
   }
 
   anarPerfilProfessional(userId: string): void {
     this.tancarModalRessenyes();
-    this.router.navigate(['/perfil', userId]);
+    this.router.navigate([this.getNavUrl('/perfil'), userId]);
   }
 
   get isLoggedIn(): boolean {
@@ -2667,10 +2681,10 @@ export class TasquesOfertesComponent implements OnInit {
     if (!this.authService.isLoggedIn()) {
       this.noticeMessage = `Has d'iniciar sessió per ${actionDesc}. Redirigint...`;
       setTimeout(() => {
-        this.router.navigate(['/login'], {
+        this.router.navigate([this.getNavUrl('/login')], {
           queryParams: {
             message: `Cal iniciar sessió abans de poder ${actionDesc}.`,
-            returnUrl
+            returnUrl: this.getNavUrl(returnUrl)
           }
         });
       }, 700);
@@ -2682,7 +2696,7 @@ export class TasquesOfertesComponent implements OnInit {
   onNovaIncidencia(): void {
     if (!this.requireLogin('publicar una incidència', '/client/crear-tasca')) return;
     if (this.authService.isClient()) {
-      this.router.navigate(['/client/crear-tasca'], { queryParams: { origen: 'tasques-ofertes' } });
+      this.router.navigate([this.getNavUrl('/client/crear-tasca')], { queryParams: { origen: 'tasques-ofertes' } });
     } else {
       this.noticeMessage = 'Només els comptes amb rol de "Client" o "Ambdós" poden publicar incidències.';
     }
@@ -2691,7 +2705,7 @@ export class TasquesOfertesComponent implements OnInit {
   onNovaOferta(): void {
     if (!this.requireLogin('publicar una oferta professional', '/professional/crear-oferta')) return;
     if (this.authService.isProfessional()) {
-      this.router.navigate(['/professional/crear-oferta'], { queryParams: { origen: 'tasques-ofertes' } });
+      this.router.navigate([this.getNavUrl('/professional/crear-oferta')], { queryParams: { origen: 'tasques-ofertes' } });
     } else {
       this.noticeMessage = 'Només els comptes amb rol de "Professional" o "Ambdós" poden publicar ofertes de servei.';
     }
@@ -2703,13 +2717,13 @@ export class TasquesOfertesComponent implements OnInit {
 
   onDetallTasca(taskId: string): void {
     if (!this.requireLogin(`veure el detall de la tasca ${taskId}`, `/tasca-detall/${taskId}`)) return;
-    this.router.navigate(['/tasca-detall', taskId]);
+    this.router.navigate([this.getNavUrl('/tasca-detall'), taskId]);
   }
 
   onFerOferta(taskId: string): void {
     if (!this.requireLogin(`fer una oferta per a la tasca ${taskId}`, '/professional/crear-oferta')) return;
     if (this.authService.isProfessional()) {
-      this.router.navigate(['/professional/crear-oferta'], { queryParams: { taskId, origen: 'tasques-ofertes' } });
+      this.router.navigate([this.getNavUrl('/professional/crear-oferta')], { queryParams: { taskId, origen: 'tasques-ofertes' } });
     } else {
       this.noticeMessage = 'Només els comptes amb rol de "Professional" o "Ambdós" poden fer ofertes econòmiques.';
     }
@@ -2812,7 +2826,7 @@ export class TasquesOfertesComponent implements OnInit {
 
   anarTascaPeticio(tascaId: string): void {
     this.tancarModalPeticioExit();
-    this.router.navigate(['/tasca-detall', tascaId]);
+    this.router.navigate([this.getNavUrl('/tasca-detall'), tascaId]);
   }
 
   isOfferOwner(offer: any): boolean {

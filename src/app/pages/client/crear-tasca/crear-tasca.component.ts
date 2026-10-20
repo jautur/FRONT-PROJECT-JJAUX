@@ -89,7 +89,7 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
           <button type="submit" class="btn btn-primary" [disabled]="submitting">
             {{ submitting ? ('CREAR_TASCA.SUBMITTING' | translate) : ('CREAR_TASCA.SUBMIT_BTN' | translate) }}
           </button>
-          <a routerLink="/" class="btn btn-cancel">{{ 'COMMON.CANCEL_LAR' | translate }}</a>
+          <a [routerLink]="getNavUrl('/tasques-ofertes')" class="btn btn-cancel">{{ 'COMMON.CANCEL_LAR' | translate }}</a>
         </div>
       </form>
     </section>
@@ -291,13 +291,27 @@ export class CrearTascaComponent implements OnInit {
     private readonly router: Router
   ) {}
 
+  get isAppPage(): boolean {
+    const url = this.router.url || '';
+    return url.startsWith('/app');
+  }
+
+  getNavUrl(path: string): string {
+    if (this.isAppPage) {
+      if (path === '/' || path === '/inici' || path === '/app') return '/app';
+      if (path.startsWith('/app/')) return path;
+      return path.startsWith('/') ? `/app${path}` : `/app/${path}`;
+    }
+    return path;
+  }
+
   /**
    * Inicialització: comprova l'origen des de tasques-ofertes i assigna el client.
    */
   ngOnInit(): void {
     const origen = this.route.snapshot.queryParams['origen'] || (typeof history !== 'undefined' ? history.state?.origen : null);
     if (origen !== 'tasques-ofertes') {
-      this.router.navigate(['/tasques-ofertes'], {
+      this.router.navigate([this.getNavUrl('/tasques-ofertes')], {
         queryParams: {
           avís: 'Per a publicar una incidència cal fer-ho des de la secció de Tasques i Ofertes.'
         }
@@ -340,7 +354,7 @@ export class CrearTascaComponent implements OnInit {
         this.submitting = false;
         this.successMessage = 'Incidència publicada amb èxit! Els professionals de la teva zona ja poden enviar-te pressupostos. Redirigint...';
         setTimeout(() => {
-          this.router.navigate(['/tasques-ofertes'], { queryParams: { tipus: 'incidencies' } });
+          this.router.navigate([this.getNavUrl('/tasques-ofertes')], { queryParams: { tipus: 'incidencies' } });
         }, 1200);
       },
       error: () => {

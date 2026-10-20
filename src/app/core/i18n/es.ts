@@ -37,6 +37,7 @@ export const es = {
     "COMUNITAT_PROFESSIONALS": "Sobre Nosotros",
     "ENLLACS_RAPIDS": "Enlaces rápidos",
     "NAVEGACIO": "NAVEGACIÓN",
+    "EL_MEU_COMPTE": "MI CUENTA",
     "GESTIO_FEINA": "GESTIÓN DE TRABAJO",
     "LES_MEVES_TASQUES": "Mis tareas",
     "CREAR_INCIDENCIA_MERCAT": "Crear Incidencia (en el Mercado)",

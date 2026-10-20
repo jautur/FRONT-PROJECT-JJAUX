@@ -200,7 +200,7 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
         </button>
 
         <p class="footer-hint">
-          {{ 'AUTH.REGISTER.ALREADY_ACCOUNT' | translate }} <a routerLink="/login">{{ 'AUTH.REGISTER.LOGIN_HERE' | translate }}</a>
+          {{ 'AUTH.REGISTER.ALREADY_ACCOUNT' | translate }} <a [routerLink]="getNavUrl('/login')">{{ 'AUTH.REGISTER.LOGIN_HERE' | translate }}</a>
         </p>
       </form>
 
@@ -541,6 +541,20 @@ export class RegistreComponent implements OnInit {
     private readonly router: Router
   ) {}
 
+  get isAppPage(): boolean {
+    const url = this.router.url || '';
+    return url.startsWith('/app');
+  }
+
+  getNavUrl(path: string): string {
+    if (this.isAppPage) {
+      if (path === '/' || path === '/inici' || path === '/app') return '/app';
+      if (path.startsWith('/app/')) return path;
+      return path.startsWith('/') ? `/app${path}` : `/app/${path}`;
+    }
+    return path;
+  }
+
   ngOnInit(): void {
     // Inicialització del formulari reactiu amb les dues caselles obligatòries no marcades per defecte
     this.registerForm = this.fb.group({
@@ -641,8 +655,8 @@ export class RegistreComponent implements OnInit {
     this.authService.register(registerData).subscribe({
       next: () => {
         this.loading = false;
-        // Sessió iniciada directament -> tornem a la pàgina principal
-        this.router.navigate(['/']);
+        // Sessió iniciada directament -> tornem a la pàgina principal adaptada
+        this.router.navigate([this.getNavUrl('/inici')]);
       },
       error: (err) => {
         this.loading = false;

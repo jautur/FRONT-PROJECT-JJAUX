@@ -85,35 +85,24 @@ export class AppComponent implements OnInit, OnDestroy {
         this.perfilDropdownObert = false;
         const url = event.urlAfterRedirects || '';
         this.isHomePage = (url === '/' || url === '' || url.startsWith('/?') || url === '/inici' || url.startsWith('/inici?') || url.startsWith('/inici#')) && url.includes('landing=true');
-        this.isAvisosPage = url.startsWith('/avisos');
+        this.isAvisosPage = url.startsWith('/avisos') || url.startsWith('/app/avisos');
         this.isAppPage = url.startsWith('/app');
 
-        // Detecció d'estat d'aplicació /inici, /app i rutes operatives de la plataforma
-        const isAppRoute = url.startsWith('/app') ||
-                           url.startsWith('/inici') ||
-                           url === '/' ||
-                           url.startsWith('/tasques-ofertes') ||
-                           url.startsWith('/perfil') ||
-                           url.startsWith('/avisos') ||
-                           url.startsWith('/client/les-meves-tasques') ||
-                           url.startsWith('/client/crear-tasca') ||
-                           url.startsWith('/professional/les-meves-ofertes') ||
-                           url.startsWith('/professional/crear-oferta') ||
-                           url.startsWith('/tasca-detall');
-
-        const hasAppStorage = typeof window !== 'undefined' && (sessionStorage.getItem('avisa_app_mode') === 'true' || localStorage.getItem('avisa_app_mode') === 'true');
-
+        // Detecció d'entorn: Versió Web (/inici) vs Versió App (/app i PWA)
         if (url.startsWith('/app') || this.pwaService.isStandalone() || this.pwaService.checkIfStandalone()) {
           this.isAppMode = true;
+          this.showBottomNav = true;
           if (typeof window !== 'undefined') {
             try { sessionStorage.setItem('avisa_app_mode', 'true'); } catch {}
           }
-        } else if (hasAppStorage) {
-          this.isAppMode = true;
+        } else {
+          // Qualsevol ruta web estàndard (/inici, /tasques-ofertes, /perfil, /blog, etc.)
+          this.isAppMode = false;
+          this.showBottomNav = false;
+          if (typeof window !== 'undefined') {
+            try { sessionStorage.removeItem('avisa_app_mode'); localStorage.removeItem('avisa_app_mode'); } catch {}
+          }
         }
-
-        // Mostra la barra inferior d'app a les rutes operatives o quan el mode app està actiu
-        this.showBottomNav = isAppRoute || this.isAppMode;
 
         this.actualitzarAvisos();
         if (!this.isHomePage) {
@@ -314,13 +303,37 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Retorna la ruta adaptada segons l'entorn de navegació actiu:
+   * - A l'entorn App mòbil (/app o rutes amb prefix /app/...), es manté el context /app.
+   * - A l'entorn Web (/inici, /tasques-ofertes, etc.), s'utilitzen les rutes web estàndard.
+   */
+  getNavUrl(targetPath: string): string {
+    const isApp = this.isAppMode || this.isAppPage || (this.router.url && this.router.url.startsWith('/app'));
+    if (!isApp) {
+      return targetPath === '/' ? '/inici' : targetPath;
+    }
+    // Entorn App:
+    if (targetPath === '/' || targetPath === '/inici' || targetPath === '/app') {
+      return '/app';
+    }
+    if (targetPath.startsWith('/app/')) {
+      return targetPath;
+    }
+    return targetPath.startsWith('/') ? `/app${targetPath}` : `/app/${targetPath}`;
+  }
+
+  /**
    * Determina si la pestanya 'TASQUES' està activa (/tasques-ofertes o gestió de tasques).
    */
   isTasquesActive(): boolean {
     const url = this.router.url || '';
-    return url.startsWith('/tasques-ofertes') ||
+    return url.startsWith('/app/tasques-ofertes') ||
+           url.startsWith('/tasques-ofertes') ||
+           url.startsWith('/app/client/les-meves-tasques') ||
            url.startsWith('/client/les-meves-tasques') ||
+           url.startsWith('/app/professional/les-meves-ofertes') ||
            url.startsWith('/professional/les-meves-ofertes') ||
+           url.startsWith('/app/tasca-detall') ||
            url.startsWith('/tasca-detall');
   }
 
@@ -329,7 +342,7 @@ export class AppComponent implements OnInit, OnDestroy {
    */
   isPerfilActive(): boolean {
     const url = this.router.url || '';
-    return url.startsWith('/perfil');
+    return url.startsWith('/app/perfil') || url.startsWith('/perfil');
   }
 
   /**
@@ -337,13 +350,13 @@ export class AppComponent implements OnInit, OnDestroy {
    */
   isIniciActive(): boolean {
     const url = this.router.url || '';
-    return url === '/' ||
-           url === '/app' ||
+    return url === '/app' ||
            url.startsWith('/app?') ||
            url.startsWith('/app#') ||
            url === '/inici' ||
            url.startsWith('/inici?') ||
-           url.startsWith('/inici#');
+           url.startsWith('/inici#') ||
+           url === '/';
   }
 
   /**
@@ -351,7 +364,7 @@ export class AppComponent implements OnInit, OnDestroy {
    */
   isAvisosActive(): boolean {
     const url = this.router.url || '';
-    return url.startsWith('/avisos');
+    return url.startsWith('/app/avisos') || url.startsWith('/avisos');
   }
 
   /**
@@ -359,7 +372,7 @@ export class AppComponent implements OnInit, OnDestroy {
    */
   onIniciClick(event?: MouseEvent): void {
     const url = this.router.url || '';
-    if (url === '/inici' || url === '/' || url.startsWith('/inici?') || url.startsWith('/inici#')) {
+    if (url === '/inici' || url === '/' || url === '/app' || url.startsWith('/inici?') || url.startsWith('/app?')) {
       if (typeof window !== 'undefined') {
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }
