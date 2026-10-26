@@ -15,7 +15,7 @@ try {
 } catch (e) {
   try {
     const path = require('path');
-    pg = require(path.join(__dirname, 'node_modules', 'pg'));
+    pg = require(path.join(__dirname, '..', 'FRONT-PROJECT-JJAUX', 'node_modules', 'pg'));
   } catch (e2) {
     try {
       pg = require('/home/jautursis/.gemini/antigravity/brain/ac12e9c2-506a-4129-bb08-8c851cfd0667/scratch/pg/node_modules/pg');
@@ -96,7 +96,7 @@ async function run() {
     }
 
     let sql = arg;
-    const knownTables = ['usuaris', 'tasques', 'ofertes', 'propostes', 'avisos', 'resenyes'];
+    const knownTables = ['usuaris', 'tasques', 'ofertes', 'propostes', 'avisos', 'resenyes', 'pressupostos', 'blacklist_telefons', 'publicacions', 'interessos'];
     if (knownTables.includes(arg.toLowerCase())) {
       sql = `SELECT * FROM ${arg.toLowerCase()} LIMIT 50`;
     }

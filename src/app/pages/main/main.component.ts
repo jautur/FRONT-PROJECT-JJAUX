@@ -157,112 +157,198 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         </div>
 
         <!-- ============================================================== -->
-        <!-- CARRUSEL DE LLISCAMENT LATERAL DE PROFESSIONALS VERIFICATS     -->
+        <!-- CARRUSEL ESTIL TWITCH DE PROFESSIONALS DE CONFIANÇA RECOMANATS -->
         <!-- ============================================================== -->
-        <section class="pro-carousel-section" id="professionals-verificats-carrusel">
-          <div class="pro-carousel-header">
-            <div class="pro-carousel-title-group">
+        <section
+          class="twitch-carousel-section"
+          id="professionals-verificats-carrusel"
+          (mouseenter)="pauseProCarousel()"
+          (mouseleave)="resumeProCarousel()"
+        >
+          <div class="twitch-carousel-header">
+            <div class="twitch-carousel-title-group">
               <span class="carousel-eyebrow">{{ 'HOME.PRO_CAROUSEL_EYEBROW' | translate }}</span>
               <h3 class="carousel-title">{{ 'HOME.PRO_CAROUSEL_TITLE' | translate }}</h3>
               <p class="carousel-subtitle">{{ 'HOME.PRO_CAROUSEL_SUBTITLE' | translate }}</p>
             </div>
-            <div class="carousel-nav-arrows" *ngIf="verifiedProfessionals.length > 1">
-              <button
-                type="button"
-                class="btn-carousel-arrow"
-                (click)="scrollProCarousel(-1)"
-                aria-label="Anterior"
-                title="Desplaçar cap a l'esquerra"
-              >
-                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                  <polyline points="15 18 9 12 15 6"></polyline>
-                </svg>
-              </button>
-              <button
-                type="button"
-                class="btn-carousel-arrow"
-                (click)="scrollProCarousel(1)"
-                aria-label="Següent"
-                title="Desplaçar cap a la dreta"
-              >
-                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                  <polyline points="9 18 15 12 9 6"></polyline>
-                </svg>
-              </button>
+            <div class="carousel-live-indicator" *ngIf="verifiedProfessionals.length > 1">
+              <span class="live-dot" [class.paused]="isProCarouselPaused"></span>
+              <span class="live-label">{{ isProCarouselPaused ? 'En pausa' : 'Rotació activa' }}</span>
             </div>
           </div>
 
-          <!-- Pista lliscant lateral (carousel track) -->
-          <div class="pro-carousel-track" #proCarouselTrack>
-            <article
-              class="pro-carousel-card"
-              *ngFor="let pro of verifiedProfessionals"
-              [class.has-custom-bg]="!!pro.foto"
-              [style.backgroundImage]="getProCardBackground(pro)"
+          <div class="no-pros-msg" *ngIf="verifiedProfessionals.length === 0">
+            <p>{{ 'HOME.PRO_CAROUSEL_NO_PROS' | translate }}</p>
+          </div>
+
+          <!-- ESCENARI TWITCH: PREV, CENTER (GRAN), NEXT -->
+          <div class="twitch-carousel-stage" *ngIf="verifiedProfessionals.length > 0">
+            <!-- TARGETA PREVISUALITZACIÓ ANTERIOR (ESQUERRA) -->
+            <div
+              class="side-preview-card prev-card"
+              *ngIf="prevPro as prev"
+              (click)="goToPrevPro()"
+              [title]="'Veure professional anterior: ' + prev.nom"
+              role="button"
+              tabindex="0"
+              (keydown.enter)="goToPrevPro()"
             >
-              <div class="pro-card-header">
-                <!-- LOGO DE L'EMPRESA AMB SEGELL DE VERIFICACIÓ -->
-                <div class="pro-company-logo" [style.background]="getCompanyLogo(pro).bg">
-                  <span class="logo-monogram">{{ getCompanyLogo(pro).initial }}</span>
-                  <span class="logo-verified-badge" [title]="'HOME.PRO_CAROUSEL_VERIFIED_BADGE' | translate">
-                    <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                      <polyline points="20 6 9 17 4 12"></polyline>
-                    </svg>
-                  </span>
+              <div class="side-card-bg" [style.backgroundImage]="getProSideBackground(prev)"></div>
+              <div class="side-card-glass">
+                <button
+                  type="button"
+                  class="btn-side-arrow"
+                  (click)="$event.stopPropagation(); goToPrevPro()"
+                  aria-label="Professional anterior"
+                  title="Anterior"
+                >
+                  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                  </svg>
+                </button>
+                <div class="side-card-info">
+                  <div class="side-avatar" [style.background]="getCompanyLogo(prev).bg">
+                    <span>{{ getCompanyLogo(prev).initial }}</span>
+                  </div>
+                  <div class="side-meta">
+                    <h5 class="side-pro-name">{{ prev.nom }}</h5>
+                    <span class="side-pro-spec" *ngIf="getProSpeciality(prev) as spec">{{ spec }}</span>
+                  </div>
                 </div>
-                <div class="pro-badge-col">
-                  <span class="verified-tag">
-                    <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px;">
+              </div>
+            </div>
+
+            <!-- TARGETA PRINCIPAL EN GRAN (SHOWCASE HERO CENTRAL) -->
+            <article class="main-showcase-card" *ngIf="currentPro as pro">
+              <div class="showcase-banner" [style.backgroundImage]="getProMainBackground(pro)">
+                <div class="banner-gradient-overlay"></div>
+                
+                <div class="banner-top-chips">
+                  <span class="chip-verified">
+                    <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px;">
                       <polyline points="20 6 9 17 4 12"></polyline>
                     </svg>
                     {{ 'HOME.PRO_CAROUSEL_VERIFIED_BADGE' | translate }}
                   </span>
-                  <span class="speciality-tag" *ngIf="getProSpeciality(pro) as spec">{{ spec }}</span>
+                  <span class="chip-speciality" *ngIf="getProSpeciality(pro) as spec">{{ spec }}</span>
+                </div>
+
+                <div class="banner-bottom-info" *ngIf="getRatingInfo(pro) as r">
+                  <div class="rating-chip">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="#fbbf24" style="margin-right: 3px;">
+                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                    </svg>
+                    <strong>{{ r.mitjana }}</strong>
+                    <span class="rating-sub">({{ r.total }} {{ r.total === 1 ? 'opinió' : 'opinions' }})</span>
+                  </div>
                 </div>
               </div>
 
-              <div class="pro-card-info">
-                <h4 class="pro-name">
-                  <a [routerLink]="[getNavUrl('/perfil'), pro.id]" class="pro-name-link" [title]="pro.nom">{{ pro.nom }}</a>
-                </h4>
-
-                <!-- VALORACIÓ -->
-                <div class="pro-rating-badge" *ngIf="getRatingInfo(pro) as r">
-                  <span class="star-pill">
-                    <svg viewBox="0 0 24 24" width="13" height="13" fill="#f59e0b" style="vertical-align: -1px; margin-right: 2px;" aria-hidden="true">
-                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-                    </svg>
-                    {{ r.mitjana }}
-                  </span>
-                  <div class="stars-row-visual" aria-hidden="true">
-                    <span class="star-icon" *ngFor="let s of [1,2,3,4,5]">
-                      <svg viewBox="0 0 24 24" width="12" height="12" [attr.fill]="s <= +r.mitjana ? '#f59e0b' : '#d1d5db'" style="vertical-align: -1px; margin-right: 1px;" aria-hidden="true">
-                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+              <div class="showcase-details">
+                <div class="pro-header-brand">
+                  <div class="brand-logo" [style.background]="getCompanyLogo(pro).bg">
+                    <span class="brand-monogram">{{ getCompanyLogo(pro).initial }}</span>
+                    <span class="brand-verified-tick" [title]="'HOME.PRO_CAROUSEL_VERIFIED_BADGE' | translate">
+                      <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"></polyline>
                       </svg>
                     </span>
                   </div>
-                  <span class="rating-count">({{ r.total }} {{ r.total === 1 ? 'opinió' : 'opinions' }})</span>
+
+                  <div class="brand-text">
+                    <h4 class="showcase-name">
+                      <a [routerLink]="[getNavUrl('/perfil'), pro.id]" class="showcase-name-link" [title]="pro.nom">{{ pro.nom }}</a>
+                    </h4>
+                    <span class="showcase-role">Professional recomanat & homologat AVISA</span>
+                  </div>
                 </div>
 
-                <p class="pro-bio" *ngIf="pro.bio">
-                  {{ pro.bio }}
+                <p class="showcase-bio">
+                  {{ pro.bio || 'Professional qualificat de confiança amb serveis garantits a la comunitat AVISA.' }}
                 </p>
-              </div>
 
-              <div class="pro-card-action-wrap">
-                <a [routerLink]="[getNavUrl('/perfil'), pro.id]" class="btn-view-pro-profile">
-                  <span>{{ 'HOME.PRO_CAROUSEL_BTN_PROFILE' | translate }}</span>
-                  <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 6px;">
-                    <line x1="5" y1="12" x2="19" y2="12"></line>
-                    <polyline points="12 5 19 12 12 19"></polyline>
-                  </svg>
-                </a>
+                <div class="showcase-perks">
+                  <span class="perk-badge">
+                    <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#10b981" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    Verificació oficial
+                  </span>
+                  <span class="perk-badge">
+                    <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#3b82f6" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    Pressupost transparent
+                  </span>
+                  <span class="perk-badge">
+                    <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#f59e0b" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round">
+                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                    </svg>
+                    Garantia AVISA
+                  </span>
+                </div>
+
+                <div class="showcase-cta-bar">
+                  <a [routerLink]="[getNavUrl('/perfil'), pro.id]" class="btn-showcase-profile">
+                    <span>{{ 'HOME.PRO_CAROUSEL_BTN_PROFILE' | translate }}</span>
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                      <line x1="5" y1="12" x2="19" y2="12"></line>
+                      <polyline points="12 5 19 12 12 19"></polyline>
+                    </svg>
+                  </a>
+                </div>
               </div>
             </article>
 
-            <div class="no-pros-msg" *ngIf="verifiedProfessionals.length === 0">
-              <p>{{ 'HOME.PRO_CAROUSEL_NO_PROS' | translate }}</p>
+            <!-- TARGETA PREVISUALITZACIÓ SEGÜENT (DRETA) -->
+            <div
+              class="side-preview-card next-card"
+              *ngIf="nextPro as next"
+              (click)="goToNextPro()"
+              [title]="'Veure professional següent: ' + next.nom"
+              role="button"
+              tabindex="0"
+              (keydown.enter)="goToNextPro()"
+            >
+              <div class="side-card-bg" [style.backgroundImage]="getProSideBackground(next)"></div>
+              <div class="side-card-glass">
+                <button
+                  type="button"
+                  class="btn-side-arrow"
+                  (click)="$event.stopPropagation(); goToNextPro()"
+                  aria-label="Professional següent"
+                  title="Següent"
+                >
+                  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                  </svg>
+                </button>
+                <div class="side-card-info">
+                  <div class="side-avatar" [style.background]="getCompanyLogo(next).bg">
+                    <span>{{ getCompanyLogo(next).initial }}</span>
+                  </div>
+                  <div class="side-meta">
+                    <h5 class="side-pro-name">{{ next.nom }}</h5>
+                    <span class="side-pro-spec" *ngIf="getProSpeciality(next) as spec">{{ spec }}</span>
+                  </div>
+                </div>
+              </div>
             </div>
+          </div>
+
+          <!-- INDICADORS DE POSICIÓ / PAGINACIÓ (DOTS TWITCH) -->
+          <div class="twitch-carousel-dots" *ngIf="verifiedProfessionals.length > 1">
+            <button
+              type="button"
+              *ngFor="let p of verifiedProfessionals; let idx = index"
+              class="carousel-dot-btn"
+              [class.active]="idx === (currentProIndex % verifiedProfessionals.length)"
+              (click)="goToProIndex(idx)"
+              [attr.aria-label]="'Professional ' + (idx + 1) + ': ' + p.nom"
+              [title]="p.nom"
+            >
+              <span class="dot-bar"></span>
+            </button>
           </div>
         </section>
 
@@ -2623,17 +2709,18 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       }
 
       /* ============================================================== */
-      /* CARRUSEL DE LLISCAMENT LATERAL DE PROFESSIONALS VERIFICATS     */
+      /* CARRUSEL ESTIL TWITCH DE PROFESSIONALS DE CONFIANÇA RECOMANATS */
       /* ============================================================== */
-      .pro-carousel-section {
+      .twitch-carousel-section {
         width: 100%;
         display: flex;
         flex-direction: column;
         gap: 1.25rem;
         box-sizing: border-box;
+        margin: 1rem 0 2rem 0;
       }
 
-      .pro-carousel-header {
+      .twitch-carousel-header {
         display: flex;
         align-items: flex-end;
         justify-content: space-between;
@@ -2641,7 +2728,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         padding: 0 0.25rem;
       }
 
-      .pro-carousel-title-group {
+      .twitch-carousel-title-group {
         display: flex;
         flex-direction: column;
         gap: 0.25rem;
@@ -2669,281 +2756,469 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         color: #64748b;
       }
 
-      .carousel-nav-arrows {
-        display: flex;
+      .carousel-live-indicator {
+        display: inline-flex;
+        align-items: center;
         gap: 0.5rem;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        padding: 0.35rem 0.8rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: #475569;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
       }
 
-      .btn-carousel-arrow {
-        width: 40px;
-        height: 40px;
+      .live-dot {
+        width: 8px;
+        height: 8px;
         border-radius: 50%;
-        border: 1px solid #cbd5e1;
-        background: #ffffff;
-        color: #334155;
+        background: #10b981;
+        box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+        animation: pulseLive 2s infinite ease-in-out;
+      }
+
+      .live-dot.paused {
+        background: #f59e0b;
+        box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2);
+        animation: none;
+      }
+
+      @keyframes pulseLive {
+        0%, 100% { transform: scale(1); opacity: 1; }
+        50% { transform: scale(1.3); opacity: 0.7; }
+      }
+
+      .live-label {
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+      }
+
+      /* ESCENARI TWITCH */
+      .twitch-carousel-stage {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1.25rem;
+        width: 100%;
+        box-sizing: border-box;
+        position: relative;
+        perspective: 1000px;
+        padding: 0.5rem 0;
+      }
+
+      /* TARGETA LATERAL (PREVISUALITZACIÓ PREV / NEXT) */
+      .side-preview-card {
+        flex: 0 0 170px;
+        width: 170px;
+        height: 350px;
+        border-radius: 20px;
+        position: relative;
+        overflow: hidden;
+        cursor: pointer;
+        background: #0f172a;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.35);
+        opacity: 0.55;
+        transform: scale(0.86);
+        transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        user-select: none;
+        z-index: 1;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+      }
+
+      .side-preview-card:hover {
+        opacity: 0.92;
+        transform: scale(0.92);
+        box-shadow: 0 16px 36px -5px rgba(0, 0, 0, 0.45);
+        border-color: #ff1744;
+      }
+
+      .side-card-bg {
+        position: absolute;
+        inset: 0;
+        background-size: cover;
+        background-position: center center;
+        background-repeat: no-repeat;
+        transition: transform 0.4s ease;
+      }
+
+      .side-preview-card:hover .side-card-bg {
+        transform: scale(1.08);
+      }
+
+      .side-card-glass {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(180deg, rgba(15, 23, 42, 0.25) 0%, rgba(15, 23, 42, 0.92) 100%);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.35rem 0.85rem;
+        box-sizing: border-box;
+      }
+
+      .btn-side-arrow {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        background: rgba(15, 23, 42, 0.8);
+        backdrop-filter: blur(8px);
+        color: #ffffff;
         display: flex;
         align-items: center;
         justify-content: center;
         cursor: pointer;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
         transition: all 0.2s ease;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
       }
 
-      .btn-carousel-arrow:hover {
-        background: #0f172a;
-        color: #ffffff;
-        border-color: #0f172a;
-        transform: scale(1.05);
+      .btn-side-arrow:hover {
+        background: #ff1744;
+        border-color: #ff1744;
+        transform: scale(1.14);
+        box-shadow: 0 6px 18px rgba(255, 23, 68, 0.45);
       }
 
-      .pro-carousel-track {
-        display: flex;
-        gap: 1.25rem;
-        overflow-x: auto;
-        scroll-snap-type: x mandatory;
-        -webkit-overflow-scrolling: touch;
-        scroll-behavior: smooth;
-        padding: 0.5rem 0.25rem 1.5rem 0.25rem;
-        scrollbar-width: thin;
-        scrollbar-color: #cbd5e1 transparent;
-      }
-
-      .pro-carousel-track::-webkit-scrollbar {
-        height: 6px;
-      }
-
-      .pro-carousel-track::-webkit-scrollbar-track {
-        background: transparent;
-      }
-
-      .pro-carousel-track::-webkit-scrollbar-thumb {
-        background: #cbd5e1;
-        border-radius: 6px;
-      }
-
-      .pro-carousel-card {
-        flex: 0 0 280px;
-        width: 280px;
-        scroll-snap-align: start;
-        background: #ffffff;
-        border: 1px solid #e2e8f0;
-        border-radius: 18px;
-        padding: 1.35rem;
+      .side-card-info {
         display: flex;
         flex-direction: column;
-        justify-content: space-between;
-        gap: 1rem;
-        box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05);
-        transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+        align-items: center;
+        text-align: center;
+        gap: 0.5rem;
+        width: 100%;
+      }
+
+      .side-avatar {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #ffffff;
+        font-weight: 900;
+        font-size: 1.1rem;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      }
+
+      .side-meta {
+        display: flex;
+        flex-direction: column;
+        gap: 0.2rem;
+        width: 100%;
+      }
+
+      .side-pro-name {
+        margin: 0;
+        font-size: 0.88rem;
+        font-weight: 800;
+        color: #ffffff;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+      }
+
+      .side-pro-spec {
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: #93c5fd;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      /* TARGETA PRINCIPAL EN GRAN (SHOWCASE HERO) */
+      .main-showcase-card {
+        flex: 1 1 680px;
+        max-width: 820px;
+        min-height: 380px;
+        display: flex;
+        background: #0f172a;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 24px;
+        overflow: hidden;
+        color: #ffffff;
+        box-shadow: 0 20px 50px -10px rgba(15, 23, 42, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.08);
+        z-index: 2;
+        transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+        animation: fadeInScale 0.35s cubic-bezier(0.16, 1, 0.3, 1);
         box-sizing: border-box;
       }
 
-      .pro-carousel-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 12px 28px rgba(15, 23, 42, 0.12);
-        border-color: #10b981;
+      @keyframes fadeInScale {
+        0% { opacity: 0.85; transform: scale(0.97); }
+        100% { opacity: 1; transform: scale(1); }
       }
 
-      .pro-carousel-card.has-custom-bg {
-        background-size: cover !important;
-        background-position: center center !important;
-        background-repeat: no-repeat !important;
-        border-color: rgba(255, 255, 255, 0.25);
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+      .main-showcase-card:hover {
+        box-shadow: 0 26px 60px -10px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 23, 68, 0.4);
+      }
+
+      /* BANNER ESQUERRE (FOTO + OVERLAY) */
+      .showcase-banner {
+        flex: 0 0 46%;
         position: relative;
+        background-size: cover;
+        background-position: center center;
+        background-repeat: no-repeat;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 1.4rem;
+        box-sizing: border-box;
+        min-height: 280px;
       }
 
-      .pro-carousel-card.has-custom-bg .pro-name {
+      .banner-gradient-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(180deg, rgba(15, 23, 42, 0.2) 0%, rgba(15, 23, 42, 0.85) 100%);
+        pointer-events: none;
+      }
+
+      .banner-top-chips {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+
+      .chip-verified {
+        background: rgba(16, 185, 129, 0.92);
+        backdrop-filter: blur(8px);
         color: #ffffff;
+        font-size: 0.74rem;
+        font-weight: 800;
+        padding: 0.25rem 0.65rem;
+        border-radius: 9999px;
+        display: inline-flex;
+        align-items: center;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
       }
 
-      .pro-carousel-card.has-custom-bg .pro-name-link {
-        color: #ffffff;
-        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.7);
+      .chip-speciality {
+        background: rgba(30, 58, 138, 0.85);
+        backdrop-filter: blur(8px);
+        color: #93c5fd;
+        font-size: 0.74rem;
+        font-weight: 700;
+        padding: 0.25rem 0.65rem;
+        border-radius: 9999px;
+        border: 1px solid rgba(147, 197, 253, 0.3);
       }
 
-      .pro-carousel-card.has-custom-bg .pro-name-link:hover {
-        color: #ff1744;
+      .banner-bottom-info {
+        position: relative;
+        z-index: 2;
       }
 
-      .pro-carousel-card.has-custom-bg .pro-bio {
-        color: #e2e8f0;
-        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+      .rating-chip {
+        display: inline-flex;
+        align-items: center;
+        background: rgba(15, 23, 42, 0.88);
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        padding: 0.35rem 0.75rem;
+        border-radius: 100px;
+        font-size: 0.85rem;
+        color: #f8fafc;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
       }
 
-      .pro-carousel-card.has-custom-bg .rating-count {
-        color: #cbd5e1;
-        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+      .rating-chip strong {
+        color: #fbbf24;
+        margin-right: 0.35rem;
       }
 
-      .pro-carousel-card.has-custom-bg:hover {
-        border-color: #ff1744;
-        box-shadow: 0 14px 34px rgba(255, 23, 68, 0.35);
-        transform: translateY(-5px);
+      .rating-sub {
+        font-size: 0.78rem;
+        color: #94a3b8;
+        margin-left: 0.35rem;
       }
 
-      .pro-card-header {
+      /* DETALLS DRETS DE LA SHOWCASE */
+      .showcase-details {
+        flex: 1;
+        padding: 1.85rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 1.2rem;
+        box-sizing: border-box;
+      }
+
+      .pro-header-brand {
         display: flex;
         align-items: center;
-        gap: 0.85rem;
+        gap: 1rem;
       }
 
-      .pro-company-logo {
-        width: 54px;
-        height: 54px;
-        border-radius: 14px;
+      .brand-logo {
+        width: 58px;
+        height: 58px;
+        border-radius: 16px;
         display: flex;
         align-items: center;
         justify-content: center;
         position: relative;
         flex-shrink: 0;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
       }
 
-      .logo-monogram {
-        font-size: 1.25rem;
+      .brand-monogram {
+        font-size: 1.35rem;
         font-weight: 900;
         color: #ffffff;
-        letter-spacing: -0.02em;
-        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
       }
 
-      .logo-verified-badge {
+      .brand-verified-tick {
         position: absolute;
-        bottom: -3px;
-        right: -3px;
-        width: 18px;
-        height: 18px;
+        bottom: -4px;
+        right: -4px;
+        width: 20px;
+        height: 20px;
         background: #10b981;
         color: #ffffff;
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        border: 2px solid #ffffff;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        border: 2px solid #0f172a;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
       }
 
-      .pro-badge-col {
+      .brand-text {
         display: flex;
         flex-direction: column;
-        gap: 0.3rem;
-        align-items: flex-start;
+        gap: 0.25rem;
       }
 
-      .verified-tag {
-        font-size: 0.72rem;
-        font-weight: 800;
-        color: #065f46;
-        background: #ecfdf5;
-        border: 1px solid #a7f3d0;
-        padding: 0.2rem 0.55rem;
-        border-radius: 100px;
-        display: inline-flex;
-        align-items: center;
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
-      }
-
-      .speciality-tag {
-        font-size: 0.76rem;
-        font-weight: 700;
-        color: #1d4ed8;
-        background: #eff6ff;
-        border: 1px solid #bfdbfe;
-        padding: 0.15rem 0.5rem;
-        border-radius: 6px;
-      }
-
-      .pro-card-info {
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-        flex: 1;
-      }
-
-      .pro-name {
+      .showcase-name {
         margin: 0;
-        font-size: 1.1rem;
+        font-size: 1.35rem;
         font-weight: 800;
-        color: #0f172a;
-        line-height: 1.3;
+        color: #ffffff;
+        line-height: 1.25;
       }
 
-      .pro-name-link {
-        color: inherit;
+      .showcase-name-link {
+        color: #ffffff;
         text-decoration: none;
         transition: color 0.2s ease;
       }
 
-      .pro-name-link:hover {
+      .showcase-name-link:hover {
         color: #ff1744;
       }
 
-      .pro-rating-badge {
-        display: flex;
-        align-items: center;
-        gap: 0.4rem;
-        flex-wrap: wrap;
-      }
-
-      .star-pill {
-        background: #fffbeb;
-        color: #b45309;
-        border: 1px solid #fef3c7;
-        font-size: 0.85rem;
-        font-weight: 800;
-        padding: 0.15rem 0.45rem;
-        border-radius: 6px;
-      }
-
-      .stars-row-visual {
-        color: #f59e0b;
-        font-size: 0.85rem;
-        letter-spacing: 0.05em;
-      }
-
-      .rating-count {
-        font-size: 0.78rem;
-        color: #64748b;
+      .showcase-role {
+        font-size: 0.8rem;
         font-weight: 600;
+        color: #94a3b8;
       }
 
-      .pro-bio {
+      .showcase-bio {
         margin: 0;
-        font-size: 0.84rem;
-        color: #475569;
-        line-height: 1.45;
+        font-size: 0.95rem;
+        line-height: 1.55;
+        color: #cbd5e1;
         display: -webkit-box;
-        -webkit-line-clamp: 2;
+        -webkit-line-clamp: 4;
         -webkit-box-orient: vertical;
         overflow: hidden;
       }
 
-      .pro-card-action-wrap {
-        margin-top: auto;
+      .showcase-perks {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
       }
 
-      .btn-view-pro-profile {
+      .perk-badge {
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: #e2e8f0;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 0.25rem 0.6rem;
+        border-radius: 8px;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+      }
+
+      .showcase-cta-bar {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding-top: 0.5rem;
+      }
+
+      .btn-showcase-profile {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: #ff1744;
+        color: #ffffff;
+        font-size: 0.95rem;
+        font-weight: 800;
+        padding: 0.75rem 1.4rem;
+        border-radius: 12px;
+        text-decoration: none;
+        box-shadow: 0 4px 14px rgba(255, 23, 68, 0.35);
+        transition: all 0.2s ease;
+      }
+
+      .btn-showcase-profile:hover {
+        background: #d50000;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(255, 23, 68, 0.45);
+        color: #ffffff;
+      }
+
+      /* DOTS DE PAGINACIÓ (TWITCH STYLE) */
+      .twitch-carousel-dots {
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 100%;
-        padding: 0.65rem 1rem;
-        background: #0f172a;
-        color: #ffffff;
-        font-weight: 700;
-        font-size: 0.88rem;
-        border-radius: 10px;
-        text-decoration: none;
-        transition: all 0.2s ease;
-        box-sizing: border-box;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
       }
 
-      .btn-view-pro-profile:hover {
+      .carousel-dot-btn {
+        background: transparent;
+        border: none;
+        padding: 6px 4px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+      }
+
+      .dot-bar {
+        width: 12px;
+        height: 6px;
+        border-radius: 4px;
+        background: #cbd5e1;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        display: block;
+      }
+
+      .carousel-dot-btn:hover .dot-bar {
+        background: #94a3b8;
+      }
+
+      .carousel-dot-btn.active .dot-bar {
+        width: 32px;
         background: #ff1744;
-        box-shadow: 0 4px 12px rgba(255, 23, 68, 0.3);
-        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(255, 23, 68, 0.35);
       }
 
       .no-pros-msg {
@@ -2954,13 +3229,54 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         width: 100%;
       }
 
-      @media (max-width: 640px) {
-        .pro-carousel-card {
-          flex: 0 0 82vw;
-          max-width: 310px;
+      /* RESPONSIVE BREAKPOINTS */
+      @media (max-width: 992px) {
+        .side-preview-card {
+          flex: 0 0 130px;
+          width: 130px;
+          height: 310px;
         }
+
+        .showcase-banner {
+          flex: 0 0 42%;
+        }
+
+        .showcase-details {
+          padding: 1.4rem;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .side-preview-card {
+          display: none;
+        }
+
+        .main-showcase-card {
+          flex-direction: column;
+          max-width: 100%;
+        }
+
+        .showcase-banner {
+          min-height: 220px;
+          padding: 1rem;
+        }
+
+        .showcase-details {
+          padding: 1.25rem;
+          gap: 1rem;
+        }
+
+        .showcase-name {
+          font-size: 1.2rem;
+        }
+
         .carousel-title {
           font-size: 1.25rem;
+        }
+
+        .btn-showcase-profile {
+          width: 100%;
+          justify-content: center;
         }
       }
     `
@@ -3023,12 +3339,103 @@ export class MainComponent implements OnInit, OnDestroy {
     return this.allUsuaris.filter(u => u.rol === 'professional');
   }
 
-  /** Desplaçament suau del carrusel de professionals cap a l'esquerra (-1) o dreta (1) */
-  scrollProCarousel(direction: number): void {
-    if (!this.proCarouselTrack) return;
-    const track = this.proCarouselTrack.nativeElement;
-    const scrollAmount = 300 * direction;
-    track.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+  /** Index del professional actiu mostrat en gran al carrusel Twitch */
+  currentProIndex = 0;
+  proCarouselInterval?: any;
+  isProCarouselPaused = false;
+
+  /** Retorna el professional actiu mostrat en gran al centre */
+  get currentPro(): Usuari | null {
+    const list = this.verifiedProfessionals;
+    if (list.length === 0) return null;
+    return list[((this.currentProIndex % list.length) + list.length) % list.length];
+  }
+
+  /** Retorna el professional anterior per a la previsualització lateral esquerra */
+  get prevPro(): Usuari | null {
+    const list = this.verifiedProfessionals;
+    if (list.length <= 1) return null;
+    const prevIdx = (this.currentProIndex - 1 + list.length) % list.length;
+    return list[prevIdx];
+  }
+
+  /** Retorna el professional següent per a la previsualització lateral dreta */
+  get nextPro(): Usuari | null {
+    const list = this.verifiedProfessionals;
+    if (list.length <= 1) return null;
+    const nextIdx = (this.currentProIndex + 1) % list.length;
+    return list[nextIdx];
+  }
+
+  /** Avança al següent professional (rotació Twitch) */
+  goToNextPro(): void {
+    const list = this.verifiedProfessionals;
+    if (list.length <= 1) return;
+    this.currentProIndex = (this.currentProIndex + 1) % list.length;
+    this.restartProCarouselTimer();
+  }
+
+  /** Retrocedeix al professional anterior (rotació Twitch) */
+  goToPrevPro(): void {
+    const list = this.verifiedProfessionals;
+    if (list.length <= 1) return;
+    this.currentProIndex = (this.currentProIndex - 1 + list.length) % list.length;
+    this.restartProCarouselTimer();
+  }
+
+  /** Salta directament a un professional determinat pels indicadors de posició */
+  goToProIndex(idx: number): void {
+    this.currentProIndex = idx;
+    this.restartProCarouselTimer();
+  }
+
+  /** Inicia el temporitzador de rotació automàtica cada 5 segons */
+  startProCarouselTimer(): void {
+    this.stopProCarouselTimer();
+    this.proCarouselInterval = setInterval(() => {
+      if (!this.isProCarouselPaused && this.verifiedProfessionals.length > 1) {
+        this.currentProIndex = (this.currentProIndex + 1) % this.verifiedProfessionals.length;
+      }
+    }, 5000);
+  }
+
+  /** Atura el temporitzador per evitar fugues de memòria */
+  stopProCarouselTimer(): void {
+    if (this.proCarouselInterval) {
+      clearInterval(this.proCarouselInterval);
+      this.proCarouselInterval = undefined;
+    }
+  }
+
+  /** Reinicia el compte enrere quan l'usuari interactua manualment */
+  restartProCarouselTimer(): void {
+    this.startProCarouselTimer();
+  }
+
+  /** Posa en pausa la rotació quan el cursor entra sobre el carrusel */
+  pauseProCarousel(): void {
+    this.isProCarouselPaused = true;
+  }
+
+  /** Reprèn la rotació automàtica quan el cursor surt de la secció */
+  resumeProCarousel(): void {
+    this.isProCarouselPaused = false;
+  }
+
+  /** Imatge de fons del banner principal del professional destacat */
+  getProMainBackground(pro: Usuari): string {
+    if (pro.foto) {
+      return `url('${pro.foto}')`;
+    }
+    return 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)';
+  }
+
+  /** Imatge de fons amb degradat fosc per a les previsualitzacions laterals */
+  getProSideBackground(pro: Usuari): string {
+    if (pro.foto) {
+      return `linear-gradient(180deg, rgba(15, 23, 42, 0.45) 0%, rgba(15, 23, 42, 0.88) 100%), url('${pro.foto}')`;
+    }
+    return 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)';
   }
 
   /** Retorna el fons degradat + fotografia assignada per a la targeta del professional recomanat */
@@ -3100,6 +3507,7 @@ export class MainComponent implements OnInit, OnDestroy {
     if (this.routerEventsSub) {
       this.routerEventsSub.unsubscribe();
     }
+    this.stopProCarouselTimer();
   }
 
   ngOnInit(): void {
@@ -3112,6 +3520,7 @@ export class MainComponent implements OnInit, OnDestroy {
     this.usuariService.getAll().subscribe({
       next: (users) => {
         this.allUsuaris = users ?? [];
+        this.startProCarouselTimer();
       },
       error: () => {}
     });
@@ -3169,7 +3578,7 @@ export class MainComponent implements OnInit, OnDestroy {
   /** Genera previsualitzacions aleatòries perquè no surtin sempre les mateixes 3 */
   generarPrevisualitzacionsAleatories(): void {
     const allTasks = [...this.tasks];
-    this.randomPreviewTasks = this.barrejarArray(allTasks).slice(0, 3);
+    this.randomPreviewTasks = this.barrejarArray(allTasks).slice(0, 1);
 
     const allOffers = [...this.offers];
     this.randomPreviewOffers = this.barrejarArray(allOffers).slice(0, 1);
@@ -3234,7 +3643,8 @@ export class MainComponent implements OnInit, OnDestroy {
 
   /** Retorna la vista prèvia aleatòria de 3 tasques per a la pàgina principal */
   get previewTasks() {
-    return this.randomPreviewTasks.length > 0 ? this.randomPreviewTasks : this.tasks.slice(0, 3);
+    const llista = this.randomPreviewTasks.length > 0 ? this.randomPreviewTasks : this.tasks;
+    return llista.slice(0, 1);
   }
 
   /** Retorna la vista prèvia d'ofertes per a la pàgina principal: 1 tant a la versió /app com a la versió web (/inici) */
