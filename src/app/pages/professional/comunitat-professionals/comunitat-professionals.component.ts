@@ -454,7 +454,7 @@ import { GuiaProfessional, GUIES_PRO_VA, GUIES_PRO_ES, GUIES_PRO_EN } from '../.
       max-width: 1180px;
       margin: 0 auto;
       padding: 1.5rem 1.25rem 5rem;
-      color: #09090c;
+      color: var(--color-text, #09090c);
       font-family: inherit;
     }
 
@@ -464,14 +464,14 @@ import { GuiaProfessional, GUIES_PRO_VA, GUIES_PRO_ES, GUIES_PRO_EN } from '../.
       align-items: center;
       gap: 0.5rem;
       font-size: 0.88rem;
-      color: #636058;
+      color: var(--color-text-muted, #636058);
       margin-bottom: 2rem;
     }
     .breadcrumb-link {
       display: inline-flex;
       align-items: center;
       gap: 0.35rem;
-      color: #636058;
+      color: var(--color-text-muted, #636058);
       text-decoration: none;
       font-weight: 600;
       transition: color 0.2s ease;
@@ -480,10 +480,10 @@ import { GuiaProfessional, GUIES_PRO_VA, GUIES_PRO_ES, GUIES_PRO_EN } from '../.
       color: #ff1744;
     }
     .breadcrumb-separator {
-      color: #d6d0c4;
+      color: var(--border-subtle, #d6d0c4);
     }
     .breadcrumb-current {
-      color: #09090c;
+      color: var(--color-text, #09090c);
       font-weight: 700;
     }
 
@@ -566,9 +566,9 @@ import { GuiaProfessional, GUIES_PRO_VA, GUIES_PRO_ES, GUIES_PRO_EN } from '../.
       align-items: center;
       gap: 0.6rem;
       padding: 0.95rem 1.7rem;
-      background: #ffffff;
-      color: #09090c;
-      border: 1px solid #d6d0c4;
+      background: var(--bg-surface, #ffffff);
+      color: var(--color-text, #09090c);
+      border: 1px solid var(--border-subtle, #d6d0c4);
       border-radius: 12px;
       font-size: 0.95rem;
       font-weight: 700;
@@ -578,7 +578,7 @@ import { GuiaProfessional, GUIES_PRO_VA, GUIES_PRO_ES, GUIES_PRO_EN } from '../.
     .btn-hero-secondary:hover {
       border-color: #ff1744;
       color: #ff1744;
-      background: #faf8f4;
+      background: var(--bg-card, #faf8f4);
       transform: translateY(-2px);
     }
 
@@ -588,7 +588,7 @@ import { GuiaProfessional, GUIES_PRO_VA, GUIES_PRO_ES, GUIES_PRO_EN } from '../.
       grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
       gap: 1.5rem;
       padding-top: 2.25rem;
-      border-top: 1px solid #ede8df;
+      border-top: 1px solid var(--border-subtle, #ede8df);
     }
     .stat-item {
       display: flex;
@@ -604,7 +604,7 @@ import { GuiaProfessional, GUIES_PRO_VA, GUIES_PRO_ES, GUIES_PRO_EN } from '../.
     }
     .stat-label {
       font-size: 0.86rem;
-      color: #636058;
+      color: var(--color-text-muted, #636058);
       font-weight: 600;
       text-align: center;
       line-height: 1.4;
@@ -628,13 +628,13 @@ import { GuiaProfessional, GUIES_PRO_VA, GUIES_PRO_ES, GUIES_PRO_EN } from '../.
     .section-heading h2 {
       font-size: 2.1rem;
       font-weight: 900;
-      color: #09090c;
+      color: var(--color-text, #09090c);
       margin: 0 0 0.85rem;
       letter-spacing: -0.02em;
     }
     .section-heading p {
       font-size: 1.05rem;
-      color: #636058;
+      color: var(--color-text-muted, #636058);
       line-height: 1.6;
       margin: 0;
     }
@@ -676,17 +676,17 @@ import { GuiaProfessional, GUIES_PRO_VA, GUIES_PRO_ES, GUIES_PRO_EN } from '../.
     .reason-card h3 {
       font-size: 1.25rem;
       font-weight: 800;
-      color: #09090c;
+      color: var(--color-text, #09090c);
       margin: 0 0 0.75rem;
     }
     .reason-card p {
       font-size: 0.95rem;
       line-height: 1.65;
-      color: #636058;
+      color: var(--color-text-muted, #636058);
       margin: 0;
     }
     .reason-card strong {
-      color: #09090c;
+      color: var(--color-text, #09090c);
     }
 
     /* Banner de transparència i sostenibilitat */
@@ -694,8 +694,8 @@ import { GuiaProfessional, GUIES_PRO_VA, GUIES_PRO_ES, GUIES_PRO_EN } from '../.
       margin-bottom: 5rem;
     }
     .transparency-card {
-      background: linear-gradient(135deg, #ffffff 0%, #fffbf5 100%);
-      border: 1.5px solid #fed7aa;
+      background: var(--bg-card, #ffffff);
+      border: 1.5px solid var(--border-subtle, #fed7aa);
       border-radius: 20px;
       padding: 2.2rem 2.5rem;
       display: flex;
@@ -710,12 +710,12 @@ import { GuiaProfessional, GUIES_PRO_VA, GUIES_PRO_ES, GUIES_PRO_EN } from '../.
       height: 58px;
       min-width: 58px;
       border-radius: 16px;
-      background: #ffedd5;
+      background: rgba(234, 88, 12, 0.12);
       color: #ea580c;
       display: flex;
       align-items: center;
       justify-content: center;
-      border: 1px solid #fdba74;
+      border: 1px solid rgba(234, 88, 12, 0.25);
     }
     .transparency-text {
       flex: 1;
@@ -732,25 +732,25 @@ import { GuiaProfessional, GUIES_PRO_VA, GUIES_PRO_ES, GUIES_PRO_EN } from '../.
     .transparency-text h3 {
       font-size: 1.35rem;
       font-weight: 900;
-      color: #09090c;
+      color: var(--color-text, #09090c);
       margin: 0 0 0.65rem;
       letter-spacing: -0.01em;
     }
     .transparency-text p {
       font-size: 0.98rem;
       line-height: 1.65;
-      color: #4b5563;
+      color: var(--color-text-muted, #4b5563);
       margin: 0;
     }
 
     /* Taula comparativa */
     .comparison-section {
       margin-bottom: 5rem;
-      background: #ffffff;
-      border: 1px solid #e5e0d7;
+      background: var(--bg-card, #ffffff);
+      border: 1px solid var(--border-subtle, #e5e0d7);
       border-radius: 20px;
       padding: 3.5rem 2.5rem;
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.03);
+      box-shadow: var(--shadow-sm, 0 8px 30px rgba(0, 0, 0, 0.03));
     }
     .table-responsive {
       overflow-x: auto;
@@ -763,14 +763,14 @@ import { GuiaProfessional, GUIES_PRO_VA, GUIES_PRO_ES, GUIES_PRO_EN } from '../.
     }
     .comparison-table th {
       padding: 1.1rem 1.4rem;
-      background: #faf8f4;
-      color: #09090c;
+      background: var(--bg-surface, #faf8f4);
+      color: var(--color-text, #09090c);
       font-weight: 800;
-      border-bottom: 2px solid #e5e0d7;
+      border-bottom: 2px solid var(--border-subtle, #e5e0d7);
       font-size: 0.95rem;
     }
     .comparison-table th.col-avisa {
-      background: rgba(255, 23, 68, 0.08);
+      background: rgba(255, 23, 68, 0.12);
       color: #ff1744;
       border-bottom-color: #ff1744;
       border-left: 2px solid #ff1744;
@@ -778,25 +778,25 @@ import { GuiaProfessional, GUIES_PRO_VA, GUIES_PRO_ES, GUIES_PRO_EN } from '../.
     }
     .comparison-table td {
       padding: 1.1rem 1.4rem;
-      border-bottom: 1px solid #ede8df;
-      color: #636058;
+      border-bottom: 1px solid var(--border-subtle, #ede8df);
+      color: var(--color-text-muted, #636058);
     }
     .comparison-table td strong {
-      color: #09090c;
+      color: var(--color-text, #09090c);
     }
     .comparison-table td.col-avisa {
-      background: rgba(255, 23, 68, 0.02);
+      background: rgba(255, 23, 68, 0.04);
       font-weight: 700;
-      color: #09090c;
+      color: var(--color-text, #09090c);
       border-left: 2px solid #ff1744;
       border-right: 2px solid #ff1744;
     }
     .badge-win {
       display: inline-block;
       padding: 0.3rem 0.7rem;
-      background: #ecfdf5;
-      color: #059669;
-      border: 1px solid #a7f3d0;
+      background: rgba(16, 185, 129, 0.15);
+      color: #10b981;
+      border: 1px solid rgba(16, 185, 129, 0.3);
       border-radius: 6px;
       font-weight: 800;
       font-size: 0.85rem;
@@ -818,25 +818,25 @@ import { GuiaProfessional, GUIES_PRO_VA, GUIES_PRO_ES, GUIES_PRO_EN } from '../.
       margin-top: 2.25rem;
     }
     .verif-step-card {
-      background: #ffffff;
-      border: 1px solid #e5e0d7;
+      background: var(--bg-card, #ffffff);
+      border: 1px solid var(--border-subtle, #e5e0d7);
       border-radius: 16px;
       padding: 1.85rem 1.4rem;
       position: relative;
       transition: all 0.25s ease;
-      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.03);
+      box-shadow: var(--shadow-xs, 0 4px 18px rgba(0, 0, 0, 0.03));
     }
     .verif-step-card:hover {
       transform: translateY(-3px);
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+      box-shadow: var(--shadow-sm, 0 10px 25px rgba(0, 0, 0, 0.06));
     }
     .verif-step-card.highlight-step {
-      border-color: #fdba74;
-      background: linear-gradient(180deg, #fffbf6 0%, #ffffff 100%);
+      border-color: rgba(234, 88, 12, 0.45);
+      background: var(--bg-card, #ffffff);
     }
     .verif-step-card.success-step {
-      border-color: #86efac;
-      background: linear-gradient(180deg, #f0fdf4 0%, #ffffff 100%);
+      border-color: rgba(22, 163, 74, 0.45);
+      background: var(--bg-card, #ffffff);
     }
     .step-badge {
       position: absolute;
@@ -845,8 +845,8 @@ import { GuiaProfessional, GUIES_PRO_VA, GUIES_PRO_ES, GUIES_PRO_EN } from '../.
       width: 28px;
       height: 28px;
       border-radius: 50%;
-      background: #f1f5f9;
-      color: #64748b;
+      background: var(--bg-surface, #f1f5f9);
+      color: var(--color-text-muted, #64748b);
       font-size: 0.8rem;
       font-weight: 900;
       display: flex;
@@ -854,45 +854,45 @@ import { GuiaProfessional, GUIES_PRO_VA, GUIES_PRO_ES, GUIES_PRO_EN } from '../.
       justify-content: center;
     }
     .highlight-step .step-badge {
-      background: #ffedd5;
+      background: rgba(234, 88, 12, 0.15);
       color: #ea580c;
     }
     .success-step .step-badge {
-      background: #dcfce7;
+      background: rgba(22, 163, 74, 0.15);
       color: #15803d;
     }
     .step-icon {
       width: 50px;
       height: 50px;
       border-radius: 12px;
-      background: #f8fafc;
-      color: #09090c;
+      background: var(--bg-surface, #f8fafc);
+      color: var(--color-text, #09090c);
       display: flex;
       align-items: center;
       justify-content: center;
-      border: 1px solid #e2e8f0;
+      border: 1px solid var(--border-subtle, #e2e8f0);
       margin-bottom: 1.15rem;
     }
     .highlight-step .step-icon {
-      background: #ffedd5;
+      background: rgba(234, 88, 12, 0.12);
       color: #ea580c;
-      border-color: #fed7aa;
+      border-color: rgba(234, 88, 12, 0.3);
     }
     .success-step .step-icon {
-      background: #dcfce7;
+      background: rgba(22, 163, 74, 0.12);
       color: #16a34a;
-      border-color: #bbf7d0;
+      border-color: rgba(22, 163, 74, 0.3);
     }
     .verif-step-card h4 {
       font-size: 1.1rem;
       font-weight: 800;
-      color: #09090c;
+      color: var(--color-text, #09090c);
       margin: 0 0 0.55rem;
     }
     .verif-step-card p {
       font-size: 0.9rem;
       line-height: 1.55;
-      color: #636058;
+      color: var(--color-text-muted, #636058);
       margin: 0;
     }
 
@@ -906,16 +906,16 @@ import { GuiaProfessional, GUIES_PRO_VA, GUIES_PRO_ES, GUIES_PRO_EN } from '../.
       gap: 1.5rem;
     }
     .guide-card {
-      background: #ffffff;
-      border: 1px solid #e5e0d7;
+      background: var(--bg-card, #ffffff);
+      border: 1px solid var(--border-subtle, #e5e0d7);
       border-radius: 16px;
       overflow: hidden;
       transition: all 0.25s ease;
-      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.02);
+      box-shadow: var(--shadow-xs, 0 4px 18px rgba(0, 0, 0, 0.02));
     }
     .guide-card:hover {
-      border-color: #d6d0c4;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+      border-color: var(--border-card, #d6d0c4);
+      box-shadow: var(--shadow-sm, 0 8px 24px rgba(0, 0, 0, 0.05));
     }
     .guide-header {
       padding: 1.8rem 2.2rem;
@@ -940,19 +940,19 @@ import { GuiaProfessional, GUIES_PRO_VA, GUIES_PRO_ES, GUIES_PRO_EN } from '../.
     }
     .guide-read-time {
       font-size: 0.82rem;
-      color: #8c887b;
+      color: var(--color-text-muted, #8c887b);
       font-weight: 500;
     }
     .guide-header h3 {
       font-size: 1.35rem;
       font-weight: 800;
-      color: #09090c;
+      color: var(--color-text, #09090c);
       margin: 0 0 0.4rem;
       line-height: 1.35;
     }
     .guide-subtitle {
       font-size: 0.98rem;
-      color: #636058;
+      color: var(--color-text-muted, #636058);
       margin: 0 0 1rem;
       line-height: 1.5;
     }
@@ -973,7 +973,7 @@ import { GuiaProfessional, GUIES_PRO_VA, GUIES_PRO_ES, GUIES_PRO_EN } from '../.
 
     .guide-content-body {
       padding: 0 2.2rem 2.2rem;
-      border-top: 1px solid #ede8df;
+      border-top: 1px solid var(--border-subtle, #ede8df);
       animation: fadeIn 0.3s ease;
     }
     .guide-cover-img {
@@ -986,11 +986,11 @@ import { GuiaProfessional, GUIES_PRO_VA, GUIES_PRO_ES, GUIES_PRO_EN } from '../.
     .guide-paragraphs p {
       font-size: 1rem;
       line-height: 1.75;
-      color: #4b5563;
+      color: var(--color-text-muted, #4b5563);
       margin-bottom: 1rem;
     }
     .guide-checklist {
-      background: #faf8f4;
+      background: var(--bg-surface, #faf8f4);
       border-left: 4px solid #ff1744;
       padding: 1.35rem 1.6rem;
       border-radius: 8px;
@@ -998,7 +998,7 @@ import { GuiaProfessional, GUIES_PRO_VA, GUIES_PRO_ES, GUIES_PRO_EN } from '../.
     }
     .guide-checklist strong {
       display: block;
-      color: #09090c;
+      color: var(--color-text, #09090c);
       font-weight: 800;
       margin-bottom: 0.75rem;
       font-size: 1rem;
@@ -1010,19 +1010,19 @@ import { GuiaProfessional, GUIES_PRO_VA, GUIES_PRO_ES, GUIES_PRO_EN } from '../.
       display: flex;
       flex-direction: column;
       gap: 0.5rem;
-      color: #4b5563;
+      color: var(--color-text-muted, #4b5563);
       font-size: 0.95rem;
     }
     .guide-callout {
       display: flex;
       align-items: flex-start;
       gap: 0.85rem;
-      background: rgba(255, 23, 68, 0.05);
-      border: 1px solid rgba(255, 23, 68, 0.15);
+      background: rgba(255, 23, 68, 0.08);
+      border: 1px solid rgba(255, 23, 68, 0.2);
       padding: 1.1rem 1.4rem;
       border-radius: 10px;
       font-size: 0.95rem;
-      color: #09090c;
+      color: var(--color-text, #09090c);
     }
     .callout-icon {
       font-size: 1.25rem;
@@ -1043,20 +1043,20 @@ import { GuiaProfessional, GUIES_PRO_VA, GUIES_PRO_ES, GUIES_PRO_EN } from '../.
       gap: 1.75rem;
     }
     .testi-card {
-      background: #ffffff;
-      border: 1px solid #e5e0d7;
+      background: var(--bg-card, #ffffff);
+      border: 1px solid var(--border-subtle, #e5e0d7);
       border-radius: 16px;
       padding: 2.2rem 2rem;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.03);
+      box-shadow: var(--shadow-xs, 0 4px 18px rgba(0, 0, 0, 0.03));
       transition: all 0.25s ease;
     }
     .testi-card:hover {
       border-color: #ff1744;
       transform: translateY(-4px);
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+      box-shadow: var(--shadow-sm, 0 10px 25px rgba(0, 0, 0, 0.08));
     }
     .testi-stars {
       color: #f59e0b;
@@ -1067,7 +1067,7 @@ import { GuiaProfessional, GUIES_PRO_VA, GUIES_PRO_ES, GUIES_PRO_EN } from '../.
     .testi-quote {
       font-size: 0.95rem;
       line-height: 1.65;
-      color: #4b5563;
+      color: var(--color-text-muted, #4b5563);
       font-style: italic;
       margin: 0 0 1.75rem;
     }
@@ -1085,12 +1085,12 @@ import { GuiaProfessional, GUIES_PRO_VA, GUIES_PRO_ES, GUIES_PRO_EN } from '../.
     }
     .testi-author strong {
       display: block;
-      color: #09090c;
+      color: var(--color-text, #09090c);
       font-size: 0.98rem;
     }
     .testi-author span {
       font-size: 0.8rem;
-      color: #636058;
+      color: var(--color-text-muted, #636058);
     }
 
     /* CTA final */

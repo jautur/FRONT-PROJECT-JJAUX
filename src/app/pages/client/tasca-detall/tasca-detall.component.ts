@@ -368,7 +368,7 @@ import { Pressupost } from '../../../models/pressupost.model';
         margin: 0 0 1rem;
         font-size: 2rem;
         font-weight: 900;
-        color: #09090c;
+        color: var(--color-text, #09090c);
         letter-spacing: -0.02em;
       }
 
@@ -377,7 +377,7 @@ import { Pressupost } from '../../../models/pressupost.model';
         gap: 1.5rem;
         flex-wrap: wrap;
         font-size: 0.95rem;
-        color: #636058;
+        color: var(--color-text-muted, #636058);
         font-weight: 600;
       }
 
@@ -401,9 +401,9 @@ import { Pressupost } from '../../../models/pressupost.model';
       }
 
       .meta-row code {
-        background: #f0ece3;
-        border: 1px solid #dcd6cb;
-        color: #09090c;
+        background: var(--bg-surface, #f0ece3);
+        border: 1px solid var(--border-subtle, #dcd6cb);
+        color: var(--color-text, #09090c);
         padding: 0.2rem 0.5rem;
         border-radius: 6px;
         font-weight: 700;
@@ -435,13 +435,13 @@ import { Pressupost } from '../../../models/pressupost.model';
       .action-box, .complete-box {
         margin-top: 1.5rem;
         padding-top: 1.5rem;
-        border-top: 1px solid #e5e0d7;
+        border-top: 1px solid var(--border-subtle, #e5e0d7);
       }
 
       .complete-box p {
         margin: 0 0 0.75rem;
         font-weight: 800;
-        color: #09090c;
+        color: var(--color-text, #09090c);
       }
 
       .evaluate-box {
@@ -559,20 +559,20 @@ import { Pressupost } from '../../../models/pressupost.model';
       .score-text {
         font-size: 0.95rem;
         font-weight: 900;
-        color: #09090c;
+        color: var(--color-text, #09090c);
         margin-left: 0.4rem;
       }
 
       .review-display-opinion {
         margin: 0;
         font-style: italic;
-        color: #4a4841;
+        color: var(--color-text-muted, #4a4841);
         font-size: 0.95rem;
         line-height: 1.5;
-        background: #ffffff;
+        background: var(--bg-surface, #ffffff);
         padding: 0.75rem 1rem;
         border-radius: 8px;
-        border: 1px solid #ede8de;
+        border: 1px solid var(--border-subtle, #ede8de);
       }
 
       .review-edit-row {
@@ -581,10 +581,10 @@ import { Pressupost } from '../../../models/pressupost.model';
       }
 
       .btn-edit-review {
-        background: #ffffff;
-        border: 1px solid #d6d0c4;
+        background: var(--bg-surface, #ffffff);
+        border: 1px solid var(--border-subtle, #d6d0c4);
         border-radius: 6px;
-        color: #09090c;
+        color: var(--color-text, #09090c);
         font-size: 0.82rem;
         font-weight: 800;
         padding: 0.4rem 0.85rem;
@@ -605,7 +605,7 @@ import { Pressupost } from '../../../models/pressupost.model';
       }
 
       .section-header h2 {
-        color: #09090c;
+        color: var(--color-text, #09090c);
         font-size: 1.4rem;
         font-weight: 900;
         margin: 0;
@@ -621,14 +621,14 @@ import { Pressupost } from '../../../models/pressupost.model';
         display: flex;
         flex-direction: column;
         gap: 0.85rem;
-        background: #ffffff;
-        border: 1px solid #e5e0d7;
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+        background: var(--bg-card, #ffffff);
+        border: 1px solid var(--border-subtle, #e5e0d7);
+        box-shadow: var(--shadow-sm, 0 4px 16px rgba(0, 0, 0, 0.04));
         transition: border-color 0.2s;
       }
 
       .offer-card:hover {
-        border-color: #d6d0c4;
+        border-color: var(--border-card, #d6d0c4);
       }
 
       .offer-header {
@@ -641,7 +641,7 @@ import { Pressupost } from '../../../models/pressupost.model';
         margin: 0;
         font-size: 1.2rem;
         font-weight: 800;
-        color: #09090c;
+        color: var(--color-text, #09090c);
       }
 
       .offer-note {
@@ -827,7 +827,7 @@ import { Pressupost } from '../../../models/pressupost.model';
       .not-found {
         text-align: center;
         padding: 3rem;
-        color: #09090c;
+        color: var(--color-text, #09090c);
       }
 
       /* Modal d'Avaluació */
@@ -848,12 +848,12 @@ import { Pressupost } from '../../../models/pressupost.model';
       }
 
       .modal-dialog {
-        background: #ffffff;
+        background: var(--bg-card, #ffffff);
         border-radius: 20px;
         width: min(560px, 100%);
         max-height: 90vh;
         overflow-y: auto;
-        border: 1px solid #e5e0d7;
+        border: 1px solid var(--border-subtle, #e5e0d7);
         box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
         display: flex;
         flex-direction: column;
@@ -861,11 +861,11 @@ import { Pressupost } from '../../../models/pressupost.model';
 
       .modal-header {
         padding: 1.5rem 1.8rem;
-        border-bottom: 1px solid #e5e0d7;
+        border-bottom: 1px solid var(--border-subtle, #e5e0d7);
         display: flex;
         justify-content: space-between;
         align-items: flex-start;
-        background: #faf8f4;
+        background: var(--bg-surface, #faf8f4);
         border-radius: 20px 20px 0 0;
       }
 
@@ -887,11 +887,11 @@ import { Pressupost } from '../../../models/pressupost.model';
         margin: 0;
         font-size: 1.35rem;
         font-weight: 900;
-        color: #09090c;
+        color: var(--color-text, #09090c);
       }
 
       .btn-close-modal {
-        background: #ece7dc;
+        background: var(--bg-surface, #ece7dc);
         border: none;
         width: 32px;
         height: 32px;
@@ -902,7 +902,7 @@ import { Pressupost } from '../../../models/pressupost.model';
         display: flex;
         align-items: center;
         justify-content: center;
-        color: #09090c;
+        color: var(--color-text, #09090c);
         transition: all 0.2s ease;
       }
 
@@ -919,8 +919,8 @@ import { Pressupost } from '../../../models/pressupost.model';
       }
 
       .modal-task-summary {
-        background: #f8f6f0;
-        border: 1px solid #e5e0d7;
+        background: var(--bg-surface, #f8f6f0);
+        border: 1px solid var(--border-subtle, #e5e0d7);
         padding: 1rem 1.25rem;
         border-radius: 12px;
       }
@@ -929,13 +929,13 @@ import { Pressupost } from '../../../models/pressupost.model';
         margin: 0.4rem 0 0.25rem;
         font-size: 1.1rem;
         font-weight: 800;
-        color: #09090c;
+        color: var(--color-text, #09090c);
       }
 
       .summary-pro {
         margin: 0;
         font-size: 0.88rem;
-        color: #55524b;
+        color: var(--color-text-muted, #55524b);
       }
 
       .summary-pro strong {
@@ -947,7 +947,7 @@ import { Pressupost } from '../../../models/pressupost.model';
         display: block;
         font-size: 0.88rem;
         font-weight: 800;
-        color: #09090c;
+        color: var(--color-text, #09090c);
         margin-bottom: 0.5rem;
       }
 

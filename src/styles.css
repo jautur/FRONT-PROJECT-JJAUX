@@ -268,6 +268,20 @@ body.theme-app-dark .card-title,
 body.theme-app-dark .article-title,
 body.theme-app-dark .author-name,
 body.theme-app-dark .breadcrumb-current,
+body.theme-app-dark .section-heading h2,
+body.theme-app-dark .section-heading h3,
+body.theme-app-dark .guide-header h3,
+body.theme-app-dark .testi-author strong,
+body.theme-app-dark .verif-step-card h4,
+body.theme-app-dark .transparency-text h3,
+body.theme-app-dark .section-title,
+body.theme-app-dark .table-title,
+body.theme-app-dark .key-points-title,
+body.theme-app-dark .related-header h3,
+body.theme-app-dark .related-body h4,
+body.theme-app-dark .offer-header h3,
+body.theme-app-dark .modal-header h2,
+body.theme-app-dark .modal-task-summary h3,
 body.theme-app-dark strong,
 body.theme-app-dark b,
 .theme-app-dark h1,
@@ -286,6 +300,20 @@ body.theme-app-dark .featured-excerpt,
 body.theme-app-dark .card-summary,
 body.theme-app-dark .subtitle,
 body.theme-app-dark .description-text,
+body.theme-app-dark .section-heading p,
+body.theme-app-dark .guide-subtitle,
+body.theme-app-dark .guide-paragraphs p,
+body.theme-app-dark .guide-checklist ul,
+body.theme-app-dark .testi-quote,
+body.theme-app-dark .verif-step-card p,
+body.theme-app-dark .transparency-text p,
+body.theme-app-dark .section-paragraphs p,
+body.theme-app-dark .key-points-list li,
+body.theme-app-dark .related-body p,
+body.theme-app-dark .related-time,
+body.theme-app-dark .col-advice,
+body.theme-app-dark .offer-note,
+body.theme-app-dark .summary-pro,
 .theme-app-dark p {
   color: #bab8ae !important;
 }
@@ -299,7 +327,8 @@ body.theme-app-dark .avisos-container,
 body.theme-app-dark .admin-panel-container,
 body.theme-app-dark .tasca-detall-container,
 body.theme-app-dark .blog-page,
-body.theme-app-dark .comunitat-container {
+body.theme-app-dark .comunitat-container,
+body.theme-app-dark .pro-community-page {
   background-color: #090a0f !important;
   color: #f5f4ef !important;
 }
@@ -330,11 +359,84 @@ body.theme-app-dark .pro-hero-section,
 body.theme-app-dark .featured-card,
 body.theme-app-dark .article-card,
 body.theme-app-dark .reason-card,
-body.theme-app-dark .article-full-view {
+body.theme-app-dark .article-full-view,
+body.theme-app-dark .comparison-section,
+body.theme-app-dark .verif-step-card,
+body.theme-app-dark .transparency-card,
+body.theme-app-dark .guide-card,
+body.theme-app-dark .testi-card,
+body.theme-app-dark .author-meta-card,
+body.theme-app-dark .key-points-box,
+body.theme-app-dark .price-table-responsive,
+body.theme-app-dark .related-card,
+body.theme-app-dark .offer-card,
+body.theme-app-dark .article-not-found-card {
   background-color: #13141d !important;
   border-color: #25273a !important;
   color: #f5f4ef !important;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.45) !important;
+}
+
+/* Taula comparativa en mode fosc */
+body.theme-app-dark .comparison-table th {
+  background-color: #191b26 !important;
+  color: #f5f4ef !important;
+  border-bottom-color: #25273a !important;
+}
+body.theme-app-dark .comparison-table th.col-avisa {
+  background-color: rgba(255, 23, 68, 0.15) !important;
+  color: #ff1744 !important;
+  border-left-color: #ff1744 !important;
+  border-right-color: #ff1744 !important;
+}
+body.theme-app-dark .comparison-table td {
+  border-bottom-color: #222436 !important;
+  color: #bab8ae !important;
+}
+body.theme-app-dark .comparison-table td strong {
+  color: #f5f4ef !important;
+}
+body.theme-app-dark .comparison-table td.col-avisa {
+  background-color: rgba(255, 23, 68, 0.07) !important;
+  color: #f5f4ef !important;
+  border-left-color: #ff1744 !important;
+  border-right-color: #ff1744 !important;
+}
+
+/* Taules de preus i elements de contingut en mode fosc */
+body.theme-app-dark .price-table {
+  background-color: #13141d !important;
+}
+body.theme-app-dark .price-table th {
+  background-color: #1f2130 !important;
+  color: #f5f4ef !important;
+  border-bottom-color: #ff1744 !important;
+}
+body.theme-app-dark .price-table td {
+  border-bottom-color: #222436 !important;
+  color: #bab8ae !important;
+}
+body.theme-app-dark .col-concept {
+  color: #f5f4ef !important;
+}
+body.theme-app-dark .guide-checklist {
+  background-color: #191b26 !important;
+  border-left-color: #ff1744 !important;
+}
+body.theme-app-dark .guide-checklist strong {
+  color: #f5f4ef !important;
+}
+body.theme-app-dark .guide-content-body {
+  border-top-color: #25273a !important;
+}
+body.theme-app-dark .step-icon {
+  background-color: #191b26 !important;
+  color: #f5f4ef !important;
+  border-color: #25273a !important;
+}
+body.theme-app-dark .step-badge {
+  background-color: #202232 !important;
+  color: #bab8ae !important;
 }
 
 /* Sub-targetes niades (com les targetes de tasques/ofertes dins del panell o graella) */
