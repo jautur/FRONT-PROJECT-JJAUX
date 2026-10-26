@@ -3172,7 +3172,7 @@ export class MainComponent implements OnInit, OnDestroy {
     this.randomPreviewTasks = this.barrejarArray(allTasks).slice(0, 3);
 
     const allOffers = [...this.offers];
-    this.randomPreviewOffers = this.barrejarArray(allOffers).slice(0, 3);
+    this.randomPreviewOffers = this.barrejarArray(allOffers).slice(0, 1);
   }
 
   private barrejarArray<T>(array: T[]): T[] {
@@ -3237,11 +3237,10 @@ export class MainComponent implements OnInit, OnDestroy {
     return this.randomPreviewTasks.length > 0 ? this.randomPreviewTasks : this.tasks.slice(0, 3);
   }
 
-  /** Retorna la vista prèvia d'ofertes per a la pàgina principal: 1 a la versió /app i 3 a la versió web (/inici) */
+  /** Retorna la vista prèvia d'ofertes per a la pàgina principal: 1 tant a la versió /app com a la versió web (/inici) */
   get previewOffers() {
-    const limit = this.isAppPage ? 1 : 3;
     const llista = this.randomPreviewOffers.length > 0 ? this.randomPreviewOffers : this.offers;
-    return llista.slice(0, limit);
+    return llista.slice(0, 1);
   }
 
   getTaskStatusClass(status: string): string {
