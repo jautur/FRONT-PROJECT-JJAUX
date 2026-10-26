@@ -262,19 +262,32 @@ body.theme-app-dark h3,
 body.theme-app-dark h4,
 body.theme-app-dark h5,
 body.theme-app-dark h6,
+body.theme-app-dark .hero-title,
+body.theme-app-dark .featured-title,
+body.theme-app-dark .card-title,
+body.theme-app-dark .article-title,
+body.theme-app-dark .author-name,
+body.theme-app-dark .breadcrumb-current,
 body.theme-app-dark strong,
 body.theme-app-dark b,
 .theme-app-dark h1,
 .theme-app-dark h2,
 .theme-app-dark h3,
 .theme-app-dark h4,
+.theme-app-dark .hero-title,
 .theme-app-dark strong {
-  color: #f5f4ef;
+  color: #f5f4ef !important;
 }
 
 body.theme-app-dark p,
+body.theme-app-dark .hero-subtitle,
+body.theme-app-dark .hero-lead,
+body.theme-app-dark .featured-excerpt,
+body.theme-app-dark .card-summary,
+body.theme-app-dark .subtitle,
+body.theme-app-dark .description-text,
 .theme-app-dark p {
-  color: #bab8ae;
+  color: #bab8ae !important;
 }
 
 /* Contenidors de pàgines en l'entorn App */
@@ -312,7 +325,12 @@ body.theme-app-dark .modal-header,
 body.theme-app-dark .modal-body,
 body.theme-app-dark .modal-footer,
 body.theme-app-dark .exit-offer-summary,
-body.theme-app-dark .exit-contact-section {
+body.theme-app-dark .exit-contact-section,
+body.theme-app-dark .pro-hero-section,
+body.theme-app-dark .featured-card,
+body.theme-app-dark .article-card,
+body.theme-app-dark .reason-card,
+body.theme-app-dark .article-full-view {
   background-color: #13141d !important;
   border-color: #25273a !important;
   color: #f5f4ef !important;

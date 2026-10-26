@@ -491,11 +491,11 @@ import { GuiaProfessional, GUIES_PRO_VA, GUIES_PRO_ES, GUIES_PRO_EN } from '../.
     .pro-hero-section {
       text-align: center;
       padding: 3.5rem 2rem 3rem;
-      background: linear-gradient(180deg, rgba(255, 23, 68, 0.04) 0%, #ffffff 100%);
-      border: 1px solid #e5e0d7;
-      border-radius: 20px;
+      background: var(--bg-card, #ffffff);
+      border: 1px solid var(--border-subtle, #e5e0d7);
+      border-radius: var(--radius-xl, 20px);
       margin-bottom: 4rem;
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.04);
+      box-shadow: var(--shadow-md, 0 8px 30px rgba(0, 0, 0, 0.04));
     }
     .hero-badge {
       display: inline-flex;
@@ -522,7 +522,7 @@ import { GuiaProfessional, GUIES_PRO_VA, GUIES_PRO_ES, GUIES_PRO_EN } from '../.
       font-size: 2.5rem;
       line-height: 1.2;
       font-weight: 900;
-      color: #09090c;
+      color: var(--color-text, #09090c);
       max-width: 880px;
       margin: 0 auto 1.25rem;
       letter-spacing: -0.02em;
@@ -530,7 +530,7 @@ import { GuiaProfessional, GUIES_PRO_VA, GUIES_PRO_ES, GUIES_PRO_EN } from '../.
     .hero-lead {
       font-size: 1.12rem;
       line-height: 1.65;
-      color: #636058;
+      color: var(--color-text-muted, #636058);
       max-width: 760px;
       margin: 0 auto 2.25rem;
     }
