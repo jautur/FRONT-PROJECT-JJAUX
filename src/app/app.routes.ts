@@ -72,7 +72,7 @@ export const appRoutes: Routes = [
   // RUTES DE L'ENTORN APP MÒBIL I PWA (/app/...)
   // Mantenen la navegació dins de l'espai de l'aplicació, amb barra inferior
   // =========================================================================
-  { path: 'app/inici', redirectTo: 'app' },
+  { path: 'app/inici', component: MainComponent },
   { path: 'app/tasques-ofertes', component: TasquesOfertesComponent },
   { path: 'app/login', component: LoginComponent },
   { path: 'app/registre', component: RegistreComponent },

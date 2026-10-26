@@ -344,7 +344,7 @@ export class AppComponent implements OnInit, OnDestroy {
       return targetPath === '/' ? '/inici' : targetPath;
     }
     // Entorn App:
-    if (targetPath === '/' || targetPath === '/inici' || targetPath === '/app') {
+    if (targetPath === '/' || targetPath === '/inici' || targetPath === '/app' || targetPath === '/app/inici') {
       return '/app';
     }
     if (targetPath.startsWith('/app/')) {
@@ -384,6 +384,7 @@ export class AppComponent implements OnInit, OnDestroy {
     return url === '/app' ||
            url.startsWith('/app?') ||
            url.startsWith('/app#') ||
+           url.startsWith('/app/inici') ||
            url === '/inici' ||
            url.startsWith('/inici?') ||
            url.startsWith('/inici#') ||

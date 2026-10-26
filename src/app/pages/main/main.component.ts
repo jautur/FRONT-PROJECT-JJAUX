@@ -3195,9 +3195,11 @@ export class MainComponent implements OnInit {
     return this.randomPreviewTasks.length > 0 ? this.randomPreviewTasks : this.tasks.slice(0, 3);
   }
 
-  /** Retorna la vista prèvia aleatòria de 3 ofertes per a la pàgina principal */
+  /** Retorna la vista prèvia d'ofertes per a la pàgina principal: 1 a la versió /app i 3 a la versió web (/inici) */
   get previewOffers() {
-    return this.randomPreviewOffers.length > 0 ? this.randomPreviewOffers : this.offers.slice(0, 3);
+    const limit = this.isAppPage ? 1 : 3;
+    const llista = this.randomPreviewOffers.length > 0 ? this.randomPreviewOffers : this.offers;
+    return llista.slice(0, limit);
   }
 
   getTaskStatusClass(status: string): string {
