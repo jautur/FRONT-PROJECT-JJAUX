@@ -8,11 +8,16 @@ import { IncidenciaService } from '../../../services/incidencia.service';
 import { UsuariService } from '../../../services/usuari.service';
 import { AvisService } from '../../../services/avis.service';
 import { BlacklistService } from '../../../services/blacklist.service';
+import { PressupostService } from '../../../services/pressupost.service';
+import { ResenyaService } from '../../../services/resenya.service';
 import { Tasca } from '../../../models/tasca.model';
 import { Oferta } from '../../../models/oferta.model';
 import { Incidencia } from '../../../models/incidencia.model';
 import { Usuari } from '../../../models/usuari.model';
 import { BlacklistTelefon } from '../../../models/blacklist.model';
+import { Pressupost } from '../../../models/pressupost.model';
+import { Resenya } from '../../../models/resenya.model';
+import { Avis } from '../../../models/avis.model';
 import { AuthService } from '../../../core/services/auth.service';
 import { ConfirmService } from '../../../core/services/confirm.service';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
@@ -20,7 +25,7 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 /**
  * Pestanya activa al panell d'administració.
  */
-type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'usuaris' | 'blacklist';
+type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'pressupostos' | 'usuaris' | 'blacklist' | 'resenyes' | 'avisos';
 
 /**
  * Component del Panell d'Administració Global (/admin/panell).
@@ -154,7 +159,56 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'usuaris' | 'blacklist';
           </div>
         </div>
 
-        <div class="metric-card metric-card-info" title="Total d'avisos i notificacions enviats">
+        <div
+          class="metric-card"
+          [class.active-card]="tabActiva === 'pressupostos'"
+          (click)="canviarTab('pressupostos')"
+          role="button"
+          tabindex="0"
+          title="Veure i supervisar pressupostos privats"
+        >
+          <span class="metric-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+              <line x1="2" y1="10" x2="22" y2="10"></line>
+              <line x1="12" y1="14" x2="16" y2="14"></line>
+            </svg>
+          </span>
+          <div class="metric-info">
+            <span class="metric-value">{{ pressupostos.length }}</span>
+            <span class="metric-label">{{ 'ADMIN.METRIC_PRESSUPOSTOS' | translate }}</span>
+            <small class="metric-sub">{{ pressupostos.length }} propostes privades</small>
+          </div>
+        </div>
+
+        <div
+          class="metric-card"
+          [class.active-card]="tabActiva === 'resenyes'"
+          (click)="canviarTab('resenyes')"
+          role="button"
+          tabindex="0"
+          title="Veure ressenyes i opinions"
+        >
+          <span class="metric-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="#f59e0b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+            </svg>
+          </span>
+          <div class="metric-info">
+            <span class="metric-value">{{ resenyes.length }}</span>
+            <span class="metric-label">{{ 'ADMIN.METRIC_RESENYES' | translate }}</span>
+            <small class="metric-sub">★ {{ mitjanaRessenyes() }} / 5.0 mitjana</small>
+          </div>
+        </div>
+
+        <div
+          class="metric-card"
+          [class.active-card]="tabActiva === 'avisos'"
+          (click)="canviarTab('avisos')"
+          role="button"
+          tabindex="0"
+          title="Historial i emissió de notificacions"
+        >
           <span class="metric-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
               <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
@@ -164,7 +218,7 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'usuaris' | 'blacklist';
           <div class="metric-info">
             <span class="metric-value">{{ totalAvisos }}</span>
             <span class="metric-label">{{ 'ADMIN.METRIC_NOTICES' | translate }}</span>
-            <small class="metric-sub">{{ 'ADMIN.METRIC_NOTICES_SUB' | translate }}</small>
+            <small class="metric-sub">{{ totalAvisos }} notificacions</small>
           </div>
         </div>
 
@@ -223,6 +277,14 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'usuaris' | 'blacklist';
         <button
           type="button"
           class="tab-btn"
+          [class.active]="tabActiva === 'pressupostos'"
+          (click)="canviarTab('pressupostos')"
+        >
+          {{ 'ADMIN.TAB_PRESSUPOSTOS' | translate }} ({{ pressupostos.length }})
+        </button>
+        <button
+          type="button"
+          class="tab-btn"
           [class.active]="tabActiva === 'usuaris'"
           (click)="canviarTab('usuaris')"
         >
@@ -235,6 +297,22 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'usuaris' | 'blacklist';
           (click)="canviarTab('blacklist')"
         >
           {{ 'ADMIN.TAB_BLACKLIST' | translate }} ({{ blacklist.length }})
+        </button>
+        <button
+          type="button"
+          class="tab-btn"
+          [class.active]="tabActiva === 'resenyes'"
+          (click)="canviarTab('resenyes')"
+        >
+          {{ 'ADMIN.TAB_RESENYES' | translate }} ({{ resenyes.length }})
+        </button>
+        <button
+          type="button"
+          class="tab-btn"
+          [class.active]="tabActiva === 'avisos'"
+          (click)="canviarTab('avisos')"
+        >
+          {{ 'ADMIN.TAB_AVISOS' | translate }} ({{ avisos.length }})
         </button>
       </div>
 
@@ -618,6 +696,18 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'usuaris' | 'blacklist';
                       {{ 'ADMIN.BTN_UNBLOCK_PHONE' | translate }}
                     </button>
                     <button
+                      type="button"
+                      class="btn-sm btn-avis-action"
+                      (click)="prepararAvisUsuari(u)"
+                      title="Enviar una notificació o alerta a aquest usuari"
+                    >
+                      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                      </svg>
+                      {{ 'ADMIN.BTN_SEND_NOTICE' | translate }}
+                    </button>
+                    <button
                       *ngIf="u.id !== 'u-admin' && u.email !== 'admin@admin' && u.email !== 'admin@admin.es'"
                       type="button"
                       class="btn-sm btn-danger"
@@ -732,6 +822,274 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'usuaris' | 'blacklist';
 
         <div class="empty-box" *ngIf="blacklist.length === 0">
           {{ 'ADMIN.BLACKLIST_EMPTY' | translate }}
+        </div>
+      </section>
+
+      <!-- ============================================================== -->
+      <!-- PESTANYA 6: PRESSUPOSTOS PRIVATS -->
+      <!-- ============================================================== -->
+      <section class="tab-content" *ngIf="tabActiva === 'pressupostos'">
+        <div class="filter-bar">
+          <input
+            type="text"
+            [(ngModel)]="searchPressupost"
+            [placeholder]="'ADMIN.SEARCH_PRESSUPOSTOS_PLACEHOLDER' | translate"
+            class="search-input"
+          />
+        </div>
+
+        <div class="table-wrapper" *ngIf="pressupostosFiltrats.length > 0">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Incidència</th>
+                <th>Professional</th>
+                <th>Preu Proposat</th>
+                <th>Termini Estimat</th>
+                <th>Proposta / Nota</th>
+                <th>Accions Administrador</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let p of pressupostosFiltrats">
+                <td class="font-mono"><strong>{{ p.id }}</strong></td>
+                <td>
+                  <a [routerLink]="[getNavUrl('/tasca-detall'), p.incidenciaId]" class="table-titol user-inline-link" title="Veure incidència">
+                    {{ p.incidenciaTitol || p.incidenciaId }}
+                  </a>
+                  <div class="table-desc">Ref: {{ p.incidenciaId }}</div>
+                </td>
+                <td>
+                  <a [routerLink]="[getNavUrl('/perfil'), p.professionalNom]" class="user-inline-link" title="Veure perfil professional">
+                    {{ p.professionalNom }}
+                  </a>
+                </td>
+                <td><strong class="budget-highlight">{{ p.preu }}</strong></td>
+                <td><span>{{ p.duracioEstimada || 'No indicada' }}</span></td>
+                <td><div class="table-desc">{{ p.descripcio }}</div></td>
+                <td>
+                  <div class="action-buttons">
+                    <button
+                      type="button"
+                      class="btn-sm btn-danger"
+                      (click)="eliminarPressupost(p.id)"
+                      title="Cancel·lar i eliminar aquest pressupost del sistema"
+                    >
+                      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                      </svg>
+                      {{ 'ADMIN.BTN_DELETE' | translate }}
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="empty-box" *ngIf="pressupostosFiltrats.length === 0">
+          {{ 'ADMIN.EMPTY_PRESSUPOSTOS' | translate }}
+        </div>
+      </section>
+
+      <!-- ============================================================== -->
+      <!-- PESTANYA 7: RESSENYES I VALORACIONS -->
+      <!-- ============================================================== -->
+      <section class="tab-content" *ngIf="tabActiva === 'resenyes'">
+        <div class="filter-bar">
+          <input
+            type="text"
+            [(ngModel)]="searchResenya"
+            [placeholder]="'ADMIN.SEARCH_RESENYES_PLACEHOLDER' | translate"
+            class="search-input"
+          />
+          <div class="rating-summary-badge" *ngIf="resenyes.length > 0">
+            ★ Mitjana plataforma: <strong>{{ mitjanaRessenyes() }} / 5.0</strong> ({{ resenyes.length }} valoracions)
+          </div>
+        </div>
+
+        <div class="table-wrapper" *ngIf="resenyesFiltrades.length > 0">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Puntuació</th>
+                <th>Client Autor</th>
+                <th>Professional Valorat</th>
+                <th>Ref. Tasca</th>
+                <th>Comentari / Opinió</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let r of resenyesFiltrades">
+                <td>
+                  <span class="stars-badge">
+                    ★ {{ r.puntuacio }}.0
+                  </span>
+                </td>
+                <td>
+                  <a [routerLink]="[getNavUrl('/perfil'), r.clientNom || r.clientId]" class="user-inline-link">
+                    {{ r.clientNom || r.clientId }}
+                  </a>
+                </td>
+                <td>
+                  <a [routerLink]="[getNavUrl('/perfil'), r.treballadorNom || r.treballadorId]" class="user-inline-link">
+                    {{ r.treballadorNom || r.treballadorId }}
+                  </a>
+                </td>
+                <td>
+                  <a *ngIf="r.tascaId" [routerLink]="[getNavUrl('/tasca-detall'), r.tascaId]" class="font-mono user-inline-link">
+                    {{ r.tascaId }}
+                  </a>
+                  <span *ngIf="!r.tascaId">—</span>
+                </td>
+                <td>
+                  <div class="table-desc">{{ r.descripcio }}</div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="empty-box" *ngIf="resenyesFiltrades.length === 0">
+          {{ 'ADMIN.EMPTY_RESENYES' | translate }}
+        </div>
+      </section>
+
+      <!-- ============================================================== -->
+      <!-- PESTANYA 8: AVISOS I NOTIFICACIONS DEL SISTEMA -->
+      <!-- ============================================================== -->
+      <section class="tab-content" *ngIf="tabActiva === 'avisos'">
+        <!-- Formulari d'emissió de nou avís -->
+        <div class="blacklist-add-card" style="margin-bottom: 1.5rem;">
+          <div class="blacklist-card-header">
+            <h3>
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+              </svg>
+              Emetre Notificació a un Usuari
+            </h3>
+            <p class="blacklist-card-sub">Envia un missatge oficial a la safata d'entrada de qualsevol client o professional.</p>
+          </div>
+
+          <form (ngSubmit)="enviarNouAvis()" class="blacklist-add-form" style="display: flex; flex-direction: column; gap: 1rem;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem;">
+              <div class="form-field">
+                <label for="destinatariAvis">Usuari Destinatari:</label>
+                <select id="destinatariAvis" [(ngModel)]="nouAvis.usuariId" name="usuariId" class="search-input" required>
+                  <option value="" disabled>-- Tria un usuari registrat --</option>
+                  <option *ngFor="let u of usuaris" [value]="u.id">
+                    {{ u.nom }} ({{ u.email }}) — {{ u.rol | uppercase }}
+                  </option>
+                </select>
+              </div>
+
+              <div class="form-field">
+                <label for="enllacAvis">Enllaç opcional (ruta):</label>
+                <input
+                  id="enllacAvis"
+                  type="text"
+                  [(ngModel)]="nouAvis.enllac"
+                  name="enllac"
+                  placeholder="Ex: /tasques-ofertes o /perfil"
+                  class="search-input"
+                />
+              </div>
+            </div>
+
+            <div class="form-field">
+              <label for="missatgeAvis">Missatge de la notificació:</label>
+              <textarea
+                id="missatgeAvis"
+                rows="2"
+                [(ngModel)]="nouAvis.missatge"
+                name="missatge"
+                placeholder="Escriu aquí el text de l'avís que rebrà l'usuari..."
+                class="search-input"
+                required
+                style="height: auto; resize: vertical;"
+              ></textarea>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end;">
+              <button
+                type="submit"
+                class="btn-primary"
+                [disabled]="enviantAvis || !nouAvis.usuariId || !nouAvis.missatge.trim()"
+                style="padding: 0.6rem 1.5rem;"
+              >
+                {{ enviantAvis ? 'Enviant...' : 'Emetre Notificació' }}
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <div class="filter-bar">
+          <input
+            type="text"
+            [(ngModel)]="searchAvis"
+            [placeholder]="'ADMIN.SEARCH_AVISOS_PLACEHOLDER' | translate"
+            class="search-input"
+          />
+        </div>
+
+        <div class="table-wrapper" *ngIf="avisosFiltrats.length > 0">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Destinatari</th>
+                <th>Missatge</th>
+                <th>Enllaç de Navegació</th>
+                <th>Estat</th>
+                <th>Data</th>
+                <th>Accions Administrador</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let a of avisosFiltrats">
+                <td class="font-mono"><strong>{{ a.id }}</strong></td>
+                <td>
+                  <span class="user-badge-tag">{{ a.usuariId }}</span>
+                </td>
+                <td>
+                  <div class="table-titol">{{ a.missatge }}</div>
+                </td>
+                <td>
+                  <code *ngIf="a.enllac">{{ a.enllac }}</code>
+                  <span *ngIf="!a.enllac">—</span>
+                </td>
+                <td>
+                  <span class="badge-estat" [ngClass]="a.llegit ? 'estat-finalitzada' : 'estat-oberta'">
+                    {{ a.llegit ? 'Llegit' : 'Pendent' }}
+                  </span>
+                </td>
+                <td><small>{{ a.data }}</small></td>
+                <td>
+                  <div class="action-buttons">
+                    <button
+                      type="button"
+                      class="btn-sm btn-danger"
+                      (click)="eliminarAvis(a.id)"
+                      title="Eliminar aquest avís del sistema"
+                    >
+                      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                      </svg>
+                      {{ 'ADMIN.BTN_DELETE' | translate }}
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="empty-box" *ngIf="avisosFiltrats.length === 0">
+          {{ 'ADMIN.EMPTY_AVISOS' | translate }}
         </div>
       </section>
 
@@ -1879,6 +2237,43 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'usuaris' | 'blacklist';
       font-weight: 800;
       font-size: 0.92rem;
     }
+    .budget-highlight {
+      color: #10b981;
+      font-weight: 800;
+      font-size: 0.95rem;
+    }
+    .rating-summary-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.45rem 0.85rem;
+      background: #fef3c7;
+      border: 1px solid #fde68a;
+      border-radius: 9999px;
+      color: #92400e;
+      font-weight: 700;
+      font-size: 0.85rem;
+    }
+    .stars-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.25rem 0.6rem;
+      border-radius: 6px;
+      font-weight: 800;
+      font-size: 0.82rem;
+      background: #fef3c7;
+      color: #d97706;
+      border: 1px solid #fde68a;
+    }
+    .btn-avis-action {
+      background: rgba(37, 99, 235, 0.1);
+      color: #2563eb;
+      border-color: rgba(37, 99, 235, 0.3);
+    }
+    .btn-avis-action:hover {
+      background: #2563eb;
+      color: #ffffff;
+    }
 
     @media (max-width: 768px) {
       .admin-container {
@@ -1957,12 +2352,18 @@ export class AdminPanellComponent implements OnInit {
   incidencies: Incidencia[] = [];
   /** Llista de tots els usuaris donats d'alta */
   usuaris: Usuari[] = [];
+  /** Llista de tots els pressupostos privats per a incidències */
+  pressupostos: Pressupost[] = [];
+  /** Llista de totes les ressenyes registrades */
+  resenyes: Resenya[] = [];
+  /** Llista de tots els avisos i notificacions */
+  avisos: Avis[] = [];
   /** Total de notificacions i avisos */
   totalAvisos = 0;
   /** Llista de tots els telèfons a la llista negra */
   blacklist: BlacklistTelefon[] = [];
 
-  /** Pestanya actual seleccionada ('tasques' | 'ofertes' | 'incidencies' | 'usuaris' | 'blacklist') */
+  /** Pestanya actual seleccionada */
   tabActiva: AdminTab = 'tasques';
 
   /** Criteris de cerca i filtres */
@@ -1972,6 +2373,14 @@ export class AdminPanellComponent implements OnInit {
   searchOferta = '';
 
   searchIncidencia = '';
+
+  searchPressupost = '';
+
+  searchResenya = '';
+
+  searchAvis = '';
+  nouAvis = { usuariId: '', missatge: '', enllac: '' };
+  enviantAvis = false;
 
   searchUsuari = '';
   filtreRolUsuari = 'tots';
@@ -2018,9 +2427,11 @@ export class AdminPanellComponent implements OnInit {
   constructor(
     private readonly tascaService: TascaService,
     private readonly ofertaService: OfertaService,
+    private readonly pressupostService: PressupostService,
     private readonly incidenciaService: IncidenciaService,
     private readonly usuariService: UsuariService,
     private readonly avisService: AvisService,
+    private readonly resenyaService: ResenyaService,
     private readonly blacklistService: BlacklistService,
     private readonly authService: AuthService,
     private readonly confirmService: ConfirmService,
@@ -2070,6 +2481,16 @@ export class AdminPanellComponent implements OnInit {
       error: () => this.errorMsg = 'Error en carregar les incidències.'
     });
 
+    this.pressupostService.getAll().subscribe({
+      next: (p) => this.pressupostos = p,
+      error: () => {}
+    });
+
+    this.resenyaService.getAll().subscribe({
+      next: (r) => this.resenyes = r,
+      error: () => {}
+    });
+
     this.usuariService.getAll().subscribe({
       next: (u) => {
         this.usuaris = u;
@@ -2082,8 +2503,14 @@ export class AdminPanellComponent implements OnInit {
     });
 
     this.avisService.getAll().subscribe({
-      next: (a) => this.totalAvisos = a.length,
-      error: () => this.totalAvisos = 0
+      next: (a) => {
+        this.avisos = a;
+        this.totalAvisos = a.length;
+      },
+      error: () => {
+        this.avisos = [];
+        this.totalAvisos = 0;
+      }
     });
 
     this.blacklistService.getAll().subscribe({
@@ -2287,6 +2714,156 @@ export class AdminPanellComponent implements OnInit {
         setTimeout(() => this.successMsg = '', 3500);
       },
       error: () => this.errorMsg = 'Error en eliminar la incidència.'
+    });
+  }
+
+  /**
+   * Filtra els pressupostos segons el terme de cerca de l'administrador.
+   */
+  get pressupostosFiltrats(): Pressupost[] {
+    if (!this.searchPressupost.trim()) return this.pressupostos;
+    const q = this.searchPressupost.toLowerCase();
+    return this.pressupostos.filter(p =>
+      p.id?.toLowerCase().includes(q) ||
+      p.incidenciaId?.toLowerCase().includes(q) ||
+      p.incidenciaTitol?.toLowerCase().includes(q) ||
+      p.professionalNom?.toLowerCase().includes(q) ||
+      p.descripcio?.toLowerCase().includes(q) ||
+      p.preu?.toLowerCase().includes(q)
+    );
+  }
+
+  /**
+   * Acció d'administrador: elimina definitivament un pressupost privat del sistema.
+   * @param id Identificador del pressupost
+   */
+  async eliminarPressupost(id: string): Promise<void> {
+    const confirmacio = await this.confirmService.confirm({
+      title: 'CONFIRM_MODAL.DELETE_OFFER_TITLE',
+      message: `Com a Administrador, segur que vols eliminar el pressupost ${id}? Aquesta acció és irreversible.`,
+      confirmText: 'CONFIRM_MODAL.DEFAULT_CONFIRM',
+      cancelText: 'CONFIRM_MODAL.DEFAULT_CANCEL',
+      isDanger: true,
+      icon: 'danger'
+    });
+    if (!confirmacio) return;
+
+    this.pressupostService.reject(id).subscribe({
+      next: () => {
+        this.pressupostos = this.pressupostos.filter(x => x.id !== id);
+        this.successMsg = `Pressupost ${id} eliminat correctament.`;
+        setTimeout(() => this.successMsg = '', 3500);
+      },
+      error: () => this.errorMsg = 'Error en eliminar el pressupost.'
+    });
+  }
+
+  /**
+   * Filtra les ressenyes segons el text de cerca de l'administrador.
+   */
+  get resenyesFiltrades(): Resenya[] {
+    if (!this.searchResenya.trim()) return this.resenyes;
+    const q = this.searchResenya.toLowerCase();
+    return this.resenyes.filter(r => {
+      const client = r.clientNom || r.clientId || '';
+      const treballador = r.treballadorNom || r.treballadorId || '';
+      return (
+        r.id?.toLowerCase().includes(q) ||
+        client.toLowerCase().includes(q) ||
+        treballador.toLowerCase().includes(q) ||
+        r.descripcio?.toLowerCase().includes(q) ||
+        r.tascaId?.toLowerCase().includes(q)
+      );
+    });
+  }
+
+  /**
+   * Calcula la puntuació mitjana de totes les valoracions de la plataforma.
+   */
+  mitjanaRessenyes(): string {
+    if (!this.resenyes || this.resenyes.length === 0) return '0.0';
+    const sum = this.resenyes.reduce((acc, curr) => acc + (curr.puntuacio || 0), 0);
+    return (sum / this.resenyes.length).toFixed(1);
+  }
+
+  /**
+   * Filtra les notificacions i avisos segons el text de cerca.
+   */
+  get avisosFiltrats(): Avis[] {
+    if (!this.searchAvis.trim()) return this.avisos;
+    const q = this.searchAvis.toLowerCase();
+    return this.avisos.filter(a =>
+      a.id?.toLowerCase().includes(q) ||
+      a.usuariId?.toLowerCase().includes(q) ||
+      a.missatge?.toLowerCase().includes(q) ||
+      a.enllac?.toLowerCase().includes(q)
+    );
+  }
+
+  /**
+   * Prepara el formulari per enviar un avís personalitzat a un usuari des de la taula d'usuaris.
+   * @param u Usuari seleccionat
+   */
+  prepararAvisUsuari(u: Usuari): void {
+    this.tabActiva = 'avisos';
+    this.nouAvis.usuariId = u.id;
+    this.nouAvis.missatge = `Notificació de l'Administració per a ${u.nom}: `;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  /**
+   * Envia una nova notificació del sistema a un usuari des del formulari administratiu.
+   */
+  enviarNouAvis(): void {
+    if (!this.nouAvis.usuariId || !this.nouAvis.missatge.trim()) return;
+
+    this.enviantAvis = true;
+    this.avisService.create({
+      usuariId: this.nouAvis.usuariId,
+      missatge: this.nouAvis.missatge.trim(),
+      enllac: this.nouAvis.enllac.trim() || undefined,
+      llegit: false,
+      data: new Date().toISOString()
+    }).subscribe({
+      next: (creat) => {
+        this.enviantAvis = false;
+        this.avisos = [creat, ...this.avisos];
+        this.totalAvisos = this.avisos.length;
+        this.nouAvis = { usuariId: '', missatge: '', enllac: '' };
+        this.successMsg = 'Notificació enviada correctament!';
+        setTimeout(() => this.successMsg = '', 4000);
+      },
+      error: () => {
+        this.enviantAvis = false;
+        this.errorMsg = "Error en enviar l'avís.";
+        setTimeout(() => this.errorMsg = '', 4000);
+      }
+    });
+  }
+
+  /**
+   * Elimina un avís del sistema com a administrador.
+   * @param id Identificador de l'avís
+   */
+  async eliminarAvis(id: string): Promise<void> {
+    const confirmacio = await this.confirmService.confirm({
+      title: 'CONFIRM_MODAL.DELETE_TASK_TITLE',
+      message: `Vols eliminar definitivament aquesta notificació (${id})?`,
+      confirmText: 'CONFIRM_MODAL.DEFAULT_CONFIRM',
+      cancelText: 'CONFIRM_MODAL.DEFAULT_CANCEL',
+      isDanger: true,
+      icon: 'danger'
+    });
+    if (!confirmacio) return;
+
+    this.avisService.delete(id).subscribe({
+      next: () => {
+        this.avisos = this.avisos.filter(x => x.id !== id);
+        this.totalAvisos = this.avisos.length;
+        this.successMsg = 'Notificació eliminada correctament.';
+        setTimeout(() => this.successMsg = '', 3500);
+      },
+      error: () => this.errorMsg = "Error en eliminar la notificació."
     });
   }
 

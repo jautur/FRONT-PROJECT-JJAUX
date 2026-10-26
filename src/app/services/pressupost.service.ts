@@ -34,6 +34,13 @@ export class PressupostService {
   }
 
   /**
+   * Obté el llistat complet de tots els pressupostos (privilegi d'administrador).
+   */
+  getAll(): Observable<Pressupost[]> {
+    return this.http.get<Pressupost[]>(this.apiUrl, { headers: this.getHeaders() });
+  }
+
+  /**
    * Envia un pressupost per a una incidència.
    */
   create(data: CrearPressupostRequest): Observable<Pressupost> {
