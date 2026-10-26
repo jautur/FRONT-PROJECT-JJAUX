@@ -306,31 +306,58 @@ export class AppComponent implements OnInit, OnDestroy {
    * Navega directament a la versió App mòbil (/app) i actualitza l'estat d'entorn.
    */
   anarAVersioApp(event?: Event): void {
-    if (event) event.preventDefault();
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
     this.tancarMenu();
     this.isAppMode = true;
     this.isAppPage = true;
     this.showBottomNav = true;
-    try {
-      sessionStorage.setItem('avisa_app_mode', 'true');
-    } catch {}
-    this.router.navigate(['/app']);
+
+    if (typeof window !== 'undefined') {
+      try {
+        sessionStorage.setItem('avisa_app_mode', 'true');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } catch {}
+    }
+
+    const currentUrl = this.router.url || '';
+    let target = '/app';
+    if (currentUrl && !currentUrl.startsWith('/app') && currentUrl !== '/' && currentUrl !== '/inici' && !currentUrl.startsWith('/inici?')) {
+      target = `/app${currentUrl.startsWith('/') ? '' : '/'}${currentUrl}`;
+    }
+    this.router.navigateByUrl(target);
   }
 
   /**
    * Navega directament a la versió Web estàndard (/inici) i restableix l'estat d'entorn.
    */
   anarAVersioWeb(event?: Event): void {
-    if (event) event.preventDefault();
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
     this.tancarMenu();
     this.isAppMode = false;
     this.isAppPage = false;
     this.showBottomNav = false;
-    try {
-      sessionStorage.removeItem('avisa_app_mode');
-      localStorage.removeItem('avisa_app_mode');
-    } catch {}
-    this.router.navigate(['/inici']);
+
+    if (typeof window !== 'undefined') {
+      try {
+        sessionStorage.removeItem('avisa_app_mode');
+        localStorage.removeItem('avisa_app_mode');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } catch {}
+    }
+
+    const currentUrl = this.router.url || '';
+    let target = '/inici';
+    if (currentUrl.startsWith('/app/')) {
+      const stripped = currentUrl.replace('/app/', '/');
+      target = stripped === '/inici' ? '/inici' : stripped;
+    }
+    this.router.navigateByUrl(target);
   }
 
   /**

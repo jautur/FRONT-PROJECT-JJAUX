@@ -18,11 +18,8 @@ export const webToAppGuard: CanActivateFn = (route, state) => {
     } catch {}
   }
 
-  const currentUrl = router.url || '';
-  const cameFromApp = currentUrl.startsWith('/app');
-
-  // Només redirigim si l'usuari està efectivament dins de l'entorn de l'aplicació
-  if (isAppSession || cameFromApp) {
+  // Només redirigim si l'usuari té activa la sessió d'aplicació (/app)
+  if (isAppSession) {
     const targetUrl = state.url;
     if (!targetUrl.startsWith('/app')) {
       if (targetUrl === '/' || targetUrl === '/inici' || targetUrl.startsWith('/inici?')) {

@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Router, RouterLink, NavigationEnd } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { DashboardResponse, DashboardService } from '../../services/dashboard.service';
 import { OfertaService } from '../../services/oferta.service';
 import { ResenyaService } from '../../services/resenya.service';
@@ -2937,11 +2938,12 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
     `
   ]
 })
-export class MainComponent implements OnInit {
+export class MainComponent implements OnInit, OnDestroy {
   dashboard?: DashboardResponse;
   loading = true;
   error = '';
   noticeMessage = '';
+  private routerEventsSub?: Subscription;
 
   randomPreviewTasks: any[] = [];
   randomPreviewOffers: any[] = [];
@@ -3058,7 +3060,19 @@ export class MainComponent implements OnInit {
     private readonly router: Router,
     public readonly pwaService: PwaService,
     private readonly translationService: TranslationService
-  ) {}
+  ) {
+    this.routerEventsSub = this.router.events.subscribe((event) => {
+      if (event instanceof NavigationEnd) {
+        this.generarPrevisualitzacionsAleatories();
+      }
+    });
+  }
+
+  ngOnDestroy(): void {
+    if (this.routerEventsSub) {
+      this.routerEventsSub.unsubscribe();
+    }
+  }
 
   ngOnInit(): void {
     this.loadDashboard();

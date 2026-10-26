@@ -211,11 +211,12 @@
       <!-- A la versió web: enllaç per accedir a la versió /app -->
       <a
         *ngIf="!isAppPage"
-        [routerLink]="'/app'"
         (click)="anarAVersioApp($event)"
         class="sidebar-brand sidebar-brand-link"
         title="Accedir a la versió App (/app)"
         aria-label="Accedir a la versió App"
+        role="button"
+        tabindex="0"
       >
         <span class="brand-badge">AV</span>
         <span class="brand-text">AVISA</span>
@@ -231,11 +232,12 @@
       <!-- A la versió /app: enllaç per accedir a la versió web -->
       <a
         *ngIf="isAppPage"
-        [routerLink]="'/inici'"
         (click)="anarAVersioWeb($event)"
         class="sidebar-brand sidebar-brand-link"
         title="Accedir a la versió Web"
         aria-label="Accedir a la versió Web"
+        role="button"
+        tabindex="0"
       >
         <span class="brand-badge brand-badge-web">AV</span>
         <span class="brand-text">AVISA</span>
