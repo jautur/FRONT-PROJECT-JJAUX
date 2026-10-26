@@ -649,12 +649,12 @@ import { GuiaProfessional, GUIES_PRO_VA, GUIES_PRO_ES, GUIES_PRO_EN } from '../.
       gap: 1.75rem;
     }
     .reason-card {
-      background: #ffffff;
-      border: 1px solid #e5e0d7;
-      border-radius: 16px;
+      background: var(--bg-card, #ffffff);
+      border: 1px solid var(--border-subtle, #e5e0d7);
+      border-radius: var(--radius-lg, 16px);
       padding: 2.2rem 2rem;
-      transition: all 0.25s ease;
-      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.03);
+      transition: all var(--transition-fast, 0.25s ease);
+      box-shadow: var(--shadow-sm, 0 4px 18px rgba(0, 0, 0, 0.03));
     }
     .reason-card:hover {
       border-color: #ff1744;

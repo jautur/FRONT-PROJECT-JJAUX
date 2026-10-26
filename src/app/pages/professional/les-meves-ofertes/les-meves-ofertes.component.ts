@@ -221,19 +221,19 @@ import { Tasca } from '../../../models/tasca.model';
       flex-wrap: wrap;
     }
     .tab-btn {
-      background: #ffffff;
-      border: 1px solid #d6d0c4;
+      background: var(--bg-card, #ffffff);
+      border: 1px solid var(--border-subtle, #d6d0c4);
       padding: 0.5rem 1.15rem;
-      border-radius: 9999px;
+      border-radius: var(--radius-full, 9999px);
       font-size: 0.88rem;
       font-weight: 800;
-      color: #636058;
+      color: var(--color-text-muted, #636058);
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all var(--transition-fast, 0.2s ease);
     }
     .tab-btn:hover {
       border-color: #ff1744;
-      color: #09090c;
+      color: var(--color-text, #09090c);
     }
     .tab-btn.active {
       background: #ff1744;
@@ -248,14 +248,14 @@ import { Tasca } from '../../../models/tasca.model';
       gap: 1.35rem;
     }
     .oferta-card {
-      background: #ffffff;
-      border: 1px solid #e5e0d7;
-      border-radius: 14px;
+      background: var(--bg-card, #ffffff);
+      border: 1px solid var(--border-subtle, #e5e0d7);
+      border-radius: var(--radius-md, 14px);
       padding: 1.35rem;
       display: flex;
       flex-direction: column;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
-      transition: all 0.2s ease;
+      box-shadow: var(--shadow-sm, 0 4px 16px rgba(0, 0, 0, 0.04));
+      transition: all var(--transition-fast, 0.2s ease);
     }
     .oferta-card:hover {
       transform: translateY(-2px);

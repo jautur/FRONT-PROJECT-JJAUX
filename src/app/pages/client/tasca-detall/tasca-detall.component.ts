@@ -285,12 +285,12 @@ import { Pressupost } from '../../../models/pressupost.model';
       }
 
       .detall-header {
-        background: #ffffff;
-        border: 1px solid #e5e0d7;
-        color: #09090c;
+        background: var(--bg-card, #ffffff);
+        border: 1px solid var(--border-subtle, #e5e0d7);
+        color: var(--color-text, #09090c);
         padding: 2.2rem;
-        border-radius: 20px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        border-radius: var(--radius-xl, 20px);
+        box-shadow: var(--shadow-md, 0 4px 20px rgba(0, 0, 0, 0.05));
       }
 
       .detall-header.converged-header {
@@ -410,22 +410,22 @@ import { Pressupost } from '../../../models/pressupost.model';
       }
 
       .card {
-        background: #ffffff;
+        background: var(--bg-card, #ffffff);
         padding: 2rem;
-        border-radius: 18px;
-        border: 1px solid #e5e0d7;
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+        border-radius: var(--radius-lg, 18px);
+        border: 1px solid var(--border-subtle, #e5e0d7);
+        box-shadow: var(--shadow-sm, 0 4px 16px rgba(0, 0, 0, 0.04));
       }
 
       .card h2 {
         margin: 0 0 0.8rem;
         font-size: 1.35rem;
         font-weight: 900;
-        color: #09090c;
+        color: var(--color-text, #09090c);
       }
 
       .description-text {
-        color: #4a4841;
+        color: var(--color-text-muted, #4a4841);
         line-height: 1.6;
         font-size: 1rem;
         margin: 0;

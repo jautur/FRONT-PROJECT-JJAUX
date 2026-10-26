@@ -307,14 +307,14 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 
       .legal-container {
         width: min(720px, 100%);
-        background: #ffffff;
-        border-radius: 20px;
+        background: var(--bg-card, #ffffff);
+        border-radius: var(--radius-xl, 20px);
         box-shadow: 0 24px 60px rgba(0, 0, 0, 0.28);
         display: flex;
         flex-direction: column;
         max-height: 85vh;
         overflow: hidden;
-        border: 1px solid #e5e0d7;
+        border: 1px solid var(--border-subtle, #e5e0d7);
         box-sizing: border-box;
       }
 
@@ -335,11 +335,11 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 
       .legal-header {
         padding: 1.4rem 1.6rem 1rem;
-        border-bottom: 1px solid #eeeae0;
+        border-bottom: 1px solid var(--border-subtle, #eeeae0);
         display: flex;
         justify-content: space-between;
         align-items: flex-start;
-        background: #faf8f4;
+        background: var(--bg-surface, #faf8f4);
       }
 
       .legal-eyebrow {

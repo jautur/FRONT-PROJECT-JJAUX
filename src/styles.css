@@ -4,21 +4,23 @@
 /* ============================================================== */
 
 :root {
-  /* Fons de pàgina blanc brut */
+  /* Fons de pàgina i superfícies (Tema Clar / Web) */
   --bg-page: #f7f3ed;
   --bg-card: #ffffff;
   --bg-surface: #faf8f4;
+  --bg-surface-elevated: #ffffff;
   --border-subtle: #e5e0d7;
+  --border-card: #e5e0d7;
+  --border-dark: #23232f;
 
   /* Negres per a la barra superior i menú lateral */
   --bg-black: #09090c;
   --bg-sidebar: #0d0d12;
-  --border-dark: #23232f;
 
   /* Colors de text per al fons blanc brut (contrast WCAG 2.2 AA) */
   --color-text: #09090c;
   --color-text-muted: #57554e;
-  --color-text-dim: #5c5952;
+  --color-text-dim: #716f67;
 
   /* Blancs per a la barra i menú negres (contrast WCAG 2.2 AA) */
   --color-bone: #f5f4ef;
@@ -31,7 +33,27 @@
   --neon-glow: 0 0 18px rgba(255, 23, 68, 0.45);
   --neon-glow-lg: 0 0 32px rgba(255, 23, 68, 0.65);
   --neon-bg: rgba(255, 23, 68, 0.12);
-  --neon-border: rgba(255, 23, 68, 0.5);
+  --neon-border: rgba(255, 23, 68, 0.4);
+
+  /* Ràdios de vora estandarditzats (consistent 4/8/12/16/20px) */
+  --radius-xs: 6px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-full: 9999px;
+
+  /* Ombres suaus estandarditzades */
+  --shadow-xs: 0 1px 3px rgba(0, 0, 0, 0.04);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 18px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.08);
+  --shadow-hover: 0 8px 26px rgba(0, 0, 0, 0.09);
+
+  /* Transicions suaus */
+  --transition-fast: 0.16s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-smooth: 0.32s cubic-bezier(0.16, 1, 0.3, 1);
 
   /* Tipografia per a títols d'alt impacte */
   --font-title: 'Boldonse', 'Climate Crisis', sans-serif;
@@ -119,27 +141,31 @@ button, .btn {
   font-family: inherit;
   font-weight: 800;
   letter-spacing: 0.02em;
-  border-radius: 8px;
+  border-radius: var(--radius-sm, 8px);
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all var(--transition-fast, 0.16s ease);
 }
 
 /* Inputs i formularis en estil clar i net */
 input, select, textarea {
   font-family: inherit;
-  background-color: #ffffff;
-  color: #09090c;
-  border: 1px solid #dcd7ce;
-  border-radius: 8px;
+  background-color: var(--bg-card, #ffffff);
+  color: var(--color-text, #09090c);
+  border: 1px solid var(--border-subtle, #dcd7ce);
+  border-radius: var(--radius-sm, 8px);
   padding: 0.75rem 1rem;
+  font-size: 0.92rem;
   font-weight: 600;
   outline: none;
-  transition: all 0.2s ease;
+  transition: border-color var(--transition-fast, 0.16s ease),
+              box-shadow var(--transition-fast, 0.16s ease),
+              background-color var(--transition-fast, 0.16s ease);
+  box-sizing: border-box;
 }
 
 input:focus, select:focus, textarea:focus {
   border-color: var(--neon, #ff1744);
-  box-shadow: 0 0 0 3px rgba(255, 23, 68, 0.15), var(--neon-glow);
+  box-shadow: 0 0 0 3px rgba(255, 23, 68, 0.16), var(--neon-glow);
 }
 
 /* Scrollbars modernes */
@@ -200,10 +226,16 @@ html.theme-app-dark,
   --bg-surface: #191b26;
   --bg-surface-elevated: #202232;
   --border-subtle: #25273a;
+  --border-card: #282a3e;
   --border-dark: #32354c;
   --color-text: #f5f4ef;
   --color-text-muted: #bab8ae;
   --color-text-dim: #7f7d73;
+  --shadow-xs: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 14px 40px rgba(0, 0, 0, 0.65);
+  --shadow-hover: 0 8px 30px rgba(255, 23, 68, 0.15), 0 4px 16px rgba(0, 0, 0, 0.55);
 }
 
 body.theme-app-dark {

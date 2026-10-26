@@ -1385,15 +1385,15 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'pressupostos' | 'usuari
       margin-bottom: 2rem;
     }
     .metric-card {
-      background: #ffffff;
-      border: 1.5px solid #e5e0d7;
-      border-radius: 14px;
+      background: var(--bg-card, #ffffff);
+      border: 1.5px solid var(--border-subtle, #e5e0d7);
+      border-radius: var(--radius-md, 14px);
       padding: 1.35rem;
       display: flex;
       align-items: center;
       gap: 1.1rem;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
-      transition: all 0.2s ease;
+      box-shadow: var(--shadow-sm, 0 4px 16px rgba(0, 0, 0, 0.04));
+      transition: all var(--transition-fast, 0.2s ease);
       cursor: pointer;
       user-select: none;
     }
@@ -1521,11 +1521,11 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'pressupostos' | 'usuari
       border-color: #ff1744;
     }
     .table-wrapper {
-      background: #ffffff;
-      border: 1px solid #e5e0d7;
-      border-radius: 12px;
+      background: var(--bg-card, #ffffff);
+      border: 1px solid var(--border-subtle, #e5e0d7);
+      border-radius: var(--radius-md, 12px);
       overflow-x: auto;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+      box-shadow: var(--shadow-sm, 0 4px 20px rgba(0, 0, 0, 0.04));
     }
     .data-table {
       width: 100%;
@@ -1534,8 +1534,8 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'pressupostos' | 'usuari
       font-size: 0.9rem;
     }
     .data-table th {
-      background: #faf8f4;
-      color: #09090c;
+      background: var(--bg-surface, #faf8f4);
+      color: var(--color-text, #09090c);
       padding: 0.9rem 1rem;
       font-weight: 800;
       border-bottom: 1px solid #e5e0d7;

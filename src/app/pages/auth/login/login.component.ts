@@ -272,23 +272,23 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
     `
       .auth-card {
         width: min(440px, 100%);
-        background: #ffffff;
+        background: var(--bg-card, #ffffff);
         padding: 2.4rem;
-        border-radius: 18px;
-        border: 1px solid #e5e0d7;
-        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.06);
-        color: #09090c;
+        border-radius: var(--radius-lg, 18px);
+        border: 1px solid var(--border-subtle, #e5e0d7);
+        box-shadow: var(--shadow-lg, 0 16px 40px rgba(0, 0, 0, 0.06));
+        color: var(--color-text, #09090c);
         position: relative;
       }
       h1 {
         margin: 0 0 0.5rem;
         font-weight: 900;
-        color: #09090c;
+        color: var(--color-text, #09090c);
         letter-spacing: -0.03em;
       }
       p {
         margin: 0 0 1.5rem;
-        color: #57554e;
+        color: var(--color-text-muted, #57554e);
         font-weight: 600;
         font-size: 0.95rem;
       }
@@ -312,7 +312,7 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
         gap: 0.45rem;
         font-weight: 800;
         font-size: 0.85rem;
-        color: #09090c;
+        color: var(--color-text, #09090c);
         text-transform: uppercase;
         letter-spacing: 0.05em;
       }

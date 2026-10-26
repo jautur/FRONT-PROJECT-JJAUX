@@ -620,11 +620,11 @@ interface CategoriaFiltre {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        background: #ffffff;
-        border: 1px solid #e5e0d7;
-        border-radius: 18px;
+        background: var(--bg-card, #ffffff);
+        border: 1px solid var(--border-subtle, #e5e0d7);
+        border-radius: var(--radius-lg, 18px);
         padding: 2rem 2.2rem;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+        box-shadow: var(--shadow-sm, 0 4px 20px rgba(0, 0, 0, 0.03));
         margin-bottom: 1.5rem;
         gap: 1.5rem;
       }
@@ -643,14 +643,14 @@ interface CategoriaFiltre {
         margin: 0 0 0.4rem;
         font-size: clamp(1.8rem, 3.5vw, 2.3rem);
         font-weight: 900;
-        color: #09090c;
+        color: var(--color-text, #09090c);
         letter-spacing: -0.02em;
       }
 
       .market-subtitle {
         margin: 0;
         font-size: 0.95rem;
-        color: #636159;
+        color: var(--color-text-muted, #636159);
         line-height: 1.5;
       }
 
@@ -702,31 +702,31 @@ interface CategoriaFiltre {
 
       /* Barra de cerca */
       .search-filter-bar {
-        background: #ffffff;
-        border: 1px solid #e5e0d7;
-        border-radius: 16px;
+        background: var(--bg-card, #ffffff);
+        border: 1px solid var(--border-subtle, #e5e0d7);
+        border-radius: var(--radius-lg, 16px);
         padding: 1.25rem 1.5rem;
         display: flex;
         flex-direction: column;
         gap: 1rem;
         margin-bottom: 2rem;
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+        box-shadow: var(--shadow-sm, 0 4px 16px rgba(0, 0, 0, 0.03));
       }
 
       .search-input-wrap {
         display: flex;
         align-items: center;
-        background: #faf8f4;
-        border: 1px solid #dcd7cc;
-        border-radius: 10px;
+        background: var(--bg-surface, #faf8f4);
+        border: 1px solid var(--border-subtle, #dcd7cc);
+        border-radius: var(--radius-md, 10px);
         padding: 0 1rem;
         gap: 0.75rem;
-        transition: border-color 0.2s ease;
+        transition: border-color var(--transition-fast, 0.2s ease), background-color var(--transition-fast, 0.2s ease);
       }
 
       .search-input-wrap:focus-within {
         border-color: #ff1744;
-        background: #ffffff;
+        background: var(--bg-card, #ffffff);
         box-shadow: 0 0 0 3px rgba(255, 23, 68, 0.12);
       }
 
@@ -742,7 +742,7 @@ interface CategoriaFiltre {
         padding: 0.85rem 0;
         font-size: 0.95rem;
         font-weight: 600;
-        color: #09090c;
+        color: var(--color-text, #09090c);
         width: 100%;
         outline: none;
       }
@@ -750,7 +750,7 @@ interface CategoriaFiltre {
       .btn-clear-search {
         background: transparent;
         border: none;
-        color: #8c897f;
+        color: var(--color-text-dim, #8c897f);
         font-size: 1rem;
         cursor: pointer;
         padding: 0.2rem;
@@ -763,15 +763,15 @@ interface CategoriaFiltre {
       }
 
       .filter-pill {
-        background: #faf8f4;
-        border: 1px solid #ddd7cc;
-        color: #403e38;
+        background: var(--bg-surface, #faf8f4);
+        border: 1px solid var(--border-subtle, #ddd7cc);
+        color: var(--color-text, #403e38);
         padding: 0.5rem 1.1rem;
-        border-radius: 9999px;
+        border-radius: var(--radius-full, 9999px);
         font-weight: 800;
         font-size: 0.82rem;
         cursor: pointer;
-        transition: all 0.2s ease;
+        transition: all var(--transition-fast, 0.2s ease);
       }
 
       .filter-pill:hover {
@@ -780,9 +780,9 @@ interface CategoriaFiltre {
       }
 
       .filter-pill.active {
-        background: #09090c;
-        color: #f7f3ed;
-        border-color: #09090c;
+        background: var(--color-text, #09090c);
+        color: var(--bg-page, #f7f3ed);
+        border-color: var(--color-text, #09090c);
       }
 
       /* Selectors de filtre exclusius per a mòbils (sense barres de desplaçament horitzontals) */
@@ -839,11 +839,11 @@ interface CategoriaFiltre {
 
       /* Columna de categories */
       .categories-card {
-        background: #ffffff;
-        border: 1px solid #e5e0d7;
-        border-radius: 16px;
+        background: var(--bg-card, #ffffff);
+        border: 1px solid var(--border-subtle, #e5e0d7);
+        border-radius: var(--radius-lg, 16px);
         padding: 1.5rem;
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+        box-shadow: var(--shadow-sm, 0 4px 16px rgba(0, 0, 0, 0.03));
       }
 
       .categories-card-header {
@@ -857,7 +857,7 @@ interface CategoriaFiltre {
         margin: 0;
         font-size: 1.15rem;
         font-weight: 900;
-        color: #09090c;
+        color: var(--color-text, #09090c);
       }
 
       .cat-count-badge {
@@ -872,7 +872,7 @@ interface CategoriaFiltre {
       .categories-card-desc {
         margin: 0 0 1.25rem;
         font-size: 0.82rem;
-        color: #7a776e;
+        color: var(--color-text-dim, #7a776e);
       }
 
       .categories-table {
@@ -886,24 +886,24 @@ interface CategoriaFiltre {
         align-items: center;
         justify-content: space-between;
         padding: 0.7rem 0.85rem;
-        border-radius: 10px;
+        border-radius: var(--radius-sm, 10px);
         background: transparent;
         border: 1px solid transparent;
         cursor: pointer;
         text-align: left;
-        transition: all 0.2s ease;
+        transition: all var(--transition-fast, 0.2s ease);
         width: 100%;
         box-sizing: border-box;
       }
 
       .category-row-btn:hover {
-        background: #faf8f4;
-        border-color: #ded8cd;
+        background: var(--bg-surface, #faf8f4);
+        border-color: var(--border-subtle, #ded8cd);
         transform: translateX(3px);
       }
 
       .category-row-btn.active {
-        background: #09090c;
+        background: var(--color-text, #09090c);
         border-color: #ff1744;
         color: #ffffff;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
@@ -930,7 +930,7 @@ interface CategoriaFiltre {
       .cat-name {
         font-size: 0.86rem;
         font-weight: 800;
-        color: #2b2a26;
+        color: var(--color-text, #2b2a26);
         white-space: nowrap;
         text-overflow: ellipsis;
         overflow: hidden;
@@ -945,8 +945,8 @@ interface CategoriaFiltre {
         font-weight: 900;
         padding: 0.15rem 0.45rem;
         border-radius: 9999px;
-        background: #eeeae0;
-        color: #55534c;
+        background: var(--border-subtle, #eeeae0);
+        color: var(--color-text-muted, #55534c);
         flex-shrink: 0;
       }
 
@@ -971,17 +971,17 @@ interface CategoriaFiltre {
         margin: 0;
         font-size: 1.35rem;
         font-weight: 900;
-        color: #09090c;
+        color: var(--color-text, #09090c);
       }
 
       .count-tag {
         font-size: 0.78rem;
         font-weight: 800;
-        color: #737066;
-        background: #ffffff;
-        border: 1px solid #e0dbce;
+        color: var(--color-text-dim, #737066);
+        background: var(--bg-card, #ffffff);
+        border: 1px solid var(--border-subtle, #e0dbce);
         padding: 0.25rem 0.6rem;
-        border-radius: 6px;
+        border-radius: var(--radius-xs, 6px);
       }
 
       .cards-grid {
@@ -992,15 +992,15 @@ interface CategoriaFiltre {
       }
 
       .market-card {
-        background: #ffffff;
-        border: 1px solid #e5e0d7;
-        border-radius: 14px;
+        background: var(--bg-card, #ffffff);
+        border: 1px solid var(--border-subtle, #e5e0d7);
+        border-radius: var(--radius-md, 14px);
         padding: 1.5rem 1.85rem;
         display: flex;
         flex-direction: column;
         gap: 0.95rem;
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
-        transition: all 0.22s ease;
+        box-shadow: var(--shadow-sm, 0 4px 16px rgba(0, 0, 0, 0.03));
+        transition: all var(--transition-fast, 0.22s ease);
         width: 100%;
         box-sizing: border-box;
       }
@@ -1008,7 +1008,7 @@ interface CategoriaFiltre {
       .market-card:hover {
         border-color: #ff1744;
         transform: translateY(-2px);
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+        box-shadow: var(--shadow-hover, 0 8px 24px rgba(0, 0, 0, 0.08));
       }
 
       .card-top-bar {
