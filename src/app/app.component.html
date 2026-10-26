@@ -121,7 +121,13 @@
       <div class="profile-dropdown-menu" *ngIf="perfilDropdownObert" (click)="$event.stopPropagation()">
         <!-- Estat d'usuari connectat -->
         <ng-container *ngIf="authService.isLoggedIn()">
-          <div class="dropdown-user-header">
+          <a
+            [routerLink]="getNavUrl('/perfil')"
+            class="dropdown-user-header"
+            (click)="tancarPerfilDropdown()"
+            [title]="'COMMON.PERFIL' | translate"
+            style="text-decoration: none; color: inherit;"
+          >
             <div class="dropdown-avatar" aria-hidden="true">
               <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
@@ -135,7 +141,7 @@
                 {{ authService.getCurrentUser()?.rol | uppercase }}
               </span>
             </div>
-          </div>
+          </a>
 
           <!-- Accions de la vista prèvia: Editar perfil i Tancar sessió -->
           <div class="dropdown-actions">

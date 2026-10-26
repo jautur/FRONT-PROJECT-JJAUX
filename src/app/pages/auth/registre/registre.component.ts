@@ -660,7 +660,9 @@ export class RegistreComponent implements OnInit {
       },
       error: (err) => {
         this.loading = false;
-        if (err.status === 400 && err.error?.missatges) {
+        if (err.status === 400 && err.error?.message) {
+          this.errorMessage = err.error.message;
+        } else if (err.status === 400 && err.error?.missatges) {
           const msgs = Object.values(err.error.missatges).join(' ');
           this.errorMessage = msgs || 'Dades de registre incorrectes.';
         } else if (err.error?.error && typeof err.error.error === 'string') {
@@ -668,7 +670,7 @@ export class RegistreComponent implements OnInit {
         } else if (err.status === 0 || err.status === 502 || err.status === 504) {
           this.errorMessage = 'El servidor no respon. Comprova que el backend estigui actiu al port 8080.';
         } else {
-          this.errorMessage = 'No s’ha pogut completar el registre. El correu podria estar ja en ús o el servidor no respon.';
+          this.errorMessage = err?.error?.message || 'No s’ha pogut completar el registre. El correu o telèfon podria estar bloquejat o el servidor no respon.';
         }
       }
     });

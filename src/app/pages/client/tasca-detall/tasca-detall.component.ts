@@ -1142,6 +1142,10 @@ export class TascaDetallComponent implements OnInit {
     return this.tasca?.tipus === 'tasca' || !!(this.tasca?.professional || this.tasca?.professionalNom) || (this.tasca?.estat !== 'Oberta');
   }
 
+  get isIncidencia(): boolean {
+    return !this.isTascaConvergida || this.tasca?.tipus === 'incidencia' || (this.tasca?.id ? this.tasca.id.startsWith('I-') : false);
+  }
+
   tancarModalFinalitzar(): void {
     this.modalFinalitzarObert = false;
     this.enviantRessenya = false;
@@ -1214,37 +1218,38 @@ export class TascaDetallComponent implements OnInit {
   }
 
   /**
-   * Carrega les ofertes i pressupostos associats a aquesta tasca o incidència.
+   * Carrega els pressupostos privats associats a aquesta incidència o ofertes si és una tasca.
+   * PRIVADESA: Els pressupostos només són visibles per als 2 usuaris implicats (el client titular i el professional emissor).
    */
   private loadOffers(taskId: string): void {
-    this.ofertaService.getByTasca(taskId).subscribe({
-      next: (offers) => {
-        this.ofertes = offers || [];
-        // Comprovem també la taula de pressupostos si és una incidència
-        this.pressupostService.getByIncidencia(taskId).subscribe({
-          next: (pressupostos) => {
-            if (pressupostos && pressupostos.length > 0) {
-              const mapped = pressupostos.map(p => ({
-                id: p.id,
-                tascaId: p.incidenciaId,
-                professional: p.professionalNom,
-                price: p.preu,
-                note: (p.descripcio || '') + (p.duracioEstimada ? ` (Termini estimat: ${p.duracioEstimada})` : ''),
-                estat: 'Pendent'
-              }));
-              // Evita duplicats si ja estaven sincronitzats
-              const existingIds = new Set(this.ofertes.map(o => o.id));
-              mapped.forEach(m => {
-                if (!existingIds.has(m.id)) {
-                  this.ofertes.push(m);
-                }
-              });
-            }
-          },
-          error: () => {}
-        });
-      }
-    });
+    if (this.isIncidencia) {
+      // Per a una incidència de client, es consulten exclusivament els pressupostos privats
+      this.pressupostService.getByIncidencia(taskId).subscribe({
+        next: (pressupostos) => {
+          this.ofertes = (pressupostos || []).map(p => ({
+            id: p.id,
+            tascaId: p.incidenciaId,
+            professional: p.professionalNom,
+            price: p.preu,
+            note: (p.descripcio || '') + (p.duracioEstimada ? ` (Termini estimat: ${p.duracioEstimada})` : ''),
+            estat: 'Pendent'
+          }));
+        },
+        error: () => {
+          this.ofertes = [];
+        }
+      });
+    } else {
+      // Per a tasques concertades
+      this.ofertaService.getByTasca(taskId).subscribe({
+        next: (offers) => {
+          this.ofertes = (offers || []).filter(o => o.categoria !== 'Pressupost');
+        },
+        error: () => {
+          this.ofertes = [];
+        }
+      });
+    }
   }
 
   /**

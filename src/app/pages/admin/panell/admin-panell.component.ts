@@ -7,10 +7,12 @@ import { OfertaService } from '../../../services/oferta.service';
 import { IncidenciaService } from '../../../services/incidencia.service';
 import { UsuariService } from '../../../services/usuari.service';
 import { AvisService } from '../../../services/avis.service';
+import { BlacklistService } from '../../../services/blacklist.service';
 import { Tasca } from '../../../models/tasca.model';
 import { Oferta } from '../../../models/oferta.model';
 import { Incidencia } from '../../../models/incidencia.model';
 import { Usuari } from '../../../models/usuari.model';
+import { BlacklistTelefon } from '../../../models/blacklist.model';
 import { AuthService } from '../../../core/services/auth.service';
 import { ConfirmService } from '../../../core/services/confirm.service';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
@@ -18,7 +20,7 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 /**
  * Pestanya activa al panell d'administració.
  */
-type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'usuaris';
+type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'usuaris' | 'blacklist';
 
 /**
  * Component del Panell d'Administració Global (/admin/panell).
@@ -165,6 +167,27 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'usuaris';
             <small class="metric-sub">{{ 'ADMIN.METRIC_NOTICES_SUB' | translate }}</small>
           </div>
         </div>
+
+        <div
+          class="metric-card"
+          [class.active-card]="tabActiva === 'blacklist'"
+          (click)="canviarTab('blacklist')"
+          role="button"
+          tabindex="0"
+          title="Veure i gestionar la llista negra de telèfons"
+        >
+          <span class="metric-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="#ff1744" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+              <line x1="1" y1="1" x2="23" y2="23" stroke="#ff1744" stroke-width="2.2"></line>
+            </svg>
+          </span>
+          <div class="metric-info">
+            <span class="metric-value">{{ blacklist.length }}</span>
+            <span class="metric-label">{{ 'ADMIN.METRIC_BLACKLIST' | translate }}</span>
+            <small class="metric-sub">{{ blacklist.length }} {{ 'ADMIN.USER_PHONE_BLOCKED' | translate }}</small>
+          </div>
+        </div>
       </div>
 
       <!-- Missatges de feedback -->
@@ -204,6 +227,14 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'usuaris';
           (click)="canviarTab('usuaris')"
         >
           {{ 'ADMIN.TAB_USERS' | translate }} ({{ usuaris.length }})
+        </button>
+        <button
+          type="button"
+          class="tab-btn"
+          [class.active]="tabActiva === 'blacklist'"
+          (click)="canviarTab('blacklist')"
+        >
+          {{ 'ADMIN.TAB_BLACKLIST' | translate }} ({{ blacklist.length }})
         </button>
       </div>
 
@@ -497,9 +528,19 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'usuaris';
               <tr *ngFor="let u of usuarisFiltrats">
                 <td class="font-mono"><strong>{{ u.id }}</strong></td>
                 <td>
-                  <a [routerLink]="[getNavUrl('/perfil'), u.id]" class="user-inline-link" title="Veure perfil">
-                    <strong>{{ u.nom }}</strong>
-                  </a>
+                  <div class="user-name-cell">
+                    <a [routerLink]="[getNavUrl('/perfil'), u.id]" class="user-inline-link" title="Veure perfil">
+                      <strong>{{ u.nom }}</strong>
+                    </a>
+                    <span *ngIf="u.rol === 'professional' && u.foto" class="badge-has-photo" [title]="'ADMIN.USER_HAS_PHOTO' | translate">
+                      <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                        <polyline points="21 15 16 10 5 21"></polyline>
+                      </svg>
+                      {{ 'ADMIN.USER_HAS_PHOTO' | translate }}
+                    </span>
+                  </div>
                 </td>
                 <td>{{ u.email }}</td>
                 <td>
@@ -507,7 +548,14 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'usuaris';
                     {{ u.rol | uppercase }}
                   </span>
                 </td>
-                <td>{{ u.telefon || '-' }}</td>
+                <td>
+                  <div class="user-phone-cell">
+                    <span>{{ u.telefon || '-' }}</span>
+                    <span *ngIf="u.telefon && isTelefonBloquejat(u.telefon)" class="badge-blacklisted">
+                      {{ 'ADMIN.USER_PHONE_BLOCKED' | translate }}
+                    </span>
+                  </div>
+                </td>
                 <td class="bio-cell">{{ u.bio || '-' }}</td>
                 <td>
                   <div class="action-buttons">
@@ -531,6 +579,45 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'usuaris';
                       {{ 'ADMIN.BTN_NEW_PASSWORD' | translate }}
                     </button>
                     <button
+                      *ngIf="u.rol === 'professional'"
+                      type="button"
+                      class="btn-sm btn-foto"
+                      (click)="obrirModalFoto(u)"
+                      [title]="u.foto ? ('ADMIN.BTN_CHANGE_PHOTO' | translate) : ('ADMIN.BTN_ASSIGN_PHOTO' | translate)"
+                    >
+                      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                        <polyline points="21 15 16 10 5 21"></polyline>
+                      </svg>
+                      {{ u.foto ? ('ADMIN.BTN_CHANGE_PHOTO' | translate) : ('ADMIN.BTN_ASSIGN_PHOTO' | translate) }}
+                    </button>
+                    <button
+                      *ngIf="u.telefon && !isTelefonBloquejat(u.telefon)"
+                      type="button"
+                      class="btn-sm btn-blacklist-action"
+                      (click)="bloquejarTelefonUsuari(u)"
+                      title="Bloquejar telèfon a la llista negra"
+                    >
+                      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line>
+                      </svg>
+                      {{ 'ADMIN.BTN_BLOCK_PHONE' | translate }}
+                    </button>
+                    <button
+                      *ngIf="u.telefon && isTelefonBloquejat(u.telefon)"
+                      type="button"
+                      class="btn-sm btn-unblock-action"
+                      (click)="desbloquejarPerTelefon(u.telefon)"
+                      title="Desbloquejar aquest telèfon"
+                    >
+                      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                      </svg>
+                      {{ 'ADMIN.BTN_UNBLOCK_PHONE' | translate }}
+                    </button>
+                    <button
                       *ngIf="u.id !== 'u-admin' && u.email !== 'admin@admin' && u.email !== 'admin@admin.es'"
                       type="button"
                       class="btn-sm btn-danger"
@@ -552,6 +639,99 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'usuaris';
 
         <div class="empty-box" *ngIf="usuarisFiltrats.length === 0">
           {{ 'ADMIN.EMPTY_USERS' | translate }}
+        </div>
+      </section>
+
+      <!-- ============================================================== -->
+      <!-- PESTANYA 5: LLISTA NEGRA DE TELÈFONS -->
+      <!-- ============================================================== -->
+      <section class="tab-content" *ngIf="tabActiva === 'blacklist'">
+        <!-- Formulari d'afegir telèfon a la llista negra -->
+        <div class="blacklist-add-card">
+          <form (ngSubmit)="afegirABlacklist()" class="blacklist-add-form">
+            <div class="form-field">
+              <label>{{ 'ADMIN.BLACKLIST_PHONE_LABEL' | translate }}</label>
+              <input
+                type="text"
+                [(ngModel)]="nouTelefonBlacklist"
+                name="nouTelefonBlacklist"
+                required
+                [placeholder]="'ADMIN.BLACKLIST_PHONE_PLACEHOLDER' | translate"
+              />
+            </div>
+            <div class="form-field flex-grow">
+              <label>{{ 'ADMIN.BLACKLIST_REASON_LABEL' | translate }}</label>
+              <input
+                type="text"
+                [(ngModel)]="nouMotiuBlacklist"
+                name="nouMotiuBlacklist"
+                [placeholder]="'ADMIN.BLACKLIST_REASON_PLACEHOLDER' | translate"
+              />
+            </div>
+            <button
+              type="submit"
+              class="btn-blacklist-submit"
+              [disabled]="afegintBlacklist || !nouTelefonBlacklist.trim()"
+            >
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line>
+              </svg>
+              {{ afegintBlacklist ? ('ADMIN.BLACKLIST_ADDING' | translate) : ('ADMIN.BLACKLIST_ADD_BTN' | translate) }}
+            </button>
+          </form>
+        </div>
+
+        <div class="filter-bar" *ngIf="blacklist.length > 0">
+          <input
+            type="text"
+            [(ngModel)]="searchBlacklist"
+            placeholder="Cerca per telèfon, motiu o qui ho ha bloquejat..."
+            class="search-input"
+          />
+        </div>
+
+        <div class="table-wrapper" *ngIf="blacklistFiltrada.length > 0">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>{{ 'ADMIN.BLACKLIST_TABLE_PHONE' | translate }}</th>
+                <th>{{ 'ADMIN.BLACKLIST_TABLE_REASON' | translate }}</th>
+                <th>{{ 'ADMIN.BLACKLIST_TABLE_BY' | translate }}</th>
+                <th>{{ 'ADMIN.BLACKLIST_TABLE_DATE' | translate }}</th>
+                <th>{{ 'ADMIN.BLACKLIST_TABLE_ACTIONS' | translate }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let bl of blacklistFiltrada">
+                <td class="font-mono"><strong>{{ bl.id }}</strong></td>
+                <td>
+                  <span class="phone-highlight">🚫 {{ bl.telefon }}</span>
+                </td>
+                <td>{{ bl.motiu || '-' }}</td>
+                <td><span class="user-badge-tag admin">{{ bl.bloquejatPer || 'admin' }}</span></td>
+                <td>{{ bl.createdAt ? (bl.createdAt | date:'dd/MM/yyyy HH:mm') : '-' }}</td>
+                <td>
+                  <button
+                    type="button"
+                    class="btn-sm btn-unblock-action"
+                    (click)="eliminarDeBlacklist(bl)"
+                    title="Desbloquejar aquest número"
+                  >
+                    <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;">
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    {{ 'ADMIN.BLACKLIST_BTN_UNBLOCK' | translate }}
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="empty-box" *ngIf="blacklist.length === 0">
+          {{ 'ADMIN.BLACKLIST_EMPTY' | translate }}
         </div>
       </section>
 
@@ -631,6 +811,124 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'usuaris';
             <button type="button" class="btn-primary" (click)="guardarNovaPassword()" [disabled]="savingPassword">
               {{ savingPassword ? ('PERFIL.UPDATING_PASSWORD' | translate) : ('PERFIL.UPDATE_PASSWORD' | translate) }}
             </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================================== -->
+      <!-- MODAL D'ADMINISTRADOR: ASSIGNAR FOTOGRAFIA DE FONS PROFESSIONAL-->
+      <!-- ============================================================== -->
+      <div class="modal-backdrop" *ngIf="modalFotoObert" (click)="tancarModalFoto()">
+        <div class="modal-card modal-photo-card" (click)="$event.stopPropagation()">
+          <div class="modal-header">
+            <h3>
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#ff1744" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                <polyline points="21 15 16 10 5 21"></polyline>
+              </svg>
+              {{ 'ADMIN.PHOTO_MODAL_TITLE' | translate }}
+            </h3>
+            <button type="button" class="btn-close" (click)="tancarModalFoto()" aria-label="Tancar">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+
+          <div class="modal-body" *ngIf="usuariFotoSeleccionat">
+            <div class="user-highlight">
+              <div><strong>Professional:</strong> {{ usuariFotoSeleccionat.nom }}</div>
+              <div class="user-subinfo">
+                <span>ID: {{ usuariFotoSeleccionat.id }}</span>
+                <span>•</span>
+                <span>{{ usuariFotoSeleccionat.email }}</span>
+              </div>
+            </div>
+
+            <p class="photo-modal-desc">{{ 'ADMIN.PHOTO_MODAL_DESC' | translate }}</p>
+
+            <!-- Galeria d'oficis recomanats / Presets ràpids -->
+            <div class="form-group">
+              <label>{{ 'ADMIN.PHOTO_PRESETS_LABEL' | translate }}</label>
+              <div class="presets-gallery-grid">
+                <button
+                  type="button"
+                  class="preset-card-btn"
+                  *ngFor="let p of fotoPresets"
+                  [class.active-preset]="fotoUrlInput === p.url"
+                  (click)="seleccionarPresetFoto(p.url)"
+                >
+                  <img [src]="p.url" [alt]="p.nom" class="preset-thumbnail" />
+                  <span class="preset-label">{{ p.nom }}</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Entrada d'URL lliure -->
+            <div class="form-group">
+              <label for="adminFotoUrl">{{ 'ADMIN.PHOTO_INPUT_LABEL' | translate }}:</label>
+              <input
+                id="adminFotoUrl"
+                type="url"
+                [(ngModel)]="fotoUrlInput"
+                class="form-control"
+                [placeholder]="'ADMIN.PHOTO_INPUT_PLACEHOLDER' | translate"
+              />
+            </div>
+
+            <!-- Vista prèvia de la targeta de recomanats -->
+            <div class="form-group">
+              <label>{{ 'ADMIN.PHOTO_PREVIEW_LABEL' | translate }}</label>
+              <div
+                class="card-live-preview"
+                [style.background-image]="fotoUrlInput ? ('linear-gradient(180deg, rgba(15, 23, 42, 0.72) 0%, rgba(15, 23, 42, 0.90) 100%), url(' + fotoUrlInput + ')') : 'linear-gradient(135deg, #1e293b, #0f172a)'"
+              >
+                <div class="preview-tag-wrap">
+                  <span class="preview-verified-tag">VERIFICAT OFICIAL</span>
+                  <span class="preview-spec-tag">{{ getEspecialitatNom(usuariFotoSeleccionat) }}</span>
+                </div>
+                <h4 class="preview-pro-name">{{ usuariFotoSeleccionat.nom }}</h4>
+                <div class="preview-rating-row">
+                  <span class="preview-star-pill">★ 4.9</span>
+                  <span class="preview-stars">★★★★★</span>
+                  <span class="preview-opinions">(12 opinions)</span>
+                </div>
+                <p class="preview-pro-bio">
+                  {{ usuariFotoSeleccionat.bio || 'Servei professional certificat per AVISA amb atenció a València i comarques.' }}
+                </p>
+                <div class="preview-btn-fake">
+                  Veure perfil complet →
+                </div>
+              </div>
+            </div>
+
+            <div *ngIf="errorFoto" class="modal-error">
+              {{ errorFoto }}
+            </div>
+          </div>
+
+          <div class="modal-footer" style="justify-content: space-between;">
+            <div>
+              <button
+                *ngIf="usuariFotoSeleccionat?.foto"
+                type="button"
+                class="btn-danger-outline"
+                (click)="eliminarFoto()"
+                [disabled]="guardantFoto"
+              >
+                {{ 'ADMIN.PHOTO_REMOVE_BTN' | translate }}
+              </button>
+            </div>
+            <div style="display: flex; gap: 0.75rem;">
+              <button type="button" class="btn-secondary" (click)="tancarModalFoto()" [disabled]="guardantFoto">
+                {{ 'CONFIRM_MODAL.DEFAULT_CANCEL' | translate }}
+              </button>
+              <button type="button" class="btn-primary" (click)="guardarFoto()" [disabled]="guardantFoto">
+                {{ guardantFoto ? ('ADMIN.PHOTO_SAVING' | translate) : ('ADMIN.PHOTO_SAVE_BTN' | translate) }}
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -1092,6 +1390,197 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'usuaris';
       color: #ffffff;
       box-shadow: 0 4px 10px rgba(255, 23, 68, 0.35);
     }
+    .btn-foto {
+      background: rgba(37, 99, 235, 0.08);
+      color: #2563eb;
+      border: 1px solid rgba(37, 99, 235, 0.3);
+      padding: 0.35rem 0.65rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      font-weight: 800;
+      transition: all 0.2s;
+    }
+    .btn-foto:hover {
+      background: #2563eb;
+      color: #ffffff;
+      box-shadow: 0 4px 10px rgba(37, 99, 235, 0.35);
+    }
+    .user-name-cell {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      flex-wrap: wrap;
+    }
+    .badge-has-photo {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      background: rgba(16, 185, 129, 0.1);
+      color: #059669;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      font-size: 0.68rem;
+      font-weight: 800;
+      padding: 0.15rem 0.45rem;
+      border-radius: 4px;
+    }
+    .modal-photo-card {
+      max-width: 640px !important;
+    }
+    .photo-modal-desc {
+      font-size: 0.85rem;
+      color: #57554e;
+      margin: 0;
+      line-height: 1.45;
+    }
+    .presets-gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.55rem;
+      margin-top: 0.35rem;
+    }
+    .preset-card-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.4rem;
+      background: #faf8f4;
+      border: 2px solid #e5e0d7;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .preset-card-btn:hover {
+      border-color: #ff1744;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    }
+    .preset-card-btn.active-preset {
+      border-color: #ff1744;
+      background: rgba(255, 23, 68, 0.06);
+      box-shadow: 0 0 0 2px rgba(255, 23, 68, 0.2);
+    }
+    .preset-thumbnail {
+      width: 100%;
+      height: 48px;
+      object-fit: cover;
+      border-radius: 5px;
+    }
+    .preset-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #1c1c28;
+    }
+    .card-live-preview {
+      border-radius: 14px;
+      padding: 1.25rem;
+      background-size: cover !important;
+      background-position: center !important;
+      background-repeat: no-repeat !important;
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+      color: #ffffff;
+      min-height: 180px;
+      box-sizing: border-box;
+      transition: background 0.3s ease;
+    }
+    .preview-tag-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+    }
+    .preview-verified-tag {
+      background: #10b981;
+      color: #ffffff;
+      font-size: 0.68rem;
+      font-weight: 900;
+      padding: 0.2rem 0.5rem;
+      border-radius: 100px;
+      letter-spacing: 0.04em;
+    }
+    .preview-spec-tag {
+      background: rgba(255, 255, 255, 0.18);
+      backdrop-filter: blur(4px);
+      color: #ffffff;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 0.15rem 0.5rem;
+      border-radius: 6px;
+    }
+    .preview-pro-name {
+      margin: 0;
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #ffffff;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+    }
+    .preview-rating-row {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.8rem;
+    }
+    .preview-star-pill {
+      background: #fffbeb;
+      color: #b45309;
+      font-weight: 800;
+      padding: 0.1rem 0.4rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+    }
+    .preview-stars {
+      color: #fbbf24;
+      letter-spacing: 1px;
+    }
+    .preview-opinions {
+      color: #cbd5e1;
+      font-size: 0.75rem;
+    }
+    .preview-pro-bio {
+      margin: 0;
+      font-size: 0.82rem;
+      line-height: 1.4;
+      color: #e2e8f0;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .preview-btn-fake {
+      margin-top: auto;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.5rem 0.85rem;
+      background: #ff1744;
+      color: #ffffff;
+      font-size: 0.78rem;
+      font-weight: 800;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(255, 23, 68, 0.35);
+      width: fit-content;
+    }
+    .btn-danger-outline {
+      background: transparent;
+      color: #dc2626;
+      border: 1.5px solid #f87171;
+      padding: 0.6rem 1rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-danger-outline:hover {
+      background: #fee2e2;
+      border-color: #dc2626;
+    }
     .modal-backdrop {
       position: fixed;
       top: 0;
@@ -1279,6 +1768,118 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'usuaris';
       cursor: not-allowed;
     }
 
+    /* ESTILS ESPECÍFICS DE LA LLISTA NEGRA */
+    .badge-danger-count {
+      background: #ff1744;
+      color: #ffffff;
+      padding: 0.15rem 0.45rem;
+      border-radius: 10px;
+      font-size: 0.72rem;
+      font-weight: 800;
+      margin-left: 0.35rem;
+    }
+    .user-phone-cell {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+      align-items: flex-start;
+    }
+    .badge-blacklisted {
+      background: rgba(239, 68, 68, 0.12);
+      color: #dc2626;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+    .btn-blacklist-action {
+      background: rgba(239, 68, 68, 0.1);
+      color: #dc2626;
+      border-color: rgba(239, 68, 68, 0.3);
+    }
+    .btn-blacklist-action:hover {
+      background: #dc2626;
+      color: #ffffff;
+    }
+    .btn-unblock-action {
+      background: rgba(16, 185, 129, 0.1);
+      color: #059669;
+      border-color: rgba(16, 185, 129, 0.3);
+    }
+    .btn-unblock-action:hover {
+      background: #059669;
+      color: #ffffff;
+    }
+    .blacklist-add-card {
+      background: #ffffff;
+      border: 1px solid #e5e0d7;
+      border-radius: 12px;
+      padding: 1.25rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    }
+    .blacklist-add-form {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-end;
+      flex-wrap: wrap;
+    }
+    .blacklist-add-form .form-field {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      font-size: 0.8rem;
+      font-weight: 800;
+      color: #09090c;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .blacklist-add-form .form-field input {
+      padding: 0.65rem 0.85rem;
+      border: 1px solid #dcd7ce;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      outline: none;
+      min-width: 200px;
+      transition: border-color 0.2s;
+    }
+    .blacklist-add-form .form-field input:focus {
+      border-color: #ff1744;
+    }
+    .blacklist-add-form .flex-grow {
+      flex: 1;
+      min-width: 240px;
+    }
+    .btn-blacklist-submit {
+      background: #dc2626;
+      color: #ffffff;
+      border: none;
+      padding: 0.72rem 1.25rem;
+      border-radius: 8px;
+      font-weight: 800;
+      font-size: 0.88rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      transition: all 0.15s ease;
+      box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
+    }
+    .btn-blacklist-submit:hover:not(:disabled) {
+      background: #991b1b;
+      transform: translateY(-1px);
+    }
+    .btn-blacklist-submit:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .phone-highlight {
+      color: #dc2626;
+      font-weight: 800;
+      font-size: 0.92rem;
+    }
+
     @media (max-width: 768px) {
       .admin-container {
         padding: 1rem 0.5rem;
@@ -1358,8 +1959,10 @@ export class AdminPanellComponent implements OnInit {
   usuaris: Usuari[] = [];
   /** Total de notificacions i avisos */
   totalAvisos = 0;
+  /** Llista de tots els telèfons a la llista negra */
+  blacklist: BlacklistTelefon[] = [];
 
-  /** Pestanya actual seleccionada ('tasques' | 'ofertes' | 'incidencies' | 'usuaris') */
+  /** Pestanya actual seleccionada ('tasques' | 'ofertes' | 'incidencies' | 'usuaris' | 'blacklist') */
   tabActiva: AdminTab = 'tasques';
 
   /** Criteris de cerca i filtres */
@@ -1372,6 +1975,11 @@ export class AdminPanellComponent implements OnInit {
 
   searchUsuari = '';
   filtreRolUsuari = 'tots';
+
+  searchBlacklist = '';
+  nouTelefonBlacklist = '';
+  nouMotiuBlacklist = '';
+  afegintBlacklist = false;
 
   /** Estat de càrrega */
   loading = true;
@@ -1388,12 +1996,32 @@ export class AdminPanellComponent implements OnInit {
   savingPassword = false;
   errorModalPassword = '';
 
+  /** Estat del modal d'assignació de fotografia de fons per a professionals recomanats */
+  modalFotoObert = false;
+  usuariFotoSeleccionat: Usuari | null = null;
+  fotoUrlInput = '';
+  guardantFoto = false;
+  errorFoto = '';
+
+  /** Galeria de fotografies recomanades per a diferents oficis de la llar */
+  readonly fotoPresets = [
+    { nom: 'Lampisteria', url: 'https://images.unsplash.com/photo-1581244277943-fe4a9c777189?w=800&auto=format&fit=crop&q=80' },
+    { nom: 'Electricitat', url: 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=800&auto=format&fit=crop&q=80' },
+    { nom: 'Pintura', url: 'https://images.unsplash.com/photo-1589939705384-5185137a7f0f?w=800&auto=format&fit=crop&q=80' },
+    { nom: 'Climatització', url: 'https://images.unsplash.com/photo-1621905252507-b35492cc74b4?w=800&auto=format&fit=crop&q=80' },
+    { nom: 'Fusteria', url: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=800&auto=format&fit=crop&q=80' },
+    { nom: 'Reformes', url: 'https://images.unsplash.com/photo-1541888946425-d0fbb186156f?w=800&auto=format&fit=crop&q=80' },
+    { nom: 'Neteja', url: 'https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=800&auto=format&fit=crop&q=80' },
+    { nom: 'Jardineria', url: 'https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?w=800&auto=format&fit=crop&q=80' }
+  ];
+
   constructor(
     private readonly tascaService: TascaService,
     private readonly ofertaService: OfertaService,
     private readonly incidenciaService: IncidenciaService,
     private readonly usuariService: UsuariService,
     private readonly avisService: AvisService,
+    private readonly blacklistService: BlacklistService,
     private readonly authService: AuthService,
     private readonly confirmService: ConfirmService,
     private readonly router: Router
@@ -1456,6 +2084,11 @@ export class AdminPanellComponent implements OnInit {
     this.avisService.getAll().subscribe({
       next: (a) => this.totalAvisos = a.length,
       error: () => this.totalAvisos = 0
+    });
+
+    this.blacklistService.getAll().subscribe({
+      next: (bl) => this.blacklist = bl,
+      error: () => this.blacklist = []
     });
   }
 
@@ -1784,6 +2417,101 @@ export class AdminPanellComponent implements OnInit {
   }
 
   /**
+   * Obre el modal per assignar o modificar la fotografia de fons del professional seleccionat.
+   */
+  obrirModalFoto(u: Usuari): void {
+    this.usuariFotoSeleccionat = u;
+    this.fotoUrlInput = u.foto || '';
+    this.errorFoto = '';
+    this.modalFotoObert = true;
+  }
+
+  /**
+   * Tanca el modal de gestió de fotografia.
+   */
+  tancarModalFoto(): void {
+    this.modalFotoObert = false;
+    this.usuariFotoSeleccionat = null;
+    this.fotoUrlInput = '';
+    this.errorFoto = '';
+  }
+
+  /**
+   * Selecciona una imatge preset de la galeria d'oficis.
+   */
+  seleccionarPresetFoto(url: string): void {
+    this.fotoUrlInput = url;
+  }
+
+  /**
+   * Determina el nom de l'ofici del professional per mostrar a la vista prèvia.
+   */
+  getEspecialitatNom(u: Usuari | null): string {
+    if (!u) return 'Servei Professional';
+    const nom = u.nom.toLowerCase();
+    if (nom.includes('lampist') || nom.includes('fontan')) return 'Lampisteria';
+    if (nom.includes('electr')) return 'Electricitat';
+    if (nom.includes('pint')) return 'Pintura i Decoració';
+    if (nom.includes('clima') || nom.includes('aire')) return 'Climatització';
+    if (nom.includes('fust') || nom.includes('carpint')) return 'Fusteria';
+    if (nom.includes('reforma') || nom.includes('palet')) return 'Reformes i Paleteria';
+    return 'Professional Certificat';
+  }
+
+  /**
+   * Guarda la fotografia al backend per al professional seleccionat.
+   */
+  guardarFoto(): void {
+    if (!this.usuariFotoSeleccionat) return;
+    this.guardantFoto = true;
+    this.errorFoto = '';
+
+    const url = this.fotoUrlInput.trim();
+    const userId = this.usuariFotoSeleccionat.id;
+    const userNom = this.usuariFotoSeleccionat.nom;
+
+    this.usuariService.assignarFoto(userId, url).subscribe({
+      next: (actualitzat) => {
+        this.guardantFoto = false;
+        this.usuaris = this.usuaris.map(u => u.id === actualitzat.id ? { ...u, foto: actualitzat.foto } : u);
+        this.successMsg = `S'ha assignat la fotografia de fons a ${userNom} correctament!`;
+        setTimeout(() => this.successMsg = '', 4500);
+        this.tancarModalFoto();
+      },
+      error: (err) => {
+        this.guardantFoto = false;
+        this.errorFoto = err?.error?.message || 'Error en actualitzar la fotografia del professional.';
+      }
+    });
+  }
+
+  /**
+   * Elimina la fotografia assignada al professional.
+   */
+  eliminarFoto(): void {
+    if (!this.usuariFotoSeleccionat) return;
+    this.guardantFoto = true;
+    this.errorFoto = '';
+
+    const userId = this.usuariFotoSeleccionat.id;
+    const userNom = this.usuariFotoSeleccionat.nom;
+
+    this.usuariService.assignarFoto(userId, '').subscribe({
+      next: (actualitzat) => {
+        this.guardantFoto = false;
+        this.usuaris = this.usuaris.map(u => u.id === actualitzat.id ? { ...u, foto: undefined } : u);
+        this.successMsg = `S'ha eliminat la fotografia de fons de ${userNom}.`;
+        setTimeout(() => this.successMsg = '', 4500);
+        this.tancarModalFoto();
+      },
+      error: (err) => {
+        this.guardantFoto = false;
+        this.errorFoto = err?.error?.message || 'Error en eliminar la fotografia.';
+      }
+    });
+  }
+
+  /**
    * Acció d'administrador: elimina definitivament un usuari del sistema.
    * Protegeix el compte d'administrador principal contra eliminació accidental.
    * @param u Usuari seleccionat per a ser donat de baixa
@@ -1816,6 +2544,157 @@ export class AdminPanellComponent implements OnInit {
       },
       error: () => {
         this.errorMsg = `Error en eliminar l'usuari "${u.nom}". Comprova els permisos del servidor.`;
+        setTimeout(() => this.errorMsg = '', 4500);
+      }
+    });
+  }
+
+  // ==========================================
+  // MÈTODES DE GESTIÓ DE LA LLISTA NEGRA (BLACKLIST)
+  // ==========================================
+
+  /**
+   * Filtra els telèfons de la llista negra segons el text de cerca introduït.
+   */
+  get blacklistFiltrada(): BlacklistTelefon[] {
+    if (!this.searchBlacklist.trim()) return this.blacklist;
+    const q = this.searchBlacklist.toLowerCase();
+    return this.blacklist.filter(b =>
+      b.telefon?.toLowerCase().includes(q) ||
+      b.motiu?.toLowerCase().includes(q) ||
+      b.bloquejatPer?.toLowerCase().includes(q) ||
+      b.id?.toLowerCase().includes(q)
+    );
+  }
+
+  /**
+   * Comprova ràpidament si un número de telèfon està bloquejat a la llista negra.
+   */
+  isTelefonBloquejat(telefon: string | undefined): boolean {
+    if (!telefon) return false;
+    const clean = telefon.trim();
+    const digits = clean.replace(/[^0-9]/g, '');
+    const normDigits = digits.startsWith('0034')
+      ? digits.slice(4)
+      : (digits.startsWith('34') && digits.length >= 11 ? digits.slice(2) : digits);
+
+    return this.blacklist.some(b => {
+      if (!b.telefon) return false;
+      const bClean = b.telefon.trim();
+      if (bClean.toLowerCase() === clean.toLowerCase()) return true;
+      const bDigits = bClean.replace(/[^0-9]/g, '');
+      const bNorm = bDigits.startsWith('0034')
+        ? bDigits.slice(4)
+        : (bDigits.startsWith('34') && bDigits.length >= 11 ? bDigits.slice(2) : bDigits);
+      return normDigits.length > 0 && bNorm === normDigits;
+    });
+  }
+
+  /**
+   * Afegeix un nou telèfon a la llista negra mitjançant el formulari administratiu.
+   */
+  afegirABlacklist(): void {
+    const tel = this.nouTelefonBlacklist.trim();
+    if (!tel) return;
+
+    this.afegintBlacklist = true;
+    this.blacklistService.add(tel, this.nouMotiuBlacklist.trim()).subscribe({
+      next: (nou) => {
+        this.afegintBlacklist = false;
+        this.nouTelefonBlacklist = '';
+        this.nouMotiuBlacklist = '';
+        this.blacklist = [nou, ...this.blacklist];
+        this.successMsg = `El telèfon ${nou.telefon} s'ha afegit a la llista negra correctament.`;
+        setTimeout(() => this.successMsg = '', 4500);
+      },
+      error: (err) => {
+        this.afegintBlacklist = false;
+        this.errorMsg = err?.error?.message || 'Error en afegir el telèfon a la llista negra.';
+        setTimeout(() => this.errorMsg = '', 4500);
+      }
+    });
+  }
+
+  /**
+   * Elimina un registre de telèfon de la llista negra amb confirmació prèvia.
+   */
+  async eliminarDeBlacklist(bl: BlacklistTelefon): Promise<void> {
+    const conf = await this.confirmService.confirm({
+      title: 'ADMIN.BLACKLIST_BTN_UNBLOCK',
+      message: `Vols desbloquejar el número de telèfon "${bl.telefon}" de la llista negra? L'usuari podrà tornar a utilitzar-lo a la plataforma.`,
+      confirmText: 'ADMIN.BLACKLIST_BTN_UNBLOCK',
+      cancelText: 'CONFIRM_MODAL.DEFAULT_CANCEL',
+      isDanger: false,
+      icon: 'question'
+    });
+    if (!conf) return;
+
+    this.blacklistService.remove(bl.id).subscribe({
+      next: () => {
+        this.blacklist = this.blacklist.filter(b => b.id !== bl.id && b.telefon !== bl.telefon);
+        this.successMsg = `El telèfon ${bl.telefon} ha estat desbloquejat amb èxit.`;
+        setTimeout(() => this.successMsg = '', 4500);
+      },
+      error: (err) => {
+        this.errorMsg = err?.error?.message || 'Error en desbloquejar el telèfon.';
+        setTimeout(() => this.errorMsg = '', 4500);
+      }
+    });
+  }
+
+  /**
+   * Acció ràpida per bloquejar el telèfon d'un usuari des del llistat d'usuaris.
+   */
+  async bloquejarTelefonUsuari(u: Usuari): Promise<void> {
+    if (!u.telefon) return;
+    const conf = await this.confirmService.confirm({
+      title: 'ADMIN.BTN_BLOCK_PHONE',
+      message: `Vols afegir el número de telèfon "${u.telefon}" de l'usuari "${u.nom}" a la llista negra?`,
+      confirmText: 'ADMIN.BLACKLIST_ADD_BTN',
+      cancelText: 'CONFIRM_MODAL.DEFAULT_CANCEL',
+      isDanger: true,
+      icon: 'danger'
+    });
+    if (!conf) return;
+
+    this.blacklistService.add(u.telefon, `Compte d'usuari: ${u.nom} (${u.email})`).subscribe({
+      next: (nou) => {
+        this.blacklist = [nou, ...this.blacklist];
+        this.successMsg = `El telèfon de ${u.nom} (${nou.telefon}) ha estat bloquejat a la llista negra.`;
+        setTimeout(() => this.successMsg = '', 4500);
+      },
+      error: (err) => {
+        this.errorMsg = err?.error?.message || 'Error en bloquejar el telèfon.';
+        setTimeout(() => this.errorMsg = '', 4500);
+      }
+    });
+  }
+
+  /**
+   * Desbloqueja un telèfon directament a partir del número.
+   */
+  async desbloquejarPerTelefon(telefon: string): Promise<void> {
+    const item = this.blacklist.find(b => b.telefon === telefon);
+    const idOrPhone = item ? item.id : telefon;
+
+    const conf = await this.confirmService.confirm({
+      title: 'ADMIN.BTN_UNBLOCK_PHONE',
+      message: `Vols desbloquejar el número de telèfon "${telefon}" de la llista negra?`,
+      confirmText: 'ADMIN.BLACKLIST_BTN_UNBLOCK',
+      cancelText: 'CONFIRM_MODAL.DEFAULT_CANCEL',
+      isDanger: false,
+      icon: 'question'
+    });
+    if (!conf) return;
+
+    this.blacklistService.remove(idOrPhone).subscribe({
+      next: () => {
+        this.blacklist = this.blacklist.filter(b => b.telefon !== telefon && b.id !== idOrPhone);
+        this.successMsg = `El telèfon ${telefon} s'ha desbloquejat correctament.`;
+        setTimeout(() => this.successMsg = '', 4500);
+      },
+      error: (err) => {
+        this.errorMsg = err?.error?.message || 'Error en desbloquejar el telèfon.';
         setTimeout(() => this.errorMsg = '', 4500);
       }
     });

@@ -188,7 +188,12 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
 
           <!-- Pista lliscant lateral (carousel track) -->
           <div class="pro-carousel-track" #proCarouselTrack>
-            <article class="pro-carousel-card" *ngFor="let pro of verifiedProfessionals">
+            <article
+              class="pro-carousel-card"
+              *ngFor="let pro of verifiedProfessionals"
+              [class.has-custom-bg]="!!pro.foto"
+              [style.backgroundImage]="getProCardBackground(pro)"
+            >
               <div class="pro-card-header">
                 <!-- LOGO DE L'EMPRESA AMB SEGELL DE VERIFICACIÓ -->
                 <div class="pro-company-logo" [style.background]="getCompanyLogo(pro).bg">
@@ -2710,6 +2715,44 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         border-color: #10b981;
       }
 
+      .pro-carousel-card.has-custom-bg {
+        background-size: cover !important;
+        background-position: center center !important;
+        background-repeat: no-repeat !important;
+        border-color: rgba(255, 255, 255, 0.25);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+        position: relative;
+      }
+
+      .pro-carousel-card.has-custom-bg .pro-name {
+        color: #ffffff;
+      }
+
+      .pro-carousel-card.has-custom-bg .pro-name-link {
+        color: #ffffff;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.7);
+      }
+
+      .pro-carousel-card.has-custom-bg .pro-name-link:hover {
+        color: #ff1744;
+      }
+
+      .pro-carousel-card.has-custom-bg .pro-bio {
+        color: #e2e8f0;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+      }
+
+      .pro-carousel-card.has-custom-bg .rating-count {
+        color: #cbd5e1;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+      }
+
+      .pro-carousel-card.has-custom-bg:hover {
+        border-color: #ff1744;
+        box-shadow: 0 14px 34px rgba(255, 23, 68, 0.35);
+        transform: translateY(-5px);
+      }
+
       .pro-card-header {
         display: flex;
         align-items: center;
@@ -2956,6 +2999,12 @@ export class MainComponent implements OnInit {
     const track = this.proCarouselTrack.nativeElement;
     const scrollAmount = 300 * direction;
     track.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+  }
+
+  /** Retorna el fons degradat + fotografia assignada per a la targeta del professional recomanat */
+  getProCardBackground(pro: Usuari): string {
+    if (!pro.foto) return '';
+    return `linear-gradient(180deg, rgba(15, 23, 42, 0.72) 0%, rgba(15, 23, 42, 0.90) 100%), url('${pro.foto}')`;
   }
 
   /** Genera el logo representatiu de l'empresa / professional amb inicials i paleta corporativa */

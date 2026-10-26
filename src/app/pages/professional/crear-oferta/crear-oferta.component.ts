@@ -5,6 +5,8 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { OfertaService, CreateOfertaDto } from '../../../services/oferta.service';
+import { PressupostService } from '../../../services/pressupost.service';
+import { CrearPressupostRequest } from '../../../models/pressupost.model';
 import { TascaService } from '../../../services/tasca.service';
 import { IncidenciaService } from '../../../services/incidencia.service';
 import { Tasca } from '../../../models/tasca.model';
@@ -643,6 +645,7 @@ export class CrearOfertaComponent implements OnInit {
 
   constructor(
     private readonly ofertaService: OfertaService,
+    private readonly pressupostService: PressupostService,
     private readonly tascaService: TascaService,
     private readonly incidenciaService: IncidenciaService,
     private readonly authService: AuthService,
@@ -826,24 +829,21 @@ export class CrearOfertaComponent implements OnInit {
     this.errorMessage = '';
     this.successMessage = '';
 
-    const selectedTask = this.availableTasks.find(t => t.id === this.formData.tascaId);
     const user = this.authService.getCurrentUser();
-    const payload: CreateOfertaDto = {
-      tascaId: this.formData.tascaId,
+    const payload: CrearPressupostRequest = {
       incidenciaId: this.formData.tascaId,
-      professional: user ? user.nom : (this.formData.professional || 'Professional AVISA'),
-      categoria: selectedTask?.categoria || 'Altres Serveis',
-      price: this.formData.price.startsWith('€') ? this.formData.price : ('€' + this.formData.price.replace('€', '').trim()),
-      note: this.formData.note,
-      estat: 'Pendent'
+      professionalId: user ? user.id : undefined,
+      professionalNom: user ? user.nom : (this.formData.professional || 'Professional AVISA'),
+      preu: this.formData.price.startsWith('€') ? this.formData.price : ('€' + this.formData.price.replace('€', '').trim()),
+      descripcio: this.formData.note
     };
 
-    this.ofertaService.create(payload).subscribe({
+    this.pressupostService.create(payload).subscribe({
       next: () => {
         this.submitting = false;
-        this.successMessage = 'Pressupost enviat al client correctament! Quan el client l\'accepti, passarà a ser una Tasca en curs.';
+        this.successMessage = 'Pressupost enviat al client correctament! És estrictament privat i no es publicarà com a oferta. Quan el client l\'accepti, es convertirà en una Tasca en curs.';
         setTimeout(() => {
-          this.router.navigate([this.getNavUrl('/tasques-ofertes')], { queryParams: { tipus: 'ofertes' } });
+          this.router.navigate([this.getNavUrl('/tasques-ofertes')], { queryParams: { tipus: 'incidencies' } });
         }, 1200);
       },
       error: () => {

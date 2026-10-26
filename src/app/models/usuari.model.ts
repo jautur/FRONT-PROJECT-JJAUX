@@ -39,4 +39,7 @@ export interface Usuari {
 
   /** Indica si hi ha una sol·licitud de verificació pendent de comprovació telefònica */
   sollicitudVerificacio?: boolean;
+
+  /** Fotografia o imatge de fons de la targeta del professional recomanat */
+  foto?: string;
 }

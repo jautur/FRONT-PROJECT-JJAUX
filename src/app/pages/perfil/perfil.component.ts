@@ -2184,9 +2184,11 @@ export class PerfilComponent implements OnInit {
           this.mitjanaPuntuacio = null;
         }
 
-        // 3. Ofertes i pressupostos associats a l'usuari
+        // 3. Ofertes públiques associades a l'usuari (els pressupostos privats no es barregen amb ofertes)
         const allUserTaskIds = new Set(this.tasquesUsuari.map(t => t.id));
         this.ofertesUsuari = (allOffers ?? []).filter(o => {
+          if (o.categoria === 'Pressupost') return false;
+          if ((o as any).incidenciaId) return false;
           const oPro = (o.professionalNom || o.professional || '').toLowerCase();
           const isAuthor = oPro && (oPro === nomLower || oPro === idLower);
           const isRecipient = !!(o.tascaId && allUserTaskIds.has(o.tascaId));

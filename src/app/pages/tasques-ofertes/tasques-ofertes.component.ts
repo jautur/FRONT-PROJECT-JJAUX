@@ -2573,7 +2573,13 @@ export class TasquesOfertesComponent implements OnInit {
    * Sols tenen professional, no tenen client assignat encara.
    */
   get ofertesFiltrades() {
-    let llista = this.dashboard?.offers ?? [];
+    let llista = (this.dashboard?.offers ?? []).filter((o) => {
+      // Un pressupost NO és una oferta de servei pública: pertany a la seua pròpia taula i és estrictament privat
+      if ((o as any).categoria === 'Pressupost') return false;
+      if ((o as any).incidenciaId) return false;
+      if (o.tascaId && o.tascaId !== 'standalone' && (o.tascaId.startsWith('I-') || o.tascaId.startsWith('T-'))) return false;
+      return true;
+    });
 
     if (this.searchQuery.trim()) {
       const q = this.searchQuery.toLowerCase().trim();
