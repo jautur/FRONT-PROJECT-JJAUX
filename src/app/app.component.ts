@@ -6,6 +6,9 @@ import { AuthService } from './core/services/auth.service';
 import { TranslationService } from './core/services/translation.service';
 import { TranslatePipe } from './core/pipes/translate.pipe';
 import { AvisService } from './services/avis.service';
+import { ConfirmService } from './core/services/confirm.service';
+import { PwaService } from './core/services/pwa.service';
+import { PwaInstallPromptComponent } from './shared/components/pwa-install-prompt/pwa-install-prompt.component';
 
 /**
  * Component principal arrel de l'aplicació AVISA.
@@ -15,11 +18,12 @@ import { AvisService } from './services/avis.service';
  * 3. En fer scroll, canvi del fons del títol a color llis.
  * 4. Obertura i ocultació del menú a l'esquerra amb els apartats necessaris.
  * 5. Indicador i botó flotant d'avisos pendents a baix a la dreta.
+ * 6. Guia interactiva d'instal·lació PWA ('Añadir a pantalla de inicio').
  */
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive, TranslatePipe],
+  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive, TranslatePipe, PwaInstallPromptComponent],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
@@ -53,6 +57,15 @@ export class AppComponent implements OnInit, OnDestroy {
   /** Estat del desplegable de vista prèvia de perfil */
   perfilDropdownObert = false;
 
+  /** Controla la visibilitat de la barra de navegació inferior de l'aplicació (/app) */
+  showBottomNav = false;
+
+  /** Indica si la sessió de l'usuari està en mode aplicació interactiva */
+  isAppMode = false;
+
+  /** Indica si la ruta actual és la secció /app */
+  isAppPage = false;
+
   /** Interval de refresc automàtic dels avisos en segon pla */
   private avisosInterval: any;
 
@@ -62,6 +75,8 @@ export class AppComponent implements OnInit, OnDestroy {
   constructor(
     public readonly authService: AuthService,
     public readonly translationService: TranslationService,
+    public readonly confirmService: ConfirmService,
+    public readonly pwaService: PwaService,
     private readonly avisService: AvisService,
     private readonly router: Router
   ) {
@@ -69,8 +84,26 @@ export class AppComponent implements OnInit, OnDestroy {
       if (event instanceof NavigationEnd) {
         this.perfilDropdownObert = false;
         const url = event.urlAfterRedirects || '';
-        this.isHomePage = url === '/' || url === '' || url.startsWith('/?');
-        this.isAvisosPage = url.startsWith('/avisos');
+        this.isHomePage = (url === '/' || url === '' || url.startsWith('/?') || url === '/inici' || url.startsWith('/inici?') || url.startsWith('/inici#')) && url.includes('landing=true');
+        this.isAvisosPage = url.startsWith('/avisos') || url.startsWith('/app/avisos');
+        this.isAppPage = url.startsWith('/app');
+
+        // Detecció d'entorn: Versió Web (/inici) vs Versió App (/app i PWA)
+        if (url.startsWith('/app') || this.pwaService.isStandalone() || this.pwaService.checkIfStandalone()) {
+          this.isAppMode = true;
+          this.showBottomNav = true;
+          if (typeof window !== 'undefined') {
+            try { sessionStorage.setItem('avisa_app_mode', 'true'); } catch {}
+          }
+        } else {
+          // Qualsevol ruta web estàndard (/inici, /tasques-ofertes, /perfil, /blog, etc.)
+          this.isAppMode = false;
+          this.showBottomNav = false;
+          if (typeof window !== 'undefined') {
+            try { sessionStorage.removeItem('avisa_app_mode'); localStorage.removeItem('avisa_app_mode'); } catch {}
+          }
+        }
+
         this.actualitzarAvisos();
         if (!this.isHomePage) {
           // A les pàgines secundàries la barra superior està disponible directament
@@ -267,5 +300,153 @@ export class AppComponent implements OnInit, OnDestroy {
     this.authService.logout();
     this.avisosPendents = 0;
     this.router.navigate(['/login'], { queryParams: { message: 'Sessió tancada correctament.' } });
+  }
+
+  /**
+   * Navega directament a la versió App mòbil (/app) i actualitza l'estat d'entorn.
+   */
+  anarAVersioApp(event?: Event): void {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    this.tancarMenu();
+    this.isAppMode = true;
+    this.isAppPage = true;
+    this.showBottomNav = true;
+
+    if (typeof window !== 'undefined') {
+      try {
+        sessionStorage.setItem('avisa_app_mode', 'true');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } catch {}
+    }
+
+    const currentUrl = this.router.url || '';
+    let target = '/app';
+    if (currentUrl && !currentUrl.startsWith('/app') && currentUrl !== '/' && currentUrl !== '/inici' && !currentUrl.startsWith('/inici?')) {
+      target = `/app${currentUrl.startsWith('/') ? '' : '/'}${currentUrl}`;
+    }
+    this.router.navigateByUrl(target);
+  }
+
+  /**
+   * Navega directament a la versió Web estàndard (/inici) i restableix l'estat d'entorn.
+   */
+  anarAVersioWeb(event?: Event): void {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    this.tancarMenu();
+    this.isAppMode = false;
+    this.isAppPage = false;
+    this.showBottomNav = false;
+
+    if (typeof window !== 'undefined') {
+      try {
+        sessionStorage.removeItem('avisa_app_mode');
+        localStorage.removeItem('avisa_app_mode');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } catch {}
+    }
+
+    const currentUrl = this.router.url || '';
+    let target = '/inici';
+    if (currentUrl.startsWith('/app/')) {
+      const stripped = currentUrl.replace('/app/', '/');
+      target = stripped === '/inici' ? '/inici' : stripped;
+    }
+    this.router.navigateByUrl(target);
+  }
+
+  /**
+   * Retorna la ruta adaptada segons l'entorn de navegació actiu:
+   * - A l'entorn App mòbil (/app o rutes amb prefix /app/...), es manté el context /app.
+   * - A l'entorn Web (/inici, /tasques-ofertes, etc.), s'utilitzen les rutes web estàndard.
+   */
+  getNavUrl(targetPath: string): string {
+    const isApp = this.isAppMode || this.isAppPage || (this.router.url && this.router.url.startsWith('/app'));
+    if (!isApp) {
+      return targetPath === '/' ? '/inici' : targetPath;
+    }
+    // Entorn App:
+    if (targetPath === '/' || targetPath === '/inici' || targetPath === '/app' || targetPath === '/app/inici') {
+      return '/app';
+    }
+    if (targetPath.startsWith('/app/')) {
+      return targetPath;
+    }
+    return targetPath.startsWith('/') ? `/app${targetPath}` : `/app/${targetPath}`;
+  }
+
+  /**
+   * Determina si la pestanya 'TASQUES' està activa (/tasques-ofertes o gestió de tasques).
+   */
+  isTasquesActive(): boolean {
+    const url = this.router.url || '';
+    return url.startsWith('/app/tasques-ofertes') ||
+           url.startsWith('/tasques-ofertes') ||
+           url.startsWith('/app/client/les-meves-tasques') ||
+           url.startsWith('/client/les-meves-tasques') ||
+           url.startsWith('/app/professional/les-meves-ofertes') ||
+           url.startsWith('/professional/les-meves-ofertes') ||
+           url.startsWith('/app/tasca-detall') ||
+           url.startsWith('/tasca-detall');
+  }
+
+  /**
+   * Determina si la pestanya 'PERFIL' està activa (/perfil).
+   */
+  isPerfilActive(): boolean {
+    const url = this.router.url || '';
+    return url.startsWith('/app/perfil') || url.startsWith('/perfil');
+  }
+
+  /**
+   * Determina si la pestanya 'INICI' està activa (/app, /inici o arrel).
+   */
+  isIniciActive(): boolean {
+    const url = this.router.url || '';
+    return url === '/app' ||
+           url.startsWith('/app?') ||
+           url.startsWith('/app#') ||
+           url.startsWith('/app/inici') ||
+           url === '/inici' ||
+           url.startsWith('/inici?') ||
+           url.startsWith('/inici#') ||
+           url === '/';
+  }
+
+  /**
+   * Determina si la pestanya 'AVISOS' està activa (/avisos).
+   */
+  isAvisosActive(): boolean {
+    const url = this.router.url || '';
+    return url.startsWith('/app/avisos') || url.startsWith('/avisos');
+  }
+
+  /**
+   * Gestiona el clic al botó inferior d'INICI per fer lliscar suaument cap a dalt si ja s'està a Inici.
+   */
+  onIniciClick(event?: MouseEvent): void {
+    const url = this.router.url || '';
+    if (url === '/inici' || url === '/' || url === '/app' || url.startsWith('/inici?') || url.startsWith('/app?')) {
+      if (typeof window !== 'undefined') {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+  }
+
+  /**
+   * Determina si s'ha de mostrar el botó superior d'usuari/perfil a la capçalera.
+   * A la secció /app i a l'entorn de l'aplicació interactiva (on ja hi ha la barra de navegació
+   * inferior amb accés directe a PERFIL), el botó superior d'usuari s'elimina.
+   */
+  get showTopProfileBtn(): boolean {
+    if (this.showBottomNav) {
+      return false;
+    }
+    return !this.isHomePage;
   }
 }

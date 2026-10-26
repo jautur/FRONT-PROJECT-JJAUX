@@ -1,6 +1,6 @@
 node_modules
 .angular
 dist
-frontend.log
-frontend.pid
+*.log
+*.pid
 *.session.sql

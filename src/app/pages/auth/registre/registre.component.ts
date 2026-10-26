@@ -5,6 +5,8 @@ import { Router, RouterLink } from '@angular/router';
 import { AuthService, RegisterData } from '../../../core/services/auth.service';
 import { TermesModalComponent } from '../termes-modal/termes-modal.component';
 
+import { TranslatePipe } from '../../../core/pipes/translate.pipe';
+
 /**
  * Component de Registre d'usuaris (/registre).
  * Implementa el model d'herència de AVISA:
@@ -22,28 +24,28 @@ import { TermesModalComponent } from '../termes-modal/termes-modal.component';
 @Component({
   selector: 'app-registre',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, TermesModalComponent],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, TermesModalComponent, TranslatePipe],
   template: `
     <section class="auth-card">
-      <h1>Crear un compte</h1>
-      <p class="subtitle">Registra't a AVISA com a client o com a professional.</p>
+      <h1>{{ 'AUTH.REGISTER.TITLE' | translate }}</h1>
+      <p class="subtitle">{{ 'AUTH.REGISTER.SUBTITLE' | translate }}</p>
 
       <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
-        {{ errorMessage }}
+        {{ errorMessage | translate }}
       </div>
 
       <form [formGroup]="registerForm" (ngSubmit)="onRegister()">
         <!-- Selecció de Tipus de Compte (Herència) -->
         <div class="field-wrap">
-          <span class="field-label">Tipus de compte</span>
+          <span class="field-label">{{ 'AUTH.REGISTER.ACCOUNT_TYPE' | translate }}</span>
           <div class="role-selector">
             <button
               type="button"
               class="role-btn"
               [class.active]="registerForm.get('rol')?.value === 'client'"
               (click)="onSelectRole('client')">
-              <strong>Client</strong>
-              <small>Publicar feines i peticions</small>
+              <strong>{{ 'AUTH.REGISTER.ROLE_CLIENT_TITLE' | translate }}</strong>
+              <small>{{ 'AUTH.REGISTER.ROLE_CLIENT_SUB' | translate }}</small>
             </button>
 
             <button
@@ -51,8 +53,8 @@ import { TermesModalComponent } from '../termes-modal/termes-modal.component';
               class="role-btn"
               [class.active]="registerForm.get('rol')?.value === 'professional'"
               (click)="onSelectRole('professional')">
-              <strong>Professional</strong>
-              <small>Client + Resoldre peticions (requereix telèfon)</small>
+              <strong>{{ 'AUTH.REGISTER.ROLE_PRO_TITLE' | translate }}</strong>
+              <small>{{ 'AUTH.REGISTER.ROLE_PRO_SUB' | translate }}</small>
             </button>
           </div>
         </div>
@@ -60,35 +62,39 @@ import { TermesModalComponent } from '../termes-modal/termes-modal.component';
         <!-- Informació pedagògica del rol seleccionat -->
         <div class="role-info-box" [ngClass]="registerForm.get('rol')?.value">
           <div *ngIf="registerForm.get('rol')?.value === 'client'">
-            ℹ️ Com a <strong>Client</strong>, podràs publicar peticions de feina i revisar pressupostos. Només requereix correu i contrasenya.
+            {{ 'AUTH.REGISTER.CLIENT_INFO' | translate }}
           </div>
           <div *ngIf="registerForm.get('rol')?.value === 'professional'">
-            ℹ️ Com a <strong>Professional</strong> (fill del client), podràs fer tot el que fa el client (publicar feines) i a més <strong>resoldre peticions</strong> d'altres usuaris. Requereix telèfon obligatori.
+            {{ 'AUTH.REGISTER.PRO_INFO' | translate }}
             <div style="margin-top: 0.5rem; color: #166534; font-weight: 600; display: flex; align-items: flex-start; gap: 0.35rem; line-height: 1.45;">
-              <span>🎉</span>
-              <span><strong>Promoció de llançament:</strong> El teu primer any a AVISA és 100% gratuït (0€ quotes fixes i 0% comissions). La plataforma es finança de la publicitat i, més endavant, dels plans i funcionalitats prèmium opcionals que s'hi adheriran!</span>
+              <span style="flex-shrink: 0; margin-top: 1px;">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#16a34a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                </svg>
+              </span>
+              <span><strong>{{ 'AUTH.REGISTER.PRO_PROMO_TITLE' | translate }}</strong> {{ 'AUTH.REGISTER.PRO_PROMO_DESC' | translate }}</span>
             </div>
           </div>
         </div>
 
         <!-- Nom complet -->
         <label>
-          Nom complet o comercial *
+          {{ 'AUTH.REGISTER.NAME_LABEL' | translate }}
           <input
             type="text"
             formControlName="nom"
             required
-            placeholder="Ex: Joan Garcia"
+            [placeholder]="'AUTH.REGISTER.NAME_PLACEHOLDER' | translate"
             [class.input-error]="submitted && registerForm.get('nom')?.invalid"
           />
           <small *ngIf="submitted && registerForm.get('nom')?.hasError('required')" class="field-error-text">
-            El nom és obligatori.
+            {{ 'AUTH.REGISTER.NAME_REQUIRED' | translate }}
           </small>
         </label>
 
         <!-- Correu electrònic -->
         <label>
-          Correu electrònic *
+          {{ 'AUTH.REGISTER.EMAIL_LABEL' | translate }}
           <input
             type="email"
             formControlName="email"
@@ -99,16 +105,16 @@ import { TermesModalComponent } from '../termes-modal/termes-modal.component';
             [class.input-error]="submitted && registerForm.get('email')?.invalid"
           />
           <small *ngIf="submitted && registerForm.get('email')?.hasError('required')" class="field-error-text">
-            El correu electrònic és obligatori.
+            {{ 'AUTH.REGISTER.EMAIL_REQUIRED' | translate }}
           </small>
           <small *ngIf="submitted && registerForm.get('email')?.hasError('email')" class="field-error-text">
-            Introdueix un correu electrònic vàlid.
+            {{ 'AUTH.REGISTER.EMAIL_INVALID' | translate }}
           </small>
         </label>
 
         <!-- Telèfon obligatori per a professionals -->
         <label *ngIf="registerForm.get('rol')?.value === 'professional'">
-          Telèfon de contacte (Obligatori per a professionals) *
+          {{ 'AUTH.REGISTER.PHONE_LABEL' | translate }}
           <input
             type="tel"
             formControlName="telefon"
@@ -117,15 +123,15 @@ import { TermesModalComponent } from '../termes-modal/termes-modal.component';
             class="input-required"
             [class.input-error]="submitted && registerForm.get('rol')?.value === 'professional' && !registerForm.get('telefon')?.value"
           />
-          <small class="hint">Necessari perquè els clients et puguin contactar quan resolguis les seves peticions.</small>
+          <small class="hint">{{ 'AUTH.REGISTER.PHONE_HINT' | translate }}</small>
           <small *ngIf="submitted && registerForm.get('rol')?.value === 'professional' && !registerForm.get('telefon')?.value" class="field-error-text">
-            El telèfon és obligatori per a professionals.
+            {{ 'AUTH.REGISTER.PHONE_REQUIRED' | translate }}
           </small>
         </label>
 
         <!-- Contrasenya -->
         <label>
-          Contrasenya *
+          {{ 'AUTH.REGISTER.PASSWORD_LABEL' | translate }}
           <input
             type="password"
             formControlName="password"
@@ -135,10 +141,10 @@ import { TermesModalComponent } from '../termes-modal/termes-modal.component';
             [class.input-error]="submitted && registerForm.get('password')?.invalid"
           />
           <small *ngIf="submitted && registerForm.get('password')?.hasError('required')" class="field-error-text">
-            La contrasenya és obligatòria.
+            {{ 'AUTH.REGISTER.PASSWORD_REQUIRED' | translate }}
           </small>
           <small *ngIf="submitted && registerForm.get('password')?.hasError('minlength')" class="field-error-text">
-            La contrasenya ha de tenir com a mínim 6 caràcters.
+            {{ 'AUTH.REGISTER.PASSWORD_MINLENGTH' | translate }}
           </small>
         </label>
 
@@ -154,17 +160,17 @@ import { TermesModalComponent } from '../termes-modal/termes-modal.component';
                 class="native-checkbox"
               />
               <span class="checkbox-label-text">
-                He llegit i accepte els
+                {{ 'AUTH.REGISTER.TERMS_READ' | translate }}
                 <button
                   type="button"
                   class="link-terms-btn"
                   (click)="obrirModalTermes('termes')">
-                  Termes i Condicions d'Ús d'AVISA
+                  {{ 'AUTH.REGISTER.TERMS_LINK' | translate }}
                 </button> *
               </span>
             </label>
             <div *ngIf="submitted && registerForm.get('acceptedTerms')?.hasError('required')" class="checkbox-error-msg">
-              ⚠️ Cal acceptar els termes i condicions per registrar-se.
+              {{ 'AUTH.REGISTER.TERMS_REQUIRED' | translate }}
             </div>
           </div>
 
@@ -178,27 +184,27 @@ import { TermesModalComponent } from '../termes-modal/termes-modal.component';
                 class="native-checkbox"
               />
               <span class="checkbox-label-text">
-                He llegit i accepte la
+                {{ 'AUTH.REGISTER.PRIVACY_READ' | translate }}
                 <button
                   type="button"
                   class="link-terms-btn"
                   (click)="obrirModalTermes('privacitat')">
-                  Política de Privacitat
+                  {{ 'AUTH.REGISTER.PRIVACY_LINK' | translate }}
                 </button> *
               </span>
             </label>
             <div *ngIf="submitted && registerForm.get('acceptedPrivacy')?.hasError('required')" class="checkbox-error-msg">
-              ⚠️ Cal acceptar la política de privacitat per registrar-se.
+              {{ 'AUTH.REGISTER.PRIVACY_REQUIRED' | translate }}
             </div>
           </div>
         </div>
 
         <button type="submit" class="submit-btn" [disabled]="loading">
-          {{ loading ? 'Creant compte...' : 'Registrar-me com a ' + (registerForm.get('rol')?.value === 'professional' ? 'Professional' : 'Client') }}
+          {{ loading ? ('AUTH.REGISTER.SUBMITTING' | translate) : ('AUTH.REGISTER.SUBMIT_PREFIX' | translate) + (registerForm.get('rol')?.value === 'professional' ? ('AUTH.REGISTER.ROLE_PRO_TITLE' | translate) : ('AUTH.REGISTER.ROLE_CLIENT_TITLE' | translate)) }}
         </button>
 
         <p class="footer-hint">
-          Ja tens compte? <a routerLink="/login">Inicia sessió aquí</a>
+          {{ 'AUTH.REGISTER.ALREADY_ACCOUNT' | translate }} <a [routerLink]="getNavUrl('/login')">{{ 'AUTH.REGISTER.LOGIN_HERE' | translate }}</a>
         </p>
       </form>
 
@@ -539,6 +545,20 @@ export class RegistreComponent implements OnInit {
     private readonly router: Router
   ) {}
 
+  get isAppPage(): boolean {
+    const url = this.router.url || '';
+    return url.startsWith('/app');
+  }
+
+  getNavUrl(path: string): string {
+    if (this.isAppPage) {
+      if (path === '/' || path === '/inici' || path === '/app') return '/app';
+      if (path.startsWith('/app/')) return path;
+      return path.startsWith('/') ? `/app${path}` : `/app/${path}`;
+    }
+    return path;
+  }
+
   ngOnInit(): void {
     // Inicialització del formulari reactiu amb les dues caselles obligatòries no marcades per defecte
     this.registerForm = this.fb.group({
@@ -639,12 +659,14 @@ export class RegistreComponent implements OnInit {
     this.authService.register(registerData).subscribe({
       next: () => {
         this.loading = false;
-        // Sessió iniciada directament -> tornem a la pàgina principal
-        this.router.navigate(['/']);
+        // Sessió iniciada directament -> tornem a la pàgina principal adaptada
+        this.router.navigate([this.getNavUrl('/inici')]);
       },
       error: (err) => {
         this.loading = false;
-        if (err.status === 400 && err.error?.missatges) {
+        if (err.status === 400 && err.error?.message) {
+          this.errorMessage = err.error.message;
+        } else if (err.status === 400 && err.error?.missatges) {
           const msgs = Object.values(err.error.missatges).join(' ');
           this.errorMessage = msgs || 'Dades de registre incorrectes.';
         } else if (err.error?.error && typeof err.error.error === 'string') {
@@ -652,7 +674,7 @@ export class RegistreComponent implements OnInit {
         } else if (err.status === 0 || err.status === 502 || err.status === 504) {
           this.errorMessage = 'El servidor no respon. Comprova que el backend estigui actiu al port 8080.';
         } else {
-          this.errorMessage = 'No s’ha pogut completar el registre. El correu podria estar ja en ús o el servidor no respon.';
+          this.errorMessage = err?.error?.message || 'No s’ha pogut completar el registre. El correu o telèfon podria estar bloquejat o el servidor no respon.';
         }
       }
     });

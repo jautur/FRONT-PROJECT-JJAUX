@@ -22,8 +22,14 @@
               "src/favicon.ico",
               "src/assets",
               "src/robots.txt",
-              "src/sitemap.xml"
+              "src/sitemap.xml",
+              {
+                "glob": "**/*",
+                "input": "public",
+                "output": "."
+              }
             ],
+            "serviceWorker": "ngsw-config.json",
             "styles": [
               "src/styles.css"
             ],

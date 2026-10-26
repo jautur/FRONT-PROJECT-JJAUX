@@ -19,7 +19,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
     <main class="article-page-container">
       <!-- Barra superior de navegació i fil d'Ariadna -->
       <nav class="breadcrumb-nav" aria-label="Fil d'Ariadna">
-        <a routerLink="/" class="breadcrumb-link">
+        <a [routerLink]="getNavUrl('/inici')" class="breadcrumb-link">
           <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
             <polyline points="9 22 9 12 15 12 15 22"></polyline>
@@ -27,14 +27,14 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
           {{ 'BLOG.BREADCRUMB_HOME' | translate }}
         </a>
         <span class="breadcrumb-separator">/</span>
-        <a routerLink="/blog" class="breadcrumb-link">{{ 'BLOG.BREADCRUMB_CONSELLS' | translate }}</a>
+        <a [routerLink]="getNavUrl('/blog')" class="breadcrumb-link">{{ 'BLOG.BREADCRUMB_CONSELLS' | translate }}</a>
         <span class="breadcrumb-separator">/</span>
         <span class="breadcrumb-current">{{ article?.categoria | translate }}</span>
       </nav>
 
       <!-- Botó de retorn ràpid -->
       <div class="back-action-bar">
-        <a routerLink="/blog" class="btn-back">
+        <a [routerLink]="getNavUrl('/blog')" class="btn-back">
           <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <line x1="19" y1="12" x2="5" y2="12"></line>
             <polyline points="12 19 5 12 12 5"></polyline>
@@ -127,7 +127,11 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
               <h3 class="key-points-title">{{ 'BLOG.TIPS_TITLE' | translate }}</h3>
               <ul class="key-points-list">
                 <li *ngFor="let pt of sec.puntsClau">
-                  <span class="check-icon">✓</span>
+                  <span class="check-icon">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                  </span>
                   <span>{{ pt }}</span>
                 </li>
               </ul>
@@ -158,7 +162,19 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
 
             <!-- Consell destacat -->
             <div class="tip-callout-card" *ngIf="sec.destacatConsell">
-              <div class="tip-icon">💡</div>
+              <div class="tip-icon">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M12 2v2"></path>
+                  <path d="M12 20v2"></path>
+                  <path d="m4.93 4.93 1.41 1.41"></path>
+                  <path d="m17.66 17.66 1.41 1.41"></path>
+                  <path d="M2 12h2"></path>
+                  <path d="M20 12h2"></path>
+                  <path d="m6.34 17.66-1.41 1.41"></path>
+                  <path d="m19.07 4.93-1.41 1.41"></path>
+                  <circle cx="12" cy="12" r="5"></circle>
+                </svg>
+              </div>
               <div class="tip-text">
                 <strong>{{ 'BLOG.TIP_RECOMMENDATION' | translate }}</strong> {{ sec.destacatConsell }}
               </div>
@@ -188,7 +204,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
                 </svg>
                 <span>{{ 'BLOG.CTA_BANNER_BTN_TASK' | translate }}</span>
               </button>
-              <a routerLink="/tasques-ofertes" class="btn-cta-secondary">
+              <a [routerLink]="getNavUrl('/tasques-ofertes')" class="btn-cta-secondary">
                 <span>{{ 'BLOG.CTA_BANNER_BTN_OFFERS' | translate }}</span>
                 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                   <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -203,10 +219,10 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         <section class="related-articles-section" *ngIf="articlesRelacionats.length > 0">
           <div class="related-header">
             <h3>{{ 'BLOG.RELATED_ARTICLES_TITLE' | translate }}</h3>
-            <a routerLink="/blog" class="link-all-articles">{{ 'HOME.VIEW_ALL_ARTICLES' | translate }}</a>
+            <a [routerLink]="getNavUrl('/blog')" class="link-all-articles">{{ 'HOME.VIEW_ALL_ARTICLES' | translate }}</a>
           </div>
           <div class="related-grid">
-            <article class="related-card" *ngFor="let rel of articlesRelacionats" [routerLink]="['/article', rel.id]" (click)="carregarArticle(rel.id)">
+            <article class="related-card" *ngFor="let rel of articlesRelacionats" [routerLink]="[getNavUrl('/article'), rel.id]" (click)="carregarArticle(rel.id)">
               <div class="related-media">
                 <img [src]="rel.imatge" [alt]="rel.titol" loading="lazy" />
                 <span class="related-cat">{{ rel.categoria | translate }}</span>
@@ -225,10 +241,15 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       <!-- Estat si l'article no s'ha trobat -->
       <ng-template #articleNoTrobat>
         <div class="article-not-found-card">
-          <div class="not-found-icon">🔍</div>
+          <div class="not-found-icon">
+            <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+          </div>
           <h2>{{ 'BLOG.NOT_FOUND_TITLE' | translate }}</h2>
           <p>{{ 'BLOG.NOT_FOUND_DESC' | translate }}</p>
-          <a routerLink="/" class="btn-back-home">{{ 'NAV.INICI' | translate }}</a>
+          <a [routerLink]="getNavUrl('/inici')" class="btn-back-home">{{ 'NAV.INICI' | translate }}</a>
         </div>
       </ng-template>
     </main>
@@ -901,6 +922,20 @@ export class ArticleDetallComponent implements OnInit {
     private readonly authService: AuthService
   ) {}
 
+  get isAppPage(): boolean {
+    const url = this.router.url || '';
+    return url.startsWith('/app');
+  }
+
+  getNavUrl(path: string): string {
+    if (this.isAppPage) {
+      if (path === '/' || path === '/inici' || path === '/app') return '/app';
+      if (path.startsWith('/app/')) return path;
+      return path.startsWith('/') ? `/app${path}` : `/app/${path}`;
+    }
+    return path;
+  }
+
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
       const id = params.get('id');
@@ -931,15 +966,15 @@ export class ArticleDetallComponent implements OnInit {
 
   anarCrearTasca(): void {
     if (!this.authService.isLoggedIn()) {
-      this.router.navigate(['/login'], {
+      this.router.navigate([this.getNavUrl('/login')], {
         queryParams: {
           message: 'Inicia sessió o crea un compte per publicar la teva tasca.',
-          returnUrl: '/client/crear-tasca'
+          returnUrl: this.getNavUrl('/client/crear-tasca')
         }
       });
       return;
     }
-    this.router.navigate(['/client/crear-tasca']);
+    this.router.navigate([this.getNavUrl('/client/crear-tasca')]);
   }
 }
 

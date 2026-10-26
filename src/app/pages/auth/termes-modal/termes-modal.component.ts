@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
 /**
  * Component de Termes i Condicions i Política de Privacitat d'AVISA.
@@ -17,20 +17,27 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
  * - Secció 6: Sancions i cancel·lació de comptes (frau, infraccions reiterades).
  * - Política de Privacitat: Responsable, finalitats i exercici de drets RGPD.
  */
+import { TranslatePipe } from '../../../core/pipes/translate.pipe';
+
 @Component({
   selector: 'app-termes-modal',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, TranslatePipe],
   template: `
     <div [class.modal-backdrop]="isModal" (click)="onBackdropClick($event)">
       <div class="legal-container" [class.is-modal-window]="isModal" (click)="$event.stopPropagation()">
         <!-- Capçalera amb pestanyes -->
         <header class="legal-header">
           <div class="header-titles">
-            <span class="legal-eyebrow">DOCUMENTACIÓ LEGAL AVISA</span>
-            <h2>{{ activeTab === 'termes' ? 'Termes i Condicions d\'Ús' : 'Política de Privacitat' }}</h2>
+            <span class="legal-eyebrow">{{ 'AUTH.TERMES_MODAL.EYEBROW' | translate }}</span>
+            <h2>{{ activeTab === 'termes' ? ('AUTH.TERMES_MODAL.TERMES_TITLE' | translate) : ('AUTH.TERMES_MODAL.PRIVACY_TITLE' | translate) }}</h2>
           </div>
-          <button *ngIf="isModal" type="button" class="btn-close" (click)="close.emit()" aria-label="Tancar document legal">✕</button>
+          <button *ngIf="isModal" type="button" class="btn-close" (click)="close.emit()" [attr.aria-label]="'AUTH.TERMES_MODAL.CLOSE' | translate">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
         </header>
 
         <!-- Selector de pestanyes: Termes vs Privacitat -->
@@ -40,14 +47,14 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
             class="tab-btn"
             [class.active]="activeTab === 'termes'"
             (click)="activeTab = 'termes'">
-            📄 Termes i Condicions
+            {{ 'AUTH.TERMES_MODAL.TAB_TERMES' | translate }}
           </button>
           <button
             type="button"
             class="tab-btn"
             [class.active]="activeTab === 'privacitat'"
             (click)="activeTab = 'privacitat'">
-            🔒 Política de Privacitat
+            {{ 'AUTH.TERMES_MODAL.TAB_PRIVACY' | translate }}
           </button>
         </nav>
 
@@ -262,13 +269,16 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
         <!-- Peu amb accions -->
         <footer class="legal-footer">
           <button *ngIf="isModal" type="button" class="btn-cancel" (click)="close.emit()">
-            Tancar
+            {{ 'COMMON.TANCAR' | translate }}
           </button>
           <button *ngIf="isModal" type="button" class="btn-accept" (click)="onAcceptClick()">
-            ✓ He llegit i accepte {{ activeTab === 'termes' ? 'els termes' : 'la privacitat' }}
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;" aria-hidden="true">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            {{ 'AUTH.TERMES_MODAL.ACCEPT_DOC' | translate }}
           </button>
-          <a *ngIf="!isModal" routerLink="/registre" class="btn-accept" style="text-decoration: none;">
-            Tornar al Registre
+          <a *ngIf="!isModal" [routerLink]="getNavUrl('/registre')" class="btn-accept" style="text-decoration: none;">
+            {{ 'AUTH.REGISTER.TITLE' | translate }}
           </a>
         </footer>
       </div>
@@ -592,7 +602,24 @@ export class TermesModalComponent implements OnInit {
   /** Event emès quan l'usuari accepta el document legal visualitzat */
   @Output() accept = new EventEmitter<'termes' | 'privacitat'>();
 
-  constructor(private readonly route: ActivatedRoute) {}
+  constructor(
+    private readonly route: ActivatedRoute,
+    private readonly router: Router
+  ) {}
+
+  get isAppPage(): boolean {
+    const url = this.router.url || '';
+    return url.startsWith('/app');
+  }
+
+  getNavUrl(path: string): string {
+    if (this.isAppPage) {
+      if (path === '/' || path === '/inici' || path === '/app') return '/app';
+      if (path.startsWith('/app/')) return path;
+      return path.startsWith('/') ? `/app${path}` : `/app/${path}`;
+    }
+    return path;
+  }
 
   ngOnInit(): void {
     // Si s'accedeix com a ruta directa /privacitat o queryParam ?tab=privacitat

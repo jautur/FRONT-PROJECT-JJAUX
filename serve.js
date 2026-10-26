@@ -10,6 +10,7 @@ const MIME_TYPES = {
   '.js': 'text/javascript; charset=utf-8',
   '.css': 'text/css; charset=utf-8',
   '.json': 'application/json; charset=utf-8',
+  '.webmanifest': 'application/manifest+json; charset=utf-8',
   '.png': 'image/png',
   '.jpg': 'image/jpeg',
   '.svg': 'image/svg+xml',
@@ -41,6 +42,15 @@ const server = http.createServer((req, res) => {
 
     req.pipe(proxyReq, { end: true });
     return;
+  }
+
+  // Guia visual de connexió mòbil amb codis QR
+  if (req.url === '/mobil' || req.url === '/mobil/' || req.url.startsWith('/mobil?')) {
+    const mobilHtml = path.join(__dirname, 'mobil_connectar.html');
+    if (fs.existsSync(mobilHtml)) {
+      res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+      return fs.createReadStream(mobilHtml).pipe(res);
+    }
   }
 
   let safePath = path.normalize(req.url.split('?')[0]);

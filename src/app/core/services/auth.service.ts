@@ -13,6 +13,16 @@ export interface LoginCredentials {
 }
 
 /**
+ * Resposta del flux de recuperació de contrasenya.
+ */
+export interface RecuperacioResponse {
+  success: boolean;
+  message: string;
+  email: string;
+  codiDev?: string;
+}
+
+/**
  * Model per a les dades sol·licitades al registre d'un nou compte.
  * - Client: requereix nom, email, password.
  * - Professional (fill de client): requereix nom, email, password i telèfon obligatori.
@@ -173,5 +183,29 @@ export class AuthService {
       userId,
       newPassword
     }, { responseType: 'text' });
+  }
+
+  /**
+   * Sol·licita un codi temporal de restabliment de contrasenya (OTP) per correu/usuari (/api/auth/demanar-recuperacio).
+   * @param email Correu electrònic o nom d'usuari
+   * @returns Observable amb la resposta i el codi temporal de proves (en entorn local)
+   */
+  demanarRecuperacio(email: string): Observable<RecuperacioResponse> {
+    return this.http.post<RecuperacioResponse>(`${this.apiUrl}/demanar-recuperacio`, { email });
+  }
+
+  /**
+   * Valida el codi temporal de 6 dígits i actualitza la contrasenya (/api/auth/restablir-contrasenya).
+   * @param email Correu electrònic o nom d'usuari
+   * @param codi Codi temporal de 6 dígits
+   * @param novaContrasenya Nova clau d'accés (mínim 6 caràcters)
+   * @returns Observable amb el resultat del canvi
+   */
+  restablirContrasenya(email: string, codi: string, novaContrasenya: string): Observable<RecuperacioResponse> {
+    return this.http.post<RecuperacioResponse>(`${this.apiUrl}/restablir-contrasenya`, {
+      email,
+      codi,
+      novaContrasenya
+    });
   }
 }

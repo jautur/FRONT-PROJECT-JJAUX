@@ -1,25 +1,35 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { forkJoin, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { Usuari } from '../../models/usuari.model';
 import { UsuariService } from '../../services/usuari.service';
 import { AuthService } from '../../core/services/auth.service';
 import { Tasca } from '../../models/tasca.model';
 import { TascaService } from '../../services/tasca.service';
+import { Oferta } from '../../models/oferta.model';
+import { OfertaService } from '../../services/oferta.service';
+import { IncidenciaService } from '../../services/incidencia.service';
+import { TranslationService } from '../../core/services/translation.service';
+import { ConfirmService } from '../../core/services/confirm.service';
+import { PressupostService } from '../../services/pressupost.service';
+import { TranslatePipe } from '../../core/pipes/translate.pipe';
 
 /**
  * Component de Perfil d'Usuari (/perfil).
  * Permet a l'usuari autenticat:
  * 1. Consultar la seva informació actual (nom, correu, rol, telèfon, biografia).
- * 2. Editar i desar canvis a la base de dades PostgreSQL mitjançant UsuariService.
- * 3. Canviar la seva contrasenya d'accés de forma segura.
- * 4. Visualitzar l'historial de tasques realitzades amb valoracions i opinions directes dels clients.
+ * 2. Navegar per les seves dades personals, tasques, pressupostos/ofertes i ressenyes.
+ * 3. Editar i desar canvis a la base de dades PostgreSQL mitjançant UsuariService.
+ * 4. Canviar la seva contrasenya d'accés de forma segura.
+ * 5. Visualitzar l'historial complet de feines i valoracions de clients.
  */
 @Component({
   selector: 'app-perfil',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink, TranslatePipe],
   template: `
     <section class="perfil-container">
       <!-- Capçalera del Perfil -->
@@ -29,10 +39,15 @@ import { TascaService } from '../../services/tasca.service';
         </div>
         <div class="header-info">
           <div class="header-name-row">
-            <h1>{{ usuari?.nom || 'El meu perfil' }}</h1>
+            <h1>{{ usuari?.nom || ('PERFIL.TITLE_OWN' | translate) }}</h1>
             <div class="pro-rating-badge-head" *ngIf="mitjanaPuntuacio">
-              <span class="stars-gold">★ {{ mitjanaPuntuacio }}</span>
-              <span class="count-head">({{ totalValoracions }} {{ totalValoracions === 1 ? 'valoració' : 'valoracions' }})</span>
+              <span class="stars-gold">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="#f59e0b" style="vertical-align: -1px; margin-right: 2px;" aria-hidden="true">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                </svg>
+                {{ mitjanaPuntuacio }}
+              </span>
+              <span class="count-head">({{ totalValoracions }} {{ totalValoracions === 1 ? ('PERFIL.RATING_COUNT_SINGULAR' | translate) : ('PERFIL.RATING_COUNT_PLURAL' | translate) }})</span>
             </div>
           </div>
           <p class="email">{{ usuari?.email }}</p>
@@ -41,17 +56,74 @@ import { TascaService } from '../../services/tasca.service';
               {{ usuari?.rol | uppercase }}
             </span>
             <span class="verified-badge" *ngIf="usuari?.rol === 'professional' && usuari?.verificat">
-              ✓ Professional Verificat AVISA
+              {{ 'PERFIL.BADGE_VERIFIED' | translate }}
             </span>
             <span class="pending-badge" *ngIf="usuari?.rol === 'professional' && !usuari?.verificat && usuari?.sollicitudVerificacio">
-              ⏳ Verificació Pendent (Trucada)
+              {{ 'PERFIL.BADGE_PENDING' | translate }}
             </span>
             <span class="unverified-badge" *ngIf="usuari?.rol === 'professional' && !usuari?.verificat && !usuari?.sollicitudVerificacio">
-              ⚠️ No verificat
+              {{ 'PERFIL.BADGE_UNVERIFIED' | translate }}
             </span>
           </div>
         </div>
       </header>
+
+      <!-- Barra de navegació de pestanyes del Perfil: Dades / Tasques / Pressupostos / Ressenyes -->
+      <nav class="perfil-nav-tabs" aria-label="Apartats del perfil">
+        <button
+          type="button"
+          class="perfil-tab-btn"
+          [class.active]="activeTab === 'dades'"
+          (click)="setTab('dades')"
+        >
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+          <span>{{ (isOwnProfile ? 'PERFIL.TAB_DADES' : 'PERFIL.TAB_CONTACTE') | translate }}</span>
+        </button>
+
+        <button
+          type="button"
+          class="perfil-tab-btn"
+          [class.active]="activeTab === 'tasques'"
+          (click)="setTab('tasques')"
+        >
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+          </svg>
+          <span>{{ 'PERFIL.TAB_TASQUES' | translate }}</span>
+          <span class="tab-count-pill" *ngIf="tasquesUsuari.length > 0">{{ tasquesUsuari.length }}</span>
+        </button>
+
+        <button
+          type="button"
+          class="perfil-tab-btn"
+          [class.active]="activeTab === 'pressupostos'"
+          (click)="setTab('pressupostos')"
+        >
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="1" x2="12" y2="23"></line>
+            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+          </svg>
+          <span>{{ 'PERFIL.TAB_PRESSUPOSTOS' | translate }}</span>
+          <span class="tab-count-pill" *ngIf="ofertesUsuari.length > 0">{{ ofertesUsuari.length }}</span>
+        </button>
+
+        <button
+          type="button"
+          class="perfil-tab-btn"
+          [class.active]="activeTab === 'ressenyes'"
+          (click)="setTab('ressenyes')"
+        >
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+          </svg>
+          <span>{{ 'PERFIL.TAB_RESSENYES' | translate }}</span>
+          <span class="tab-count-pill" *ngIf="tasquesFinalitzades.length > 0">{{ tasquesFinalitzades.length }}</span>
+        </button>
+      </nav>
 
       <!-- Missatges d'alerta o notificació -->
       <div *ngIf="successMessage" class="alert alert-success">
@@ -61,38 +133,43 @@ import { TascaService } from '../../services/tasca.service';
         {{ errorMessage }}
       </div>
 
-      <!-- Vista per al propi perfil (editable) -->
-      <div class="perfil-grid" *ngIf="isOwnProfile">
+      <!-- Estat de càrrega de dades del perfil -->
+      <div class="tab-loading-state" *ngIf="loadingTabData">
+        <p>{{ 'COMMON.CARREGANT' | translate }}</p>
+      </div>
+
+      <!-- Vista per al propi perfil (editable - Pestanya Dades) -->
+      <div class="perfil-grid" *ngIf="!loadingTabData && activeTab === 'dades' && isOwnProfile">
         <!-- Formulari d'edició de dades bàsiques -->
         <article class="card">
-          <h2>Dades personals</h2>
-          <p class="subtitle">Actualitza la teva informació de contacte i presentació.</p>
+          <h2>{{ 'PERFIL.PERSONAL_DATA_TITLE' | translate }}</h2>
+          <p class="subtitle">{{ 'PERFIL.PERSONAL_DATA_SUB' | translate }}</p>
 
           <form (ngSubmit)="onSaveProfile()">
             <label>
-              Nom complet o comercial
-              <input type="text" [(ngModel)]="formData.nom" name="nom" required placeholder="El teu nom" />
+              {{ 'PERFIL.FULL_NAME' | translate }}
+              <input type="text" [(ngModel)]="formData.nom" name="nom" required [placeholder]="'PERFIL.FULL_NAME' | translate" />
             </label>
 
             <label>
-              Correu electrònic
+              {{ 'PERFIL.EMAIL' | translate }}
               <input type="email" [value]="usuari?.email" disabled class="input-disabled" />
-              <small class="hint">El correu s'utilitza per identificar el compte i no es pot canviar directament.</small>
+              <small class="hint">{{ 'PERFIL.EMAIL_HINT' | translate }}</small>
             </label>
 
             <label>
-              Telèfon de contacte
+              {{ 'PERFIL.PHONE' | translate }}
               <input type="tel" [(ngModel)]="formData.telefon" name="telefon" placeholder="+34 600 000 000" />
             </label>
 
             <label>
-              Biografia / Presentació
-              <textarea [(ngModel)]="formData.bio" name="bio" rows="4" placeholder="Explica breument la teva experiència o serveis..."></textarea>
+              {{ 'PERFIL.BIO' | translate }}
+              <textarea [(ngModel)]="formData.bio" name="bio" rows="4" [placeholder]="'PERFIL.BIO_PLACEHOLDER' | translate"></textarea>
             </label>
 
             <!-- Percentil de comissió reservat per a la plataforma (0-100%, defecte 3%) -->
             <label class="percentil-form-group">
-              Percentil de comissió plataforma (%)
+              {{ 'PERFIL.COMMISSION_PERCENTILE' | translate }}
               <div class="percentil-input-row" style="display: flex; align-items: center; gap: 0.75rem; margin-top: 0.35rem;">
                 <input
                   type="number"
@@ -105,22 +182,22 @@ import { TascaService } from '../../services/tasca.service';
                   style="max-width: 130px; font-weight: 700;"
                 />
                 <span class="percentil-badge-pill" style="background: #eff6ff; color: #1d4ed8; font-weight: 800; padding: 0.35rem 0.75rem; border-radius: 6px; font-size: 0.85rem; border: 1px solid #bfdbfe;">
-                  {{ formData.percentil ?? (usuari?.percentil ?? 3) }}% reservat plataforma
+                  {{ formData.percentil ?? (usuari?.percentil ?? 3) }}% {{ 'PERFIL.COMMISSION_RESERVED' | translate }}
                 </span>
               </div>
               <small class="hint" *ngIf="isAdmin" style="color: #059669; font-weight: 600; margin-top: 0.3rem; display: block;">
-                ★ Com a Administrador, disposes de permisos per assignar o reduir qualsevol percentil (0% - 100%).
+                {{ 'PERFIL.ADMIN_PERCENTILE_HINT' | translate }}
               </small>
               <small class="hint" *ngIf="!isAdmin" style="margin-top: 0.3rem; display: block;">
-                Com a usuari pots editar el percentil per a augmentar-lo (mínim actual: {{ usuari?.percentil ?? 3 }}%). Per reduir-lo cal intervenció d'un administrador.
+                {{ 'PERFIL.USER_PERCENTILE_HINT' | translate }}
               </small>
               <div class="commission-simulation-box" style="margin-top: 0.5rem; padding: 0.6rem 0.85rem; background: #fdfbf7; border: 1px dashed #dcd6cb; border-radius: 6px; font-size: 0.82rem; color: #4b4841;">
-                <strong>Normalització i càlcul estimat:</strong> Per a un servei de 100€, es reservaran <strong>{{ getCommissionSimulation() }}€</strong> com a comissió per a la plataforma.
+                <strong>{{ 'PERFIL.COMMISSION_SIMULATION_TITLE' | translate }}</strong> {{ 'PERFIL.COMMISSION_SIMULATION_TEXT' | translate }} <strong>{{ getCommissionSimulation() }}€</strong> {{ 'PERFIL.COMMISSION_SIMULATION_END' | translate }}
               </div>
             </label>
 
             <button type="submit" class="btn btn-primary" [disabled]="saving">
-              {{ saving ? 'Desant...' : 'Desar canvis' }}
+              {{ saving ? ('PERFIL.SAVING' | translate) : ('PERFIL.SAVE_CHANGES' | translate) }}
             </button>
           </form>
         </article>
@@ -128,22 +205,22 @@ import { TascaService } from '../../services/tasca.service';
         <!-- Secció de Seguretat i Canvi de contrasenya -->
         <div class="side-column">
           <article class="card">
-            <h2>Seguretat del compte</h2>
-            <p class="subtitle">Canvia la contrasenya d'accés a la plataforma.</p>
+            <h2>{{ 'PERFIL.ACCOUNT_SECURITY' | translate }}</h2>
+            <p class="subtitle">{{ 'PERFIL.ACCOUNT_SECURITY_SUB' | translate }}</p>
 
             <form (ngSubmit)="onChangePassword()">
               <label>
-                Nova contrasenya
+                {{ 'PERFIL.NEW_PASSWORD' | translate }}
                 <input type="password" [(ngModel)]="passwordData.newPassword" name="newPassword" required minlength="6" placeholder="Mínim 6 caràcters" />
               </label>
 
               <label>
-                Repeteix la nova contrasenya
+                {{ 'PERFIL.REPEAT_PASSWORD' | translate }}
                 <input type="password" [(ngModel)]="passwordData.confirmPassword" name="confirmPassword" required placeholder="Repeteix la contrasenya" />
               </label>
 
               <button type="submit" class="btn btn-secondary" [disabled]="changingPassword">
-                {{ changingPassword ? 'Actualitzant...' : 'Actualitzar contrasenya' }}
+                {{ changingPassword ? ('PERFIL.UPDATING_PASSWORD' | translate) : ('PERFIL.UPDATE_PASSWORD' | translate) }}
               </button>
             </form>
           </article>
@@ -160,7 +237,7 @@ import { TascaService } from '../../services/tasca.service';
                 </svg>
               </span>
               <div>
-                <h2>Estat de Verificació</h2>
+                <h2>{{ 'PERFIL.VERIF_STATUS_TITLE' | translate }}</h2>
                 <span class="verif-status-pill" [ngClass]="getVerifStatusClass()">
                   {{ getVerifStatusLabel() }}
                 </span>
@@ -173,12 +250,28 @@ import { TascaService } from '../../services/tasca.service';
 
             <div class="verif-checklist">
               <div class="check-item" [class.valid]="!!usuari?.email">
-                <span class="check-icon">{{ !!usuari?.email ? '✓' : '✗' }}</span>
-                <span>Email registrat: <strong>{{ usuari?.email || 'Mancant' }}</strong></span>
+                <span class="check-icon">
+                  <svg *ngIf="!!usuari?.email" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                  <svg *ngIf="!usuari?.email" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                  </svg>
+                </span>
+                <span>{{ 'PERFIL.EMAIL_REGISTERED' | translate }} <strong>{{ usuari?.email || 'Mancant' }}</strong></span>
               </div>
               <div class="check-item" [class.valid]="!!usuari?.telefon">
-                <span class="check-icon">{{ !!usuari?.telefon ? '✓' : '✗' }}</span>
-                <span>Telèfon de trucada: <strong>{{ usuari?.telefon || 'Cal afegir un telèfon' }}</strong></span>
+                <span class="check-icon">
+                  <svg *ngIf="!!usuari?.telefon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                  <svg *ngIf="!usuari?.telefon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                  </svg>
+                </span>
+                <span>{{ 'PERFIL.PHONE_CALL' | translate }} <strong>{{ usuari?.telefon || 'Cal afegir un telèfon' }}</strong></span>
               </div>
             </div>
 
@@ -189,33 +282,41 @@ import { TascaService } from '../../services/tasca.service';
                 class="btn btn-verif"
                 (click)="onSollicitarVerificacio()"
                 [disabled]="sollicitantVerificacio || !usuari?.telefon">
-                {{ sollicitantVerificacio ? 'Enviant sol·licitud...' : '📞 Sol·licitar Verificació per Trucada' }}
+                {{ sollicitantVerificacio ? ('PERFIL.REQUESTING_VERIF' | translate) : ('PERFIL.BTN_REQUEST_VERIF' | translate) }}
               </button>
               <small *ngIf="!usuari?.telefon" class="field-error-text" style="display:block; margin-top: 0.35rem;">
-                * Cal que desis un telèfon de contacte abans de poder sol·licitar la verificació.
+                {{ 'PERFIL.PHONE_REQUIRED_FOR_VERIF' | translate }}
               </small>
             </div>
 
             <!-- Avís si la sol·licitud està pendent de trucada -->
             <div *ngIf="!usuari?.verificat && usuari?.sollicitudVerificacio" class="pending-notice-box" style="margin-top: 0.85rem;">
-              <span class="notice-icon">📞</span>
+              <span class="notice-icon">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                </svg>
+              </span>
               <div>
-                <strong>Sol·licitud en curs:</strong> L'administrador d'AVISA es posarà en contacte amb tu en breu al telèfon <strong>{{ usuari?.telefon }}</strong> per comprovar la teva identitat.
+                <strong>{{ 'PERFIL.VERIF_PENDING_TITLE' | translate }}</strong> {{ 'PERFIL.VERIF_PENDING_DESC' | translate }}
               </div>
             </div>
 
             <!-- Avís si ja està verificat -->
             <div *ngIf="usuari?.verificat" class="verified-notice-box" style="margin-top: 0.85rem;">
-              <span class="notice-icon">✓</span>
+              <span class="notice-icon">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </span>
               <div>
-                <strong>Compte Oficialment Verificat:</strong> La teva identitat i telèfon han estat comprovats telefònicament. Disposes del distintiu visible al mercat.
+                <strong>{{ 'PERFIL.VERIF_OFFICIAL_TITLE' | translate }}</strong> {{ 'PERFIL.VERIF_OFFICIAL_DESC' | translate }}
               </div>
             </div>
 
             <!-- Accions de l'Administrador -->
             <div *ngIf="isAdmin" class="admin-verif-actions" style="margin-top: 1.15rem; padding-top: 0.85rem; border-top: 1px dashed #cbd5e1;">
               <p style="font-size: 0.8rem; font-weight: 700; color: #475569; margin-bottom: 0.5rem;">
-                ★ Acció Administrador (Comprovació Trucada):
+                {{ 'PERFIL.ADMIN_VERIF_TITLE' | translate }}
               </p>
               <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
                 <button
@@ -224,7 +325,7 @@ import { TascaService } from '../../services/tasca.service';
                   *ngIf="!usuari?.verificat"
                   (click)="onVerificarProfessional(true)"
                   [disabled]="processantVerificacioAdmin">
-                  ✓ Aprovar Trucada i Verificar
+                  {{ 'PERFIL.ADMIN_APPROVE_VERIF' | translate }}
                 </button>
                 <button
                   type="button"
@@ -232,7 +333,7 @@ import { TascaService } from '../../services/tasca.service';
                   *ngIf="usuari?.verificat || usuari?.sollicitudVerificacio"
                   (click)="onVerificarProfessional(false)"
                   [disabled]="processantVerificacioAdmin">
-                  ✕ Rebutjar / Desverificar
+                  {{ 'PERFIL.ADMIN_REJECT_VERIF' | translate }}
                 </button>
               </div>
             </div>
@@ -240,44 +341,61 @@ import { TascaService } from '../../services/tasca.service';
 
           <!-- Targeta informativa de rol -->
           <article class="card info-card">
-            <h3>Informació del Rol</h3>
+            <h3>{{ 'PERFIL.ROLE_INFO_TITLE' | translate }}</h3>
             <div *ngIf="usuari?.rol === 'client'">
-              <p>Com a <strong>Client</strong>, pots publicar peticions i feines, rebre pressupostos i contractar serveis. Només necessites correu i contrasenya.</p>
+              <p>{{ 'PERFIL.ROLE_CLIENT_INFO' | translate }}</p>
             </div>
             <div *ngIf="usuari?.rol === 'professional'">
-              <p>Com a <strong>Professional</strong> (fill del client), disposes de totes les funcions del client (publicar feines) i a més disposes de telèfon per <strong>resoldre peticions</strong> i enviar pressupostos a altres usuaris.</p>
+              <p>{{ 'PERFIL.ROLE_PRO_INFO' | translate }}</p>
             </div>
             <div *ngIf="usuari?.rol === 'admin'">
-              <p>Com a <strong>Administrador</strong>, tens accés global de gestió d'usuaris, supervisió de tasques i configuració d'avisos.</p>
+              <p>{{ 'PERFIL.ROLE_ADMIN_INFO' | translate }}</p>
             </div>
           </article>
         </div>
       </div>
 
-      <!-- Vista per a perfil públic d'un altre professional o usuari -->
-      <div class="perfil-grid" *ngIf="!isOwnProfile">
+      <!-- Vista per a perfil públic d'un altre professional o usuari (Pestanya Dades/Contacte) -->
+      <div class="perfil-grid" *ngIf="!loadingTabData && activeTab === 'dades' && !isOwnProfile">
         <article class="card">
-          <h2>Dades de contacte i presentació</h2>
-          <p class="subtitle">Informació oficial del professional registrat a la plataforma AVISA.</p>
+          <h2>{{ 'PERFIL.PUBLIC_CONTACT_TITLE' | translate }}</h2>
+          <p class="subtitle">{{ 'PERFIL.PUBLIC_CONTACT_SUB' | translate }}</p>
 
           <div class="public-info-list">
             <div class="public-info-row" *ngIf="usuari?.telefon">
-              <span class="info-label">Telèfon directe:</span>
-              <strong class="info-value tel-value">{{ usuari?.telefon }}</strong>
+              <span class="info-label">{{ 'PERFIL.DIRECT_PHONE' | translate }}</span>
+              <div style="display: flex; align-items: center; gap: 0.65rem; flex-wrap: wrap;">
+                <strong class="info-value tel-value">{{ usuari?.telefon }}</strong>
+                <button type="button" class="btn-quick-contact btn-quick-wa" (click)="contactarPerfilWhatsapp()" [attr.title]="'TASQUES_OFERTES.CONTACTAR_WHATSAPP' | translate">
+                  <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor">
+                    <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.664-.698c.97.587 1.761.883 2.796.883 3.183 0 5.769-2.587 5.77-5.767 0-3.181-2.586-5.769-5.77-5.769zm3.388 8.163c-.144.405-.837.774-1.17.822-.313.044-.725.074-2.385-.615-1.996-.826-3.268-2.862-3.368-2.996-.099-.133-.807-1.074-.807-2.048 0-.974.51-1.452.691-1.652.181-.199.395-.249.527-.249.132 0 .264.002.378.007.123.006.287-.047.45.344.167.399.57 1.391.62 1.492.051.101.085.22.018.354-.067.133-.101.217-.201.334-.101.118-.212.263-.303.353-.101.1-.207.21-.089.412.118.202.525.867 1.127 1.403.774.688 1.427.901 1.629 1.002.202.1.32.083.438-.051.118-.135.506-.59.641-.792.135-.202.27-.169.455-.101.185.067 1.176.554 1.378.655.202.101.337.151.387.236.05.084.05.489-.094.894z"></path>
+                  </svg>
+                  <span>WhatsApp</span>
+                </button>
+              </div>
             </div>
 
             <div class="public-info-row" *ngIf="usuari?.email">
-              <span class="info-label">Correu electrònic:</span>
-              <span class="info-value">{{ usuari?.email }}</span>
+              <span class="info-label">{{ 'PERFIL.EMAIL' | translate }}:</span>
+              <div style="display: flex; align-items: center; gap: 0.65rem; flex-wrap: wrap;">
+                <span class="info-value">{{ usuari?.email }}</span>
+                <button type="button" class="btn-quick-contact btn-quick-email" (click)="contactarPerfilEmail()" [attr.title]="'TASQUES_OFERTES.CONTACTAR_EMAIL' | translate">
+                  <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                    <polyline points="22,6 12,13 2,6"></polyline>
+                  </svg>
+                  <span>Correu</span>
+                </button>
+              </div>
             </div>
 
             <div class="public-info-row" *ngIf="usuari?.percentil != null">
-              <span class="info-label">Comissió plataforma (Percentil):</span>
+              <span class="info-label">{{ 'PERFIL.COMMISSION_PERCENTILE_PUBLIC' | translate }}</span>
               <strong class="info-value" style="color: #ff1744;">{{ usuari?.percentil }}%</strong>
             </div>
 
             <div class="public-bio-box" *ngIf="usuari?.bio">
-              <span class="info-label">Biografia / Especialitat:</span>
+              <span class="info-label">{{ 'PERFIL.BIO_SPECIALTY' | translate }}</span>
               <p class="bio-text">{{ usuari?.bio }}</p>
             </div>
           </div>
@@ -296,7 +414,7 @@ import { TascaService } from '../../services/tasca.service';
                 </svg>
               </span>
               <div>
-                <h2>Verificació Professional</h2>
+                <h2>{{ 'PERFIL.VERIF_STATUS_TITLE' | translate }}</h2>
                 <span class="verif-status-pill" [ngClass]="getVerifStatusClass()">
                   {{ getVerifStatusLabel() }}
                 </span>
@@ -309,7 +427,7 @@ import { TascaService } from '../../services/tasca.service';
 
             <div *ngIf="isAdmin" class="admin-verif-actions" style="margin-top: 1rem; padding-top: 0.75rem; border-top: 1px dashed #cbd5e1;">
               <p style="font-size: 0.8rem; font-weight: 700; color: #475569; margin-bottom: 0.5rem;">
-                ★ Acció Administrador (Comprovació Trucada):
+                {{ 'PERFIL.ADMIN_VERIF_TITLE' | translate }}
               </p>
               <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
                 <button
@@ -318,7 +436,7 @@ import { TascaService } from '../../services/tasca.service';
                   *ngIf="!usuari?.verificat"
                   (click)="onVerificarProfessional(true)"
                   [disabled]="processantVerificacioAdmin">
-                  ✓ Aprovar Trucada i Verificar
+                  {{ 'PERFIL.ADMIN_APPROVE_VERIF' | translate }}
                 </button>
                 <button
                   type="button"
@@ -326,76 +444,273 @@ import { TascaService } from '../../services/tasca.service';
                   *ngIf="usuari?.verificat || usuari?.sollicitudVerificacio"
                   (click)="onVerificarProfessional(false)"
                   [disabled]="processantVerificacioAdmin">
-                  ✕ Desverificar / Rebutjar
+                  {{ 'PERFIL.ADMIN_REJECT_VERIF' | translate }}
                 </button>
               </div>
             </div>
           </article>
 
           <article class="card info-card">
-            <h3>Garantia AVISA</h3>
+            <h3>{{ 'PERFIL.GUARANTEE_TITLE' | translate }}</h3>
             <p>
-              Tots els professionals de la plataforma compten amb compte registrat, telèfon verificat i valoracions auditades per part de clients reals en finalitzar cada encàrrec.
+              {{ 'PERFIL.GUARANTEE_DESC' | translate }}
             </p>
           </article>
         </div>
       </div>
 
-      <!-- SECCIÓ DE TASQUES REALITZADES I VALORACIONS (directament de la taula TASQUES) -->
-      <section class="card reviews-profile-card" *ngIf="tasquesFinalitzades.length > 0">
-        <div class="reviews-card-header">
-          <div>
-            <h2>{{ usuari?.rol === 'professional' ? 'Tasques realitzades i valoracions' : 'Historial de tasques finalitzades' }}</h2>
-            <p class="subtitle">
-              {{ usuari?.rol === 'professional' 
-                  ? 'Tasques completades a la plataforma AVISA amb la puntuació i opinió directa dels clients.' 
-                  : 'Historial de feines concloses amb èxit a la plataforma.' }}
-            </p>
+      <!-- =========================================================================
+           PESTANYA 2: TASQUES DE L'USUARI (CREADES O ASSIGNADES)
+           ========================================================================= -->
+      <section class="tab-content-section" *ngIf="!loadingTabData && activeTab === 'tasques'">
+        <div class="tab-header-card">
+          <div class="tab-header-titles">
+            <h2>{{ 'PERFIL.TAB_TASQUES' | translate }} ({{ tasquesUsuari.length }})</h2>
+            <p>{{ (usuari?.rol === 'professional' ? 'LES_MEVES_OFERTES.ASSIGNED_SECTION_HINT' : 'LES_MEVES_TASQUES.SUBTITLE') | translate }}</p>
           </div>
-          <div class="score-summary-pill" *ngIf="mitjanaPuntuacio">
-            <span class="stars-gold">★ {{ mitjanaPuntuacio }}</span>
-            <span class="score-count">({{ totalValoracions }} {{ totalValoracions === 1 ? 'valoració' : 'valoracions' }})</span>
+
+          <div class="tab-filters-row">
+            <button
+              type="button"
+              class="tab-filter-btn"
+              [class.active]="filtreTasques === 'totes'"
+              (click)="setFiltreTasques('totes')"
+            >
+              {{ 'PERFIL.FILTER_TAB_TOTES' | translate }} ({{ tasquesUsuari.length }})
+            </button>
+            <button
+              type="button"
+              class="tab-filter-btn"
+              [class.active]="filtreTasques === 'oberta'"
+              (click)="setFiltreTasques('oberta')"
+            >
+              {{ 'PERFIL.FILTER_TAB_OBERTA' | translate }} ({{ countTasquesObertes() }})
+            </button>
+            <button
+              type="button"
+              class="tab-filter-btn"
+              [class.active]="filtreTasques === 'en_curs'"
+              (click)="setFiltreTasques('en_curs')"
+            >
+              {{ 'PERFIL.FILTER_TAB_EN_CURS' | translate }} ({{ countTasquesEnCurs() }})
+            </button>
+            <button
+              type="button"
+              class="tab-filter-btn"
+              [class.active]="filtreTasques === 'finalitzada'"
+              (click)="setFiltreTasques('finalitzada')"
+            >
+              {{ 'PERFIL.FILTER_TAB_FINALITZADA' | translate }} ({{ countTasquesFinalitzades() }})
+            </button>
+            <a *ngIf="isOwnProfile" [routerLink]="getNavUrl('/client/crear-tasca')" class="btn-tab-create">
+              {{ 'PERFIL.BTN_CREAR_TASCA_PERFIL' | translate }}
+            </a>
           </div>
         </div>
 
-        <div class="reviews-profile-list">
-          <article class="review-profile-item" *ngFor="let t of tasquesFinalitzades">
-            <div class="review-item-header">
-              <div class="reviewer-meta">
-                <div class="reviewer-avatar">
-                  {{ (t.clientNom || t.client || 'C').charAt(0).toUpperCase() }}
-                </div>
-                <div>
-                  <strong class="reviewer-name">{{ t.clientNom || t.client || 'Client AVISA' }}</strong>
-                  <div class="task-info-chips">
-                    <span class="badge-cat" *ngIf="t.categoria">{{ t.categoria }}</span>
-                    <span class="badge-price" *ngIf="t.budget">{{ t.budget }}</span>
-                    <span class="badge-origen" *ngIf="t.origenId">Ref: {{ t.origenId }}</span>
-                  </div>
-                </div>
+        <!-- Graella de tasques -->
+        <div class="profile-tasks-grid" *ngIf="tasquesFiltrades.length > 0">
+          <article class="profile-task-card" *ngFor="let t of tasquesFiltrades">
+            <div class="task-card-header">
+              <span class="badge-cat" *ngIf="t.categoria">{{ t.categoria | translate }}</span>
+              <span class="badge-estat-pill" [ngClass]="getTaskEstatClass(t.estat)">
+                {{ t.estat || 'Oberta' }}
+              </span>
+            </div>
+
+            <h3 class="task-card-title">{{ t.titol }}</h3>
+            <p class="task-card-desc" *ngIf="t.descripcio">{{ t.descripcio }}</p>
+
+            <div class="task-card-meta">
+              <div class="meta-item" *ngIf="t.clientNom || t.client">
+                <span class="meta-label">{{ 'TASQUES_OFERTES.CLIENT_WHO_ASKS' | translate | slice:0:-1 }}:</span>
+                <strong>{{ t.clientNom || t.client }}</strong>
               </div>
-              <div class="review-stars-badge" *ngIf="t.valoracio">
-                <span class="star-icon" *ngFor="let s of [1,2,3,4,5]">{{ s <= t.valoracio ? '★' : '☆' }}</span>
-                <span class="star-number">{{ t.valoracio }}/5</span>
+              <div class="meta-item" *ngIf="t.professionalNom || t.professional">
+                <span class="meta-label">{{ 'TASQUES_OFERTES.PRO_ASSIGNED' | translate | slice:0:-1 }}:</span>
+                <strong style="color: #ff1744;">{{ t.professionalNom || t.professional }}</strong>
+              </div>
+              <div class="meta-item" *ngIf="t.budget">
+                <span class="meta-label">{{ 'PERFIL.BUDGET_ESTIMATED' | translate }}</span>
+                <span class="meta-budget">{{ t.budget }}</span>
               </div>
             </div>
 
-            <div class="task-work-body">
-              <h4 class="task-work-title">{{ t.titol }}</h4>
-              <p class="task-work-desc" *ngIf="t.descripcio && t.descripcio !== t.opinio">{{ t.descripcio }}</p>
-              <div class="task-opinion-box" *ngIf="t.opinio">
-                <span class="opinion-quote-label">Opinió del client:</span>
-                <p class="review-item-comment">“{{ t.opinio }}”</p>
-              </div>
+            <div class="task-card-actions">
+              <a [routerLink]="[getNavUrl('/tasca-detall'), t.id]" class="btn-task-detail">
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <span>{{ 'PERFIL.VEURE_DETALL_TASCA' | translate }}</span>
+              </a>
             </div>
           </article>
         </div>
+
+        <!-- Estat buit de tasques -->
+        <div class="empty-tab-box" *ngIf="tasquesFiltrades.length === 0">
+          <span class="empty-tab-icon">
+            <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+              <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+            </svg>
+          </span>
+          <h4>{{ 'PERFIL.NO_TASQUES_USER' | translate }}</h4>
+          <p class="subtitle">{{ 'PERFIL.NO_TASQUES_FILTER' | translate }}</p>
+          <a *ngIf="isOwnProfile" [routerLink]="getNavUrl('/client/crear-tasca')" class="btn-create-tab">
+            {{ 'PERFIL.BTN_CREAR_TASCA_PERFIL' | translate }}
+          </a>
+        </div>
       </section>
 
-      <!-- Sense tasques finalitzades encara -->
-      <section class="card reviews-profile-card empty-reviews" *ngIf="usuari?.rol === 'professional' && tasquesFinalitzades.length === 0">
-        <h3>Encara no té tasques finalitzades</h3>
-        <p class="subtitle">Aquest professional encara no ha conclòs cap tasca valorada a la plataforma AVISA.</p>
+      <!-- =========================================================================
+           PESTANYA 3: PRESSUPOSTOS I OFERTES DE L'USUARI
+           ========================================================================= -->
+      <section class="tab-content-section" *ngIf="!loadingTabData && activeTab === 'pressupostos'">
+        <div class="tab-header-card">
+          <div class="tab-header-titles">
+            <h2>{{ 'PERFIL.TAB_PRESSUPOSTOS' | translate }} ({{ ofertesUsuari.length }})</h2>
+            <p>{{ 'LES_MEVES_OFERTES.PROPOSALS_SECTION_HINT' | translate }}</p>
+          </div>
+
+          <a *ngIf="isOwnProfile && (usuari?.rol === 'professional' || isAdmin)" [routerLink]="getNavUrl('/professional/crear-oferta')" class="btn-tab-create">
+            {{ 'PERFIL.BTN_CREAR_OFERTA_PERFIL' | translate }}
+          </a>
+        </div>
+
+        <!-- Graella d'ofertes i pressupostos -->
+        <div class="profile-offers-grid" *ngIf="ofertesUsuari.length > 0">
+          <article class="profile-offer-card" *ngFor="let o of ofertesUsuari">
+            <div class="offer-card-top">
+              <span class="offer-nature-pill">{{ 'TASQUES_OFERTES.OFFER_NATURE' | translate }}</span>
+              <span class="badge-cat" *ngIf="o.categoria">{{ o.categoria | translate }}</span>
+            </div>
+
+            <div class="offer-price-row">
+              <span class="offer-price-label">{{ 'PERFIL.OFFER_PRICE' | translate }}</span>
+              <span class="offer-price-amount">{{ o.price }}</span>
+            </div>
+
+            <p class="offer-card-note" *ngIf="o.note">“{{ o.note }}”</p>
+
+            <div class="offer-card-meta">
+              <div class="meta-item" *ngIf="o.professionalNom || o.professional">
+                <span class="meta-label">{{ 'TASQUES_OFERTES.PRO_WHO_OFFERS' | translate | slice:0:-1 }}:</span>
+                <strong>{{ o.professionalNom || o.professional }}</strong>
+              </div>
+              <div class="meta-item" *ngIf="o.tascaId">
+                <span class="meta-label">{{ 'PERFIL.OFFER_FOR_TASK' | translate }}</span>
+                <span class="meta-ref">{{ o.tascaId }}</span>
+              </div>
+            </div>
+
+            <div class="offer-card-actions">
+              <button
+                *ngIf="isOwnProfile && isClient() && canAcceptOffer(o)"
+                type="button"
+                class="btn-accept-budget"
+                (click)="onAcceptarPressupost(o)"
+              >
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span>{{ 'TASCA_DETALL.BTN_ACCEPT_QUOTE' | translate }}</span>
+              </button>
+
+              <a *ngIf="o.tascaId" [routerLink]="[getNavUrl('/tasca-detall'), o.tascaId]" class="btn-task-detail">
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                  <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                </svg>
+                <span>{{ 'PERFIL.VEURE_DETALL_TASCA' | translate }}</span>
+              </a>
+            </div>
+          </article>
+        </div>
+
+        <!-- Estat buit d'ofertes -->
+        <div class="empty-tab-box" *ngIf="ofertesUsuari.length === 0">
+          <span class="empty-tab-icon">
+            <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+              <line x1="2" y1="10" x2="22" y2="10"></line>
+            </svg>
+          </span>
+          <h4>{{ 'PERFIL.NO_PRESSUPOSTOS_USER' | translate }}</h4>
+          <p class="subtitle">{{ 'PERFIL.NO_PRESSUPOSTOS_USER' | translate }}</p>
+          <a *ngIf="isOwnProfile && (usuari?.rol === 'professional' || isAdmin)" [routerLink]="getNavUrl('/professional/crear-oferta')" class="btn-create-tab">
+            {{ 'PERFIL.BTN_CREAR_OFERTA_PERFIL' | translate }}
+          </a>
+        </div>
+      </section>
+
+      <!-- =========================================================================
+           PESTANYA 4: RESSENYES I OPINIONS DE CLIENTS
+           ========================================================================= -->
+      <section class="tab-content-section" *ngIf="!loadingTabData && activeTab === 'ressenyes'">
+        <section class="card reviews-profile-card" *ngIf="tasquesFinalitzades.length > 0">
+          <div class="reviews-card-header">
+            <div>
+              <h2>{{ (usuari?.rol === 'professional' ? 'PERFIL.REVIEWS_TITLE_PRO' : 'PERFIL.REVIEWS_TITLE_CLIENT') | translate }}</h2>
+              <p class="subtitle">
+                {{ (usuari?.rol === 'professional' ? 'PERFIL.REVIEWS_SUB_PRO' : 'PERFIL.REVIEWS_SUB_CLIENT') | translate }}
+              </p>
+            </div>
+            <div class="score-summary-pill" *ngIf="mitjanaPuntuacio">
+              <span class="stars-gold">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="#f59e0b" style="vertical-align: -1px; margin-right: 2px;" aria-hidden="true">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                </svg>
+                {{ mitjanaPuntuacio }}
+              </span>
+              <span class="score-count">({{ totalValoracions }} {{ totalValoracions === 1 ? ('PERFIL.RATING_COUNT_SINGULAR' | translate) : ('PERFIL.RATING_COUNT_PLURAL' | translate) }})</span>
+            </div>
+          </div>
+
+          <div class="reviews-profile-list">
+            <article class="review-profile-item" *ngFor="let t of tasquesFinalitzades">
+              <div class="review-item-header">
+                <div class="reviewer-meta">
+                  <div class="reviewer-avatar">
+                    {{ (t.clientNom || t.client || 'C').charAt(0).toUpperCase() }}
+                  </div>
+                  <div>
+                    <strong class="reviewer-name">{{ t.clientNom || t.client || 'Client AVISA' }}</strong>
+                    <div class="task-info-chips">
+                      <span class="badge-cat" *ngIf="t.categoria">{{ t.categoria | translate }}</span>
+                      <span class="badge-price" *ngIf="t.budget">{{ t.budget }}</span>
+                      <span class="badge-origen" *ngIf="t.origenId">Ref: {{ t.origenId }}</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="review-stars-badge" *ngIf="t.valoracio">
+                  <span class="star-icon" *ngFor="let s of [1,2,3,4,5]">
+                    <svg viewBox="0 0 24 24" width="12" height="12" [attr.fill]="s <= t.valoracio ? '#f59e0b' : '#d1d5db'" style="vertical-align: -1px; margin-right: 1px;" aria-hidden="true">
+                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                    </svg>
+                  </span>
+                  <span class="star-number">{{ t.valoracio }}/5</span>
+                </div>
+              </div>
+
+              <div class="task-work-body">
+                <h4 class="task-work-title">{{ t.titol }}</h4>
+                <p class="task-work-desc" *ngIf="t.descripcio && t.descripcio !== t.opinio">{{ t.descripcio }}</p>
+                <div class="task-opinion-box" *ngIf="t.opinio">
+                  <span class="opinion-quote-label">{{ 'PERFIL.CLIENT_OPINION' | translate }}</span>
+                  <p class="review-item-comment">“{{ t.opinio }}”</p>
+                </div>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <!-- Sense tasques finalitzades encara -->
+        <section class="card reviews-profile-card empty-reviews" *ngIf="tasquesFinalitzades.length === 0">
+          <h3>{{ 'PERFIL.NO_REVIEWS_TITLE' | translate }}</h3>
+          <p class="subtitle">{{ 'PERFIL.NO_REVIEWS_DESC' | translate }}</p>
+        </section>
       </section>
     </section>
   `,
@@ -405,14 +720,19 @@ import { TascaService } from '../../services/tasca.service';
         display: flex;
         justify-content: center;
         width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
       }
 
       .perfil-container {
         width: min(1000px, 100%);
+        max-width: 100%;
         margin: 0 auto;
         display: flex;
         flex-direction: column;
         gap: 1.75rem;
+        box-sizing: border-box;
+        overflow-x: hidden;
       }
 
       .perfil-header {
@@ -425,6 +745,428 @@ import { TascaService } from '../../services/tasca.service';
         align-items: center;
         gap: 1.75rem;
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        box-sizing: border-box;
+        max-width: 100%;
+      }
+
+      .btn-perfil-logout {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: #fff0f0;
+        border: 1px solid #ffd4d4;
+        color: #d32f2f;
+        padding: 0.65rem 1.15rem;
+        border-radius: 12px;
+        font-weight: 800;
+        font-size: 0.88rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      .btn-perfil-logout:hover {
+        background: #ff1744;
+        color: #ffffff;
+        border-color: #ff1744;
+        box-shadow: 0 4px 14px rgba(255, 23, 68, 0.25);
+        transform: translateY(-1px);
+      }
+
+      /* =========================================================================
+         BARRA DE NAVEGACIÓ DE PESTANYES DEL PERFIL (SENSE DESLIZABLES LATERALS)
+         ========================================================================= */
+      .perfil-nav-tabs {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0.5rem;
+        background: #ffffff;
+        border: 1px solid #e5e0d7;
+        padding: 0.45rem;
+        border-radius: 16px;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+        width: 100%;
+        box-sizing: border-box;
+        overflow: hidden;
+      }
+
+      .perfil-tab-btn {
+        width: 100%;
+        min-width: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.45rem;
+        padding: 0.75rem 0.6rem;
+        border-radius: 12px;
+        border: 1px solid transparent;
+        background: transparent;
+        color: #55524b;
+        font-weight: 800;
+        font-size: 0.86rem;
+        cursor: pointer;
+        transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+        user-select: none;
+        box-sizing: border-box;
+        text-align: center;
+      }
+
+      .perfil-tab-btn:hover {
+        background: #faf8f4;
+        color: #09090c;
+      }
+
+      .perfil-tab-btn.active {
+        background: #09090c;
+        color: #ffffff;
+        box-shadow: 0 4px 16px rgba(9, 9, 12, 0.25);
+      }
+
+      .perfil-tab-btn.active svg {
+        color: var(--neon, #ff1744);
+        filter: drop-shadow(0 0 6px rgba(255, 23, 68, 0.5));
+      }
+
+      .tab-count-pill {
+        background: rgba(255, 23, 68, 0.12);
+        color: var(--neon, #ff1744);
+        font-size: 0.72rem;
+        font-weight: 900;
+        padding: 0.15rem 0.5rem;
+        border-radius: 10px;
+        border: 1px solid rgba(255, 23, 68, 0.25);
+      }
+
+      .perfil-tab-btn.active .tab-count-pill {
+        background: var(--neon, #ff1744);
+        color: #ffffff;
+        border-color: var(--neon, #ff1744);
+      }
+
+      .tab-loading-state {
+        background: #ffffff;
+        border: 1px solid #e5e0d7;
+        border-radius: 16px;
+        padding: 3rem;
+        text-align: center;
+        color: #78756e;
+        font-weight: 700;
+      }
+
+      .tab-content-section {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+      }
+
+      .tab-header-card {
+        background: #ffffff;
+        border: 1px solid #e5e0d7;
+        border-radius: 16px;
+        padding: 1.4rem 1.6rem;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+
+      .tab-header-titles h2 {
+        font-size: 1.3rem;
+        font-weight: 900;
+        color: #09090c;
+        margin: 0;
+      }
+
+      .tab-header-titles p {
+        font-size: 0.85rem;
+        color: #78756e;
+        margin: 0.25rem 0 0;
+      }
+
+      .tab-filters-row {
+        display: flex;
+        gap: 0.45rem;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+
+      .tab-filter-btn {
+        background: #f6f4ee;
+        border: 1px solid #e2ddd4;
+        color: #55524b;
+        font-size: 0.82rem;
+        font-weight: 800;
+        padding: 0.45rem 0.9rem;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .tab-filter-btn:hover {
+        background: #ebe6dc;
+        color: #09090c;
+      }
+
+      .tab-filter-btn.active {
+        background: var(--neon, #ff1744);
+        color: #ffffff;
+        border-color: var(--neon, #ff1744);
+        box-shadow: 0 2px 8px rgba(255, 23, 68, 0.35);
+      }
+
+      .btn-tab-create {
+        background: var(--neon, #ff1744);
+        color: #ffffff;
+        font-weight: 900;
+        font-size: 0.82rem;
+        padding: 0.5rem 1.05rem;
+        border-radius: 8px;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        box-shadow: 0 4px 12px rgba(255, 23, 68, 0.3);
+        transition: all 0.2s ease;
+      }
+
+      .btn-tab-create:hover {
+        background: #09090c;
+      }
+
+      .profile-tasks-grid,
+      .profile-offers-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+        gap: 1.25rem;
+      }
+
+      .profile-task-card,
+      .profile-offer-card {
+        background: #ffffff;
+        border: 1px solid #e5e0d7;
+        border-radius: 16px;
+        padding: 1.4rem;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 0.9rem;
+        transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+      }
+
+      .profile-task-card:hover,
+      .profile-offer-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+        border-color: #d5cfc2;
+      }
+
+      .task-card-header,
+      .offer-card-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .badge-estat-pill {
+        padding: 0.25rem 0.65rem;
+        border-radius: 20px;
+        font-weight: 800;
+        font-size: 0.74rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+
+      .estat-oberta {
+        background: #eff6ff;
+        color: #1d4ed8;
+        border: 1px solid #bfdbfe;
+      }
+
+      .estat-en-curs {
+        background: #ecfeff;
+        color: #0e7490;
+        border: 1px solid #a5f3fc;
+      }
+
+      .estat-finalitzada {
+        background: #f0fdf4;
+        color: #15803d;
+        border: 1px solid #bbf7d0;
+      }
+
+      .estat-default {
+        background: #f1f5f9;
+        color: #475569;
+        border: 1px solid #cbd5e1;
+      }
+
+      .offer-nature-pill {
+        background: rgba(255, 23, 68, 0.08);
+        color: var(--neon, #ff1744);
+        border: 1px solid rgba(255, 23, 68, 0.25);
+        font-weight: 900;
+        font-size: 0.72rem;
+        padding: 0.2rem 0.55rem;
+        border-radius: 6px;
+        text-transform: uppercase;
+      }
+
+      .offer-price-row {
+        display: flex;
+        align-items: baseline;
+        gap: 0.65rem;
+        margin-top: 0.2rem;
+      }
+
+      .offer-price-label {
+        font-size: 0.8rem;
+        color: #78756e;
+        font-weight: 700;
+      }
+
+      .offer-price-amount {
+        font-size: 1.55rem;
+        font-weight: 900;
+        color: var(--neon, #ff1744);
+        letter-spacing: -0.02em;
+      }
+
+      .task-card-title {
+        font-size: 1.15rem;
+        font-weight: 900;
+        color: #09090c;
+        margin: 0;
+        line-height: 1.35;
+      }
+
+      .task-card-desc,
+      .offer-card-note {
+        font-size: 0.86rem;
+        color: #5a5750;
+        line-height: 1.5;
+        margin: 0;
+      }
+
+      .task-card-meta,
+      .offer-card-meta {
+        background: #faf8f4;
+        border: 1px solid #ebe5da;
+        border-radius: 10px;
+        padding: 0.75rem 0.9rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+      }
+
+      .meta-budget {
+        font-weight: 900;
+        color: var(--neon, #ff1744);
+        font-size: 0.95rem;
+      }
+
+      .meta-ref {
+        font-weight: 800;
+        font-family: monospace;
+        color: #09090c;
+        background: #ede8dd;
+        padding: 0.15rem 0.4rem;
+        border-radius: 4px;
+        font-size: 0.78rem;
+      }
+
+      .task-card-actions,
+      .offer-card-actions {
+        margin-top: 0.35rem;
+      }
+
+      .btn-task-detail {
+        width: 100%;
+        box-sizing: border-box;
+        background: #09090c;
+        color: #ffffff;
+        font-weight: 800;
+        font-size: 0.84rem;
+        padding: 0.65rem 1rem;
+        border-radius: 8px;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        transition: all 0.2s ease;
+      }
+
+      .btn-task-detail:hover {
+        background: var(--neon, #ff1744);
+        box-shadow: 0 4px 12px rgba(255, 23, 68, 0.35);
+      }
+
+      .btn-accept-budget {
+        width: 100%;
+        box-sizing: border-box;
+        background: #16a34a;
+        color: #ffffff;
+        font-weight: 800;
+        font-size: 0.84rem;
+        padding: 0.65rem 1rem;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        box-shadow: 0 4px 12px rgba(22, 163, 74, 0.25);
+        transition: all 0.2s ease;
+      }
+
+      .btn-accept-budget:hover {
+        background: #15803d;
+        transform: translateY(-1px);
+        box-shadow: 0 6px 16px rgba(22, 163, 74, 0.35);
+      }
+
+      .empty-tab-box {
+        background: #ffffff;
+        border: 1px dashed #d5cfc2;
+        border-radius: 16px;
+        padding: 3.5rem 1.5rem;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.75rem;
+      }
+
+      .empty-tab-icon {
+        font-size: 2.8rem;
+        line-height: 1;
+      }
+
+      .empty-tab-box h4 {
+        font-size: 1.2rem;
+        font-weight: 900;
+        color: #09090c;
+        margin: 0;
+      }
+
+      .btn-create-tab {
+        margin-top: 0.5rem;
+        background: var(--neon, #ff1744);
+        color: #ffffff;
+        font-weight: 900;
+        font-size: 0.88rem;
+        padding: 0.65rem 1.3rem;
+        border-radius: 8px;
+        text-decoration: none;
+        box-shadow: 0 4px 14px rgba(255, 23, 68, 0.3);
+        transition: all 0.2s ease;
+      }
+
+      .btn-create-tab:hover {
+        background: #09090c;
       }
 
       .avatar-badge {
@@ -746,10 +1488,43 @@ import { TascaService } from '../../services/tasca.service';
         gap: 0.75rem;
       }
 
+      .btn-quick-contact {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.35rem 0.65rem;
+        border-radius: 6px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        cursor: pointer;
+        border: none;
+        transition: transform 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+        line-height: 1;
+        white-space: nowrap;
+      }
+      .btn-quick-contact:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
+      }
+      .btn-quick-wa {
+        background: #25D366;
+        color: #ffffff;
+      }
+      .btn-quick-wa:hover {
+        background: #1eb855;
+      }
+      .btn-quick-email {
+        background: #2563eb;
+        color: #ffffff;
+      }
+      .btn-quick-email:hover {
+        background: #1d4ed8;
+      }
+
       .info-label {
         font-size: 0.82rem;
         font-weight: 700;
-        color: #6b7280;
+        color: #59606d;
         text-transform: uppercase;
         letter-spacing: 0.04em;
         min-width: 140px;
@@ -865,7 +1640,7 @@ import { TascaService } from '../../services/tasca.service';
 
       .review-date {
         font-size: 0.76rem;
-        color: #9ca3af;
+        color: #59606d;
       }
 
       .review-stars-badge {
@@ -1142,6 +1917,17 @@ import { TascaService } from '../../services/tasca.service';
           grid-template-columns: 1fr;
         }
 
+        .perfil-nav-tabs {
+          grid-template-columns: repeat(2, 1fr);
+          gap: 0.45rem;
+          padding: 0.45rem;
+        }
+
+        .perfil-tab-btn {
+          padding: 0.7rem 0.5rem;
+          font-size: 0.82rem;
+        }
+
         .perfil-header {
           flex-direction: column;
           text-align: center;
@@ -1173,6 +1959,49 @@ import { TascaService } from '../../services/tasca.service';
           flex-direction: column;
           align-items: flex-start;
           gap: 0.25rem;
+        }
+
+        .profile-tasks-grid,
+        .profile-offers-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .tab-header-card {
+          padding: 1.1rem 1rem;
+        }
+
+        .tab-filters-row {
+          width: 100%;
+        }
+
+        .tab-filter-btn {
+          flex: 1;
+          text-align: center;
+          padding: 0.45rem 0.5rem;
+          font-size: 0.76rem;
+        }
+
+        .info-label {
+          min-width: auto;
+        }
+      }
+
+      @media (max-width: 440px) {
+        .perfil-nav-tabs {
+          grid-template-columns: repeat(2, 1fr);
+          gap: 0.35rem;
+          padding: 0.35rem;
+        }
+
+        .perfil-tab-btn {
+          padding: 0.6rem 0.3rem;
+          font-size: 0.75rem;
+          gap: 0.3rem;
+        }
+
+        .perfil-tab-btn svg {
+          width: 15px;
+          height: 15px;
         }
       }
     `
@@ -1207,6 +2036,21 @@ export class PerfilComponent implements OnInit {
   /** Indica si s'està visualitzant el propi perfil (editable) o el d'un altre usuari (públic) */
   isOwnProfile = true;
 
+  /** Pestanya activa del perfil: 'dades' | 'tasques' | 'pressupostos' | 'ressenyes' */
+  activeTab: 'dades' | 'tasques' | 'pressupostos' | 'ressenyes' = 'dades';
+
+  /** Filtre actiu per a les tasques de l'usuari */
+  filtreTasques: 'totes' | 'oberta' | 'en_curs' | 'finalitzada' = 'totes';
+
+  /** Llistat complet de tasques i peticions vinculades a l'usuari */
+  tasquesUsuari: Tasca[] = [];
+
+  /** Llistat complet de pressupostos i ofertes vinculades a l'usuari */
+  ofertesUsuari: Oferta[] = [];
+
+  /** Indicador de càrrega de dades de pestanyes */
+  loadingTabData = false;
+
   /** Llistat de tasques finalitzades associades a l'usuari (les quals actuen com a valoracions públiques) */
   tasquesFinalitzades: Tasca[] = [];
 
@@ -1220,9 +2064,36 @@ export class PerfilComponent implements OnInit {
     private readonly authService: AuthService,
     private readonly usuariService: UsuariService,
     private readonly tascaService: TascaService,
+    private readonly ofertaService: OfertaService,
+    private readonly pressupostService: PressupostService,
+    private readonly incidenciaService: IncidenciaService,
+    private readonly confirmService: ConfirmService,
     private readonly router: Router,
-    private readonly route: ActivatedRoute
+    private readonly route: ActivatedRoute,
+    public readonly translationService: TranslationService
   ) {}
+
+  get isAppPage(): boolean {
+    const url = this.router.url || '';
+    return url.startsWith('/app');
+  }
+
+  getNavUrl(path: string): string {
+    if (this.isAppPage) {
+      if (path === '/' || path === '/inici' || path === '/app') return '/app';
+      if (path.startsWith('/app/')) return path;
+      return path.startsWith('/') ? `/app${path}` : `/app/${path}`;
+    }
+    return path;
+  }
+
+  /**
+   * Tanca la sessió actual de l'usuari i redirigeix al formulari d'inici de sessió.
+   */
+  tancarSessio(): void {
+    this.authService.logout();
+    this.router.navigate(['/login'], { queryParams: { message: 'Sessió tancada correctament.' } });
+  }
 
   /**
    * Comprova si l'usuari connectat és administrador.
@@ -1244,9 +2115,16 @@ export class PerfilComponent implements OnInit {
 
   /**
    * Cicle de vida OnInit:
-   * Comprova l'autenticació i carrega les dades actuals des de PostgreSQL.
+   * Comprova l'autenticació, sincronitza pestanya activa de la URL i carrega les dades actuals des de PostgreSQL.
    */
   ngOnInit(): void {
+    this.route.queryParamMap.subscribe((qp) => {
+      const tab = qp.get('tab');
+      if (tab && ['dades', 'tasques', 'pressupostos', 'ressenyes'].includes(tab)) {
+        this.activeTab = tab as any;
+      }
+    });
+
     this.route.paramMap.subscribe((params) => {
       const targetId = params.get('id');
       const currentUser = this.authService.getCurrentUser();
@@ -1282,31 +2160,67 @@ export class PerfilComponent implements OnInit {
             this.formData.percentil = freshUser.percentil ?? 3;
             this.authService.setCurrentUser(freshUser);
           }
-          this.carregarTasquesPerfil(freshUser);
+          this.carregarDadesCompletasPerfil(freshUser);
         }
       },
       error: () => {
         if (this.isOwnProfile && this.usuari) {
-          this.carregarTasquesPerfil(this.usuari);
+          this.carregarDadesCompletasPerfil(this.usuari);
         }
       }
     });
   }
 
   /**
-   * Carrega les tasques finalitzades de l'usuari (que contenen la valoració i opinió).
-   * Les mateixes tasques completades són les que es mostren com a valoracions públiques del professional!
+   * Carrega de manera integral les tasques, incidències obertes, ofertes i valoracions de l'usuari.
    */
-  private carregarTasquesPerfil(user: Usuari): void {
-    const ident = user.nom || user.id;
-    const fetchObs = (user.rol === 'professional')
-      ? this.tascaService.getByProfessional(ident)
-      : this.tascaService.getByClient(ident);
+  private carregarDadesCompletasPerfil(user: Usuari): void {
+    this.loadingTabData = true;
+    const userNom = user.nom || '';
+    const userId = user.id || '';
+    const nomLower = userNom.toLowerCase();
+    const idLower = userId.toLowerCase();
 
-    fetchObs.subscribe({
-      next: (tasks) => {
-        const all = tasks ?? [];
-        this.tasquesFinalitzades = all.filter(
+    forkJoin({
+      allTasks: this.tascaService.getAll().pipe(catchError(() => of([]))),
+      clientIncidencies: (userNom ? this.incidenciaService.getByClient(userNom) : of([])).pipe(catchError(() => of([]))),
+      allOffers: this.ofertaService.getAll().pipe(catchError(() => of([])))
+    }).subscribe({
+      next: ({ allTasks, clientIncidencies, allOffers }) => {
+        this.loadingTabData = false;
+
+        // 1. Tasques de l'usuari (on és client o professional assignat)
+        const userTasks = (allTasks ?? []).filter(t => {
+          const cNom = (t.clientNom || t.client || '').toLowerCase();
+          const cId = (t.clientId || '').toLowerCase();
+          const pNom = (t.professionalNom || t.professional || '').toLowerCase();
+          const pId = (t.professionalId || '').toLowerCase();
+          return (cNom && cNom === nomLower) || (cId && cId === idLower) ||
+                 (pNom && pNom === nomLower) || (pId && pId === idLower);
+        });
+
+        // Mapejar incidències obertes que no tinguin encara tasca acordada
+        const existingTaskIds = new Set(userTasks.map(t => t.id));
+        const mappedIncidencies: Tasca[] = (clientIncidencies ?? [])
+          .filter(inc => !existingTaskIds.has(inc.id))
+          .map(inc => ({
+            id: inc.id,
+            titol: inc.titol,
+            descripcio: inc.descripcio,
+            categoria: inc.categoria,
+            clientId: inc.clientId,
+            client: inc.clientNom || inc.client || userNom,
+            clientNom: inc.clientNom || inc.client || userNom,
+            budget: inc.budget,
+            estat: inc.estat || 'Oberta',
+            tipus: 'incidencia',
+            createdAt: inc.createdAt
+          }));
+
+        this.tasquesUsuari = [...userTasks, ...mappedIncidencies];
+
+        // 2. Tasques finalitzades amb valoració (per a la pestanya de ressenyes)
+        this.tasquesFinalitzades = this.tasquesUsuari.filter(
           t => t.estat === 'Finalitzada' || (t.valoracio != null && t.valoracio > 0)
         );
         const rated = this.tasquesFinalitzades.filter(t => t.valoracio != null && t.valoracio > 0);
@@ -1317,13 +2231,85 @@ export class PerfilComponent implements OnInit {
         } else {
           this.mitjanaPuntuacio = null;
         }
+
+        // 3. Ofertes públiques associades a l'usuari (els pressupostos privats no es barregen amb ofertes)
+        const allUserTaskIds = new Set(this.tasquesUsuari.map(t => t.id));
+        this.ofertesUsuari = (allOffers ?? []).filter(o => {
+          if (o.categoria === 'Pressupost') return false;
+          if ((o as any).incidenciaId) return false;
+          const oPro = (o.professionalNom || o.professional || '').toLowerCase();
+          const isAuthor = oPro && (oPro === nomLower || oPro === idLower);
+          const isRecipient = !!(o.tascaId && allUserTaskIds.has(o.tascaId));
+          return isAuthor || isRecipient;
+        });
       },
       error: () => {
+        this.loadingTabData = false;
+        this.tasquesUsuari = [];
+        this.ofertesUsuari = [];
         this.tasquesFinalitzades = [];
         this.totalValoracions = 0;
         this.mitjanaPuntuacio = null;
       }
     });
+  }
+
+  /**
+   * Canvia la pestanya activa del perfil i actualitza el paràmetre de consulta de la URL.
+   */
+  setTab(tab: 'dades' | 'tasques' | 'pressupostos' | 'ressenyes'): void {
+    this.activeTab = tab;
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { tab },
+      queryParamsHandling: 'merge'
+    });
+  }
+
+  /**
+   * Defineix el filtre d'estat de les tasques.
+   */
+  setFiltreTasques(f: 'totes' | 'oberta' | 'en_curs' | 'finalitzada'): void {
+    this.filtreTasques = f;
+  }
+
+  /**
+   * Retorna les tasques filtrades segons la pestanya de filtre seleccionada.
+   */
+  get tasquesFiltrades(): Tasca[] {
+    if (this.filtreTasques === 'oberta') {
+      return this.tasquesUsuari.filter(t => (t.estat || '').toLowerCase().includes('obert') || t.tipus === 'incidencia');
+    }
+    if (this.filtreTasques === 'en_curs') {
+      return this.tasquesUsuari.filter(t => (t.estat || '').toLowerCase().includes('curs'));
+    }
+    if (this.filtreTasques === 'finalitzada') {
+      return this.tasquesUsuari.filter(t => (t.estat || '').toLowerCase().includes('finalitzad'));
+    }
+    return this.tasquesUsuari;
+  }
+
+  countTasquesObertes(): number {
+    return this.tasquesUsuari.filter(t => (t.estat || '').toLowerCase().includes('obert') || t.tipus === 'incidencia').length;
+  }
+
+  countTasquesEnCurs(): number {
+    return this.tasquesUsuari.filter(t => (t.estat || '').toLowerCase().includes('curs')).length;
+  }
+
+  countTasquesFinalitzades(): number {
+    return this.tasquesUsuari.filter(t => (t.estat || '').toLowerCase().includes('finalitzad')).length;
+  }
+
+  /**
+   * Retorna la classe CSS identificativa de l'estat d'una tasca.
+   */
+  getTaskEstatClass(estat?: string): string {
+    const s = (estat || '').toLowerCase();
+    if (s.includes('obert')) return 'estat-oberta';
+    if (s.includes('curs')) return 'estat-en-curs';
+    if (s.includes('finalitzad')) return 'estat-finalitzada';
+    return 'estat-default';
   }
 
   /**
@@ -1427,26 +2413,26 @@ export class PerfilComponent implements OnInit {
   }
 
   getVerifStatusLabel(): string {
-    if (this.usuari?.verificat) return 'Oficialment Verificat';
-    if (this.usuari?.sollicitudVerificacio) return 'Pendent de Trucada';
-    return 'No Verificat';
+    if (this.usuari?.verificat) return this.translationService.t('PERFIL.STATUS_OFFICIALLY_VERIFIED');
+    if (this.usuari?.sollicitudVerificacio) return this.translationService.t('PERFIL.STATUS_CALL_PENDING');
+    return this.translationService.t('PERFIL.STATUS_NOT_VERIFIED');
   }
 
   getVerifDescription(): string {
     if (this.usuari?.verificat) {
-      return "Enhorabona! L'equip d'administració d'AVISA ha verificat la teva identitat mitjançant trucada telefònica. Disposes del distintiu oficial a tot el mercat.";
+      return this.translationService.t('PERFIL.VERIF_OFFICIAL_DESC');
     }
     if (this.usuari?.sollicitudVerificacio) {
-      return "Hem rebut la teva sol·licitud. Un administrador et trucarà en breu al telèfon registrat per comprovar que ets tu i activar el teu distintiu.";
+      return this.translationService.t('PERFIL.VERIF_PENDING_DESC');
     }
-    return "Tots els professionals comencen sense verificar. Per obtindre el distintiu de confiança oficial, sol·licita la verificació: l'administrador et trucarà per validar la teva identitat.";
+    return this.translationService.t('PERFIL.GUARANTEE_DESC');
   }
 
   getPublicVerifDescription(): string {
     if (this.usuari?.verificat) {
-      return "Aquest professional ha estat contrastat oficialment mitjançant comprovació telefònica per l'administració d'AVISA.";
+      return this.translationService.t('PERFIL.VERIF_OFFICIAL_DESC');
     }
-    return "Aquest professional encara no ha completat la verificació telefònica oficial.";
+    return this.translationService.t('PERFIL.GUARANTEE_DESC');
   }
 
   onSollicitarVerificacio(): void {
@@ -1503,6 +2489,94 @@ export class PerfilComponent implements OnInit {
   private clearAlerts(): void {
     this.successMessage = '';
     this.errorMessage = '';
+  }
+
+  /**
+   * Obre directament WhatsApp amb un missatge preconfigurat dirigit al professional.
+   */
+  contactarPerfilWhatsapp(): void {
+    if (!this.usuari?.telefon) return;
+    const cleanPhone = this.usuari.telefon.replace(/\D/g, '');
+    const phoneWithCountry = cleanPhone.length === 9 ? '34' + cleanPhone : cleanPhone;
+    const clientUser = this.authService.getCurrentUser();
+    const clientNom = clientUser ? clientUser.nom : 'un client interessat';
+    const msg = `Hola ${this.usuari.nom}, t'he trobat a AVISA. Sóc ${clientNom}. M'agradaria consultar-te sobre els teus serveis professionals.`;
+    const url = `https://wa.me/${phoneWithCountry}?text=${encodeURIComponent(msg)}`;
+    window.open(url, '_blank', 'noopener,noreferrer');
+  }
+
+  /**
+   * Obre el gestor de correu del client amb un assumpte i cos dirigits al professional.
+   */
+  contactarPerfilEmail(): void {
+    if (!this.usuari?.email) return;
+    const clientUser = this.authService.getCurrentUser();
+    const clientNom = clientUser ? clientUser.nom : 'Client interessat';
+    const subject = `Contacte a través d'AVISA: Serveis professionals`;
+    const body = `Hola ${this.usuari.nom},\n\nM'he posat en contacte amb tu després de veure el teu perfil professional a AVISA.\n\nM'agradaria demanar-te informació i disponibilitat per a una feina.\n\nSalutacions cordials,\n${clientNom}`;
+    window.location.href = `mailto:${this.usuari.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  }
+
+  /**
+   * Determina si l'usuari connectat és un client.
+   */
+  isClient(): boolean {
+    return this.authService.isClient();
+  }
+
+  /**
+   * Comprova si el pressupost correspon a una tasca oberta del client i pot ser acceptat.
+   */
+  canAcceptOffer(o: Oferta): boolean {
+    if (!o.tascaId) return false;
+    return this.tasquesUsuari.some(t => t.id === o.tascaId && (t.estat === 'Oberta' || t.tipus === 'incidencia'));
+  }
+
+  /**
+   * Accepta un pressupost des del perfil: passa a ser una Tasca en curs i el pressupost s'elimina.
+   */
+  async onAcceptarPressupost(oferta: Oferta): Promise<void> {
+    const proNom = oferta.professionalNom || oferta.professional || 'aquest professional';
+    const confirmacio = await this.confirmService.confirm({
+      title: 'CONFIRM_MODAL.ACCEPT_BUDGET_TITLE',
+      message: this.translationService.t('CONFIRM_MODAL.ACCEPT_BUDGET_MSG', { pro: proNom, preu: oferta.price || '' }),
+      confirmText: 'CONFIRM_MODAL.DEFAULT_CONFIRM',
+      cancelText: 'CONFIRM_MODAL.DEFAULT_CANCEL',
+      icon: 'success'
+    });
+    if (!confirmacio) return;
+
+    this.pressupostService.accept(oferta.id).subscribe({
+      next: () => {
+        this.successMessage = 'Pressupost acceptat correctament! Ha passat a ser una Tasca en curs i el pressupost s’ha eliminat.';
+        if (this.usuari) {
+          this.carregarDadesCompletasPerfil(this.usuari);
+        }
+        setTimeout(() => {
+          this.setTab('tasques');
+          this.successMessage = '';
+        }, 1200);
+      },
+      error: () => {
+        // Fallback per ofertes
+        this.ofertaService.accept(oferta.id).subscribe({
+          next: () => {
+            this.successMessage = 'Pressupost acceptat correctament! Ha passat a ser una Tasca en curs i el pressupost s’ha eliminat.';
+            if (this.usuari) {
+              this.carregarDadesCompletasPerfil(this.usuari);
+            }
+            setTimeout(() => {
+              this.setTab('tasques');
+              this.successMessage = '';
+            }, 1200);
+          },
+          error: () => {
+            this.errorMessage = 'No s’ha pogut acceptar el pressupost.';
+            setTimeout(() => this.errorMessage = '', 3500);
+          }
+        });
+      }
+    });
   }
 }
 

@@ -19,7 +19,7 @@ import { GuiaProfessional, GUIES_PRO_VA, GUIES_PRO_ES, GUIES_PRO_EN } from '../.
     <div class="pro-community-page">
       <!-- Breadcrumbs de navegació -->
       <nav class="pro-breadcrumbs" aria-label="Fil d'ariadna">
-        <a routerLink="/" class="breadcrumb-link">
+        <a [routerLink]="getNavUrl('/inici')" class="breadcrumb-link">
           <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
             <polyline points="9 22 9 12 15 12 15 22"></polyline>
@@ -27,7 +27,7 @@ import { GuiaProfessional, GUIES_PRO_VA, GUIES_PRO_ES, GUIES_PRO_EN } from '../.
           {{ 'NAV.INICI' | translate }}
         </a>
         <span class="breadcrumb-separator">/</span>
-        <a routerLink="/tasques-ofertes" class="breadcrumb-link">{{ 'COMMUNITY_PRO.BREADCRUMB_PROS' | translate }}</a>
+        <a [routerLink]="getNavUrl('/tasques-ofertes')" class="breadcrumb-link">{{ 'COMMUNITY_PRO.BREADCRUMB_PROS' | translate }}</a>
         <span class="breadcrumb-separator">/</span>
         <span class="breadcrumb-current">{{ 'COMMUNITY_PRO.BREADCRUMB_COMMUNITY' | translate }}</span>
       </nav>
@@ -53,7 +53,7 @@ import { GuiaProfessional, GUIES_PRO_VA, GUIES_PRO_ES, GUIES_PRO_EN } from '../.
             </svg>
             <span>{{ 'COMMUNITY_PRO.HERO_BTN_JOIN' | translate }}</span>
           </button>
-          <a routerLink="/tasques-ofertes" [queryParams]="{ tipus: 'tasques' }" class="btn-hero-secondary">
+          <a [routerLink]="getNavUrl('/tasques-ofertes')" [queryParams]="{ tipus: 'tasques' }" class="btn-hero-secondary">
             <span>{{ 'COMMUNITY_PRO.HERO_BTN_EXPLORE' | translate }}</span>
             <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
               <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -343,12 +343,29 @@ import { GuiaProfessional, GUIES_PRO_VA, GUIES_PRO_ES, GUIES_PRO_EN } from '../.
               <div class="guide-checklist">
                 <strong>{{ 'COMMUNITY_PRO.GUIDE_KEYS_TITLE' | translate }}</strong>
                 <ul>
-                  <li *ngFor="let pt of guia.puntsClau">✓ {{ pt }}</li>
+                  <li *ngFor="let pt of guia.puntsClau">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 5px;" aria-hidden="true">
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    {{ pt }}
+                  </li>
                 </ul>
               </div>
 
               <div class="guide-callout">
-                <span class="callout-icon">💡</span>
+                <span class="callout-icon">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M12 2v2"></path>
+                    <path d="M12 20v2"></path>
+                    <path d="m4.93 4.93 1.41 1.41"></path>
+                    <path d="m17.66 17.66 1.41 1.41"></path>
+                    <path d="M2 12h2"></path>
+                    <path d="M20 12h2"></path>
+                    <path d="m6.34 17.66-1.41 1.41"></path>
+                    <path d="m19.07 4.93-1.41 1.41"></path>
+                    <circle cx="12" cy="12" r="5"></circle>
+                  </svg>
+                </span>
                 <p><strong>{{ 'COMMUNITY_PRO.GUIDE_TIP_TITLE' | translate }}</strong> {{ guia.destacat }}</p>
               </div>
             </div>
@@ -365,7 +382,11 @@ import { GuiaProfessional, GUIES_PRO_VA, GUIES_PRO_ES, GUIES_PRO_EN } from '../.
 
         <div class="testimonials-grid">
           <div class="testi-card">
-            <div class="testi-stars">★★★★★</div>
+            <div class="testi-stars" aria-label="5 estrelles">
+              <svg *ngFor="let s of [1,2,3,4,5]" viewBox="0 0 24 24" width="14" height="14" fill="#f59e0b" style="margin-right: 2px;" aria-hidden="true">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+              </svg>
+            </div>
             <p class="testi-quote">{{ 'COMMUNITY_PRO.TESTI_1_QUOTE' | translate }}</p>
             <div class="testi-author">
               <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=120&q=80" alt="Jordi Romero" class="testi-avatar" />
@@ -377,7 +398,11 @@ import { GuiaProfessional, GUIES_PRO_VA, GUIES_PRO_ES, GUIES_PRO_EN } from '../.
           </div>
 
           <div class="testi-card">
-            <div class="testi-stars">★★★★★</div>
+            <div class="testi-stars" aria-label="5 estrelles">
+              <svg *ngFor="let s of [1,2,3,4,5]" viewBox="0 0 24 24" width="14" height="14" fill="#f59e0b" style="margin-right: 2px;" aria-hidden="true">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+              </svg>
+            </div>
             <p class="testi-quote">{{ 'COMMUNITY_PRO.TESTI_2_QUOTE' | translate }}</p>
             <div class="testi-author">
               <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=120&q=80" alt="Pere Font" class="testi-avatar" />
@@ -389,7 +414,11 @@ import { GuiaProfessional, GUIES_PRO_VA, GUIES_PRO_ES, GUIES_PRO_EN } from '../.
           </div>
 
           <div class="testi-card">
-            <div class="testi-stars">★★★★★</div>
+            <div class="testi-stars" aria-label="5 estrelles">
+              <svg *ngFor="let s of [1,2,3,4,5]" viewBox="0 0 24 24" width="14" height="14" fill="#f59e0b" style="margin-right: 2px;" aria-hidden="true">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+              </svg>
+            </div>
             <p class="testi-quote">{{ 'COMMUNITY_PRO.TESTI_3_QUOTE' | translate }}</p>
             <div class="testi-author">
               <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=120&q=80" alt="Marc Soler" class="testi-avatar" />
@@ -414,7 +443,7 @@ import { GuiaProfessional, GUIES_PRO_VA, GUIES_PRO_ES, GUIES_PRO_EN } from '../.
             <button type="button" class="btn-register-pro-big" (click)="anarRegistrePro()">
               {{ 'COMMUNITY_PRO.FINAL_BTN' | translate }}
             </button>
-            <a routerLink="/" class="link-back-main">{{ 'COMMUNITY_PRO.FINAL_BACK' | translate }}</a>
+            <a [routerLink]="getNavUrl('/inici')" class="link-back-main">{{ 'COMMUNITY_PRO.FINAL_BACK' | translate }}</a>
           </div>
         </div>
       </section>
@@ -1010,7 +1039,7 @@ import { GuiaProfessional, GUIES_PRO_VA, GUIES_PRO_ES, GUIES_PRO_EN } from '../.
     }
     .testimonials-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
       gap: 1.75rem;
     }
     .testi-card {
@@ -1249,15 +1278,29 @@ export class ComunitatProfessionalsComponent implements OnInit {
     this.guiaOberta = this.guiaOberta === id ? '' : id;
   }
 
+  get isAppPage(): boolean {
+    const url = this.router.url || '';
+    return url.startsWith('/app');
+  }
+
+  getNavUrl(path: string): string {
+    if (this.isAppPage) {
+      if (path === '/' || path === '/inici' || path === '/app') return '/app';
+      if (path.startsWith('/app/')) return path;
+      return path.startsWith('/') ? `/app${path}` : `/app/${path}`;
+    }
+    return path;
+  }
+
   anarRegistrePro(): void {
     if (this.authService.isLoggedIn()) {
       if (this.authService.isProfessional()) {
-        this.router.navigate(['/tasques-ofertes'], { queryParams: { tipus: 'tasques' } });
+        this.router.navigate([this.getNavUrl('/tasques-ofertes')], { queryParams: { tipus: 'tasques' } });
       } else {
-        this.router.navigate(['/perfil']);
+        this.router.navigate([this.getNavUrl('/perfil')]);
       }
       return;
     }
-    this.router.navigate(['/registre'], { queryParams: { rol: 'professional' } });
+    this.router.navigate([this.getNavUrl('/registre')], { queryParams: { rol: 'professional' } });
   }
 }
