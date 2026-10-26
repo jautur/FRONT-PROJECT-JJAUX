@@ -698,6 +698,53 @@
   gap: 0.65rem;
 }
 
+.sidebar-brand-link {
+  text-decoration: none;
+  cursor: pointer;
+  padding: 0.35rem 0.65rem;
+  margin: -0.35rem -0.65rem;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.sidebar-brand-link:hover {
+  background: rgba(255, 255, 255, 0.05);
+  transform: translateX(2px);
+}
+
+.sidebar-brand-link:hover .brand-text {
+  color: var(--neon, #ff1744);
+}
+
+.sidebar-brand-link:hover .brand-switch-badge {
+  background: var(--neon, #ff1744);
+  color: #ffffff;
+  border-color: var(--neon, #ff1744);
+}
+
+.brand-switch-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 9999px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  background: #1c1c28;
+  color: var(--color-bone-muted, #bab8ae);
+  border: 1px solid #2e2e40;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.brand-badge-web {
+  background: #2563eb !important;
+}
+
 .brand-badge {
   background: var(--neon, #ff1744);
   color: #ffffff;

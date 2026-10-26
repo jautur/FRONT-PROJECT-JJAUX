@@ -208,10 +208,46 @@
   <!-- MENÚ LATERAL A L'ESQUERRA -->
   <aside class="sidebar-left" [class.open]="menuObert">
     <div class="sidebar-header">
-      <div class="sidebar-brand">
+      <!-- A la versió web: enllaç per accedir a la versió /app -->
+      <a
+        *ngIf="!isAppPage"
+        [routerLink]="'/app'"
+        (click)="anarAVersioApp($event)"
+        class="sidebar-brand sidebar-brand-link"
+        title="Accedir a la versió App (/app)"
+        aria-label="Accedir a la versió App"
+      >
         <span class="brand-badge">AV</span>
         <span class="brand-text">AVISA</span>
-      </div>
+        <span class="brand-switch-badge">
+          <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+            <line x1="12" y1="18" x2="12.01" y2="18"></line>
+          </svg>
+          /app
+        </span>
+      </a>
+
+      <!-- A la versió /app: enllaç per accedir a la versió web -->
+      <a
+        *ngIf="isAppPage"
+        [routerLink]="'/inici'"
+        (click)="anarAVersioWeb($event)"
+        class="sidebar-brand sidebar-brand-link"
+        title="Accedir a la versió Web"
+        aria-label="Accedir a la versió Web"
+      >
+        <span class="brand-badge brand-badge-web">AV</span>
+        <span class="brand-text">AVISA</span>
+        <span class="brand-switch-badge">
+          <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="2" y1="12" x2="22" y2="12"></line>
+            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+          </svg>
+          Web
+        </span>
+      </a>
       <button type="button" class="btn-close-sidebar" (click)="tancarMenu()" [title]="'NAV.OCULTAR_MENU' | translate" [attr.aria-label]="'NAV.OCULTAR_MENU' | translate">
         <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <line x1="18" y1="6" x2="6" y2="18"></line>

@@ -303,6 +303,37 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Navega directament a la versió App mòbil (/app) i actualitza l'estat d'entorn.
+   */
+  anarAVersioApp(event?: Event): void {
+    if (event) event.preventDefault();
+    this.tancarMenu();
+    this.isAppMode = true;
+    this.isAppPage = true;
+    this.showBottomNav = true;
+    try {
+      sessionStorage.setItem('avisa_app_mode', 'true');
+    } catch {}
+    this.router.navigate(['/app']);
+  }
+
+  /**
+   * Navega directament a la versió Web estàndard (/inici) i restableix l'estat d'entorn.
+   */
+  anarAVersioWeb(event?: Event): void {
+    if (event) event.preventDefault();
+    this.tancarMenu();
+    this.isAppMode = false;
+    this.isAppPage = false;
+    this.showBottomNav = false;
+    try {
+      sessionStorage.removeItem('avisa_app_mode');
+      localStorage.removeItem('avisa_app_mode');
+    } catch {}
+    this.router.navigate(['/inici']);
+  }
+
+  /**
    * Retorna la ruta adaptada segons l'entorn de navegació actiu:
    * - A l'entorn App mòbil (/app o rutes amb prefix /app/...), es manté el context /app.
    * - A l'entorn Web (/inici, /tasques-ofertes, etc.), s'utilitzen les rutes web estàndard.
