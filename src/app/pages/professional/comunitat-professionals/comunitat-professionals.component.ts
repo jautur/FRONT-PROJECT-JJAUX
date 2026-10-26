@@ -343,12 +343,29 @@ import { GuiaProfessional, GUIES_PRO_VA, GUIES_PRO_ES, GUIES_PRO_EN } from '../.
               <div class="guide-checklist">
                 <strong>{{ 'COMMUNITY_PRO.GUIDE_KEYS_TITLE' | translate }}</strong>
                 <ul>
-                  <li *ngFor="let pt of guia.puntsClau">✓ {{ pt }}</li>
+                  <li *ngFor="let pt of guia.puntsClau">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 5px;" aria-hidden="true">
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    {{ pt }}
+                  </li>
                 </ul>
               </div>
 
               <div class="guide-callout">
-                <span class="callout-icon">💡</span>
+                <span class="callout-icon">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M12 2v2"></path>
+                    <path d="M12 20v2"></path>
+                    <path d="m4.93 4.93 1.41 1.41"></path>
+                    <path d="m17.66 17.66 1.41 1.41"></path>
+                    <path d="M2 12h2"></path>
+                    <path d="M20 12h2"></path>
+                    <path d="m6.34 17.66-1.41 1.41"></path>
+                    <path d="m19.07 4.93-1.41 1.41"></path>
+                    <circle cx="12" cy="12" r="5"></circle>
+                  </svg>
+                </span>
                 <p><strong>{{ 'COMMUNITY_PRO.GUIDE_TIP_TITLE' | translate }}</strong> {{ guia.destacat }}</p>
               </div>
             </div>
@@ -365,7 +382,11 @@ import { GuiaProfessional, GUIES_PRO_VA, GUIES_PRO_ES, GUIES_PRO_EN } from '../.
 
         <div class="testimonials-grid">
           <div class="testi-card">
-            <div class="testi-stars">★★★★★</div>
+            <div class="testi-stars" aria-label="5 estrelles">
+              <svg *ngFor="let s of [1,2,3,4,5]" viewBox="0 0 24 24" width="14" height="14" fill="#f59e0b" style="margin-right: 2px;" aria-hidden="true">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+              </svg>
+            </div>
             <p class="testi-quote">{{ 'COMMUNITY_PRO.TESTI_1_QUOTE' | translate }}</p>
             <div class="testi-author">
               <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=120&q=80" alt="Jordi Romero" class="testi-avatar" />
@@ -377,7 +398,11 @@ import { GuiaProfessional, GUIES_PRO_VA, GUIES_PRO_ES, GUIES_PRO_EN } from '../.
           </div>
 
           <div class="testi-card">
-            <div class="testi-stars">★★★★★</div>
+            <div class="testi-stars" aria-label="5 estrelles">
+              <svg *ngFor="let s of [1,2,3,4,5]" viewBox="0 0 24 24" width="14" height="14" fill="#f59e0b" style="margin-right: 2px;" aria-hidden="true">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+              </svg>
+            </div>
             <p class="testi-quote">{{ 'COMMUNITY_PRO.TESTI_2_QUOTE' | translate }}</p>
             <div class="testi-author">
               <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=120&q=80" alt="Pere Font" class="testi-avatar" />
@@ -389,7 +414,11 @@ import { GuiaProfessional, GUIES_PRO_VA, GUIES_PRO_ES, GUIES_PRO_EN } from '../.
           </div>
 
           <div class="testi-card">
-            <div class="testi-stars">★★★★★</div>
+            <div class="testi-stars" aria-label="5 estrelles">
+              <svg *ngFor="let s of [1,2,3,4,5]" viewBox="0 0 24 24" width="14" height="14" fill="#f59e0b" style="margin-right: 2px;" aria-hidden="true">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+              </svg>
+            </div>
             <p class="testi-quote">{{ 'COMMUNITY_PRO.TESTI_3_QUOTE' | translate }}</p>
             <div class="testi-author">
               <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=120&q=80" alt="Marc Soler" class="testi-avatar" />
@@ -1010,7 +1039,7 @@ import { GuiaProfessional, GUIES_PRO_VA, GUIES_PRO_ES, GUIES_PRO_EN } from '../.
     }
     .testimonials-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
       gap: 1.75rem;
     }
     .testi-card {

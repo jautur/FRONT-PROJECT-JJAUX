@@ -197,7 +197,12 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'pressupostos' | 'usuari
           <div class="metric-info">
             <span class="metric-value">{{ resenyes.length }}</span>
             <span class="metric-label">{{ 'ADMIN.METRIC_RESENYES' | translate }}</span>
-            <small class="metric-sub">★ {{ mitjanaRessenyes() }} / 5.0 mitjana</small>
+            <small class="metric-sub">
+              <svg viewBox="0 0 24 24" width="12" height="12" fill="#f59e0b" style="vertical-align: -1px; margin-right: 2px;" aria-hidden="true">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+              </svg>
+              {{ mitjanaRessenyes() }} / 5.0 mitjana
+            </small>
           </div>
         </div>
 
@@ -797,7 +802,13 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'pressupostos' | 'usuari
               <tr *ngFor="let bl of blacklistFiltrada">
                 <td class="font-mono"><strong>{{ bl.id }}</strong></td>
                 <td>
-                  <span class="phone-highlight">🚫 {{ bl.telefon }}</span>
+                  <span class="phone-highlight">
+                    <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;" aria-hidden="true">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line>
+                    </svg>
+                    {{ bl.telefon }}
+                  </span>
                 </td>
                 <td>{{ bl.motiu || '-' }}</td>
                 <td><span class="user-badge-tag admin">{{ bl.bloquejatPer || 'admin' }}</span></td>
@@ -906,7 +917,10 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'pressupostos' | 'usuari
             class="search-input"
           />
           <div class="rating-summary-badge" *ngIf="resenyes.length > 0">
-            ★ Mitjana plataforma: <strong>{{ mitjanaRessenyes() }} / 5.0</strong> ({{ resenyes.length }} valoracions)
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="#f59e0b" style="vertical-align: -2px; margin-right: 3px;" aria-hidden="true">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+            </svg>
+            Mitjana plataforma: <strong>{{ mitjanaRessenyes() }} / 5.0</strong> ({{ resenyes.length }} valoracions)
           </div>
         </div>
 
@@ -925,7 +939,10 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'pressupostos' | 'usuari
               <tr *ngFor="let r of resenyesFiltrades">
                 <td>
                   <span class="stars-badge">
-                    ★ {{ r.puntuacio }}.0
+                    <svg viewBox="0 0 24 24" width="13" height="13" fill="#f59e0b" style="vertical-align: -1px; margin-right: 3px;" aria-hidden="true">
+                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                    </svg>
+                    {{ r.puntuacio }}.0
                   </span>
                 </td>
                 <td>
@@ -1249,8 +1266,17 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'pressupostos' | 'usuari
                 </div>
                 <h4 class="preview-pro-name">{{ usuariFotoSeleccionat.nom }}</h4>
                 <div class="preview-rating-row">
-                  <span class="preview-star-pill">★ 4.9</span>
-                  <span class="preview-stars">★★★★★</span>
+                  <span class="preview-star-pill">
+                    <svg viewBox="0 0 24 24" width="12" height="12" fill="#f59e0b" style="vertical-align: -1px; margin-right: 2px;" aria-hidden="true">
+                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                    </svg>
+                    4.9
+                  </span>
+                  <span class="preview-stars" aria-hidden="true">
+                    <svg *ngFor="let s of [1,2,3,4,5]" viewBox="0 0 24 24" width="11" height="11" fill="#f59e0b" style="margin-right: 1px;">
+                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                    </svg>
+                  </span>
                   <span class="preview-opinions">(12 opinions)</span>
                 </div>
                 <p class="preview-pro-bio">
@@ -1943,8 +1969,8 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'pressupostos' | 'usuari
       position: fixed;
       top: 0;
       left: 0;
-      width: 100vw;
-      height: 100vh;
+      width: 100%;
+      height: 100%;
       background: rgba(9, 9, 12, 0.65);
       display: flex;
       align-items: center;

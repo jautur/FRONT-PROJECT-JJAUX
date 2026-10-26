@@ -526,10 +526,25 @@
   <div class="custom-confirm-overlay" *ngIf="confirmService.isOpen()" (click)="confirmService.onCancel()" role="dialog" aria-modal="true">
     <div class="custom-confirm-card" (click)="$event.stopPropagation()">
       <div class="confirm-icon-badge" [ngClass]="confirmService.icon()">
-        <span *ngIf="confirmService.icon() === 'question'">🤝</span>
-        <span *ngIf="confirmService.icon() === 'success'">✓</span>
-        <span *ngIf="confirmService.icon() === 'warning'">⚠️</span>
-        <span *ngIf="confirmService.icon() === 'danger'">🗑️</span>
+        <svg *ngIf="confirmService.icon() === 'question'" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="10"></circle>
+          <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+          <line x1="12" y1="17" x2="12.01" y2="17"></line>
+        </svg>
+        <svg *ngIf="confirmService.icon() === 'success'" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+        <svg *ngIf="confirmService.icon() === 'warning'" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path>
+          <line x1="12" y1="9" x2="12" y2="13"></line>
+          <line x1="12" y1="17" x2="12.01" y2="17"></line>
+        </svg>
+        <svg *ngIf="confirmService.icon() === 'danger'" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polyline points="3 6 5 6 21 6"></polyline>
+          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+          <line x1="10" y1="11" x2="10" y2="17"></line>
+          <line x1="14" y1="11" x2="14" y2="17"></line>
+        </svg>
       </div>
 
       <h3 class="confirm-modal-title">{{ confirmService.title() | translate }}</h3>

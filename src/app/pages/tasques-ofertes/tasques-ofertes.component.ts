@@ -71,7 +71,10 @@ interface CategoriaFiltre {
             [attr.aria-label]="'TASQUES_OFERTES.SEARCH_PLACEHOLDER' | translate"
           />
           <button *ngIf="searchQuery" type="button" class="btn-clear-search" (click)="searchQuery = ''" [attr.aria-label]="'TASQUES_OFERTES.CLEAR_SEARCH' | translate">
-            ✕
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
           </button>
         </div>
 
@@ -120,7 +123,7 @@ interface CategoriaFiltre {
               (change)="seleccionarCategoria(categoriaSeleccionada)"
               class="mobile-native-select"
             >
-              <option value="totes">📁 {{ 'TASQUES_OFERTES.ALL_CATEGORIES' | translate }} ({{ totalElements }})</option>
+              <option value="totes">{{ 'TASQUES_OFERTES.ALL_CATEGORIES' | translate }} ({{ totalElements }})</option>
               <option *ngFor="let cat of categoriesLlista" [value]="cat.nom">
                 {{ cat.nom | translate }} ({{ comptarElementsPerCategoria(cat.nom) }})
               </option>
@@ -134,10 +137,10 @@ interface CategoriaFiltre {
               [(ngModel)]="tipusFiltre"
               class="mobile-native-select"
             >
-              <option value="tots">📋 {{ 'TASQUES_OFERTES.FILTER_ALL' | translate }} ({{ totalElements }})</option>
-              <option value="ofertes">💼 {{ 'TASQUES_OFERTES.FILTER_OFFERS' | translate }} ({{ ofertesFiltrades.length }})</option>
-              <option value="incidencies">🔧 {{ 'TASQUES_OFERTES.FILTER_INCIDENCIES' | translate }} ({{ incidenciesFiltrades.length }})</option>
-              <option value="tasques">🤝 {{ 'TASQUES_OFERTES.FILTER_TASKS' | translate }} ({{ tasquesFiltrades.length }})</option>
+              <option value="tots">{{ 'TASQUES_OFERTES.FILTER_ALL' | translate }} ({{ totalElements }})</option>
+              <option value="ofertes">{{ 'TASQUES_OFERTES.FILTER_OFFERS' | translate }} ({{ ofertesFiltrades.length }})</option>
+              <option value="incidencies">{{ 'TASQUES_OFERTES.FILTER_INCIDENCIES' | translate }} ({{ incidenciesFiltrades.length }})</option>
+              <option value="tasques">{{ 'TASQUES_OFERTES.FILTER_TASKS' | translate }} ({{ tasquesFiltrades.length }})</option>
             </select>
           </div>
         </div>
@@ -146,7 +149,12 @@ interface CategoriaFiltre {
       <!-- Avís del sistema (si escau) -->
       <div *ngIf="noticeMessage" class="notice-banner">
         <span>{{ noticeMessage }}</span>
-        <button type="button" class="btn-dismiss" (click)="noticeMessage = ''" aria-label="Tancar avís">✕</button>
+        <button type="button" class="btn-dismiss" (click)="noticeMessage = ''" aria-label="Tancar avís">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
       </div>
 
       <!-- Disposició principal: Columna de Categories + Llistats -->
@@ -287,7 +295,12 @@ interface CategoriaFiltre {
                       <strong class="meta-value pro-name-val">{{ offer.professional }}</strong>
                     </a>
                     <span class="pro-rating-inline" *ngIf="getProfessionalRating(offer.professional) as ratingInfo">
-                      <span class="stars-gold">★ {{ ratingInfo.mitjana }}</span>
+                      <span class="stars-gold">
+                        <svg viewBox="0 0 24 24" width="13" height="13" fill="#f59e0b" style="vertical-align: -1px; margin-right: 2px;" aria-hidden="true">
+                          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                        </svg>
+                        {{ ratingInfo.mitjana }}
+                      </span>
                       <span class="reviews-count">({{ ratingInfo.total }} {{ 'TASQUES_OFERTES.VALORACIONS' | translate }})</span>
                       <button type="button" class="btn-view-reviews" (click)="obrirModalRessenyes(offer.professional)">
                         {{ 'TASQUES_OFERTES.VEURE_RESSENYES' | translate }}
@@ -425,11 +438,21 @@ interface CategoriaFiltre {
               <span class="pro-tag-badge">{{ 'TASQUES_OFERTES.MODAL_PRO_TAG' | translate }}</span>
               <h2>{{ modalProfessionalNom }}</h2>
               <div class="modal-rating-summary" *ngIf="modalProfessionalRating">
-                <span class="stars-gold">★ {{ modalProfessionalRating.mitjana }}</span>
+                <span class="stars-gold">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="#f59e0b" style="vertical-align: -1px; margin-right: 2px;" aria-hidden="true">
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                  </svg>
+                  {{ modalProfessionalRating.mitjana }}
+                </span>
                 <span class="rating-count">({{ modalProfessionalRating.total }} {{ 'TASQUES_OFERTES.MODAL_REVIEWS_VERIFIED' | translate }})</span>
               </div>
             </div>
-            <button type="button" class="btn-close-modal" (click)="tancarModalRessenyes()" [attr.aria-label]="'COMMON.TANCAR' | translate">✕</button>
+            <button type="button" class="btn-close-modal" (click)="tancarModalRessenyes()" [attr.aria-label]="'COMMON.TANCAR' | translate">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
           </header>
 
           <div class="modal-body">
@@ -467,7 +490,11 @@ interface CategoriaFiltre {
                     </div>
                   </div>
                   <div class="stars-gold">
-                    <span *ngFor="let s of [1,2,3,4,5]">{{ s <= r.puntuacio ? '★' : '☆' }}</span>
+                    <span *ngFor="let s of [1,2,3,4,5]">
+                      <svg viewBox="0 0 24 24" width="13" height="13" [attr.fill]="s <= r.puntuacio ? '#f59e0b' : '#d1d5db'" style="vertical-align: -1px; margin-right: 1px;" aria-hidden="true">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                      </svg>
+                    </span>
                     <span class="rating-digit">{{ r.puntuacio }}/5</span>
                   </div>
                 </div>
@@ -501,13 +528,23 @@ interface CategoriaFiltre {
               <h2>{{ 'TASQUES_OFERTES.PETICIO_ENVIADA_TITLE' | translate }}</h2>
               <p class="exit-modal-sub">{{ 'TASQUES_OFERTES.PETICIO_ENVIADA_SUBTITLE' | translate }}</p>
             </div>
-            <button type="button" class="btn-close-modal" (click)="tancarModalPeticioExit()" [attr.aria-label]="'COMMON.TANCAR' | translate">✕</button>
+            <button type="button" class="btn-close-modal" (click)="tancarModalPeticioExit()" [attr.aria-label]="'COMMON.TANCAR' | translate">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
           </header>
 
           <div class="modal-body exit-modal-body">
             <!-- Targeta resum de la petició confirmada -->
             <div class="exit-offer-summary">
-              <div class="exit-offer-badge">✓ {{ 'TASQUES_OFERTES.AGREED_NATURE' | translate }}</div>
+              <div class="exit-offer-badge">
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;" aria-hidden="true">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                {{ 'TASQUES_OFERTES.AGREED_NATURE' | translate }}
+              </div>
               <h3 class="exit-offer-title">{{ peticioExitDades.titol }}</h3>
               <div class="exit-offer-meta">
                 <span class="exit-pro-info">
@@ -1287,7 +1324,7 @@ interface CategoriaFiltre {
         gap: 0.2rem;
       }
       .reviews-count {
-        color: #6b7280;
+        color: #59606d;
         font-size: 0.82rem;
       }
       .btn-view-reviews {
@@ -1410,7 +1447,7 @@ interface CategoriaFiltre {
         background: none;
         border: none;
         font-size: 1.25rem;
-        color: #9ca3af;
+        color: #59606d;
         cursor: pointer;
         padding: 0.3rem;
         line-height: 1;
@@ -1497,7 +1534,7 @@ interface CategoriaFiltre {
       }
       .review-date {
         font-size: 0.74rem;
-        color: #9ca3af;
+        color: #59606d;
       }
       .rating-digit {
         font-size: 0.78rem;

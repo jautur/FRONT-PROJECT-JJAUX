@@ -101,7 +101,12 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
         <!-- Header del Modal -->
         <div class="modal-header">
           <div class="modal-title-wrap">
-            <span class="modal-icon">🔐</span>
+            <span class="modal-icon">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+            </span>
             <h2>{{ 'AUTH.LOGIN.RECOVERY_MODAL_TITLE' | translate }}</h2>
           </div>
           <button
@@ -110,7 +115,10 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
             (click)="tancarModalRecuperacio()"
             aria-label="Tancar"
           >
-            ✕
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
           </button>
         </div>
 
@@ -241,7 +249,11 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 
         <!-- PAS 3: Èxit confirmació -->
         <div *ngIf="pasRecuperacio === 3" class="modal-body success-body">
-          <div class="success-icon-wrap">✓</div>
+          <div class="success-icon-wrap">
+            <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+          </div>
           <h3>{{ 'AUTH.LOGIN.RECOVERY_SUCCESS_TITLE' | translate }}</h3>
           <p class="success-desc">{{ 'AUTH.LOGIN.RECOVERY_SUCCESS_DESC' | translate }}</p>
 

@@ -244,7 +244,7 @@ import { Tasca } from '../../../models/tasca.model';
     }
     .ofertes-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
       gap: 1.35rem;
     }
     .oferta-card {
@@ -524,7 +524,7 @@ import { Tasca } from '../../../models/tasca.model';
     }
     .assigned-tasks-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(min(100%, 290px), 1fr));
       gap: 1.25rem;
     }
     .assigned-task-card {

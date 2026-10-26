@@ -41,7 +41,12 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
           <div class="header-name-row">
             <h1>{{ usuari?.nom || ('PERFIL.TITLE_OWN' | translate) }}</h1>
             <div class="pro-rating-badge-head" *ngIf="mitjanaPuntuacio">
-              <span class="stars-gold">★ {{ mitjanaPuntuacio }}</span>
+              <span class="stars-gold">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="#f59e0b" style="vertical-align: -1px; margin-right: 2px;" aria-hidden="true">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                </svg>
+                {{ mitjanaPuntuacio }}
+              </span>
               <span class="count-head">({{ totalValoracions }} {{ totalValoracions === 1 ? ('PERFIL.RATING_COUNT_SINGULAR' | translate) : ('PERFIL.RATING_COUNT_PLURAL' | translate) }})</span>
             </div>
           </div>
@@ -245,11 +250,27 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
 
             <div class="verif-checklist">
               <div class="check-item" [class.valid]="!!usuari?.email">
-                <span class="check-icon">{{ !!usuari?.email ? '✓' : '✗' }}</span>
+                <span class="check-icon">
+                  <svg *ngIf="!!usuari?.email" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                  <svg *ngIf="!usuari?.email" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                  </svg>
+                </span>
                 <span>{{ 'PERFIL.EMAIL_REGISTERED' | translate }} <strong>{{ usuari?.email || 'Mancant' }}</strong></span>
               </div>
               <div class="check-item" [class.valid]="!!usuari?.telefon">
-                <span class="check-icon">{{ !!usuari?.telefon ? '✓' : '✗' }}</span>
+                <span class="check-icon">
+                  <svg *ngIf="!!usuari?.telefon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                  <svg *ngIf="!usuari?.telefon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                  </svg>
+                </span>
                 <span>{{ 'PERFIL.PHONE_CALL' | translate }} <strong>{{ usuari?.telefon || 'Cal afegir un telèfon' }}</strong></span>
               </div>
             </div>
@@ -270,7 +291,11 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
 
             <!-- Avís si la sol·licitud està pendent de trucada -->
             <div *ngIf="!usuari?.verificat && usuari?.sollicitudVerificacio" class="pending-notice-box" style="margin-top: 0.85rem;">
-              <span class="notice-icon">📞</span>
+              <span class="notice-icon">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                </svg>
+              </span>
               <div>
                 <strong>{{ 'PERFIL.VERIF_PENDING_TITLE' | translate }}</strong> {{ 'PERFIL.VERIF_PENDING_DESC' | translate }}
               </div>
@@ -278,7 +303,11 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
 
             <!-- Avís si ja està verificat -->
             <div *ngIf="usuari?.verificat" class="verified-notice-box" style="margin-top: 0.85rem;">
-              <span class="notice-icon">✓</span>
+              <span class="notice-icon">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </span>
               <div>
                 <strong>{{ 'PERFIL.VERIF_OFFICIAL_TITLE' | translate }}</strong> {{ 'PERFIL.VERIF_OFFICIAL_DESC' | translate }}
               </div>
@@ -521,7 +550,12 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
 
         <!-- Estat buit de tasques -->
         <div class="empty-tab-box" *ngIf="tasquesFiltrades.length === 0">
-          <span class="empty-tab-icon">📋</span>
+          <span class="empty-tab-icon">
+            <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+              <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+            </svg>
+          </span>
           <h4>{{ 'PERFIL.NO_TASQUES_USER' | translate }}</h4>
           <p class="subtitle">{{ 'PERFIL.NO_TASQUES_FILTER' | translate }}</p>
           <a *ngIf="isOwnProfile" [routerLink]="getNavUrl('/client/crear-tasca')" class="btn-create-tab">
@@ -597,7 +631,12 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
 
         <!-- Estat buit d'ofertes -->
         <div class="empty-tab-box" *ngIf="ofertesUsuari.length === 0">
-          <span class="empty-tab-icon">💶</span>
+          <span class="empty-tab-icon">
+            <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+              <line x1="2" y1="10" x2="22" y2="10"></line>
+            </svg>
+          </span>
           <h4>{{ 'PERFIL.NO_PRESSUPOSTOS_USER' | translate }}</h4>
           <p class="subtitle">{{ 'PERFIL.NO_PRESSUPOSTOS_USER' | translate }}</p>
           <a *ngIf="isOwnProfile && (usuari?.rol === 'professional' || isAdmin)" [routerLink]="getNavUrl('/professional/crear-oferta')" class="btn-create-tab">
@@ -619,7 +658,12 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
               </p>
             </div>
             <div class="score-summary-pill" *ngIf="mitjanaPuntuacio">
-              <span class="stars-gold">★ {{ mitjanaPuntuacio }}</span>
+              <span class="stars-gold">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="#f59e0b" style="vertical-align: -1px; margin-right: 2px;" aria-hidden="true">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                </svg>
+                {{ mitjanaPuntuacio }}
+              </span>
               <span class="score-count">({{ totalValoracions }} {{ totalValoracions === 1 ? ('PERFIL.RATING_COUNT_SINGULAR' | translate) : ('PERFIL.RATING_COUNT_PLURAL' | translate) }})</span>
             </div>
           </div>
@@ -641,7 +685,11 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
                   </div>
                 </div>
                 <div class="review-stars-badge" *ngIf="t.valoracio">
-                  <span class="star-icon" *ngFor="let s of [1,2,3,4,5]">{{ s <= t.valoracio ? '★' : '☆' }}</span>
+                  <span class="star-icon" *ngFor="let s of [1,2,3,4,5]">
+                    <svg viewBox="0 0 24 24" width="12" height="12" [attr.fill]="s <= t.valoracio ? '#f59e0b' : '#d1d5db'" style="vertical-align: -1px; margin-right: 1px;" aria-hidden="true">
+                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                    </svg>
+                  </span>
                   <span class="star-number">{{ t.valoracio }}/5</span>
                 </div>
               </div>
@@ -888,7 +936,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       .profile-tasks-grid,
       .profile-offers-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
         gap: 1.25rem;
       }
 
@@ -1476,7 +1524,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       .info-label {
         font-size: 0.82rem;
         font-weight: 700;
-        color: #6b7280;
+        color: #59606d;
         text-transform: uppercase;
         letter-spacing: 0.04em;
         min-width: 140px;
@@ -1592,7 +1640,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
 
       .review-date {
         font-size: 0.76rem;
-        color: #9ca3af;
+        color: #59606d;
       }
 
       .review-stars-badge {

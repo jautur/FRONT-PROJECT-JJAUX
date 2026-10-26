@@ -67,7 +67,11 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
           <div *ngIf="registerForm.get('rol')?.value === 'professional'">
             {{ 'AUTH.REGISTER.PRO_INFO' | translate }}
             <div style="margin-top: 0.5rem; color: #166534; font-weight: 600; display: flex; align-items: flex-start; gap: 0.35rem; line-height: 1.45;">
-              <span>🎉</span>
+              <span style="flex-shrink: 0; margin-top: 1px;">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#16a34a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                </svg>
+              </span>
               <span><strong>{{ 'AUTH.REGISTER.PRO_PROMO_TITLE' | translate }}</strong> {{ 'AUTH.REGISTER.PRO_PROMO_DESC' | translate }}</span>
             </div>
           </div>

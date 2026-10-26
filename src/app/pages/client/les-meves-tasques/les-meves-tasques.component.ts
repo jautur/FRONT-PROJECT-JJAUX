@@ -138,7 +138,10 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
             <div class="meta-item rating-item" *ngIf="t.valoracio">
               <span class="meta-label">{{ 'LES_MEVES_TASQUES.YOUR_RATING' | translate }}</span>
               <span class="meta-value rating-stars">
-                ★ {{ t.valoracio }}/5
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="#f59e0b" style="vertical-align: -1px; margin-right: 2px;" aria-hidden="true">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                </svg>
+                {{ t.valoracio }}/5
                 <span *ngIf="t.opinio" class="rating-quote">"{{ t.opinio }}"</span>
               </span>
             </div>
@@ -161,7 +164,10 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
               (click)="obrirModalFinalitzar(t)"
               title="Avaluar el servei rebut per a aquesta tasca"
             >
-              ★ {{ 'TASCA_DETALL.BTN_EVALUATE' | translate }}
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor" style="vertical-align: -1px; margin-right: 4px;" aria-hidden="true">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+              </svg>
+              {{ 'TASCA_DETALL.BTN_EVALUATE' | translate }}
             </button>
 
             <button
@@ -199,7 +205,12 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
               <span class="modal-badge-tag">{{ 'TASCA_DETALL.REVIEW_HEADER' | translate }}</span>
               <h2>{{ 'TASCA_DETALL.MODAL_EVALUATE_TITLE' | translate }}</h2>
             </div>
-            <button type="button" class="btn-close-modal" (click)="tancarModalFinalitzar()" aria-label="Tancar">✕</button>
+            <button type="button" class="btn-close-modal" (click)="tancarModalFinalitzar()" aria-label="Tancar">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
           </header>
 
           <div class="modal-body" *ngIf="tascaPerFinalitzar">
@@ -228,7 +239,9 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
                   (click)="puntuacioSeleccionada = star"
                   title="{{ star }} estrelles"
                 >
-                  ★
+                  <svg viewBox="0 0 24 24" width="18" height="18" [attr.fill]="star <= puntuacioSeleccionada ? '#f59e0b' : 'none'" [attr.stroke]="star <= puntuacioSeleccionada ? '#f59e0b' : '#9ca3af'" stroke-width="2" aria-hidden="true">
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                  </svg>
                 </button>
                 <span class="star-rating-text">{{ getRatingLabel(puntuacioSeleccionada) }}</span>
               </div>
@@ -342,7 +355,7 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
     }
     .tasques-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
       gap: 1.35rem;
     }
     .tasca-card {
@@ -632,8 +645,8 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
       position: fixed;
       top: 0;
       left: 0;
-      width: 100vw;
-      height: 100vh;
+      width: 100%;
+      height: 100%;
       background: rgba(9, 9, 12, 0.78);
       backdrop-filter: blur(4px);
       display: flex;

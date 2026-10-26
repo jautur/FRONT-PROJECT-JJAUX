@@ -81,13 +81,20 @@ import { Pressupost } from '../../../models/pressupost.model';
         <!-- Botó per al client quan la tasca ja està finalitzada pel professional però encara no té valoració -->
         <div *ngIf="isClientOwner && tasca.estat === 'Finalitzada' && !tasca.valoracio" class="evaluate-box">
           <div class="evaluate-box-content">
-            <span class="evaluate-icon">★</span>
+            <span class="evaluate-icon">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="#f59e0b" aria-hidden="true">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+              </svg>
+            </span>
             <div>
               <h3>{{ 'TASCA_DETALL.EVALUATE_TITLE' | translate }}</h3>
               <p>{{ 'TASCA_DETALL.EVALUATE_SUB' | translate }}</p>
             </div>
           </div>
           <button type="button" class="btn btn-evaluate" (click)="onCompleteTask()">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" style="vertical-align: -1px; margin-right: 4px;" aria-hidden="true">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+            </svg>
             {{ 'TASCA_DETALL.BTN_EVALUATE' | translate }}
           </button>
         </div>
@@ -97,7 +104,11 @@ import { Pressupost } from '../../../models/pressupost.model';
           <div class="review-display-header">
             <span class="review-display-badge">{{ 'TASCA_DETALL.REVIEW_HEADER' | translate }}</span>
             <div class="stars-display">
-              <span *ngFor="let s of [1, 2, 3, 4, 5]" class="star-glyph" [class.filled]="s <= (tasca.valoracio || 0)">★</span>
+              <span *ngFor="let s of [1, 2, 3, 4, 5]" class="star-glyph">
+                <svg viewBox="0 0 24 24" width="16" height="16" [attr.fill]="s <= (tasca.valoracio || 0) ? '#f59e0b' : '#d1d5db'" aria-hidden="true">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                </svg>
+              </span>
               <span class="score-text">{{ tasca.valoracio }}/5</span>
             </div>
           </div>
@@ -186,7 +197,12 @@ import { Pressupost } from '../../../models/pressupost.model';
               <span class="modal-badge-tag">{{ 'TASCA_DETALL.REVIEW_HEADER' | translate }}</span>
               <h2>{{ 'TASCA_DETALL.MODAL_EVALUATE_TITLE' | translate }}</h2>
             </div>
-            <button type="button" class="btn-close-modal" (click)="tancarModalFinalitzar()" aria-label="Tancar">✕</button>
+            <button type="button" class="btn-close-modal" (click)="tancarModalFinalitzar()" aria-label="Tancar">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
           </header>
 
           <div class="modal-body" *ngIf="tasca">
@@ -209,7 +225,9 @@ import { Pressupost } from '../../../models/pressupost.model';
                   (click)="puntuacioSeleccionada = star"
                   title="{{ star }} estrelles"
                 >
-                  ★
+                  <svg viewBox="0 0 24 24" width="18" height="18" [attr.fill]="star <= puntuacioSeleccionada ? '#f59e0b' : 'none'" [attr.stroke]="star <= puntuacioSeleccionada ? '#f59e0b' : '#9ca3af'" stroke-width="2" aria-hidden="true">
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                  </svg>
                 </button>
                 <span class="star-rating-text">{{ getRatingLabel(puntuacioSeleccionada) }}</span>
               </div>
@@ -817,8 +835,8 @@ import { Pressupost } from '../../../models/pressupost.model';
         position: fixed;
         top: 0;
         left: 0;
-        width: 100vw;
-        height: 100vh;
+        width: 100%;
+        height: 100%;
         background: rgba(9, 9, 12, 0.78);
         backdrop-filter: blur(4px);
         display: flex;

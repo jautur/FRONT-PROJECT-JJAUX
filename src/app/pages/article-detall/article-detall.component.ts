@@ -127,7 +127,11 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
               <h3 class="key-points-title">{{ 'BLOG.TIPS_TITLE' | translate }}</h3>
               <ul class="key-points-list">
                 <li *ngFor="let pt of sec.puntsClau">
-                  <span class="check-icon">✓</span>
+                  <span class="check-icon">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                  </span>
                   <span>{{ pt }}</span>
                 </li>
               </ul>
@@ -158,7 +162,19 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
 
             <!-- Consell destacat -->
             <div class="tip-callout-card" *ngIf="sec.destacatConsell">
-              <div class="tip-icon">💡</div>
+              <div class="tip-icon">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M12 2v2"></path>
+                  <path d="M12 20v2"></path>
+                  <path d="m4.93 4.93 1.41 1.41"></path>
+                  <path d="m17.66 17.66 1.41 1.41"></path>
+                  <path d="M2 12h2"></path>
+                  <path d="M20 12h2"></path>
+                  <path d="m6.34 17.66-1.41 1.41"></path>
+                  <path d="m19.07 4.93-1.41 1.41"></path>
+                  <circle cx="12" cy="12" r="5"></circle>
+                </svg>
+              </div>
               <div class="tip-text">
                 <strong>{{ 'BLOG.TIP_RECOMMENDATION' | translate }}</strong> {{ sec.destacatConsell }}
               </div>
@@ -225,7 +241,12 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       <!-- Estat si l'article no s'ha trobat -->
       <ng-template #articleNoTrobat>
         <div class="article-not-found-card">
-          <div class="not-found-icon">🔍</div>
+          <div class="not-found-icon">
+            <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+          </div>
           <h2>{{ 'BLOG.NOT_FOUND_TITLE' | translate }}</h2>
           <p>{{ 'BLOG.NOT_FOUND_DESC' | translate }}</p>
           <a [routerLink]="getNavUrl('/inici')" class="btn-back-home">{{ 'NAV.INICI' | translate }}</a>

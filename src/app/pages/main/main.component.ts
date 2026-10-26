@@ -87,8 +87,13 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
               <h3>{{ getOfertaTitol(offer) }}</h3>
               <p class="meta">
                 {{ 'HOME.PRO_LABEL' | translate }}<a [routerLink]="[getNavUrl('/perfil'), offer.professional]" class="user-inline-link pro-title-link" title="Veure perfil de {{ offer.professional }}">{{ offer.professional }}</a>
-                <span class="pro-preview-rating" *ngIf="getRatingInfo(offer.professional) as r" style="display: inline-flex; margin-left: 0.5rem;">
-                  <span class="stars-gold">★ {{ r.mitjana }}</span>
+                <span class="pro-preview-rating" *ngIf="getRatingInfo(offer.professional) as r" style="display: inline-flex; margin-left: 0.5rem; align-items: center;">
+                  <span class="stars-gold">
+                    <svg viewBox="0 0 24 24" width="13" height="13" fill="#f59e0b" style="vertical-align: -1px; margin-right: 2px;" aria-hidden="true">
+                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                    </svg>
+                    {{ r.mitjana }}
+                  </span>
                   <span class="reviews-count">({{ r.total }})</span>
                 </span>
               </p>
@@ -223,9 +228,18 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
 
                 <!-- VALORACIÓ -->
                 <div class="pro-rating-badge" *ngIf="getRatingInfo(pro) as r">
-                  <span class="star-pill">★ {{ r.mitjana }}</span>
+                  <span class="star-pill">
+                    <svg viewBox="0 0 24 24" width="13" height="13" fill="#f59e0b" style="vertical-align: -1px; margin-right: 2px;" aria-hidden="true">
+                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                    </svg>
+                    {{ r.mitjana }}
+                  </span>
                   <div class="stars-row-visual" aria-hidden="true">
-                    <span class="star-icon" *ngFor="let s of [1,2,3,4,5]">{{ s <= +r.mitjana ? '★' : '☆' }}</span>
+                    <span class="star-icon" *ngFor="let s of [1,2,3,4,5]">
+                      <svg viewBox="0 0 24 24" width="12" height="12" [attr.fill]="s <= +r.mitjana ? '#f59e0b' : '#d1d5db'" style="vertical-align: -1px; margin-right: 1px;" aria-hidden="true">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                      </svg>
+                    </span>
                   </div>
                   <span class="rating-count">({{ r.total }} {{ r.total === 1 ? 'opinió' : 'opinions' }})</span>
                 </div>
@@ -479,7 +493,11 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
           <div class="reviews-home-grid">
             <div class="review-home-card" *ngFor="let r of ressenyesDestacades">
               <div class="review-stars-row">
-                <span class="star-gold" *ngFor="let s of [1,2,3,4,5]">{{ s <= r.puntuacio ? '★' : '☆' }}</span>
+                <span class="star-gold" *ngFor="let s of [1,2,3,4,5]">
+                  <svg viewBox="0 0 24 24" width="13" height="13" [attr.fill]="s <= r.puntuacio ? '#f59e0b' : '#d1d5db'" style="vertical-align: -1px; margin-right: 1px;" aria-hidden="true">
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                  </svg>
+                </span>
                 <span class="rating-badge-small">{{ r.puntuacio }}.0</span>
               </div>
               <p class="review-home-comment">“{{ r.descripcio }}”</p>
@@ -587,13 +605,23 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
               <h2>{{ 'TASQUES_OFERTES.PETICIO_ENVIADA_TITLE' | translate }}</h2>
               <p class="exit-modal-sub">{{ 'TASQUES_OFERTES.PETICIO_ENVIADA_SUBTITLE' | translate }}</p>
             </div>
-            <button type="button" class="btn-close-modal" (click)="tancarModalPeticioExit()" [attr.aria-label]="'COMMON.TANCAR' | translate">✕</button>
+            <button type="button" class="btn-close-modal" (click)="tancarModalPeticioExit()" [attr.aria-label]="'COMMON.TANCAR' | translate">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
           </header>
 
           <div class="modal-body exit-modal-body">
             <!-- Targeta resum de la petició confirmada -->
             <div class="exit-offer-summary">
-              <div class="exit-offer-badge">✓ {{ 'TASQUES_OFERTES.AGREED_NATURE' | translate }}</div>
+              <div class="exit-offer-badge">
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;" aria-hidden="true">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                {{ 'TASQUES_OFERTES.AGREED_NATURE' | translate }}
+              </div>
               <h3 class="exit-offer-title">{{ peticioExitDades.titol }}</h3>
               <div class="exit-offer-meta">
                 <span class="exit-pro-info">
@@ -2183,7 +2211,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         font-weight: 700;
       }
       .pro-preview-rating .reviews-count {
-        color: #6b7280;
+        color: #59606d;
         font-size: 0.78rem;
       }
 
@@ -2217,7 +2245,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       }
       .reviews-home-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
         gap: 1.5rem;
         margin-top: 2rem;
       }
@@ -2292,7 +2320,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       }
       .pro-assigned-note {
         font-size: 0.76rem;
-        color: #6b7280;
+        color: #59606d;
       }
       .pro-assigned-note strong {
         color: #1f2937;

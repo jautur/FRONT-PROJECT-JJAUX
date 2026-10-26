@@ -32,7 +32,12 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
             <span class="legal-eyebrow">{{ 'AUTH.TERMES_MODAL.EYEBROW' | translate }}</span>
             <h2>{{ activeTab === 'termes' ? ('AUTH.TERMES_MODAL.TERMES_TITLE' | translate) : ('AUTH.TERMES_MODAL.PRIVACY_TITLE' | translate) }}</h2>
           </div>
-          <button *ngIf="isModal" type="button" class="btn-close" (click)="close.emit()" [attr.aria-label]="'AUTH.TERMES_MODAL.CLOSE' | translate">✕</button>
+          <button *ngIf="isModal" type="button" class="btn-close" (click)="close.emit()" [attr.aria-label]="'AUTH.TERMES_MODAL.CLOSE' | translate">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
         </header>
 
         <!-- Selector de pestanyes: Termes vs Privacitat -->
@@ -267,7 +272,10 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
             {{ 'COMMON.TANCAR' | translate }}
           </button>
           <button *ngIf="isModal" type="button" class="btn-accept" (click)="onAcceptClick()">
-            ✓ {{ 'AUTH.TERMES_MODAL.ACCEPT_DOC' | translate }}
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;" aria-hidden="true">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            {{ 'AUTH.TERMES_MODAL.ACCEPT_DOC' | translate }}
           </button>
           <a *ngIf="!isModal" [routerLink]="getNavUrl('/registre')" class="btn-accept" style="text-decoration: none;">
             {{ 'AUTH.REGISTER.TITLE' | translate }}
