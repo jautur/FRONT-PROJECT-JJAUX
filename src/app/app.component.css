@@ -1545,11 +1545,11 @@
    BARRA DE NAVEGACIÓ INFERIOR DE L'APLICACIÓ (/app - INICI / TASQUES / PERFIL)
    ========================================================================== */
 .shell.has-bottom-nav .content {
-  padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)) !important;
+  padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)) !important;
 }
 
 .shell.has-bottom-nav .floating-avisos-wrapper {
-  bottom: calc(76px + env(safe-area-inset-bottom, 0px)) !important;
+  bottom: calc(84px + env(safe-area-inset-bottom, 0px)) !important;
 }
 
 .app-bottom-nav {
@@ -1558,46 +1558,18 @@
   left: 0;
   right: 0;
   width: 100%;
-  height: calc(62px + env(safe-area-inset-bottom, 0px));
-  background: rgba(9, 9, 12, 0.96);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
+  height: calc(72px + env(safe-area-inset-bottom, 0px));
+  background: rgba(14, 17, 26, 0.96);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border-top: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 -6px 28px rgba(0, 0, 0, 0.6);
   display: flex;
   justify-content: space-around;
-  align-items: flex-start;
+  align-items: center;
   z-index: 9999;
-  padding: 0.35rem 0.75rem env(safe-area-inset-bottom, 0px);
+  padding: 0.25rem 0.5rem env(safe-area-inset-bottom, 0px);
   box-sizing: border-box;
-}
-
-/* Indicador únic: acompanya la pestanya activa darrere de la seua icona. */
-.app-bottom-nav::before {
-  content: '';
-  position: absolute;
-  top: 5px;
-  left: calc(12.5% - 21px);
-  width: 42px;
-  height: 42px;
-  border: 1px solid rgba(255, 23, 68, 0.5);
-  border-radius: 50%;
-  background: rgba(255, 23, 68, 0.1);
-  box-shadow: 0 0 16px rgba(255, 23, 68, 0.16);
-  pointer-events: none;
-  transition: left 0.32s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.app-bottom-nav:has(.bottom-nav-item:nth-child(2).active-bottom-tab)::before {
-  left: calc(37.5% - 21px);
-}
-
-.app-bottom-nav:has(.bottom-nav-item:nth-child(3).active-bottom-tab)::before {
-  left: calc(62.5% - 21px);
-}
-
-.app-bottom-nav:has(.bottom-nav-item:nth-child(4).active-bottom-tab)::before {
-  left: calc(87.5% - 21px);
 }
 
 .bottom-nav-item {
@@ -1607,13 +1579,13 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 3px;
+  gap: 2px;
   color: #94939b;
   text-decoration: none;
   font-family: inherit;
   font-weight: 700;
   font-size: 0.72rem;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
   position: relative;
   z-index: 1;
@@ -1623,12 +1595,19 @@
   -webkit-tap-highlight-color: transparent;
 }
 
+/* Cercle de fons de la icona: gran, ergonòmic i centrat */
 .bottom-nav-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: inherit;
-  transition: transform 0.22s ease, color 0.22s ease;
+  position: relative;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  background: transparent;
+  border: 1.5px solid transparent;
+  color: #94939b;
 }
 
 .bottom-nav-icon svg {
@@ -1637,10 +1616,16 @@
 
 .bottom-nav-label {
   transition: color 0.22s ease, font-weight 0.22s ease;
+  line-height: 1;
 }
 
 .bottom-nav-item:hover {
   color: #f5f4ef;
+}
+
+.bottom-nav-item:hover .bottom-nav-icon {
+  background: rgba(255, 255, 255, 0.06);
+  color: #ff1744;
 }
 
 .bottom-nav-item:active {
@@ -1648,62 +1633,68 @@
   transition: transform 0.1s ease;
 }
 
-.bottom-nav-item:hover .bottom-nav-icon {
-  transform: translateY(-2px);
-  color: #ff1744;
-}
-
 .bottom-nav-item:active .bottom-nav-icon {
   transform: scale(0.95);
 }
 
+/* Pestanya activa: el cercle serveix de fons il·luminat per a la icona */
 .bottom-nav-item.active-bottom-tab {
   color: #ffffff;
 }
 
 .bottom-nav-item.active-bottom-tab .bottom-nav-icon {
+  background: radial-gradient(circle, rgba(255, 23, 68, 0.26) 0%, rgba(255, 23, 68, 0.12) 100%);
+  border-color: rgba(255, 23, 68, 0.65);
   color: #ff1744;
+  box-shadow: 0 0 20px rgba(255, 23, 68, 0.38), inset 0 0 10px rgba(255, 23, 68, 0.15);
   transform: translateY(-2px);
-  filter: drop-shadow(0 0 8px rgba(255, 23, 68, 0.65));
+}
+
+.bottom-nav-item.active-bottom-tab .bottom-nav-icon svg {
+  filter: drop-shadow(0 0 6px rgba(255, 23, 68, 0.75));
 }
 
 .bottom-nav-item.active-bottom-tab .bottom-nav-label {
   color: #ffffff;
   font-weight: 900;
-  text-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.35);
 }
 
 .bottom-nav-badge {
   position: absolute;
-  top: -4px;
-  right: -8px;
+  top: 1px;
+  right: 1px;
   background: var(--neon, #ff1744);
   color: #ffffff;
   font-size: 0.62rem;
   font-weight: 900;
-  min-width: 15px;
-  height: 15px;
-  line-height: 15px;
+  min-width: 17px;
+  height: 17px;
+  line-height: 17px;
   border-radius: 9999px;
   text-align: center;
   padding: 0 3px;
-  box-shadow: 0 0 8px rgba(255, 23, 68, 0.7);
+  box-shadow: 0 0 8px rgba(255, 23, 68, 0.8);
+  border: 1.5px solid #09090c;
   box-sizing: border-box;
 }
 
 @media (max-width: 480px) {
   .app-bottom-nav {
-    height: calc(60px + env(safe-area-inset-bottom, 0px));
-    padding: 0.35rem 0.2rem calc(0.35rem + env(safe-area-inset-bottom, 0px));
+    height: calc(70px + env(safe-area-inset-bottom, 0px));
+    padding: 0.2rem 0.25rem calc(0.2rem + env(safe-area-inset-bottom, 0px));
+  }
+  .bottom-nav-icon {
+    width: 46px;
+    height: 46px;
   }
   .bottom-nav-item {
-    min-width: 0;
-    font-size: 0.64rem;
-    letter-spacing: 0.025em;
+    font-size: 0.65rem;
+    gap: 2px;
   }
   .bottom-nav-icon svg {
-    width: 20px;
-    height: 20px;
+    width: 21px;
+    height: 21px;
   }
 }
 

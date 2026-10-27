@@ -629,6 +629,314 @@ body.theme-app-dark .tab-filter-btn.active {
   color: #ffffff !important;
 }
 
+/* ============================================================== */
+/* REVISIÓ I CORRECCIÓ DE COLORS DE CADA BOTÓ I RECUADRE A /APP/  */
+/* ============================================================== */
+
+/* Botons secundaris, accions i botons de retorn a /app/ */
+body.theme-app-dark .btn-action-alt,
+body.theme-app-dark .btn-cancel,
+body.theme-app-dark .btn-app-back,
+body.theme-app-dark .btn-refresh-market,
+body.theme-app-dark .btn-refresh-avisos {
+  background-color: #252b3d !important;
+  border-color: #3d4661 !important;
+  color: #f5f4ef !important;
+}
+
+body.theme-app-dark .btn-action-alt:hover:not(:disabled),
+body.theme-app-dark .btn-cancel:hover,
+body.theme-app-dark .btn-app-back:hover,
+body.theme-app-dark .btn-refresh-market:hover,
+body.theme-app-dark .btn-refresh-avisos:hover {
+  background-color: #30374c !important;
+  border-color: #ff1744 !important;
+  color: #ffffff !important;
+}
+
+body.theme-app-dark .btn-action-alt:disabled {
+  opacity: 0.35 !important;
+  cursor: not-allowed !important;
+}
+
+/* Botons principals d'alta conversió (Neó Roig intens) */
+body.theme-app-dark .btn-contractar,
+body.theme-app-dark .btn-create-task,
+body.theme-app-dark .btn-primary,
+body.theme-app-dark .btn-submit,
+body.theme-app-dark .btn-role-action {
+  background-color: #ff1744 !important;
+  border-color: #ff1744 !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 16px rgba(255, 23, 68, 0.45) !important;
+}
+
+body.theme-app-dark .btn-contractar:hover,
+body.theme-app-dark .btn-create-task:hover,
+body.theme-app-dark .btn-primary:hover,
+body.theme-app-dark .btn-submit:hover,
+body.theme-app-dark .btn-role-action:hover {
+  background-color: #d5002e !important;
+  border-color: #d5002e !important;
+  box-shadow: 0 6px 22px rgba(255, 23, 68, 0.65) !important;
+  transform: translateY(-2px);
+}
+
+body.theme-app-dark .btn-create-offer {
+  background-color: #252b3d !important;
+  border-color: #414a63 !important;
+  color: #f5f4ef !important;
+}
+
+body.theme-app-dark .btn-create-offer:hover {
+  background-color: #ff1744 !important;
+  border-color: #ff1744 !important;
+  color: #ffffff !important;
+}
+
+/* Botons d'icona i botons d'acció perillosa (eliminar, descartar) */
+body.theme-app-dark .btn-icon {
+  background-color: #252b3d !important;
+  border-color: #3d4661 !important;
+  color: #bab8ae !important;
+}
+
+body.theme-app-dark .btn-icon:hover {
+  background-color: #30374c !important;
+  border-color: #ff1744 !important;
+  color: #ffffff !important;
+}
+
+body.theme-app-dark .btn-icon.danger {
+  color: #ff5252 !important;
+  border-color: rgba(255, 82, 82, 0.35) !important;
+  background-color: rgba(255, 82, 82, 0.1) !important;
+}
+
+body.theme-app-dark .btn-icon.danger:hover {
+  background-color: #ff5252 !important;
+  border-color: #ff5252 !important;
+  color: #ffffff !important;
+}
+
+/* Pestanyes de selector de modalitat a Crear Oferta */
+body.theme-app-dark .mode-tab-btn {
+  background-color: #252b3d !important;
+  border-color: #3d4661 !important;
+  color: #bab8ae !important;
+}
+
+body.theme-app-dark .mode-tab-btn strong {
+  color: #f5f4ef !important;
+}
+
+body.theme-app-dark .mode-tab-btn.active {
+  background-color: #1b2030 !important;
+  border-color: #ff1744 !important;
+  box-shadow: 0 0 16px rgba(255, 23, 68, 0.25) !important;
+}
+
+body.theme-app-dark .mode-tab-btn.active .tab-badge {
+  background-color: #ff1744 !important;
+  color: #ffffff !important;
+}
+
+/* Pestanyes de filtre d'Avisos */
+body.theme-app-dark .tab-btn {
+  background-color: #252b3d !important;
+  border-color: #3d4661 !important;
+  color: #bab8ae !important;
+}
+
+body.theme-app-dark .tab-btn:hover {
+  border-color: #ff1744 !important;
+  color: #f5f4ef !important;
+}
+
+body.theme-app-dark .tab-btn.active {
+  background-color: #ff1744 !important;
+  border-color: #ff1744 !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 15px rgba(255, 23, 68, 0.35) !important;
+}
+
+/* Fletxes de navegació del carrusel i controls */
+body.theme-app-dark .btn-side-arrow,
+body.theme-app-dark .btn-nav-prev,
+body.theme-app-dark .btn-nav-next {
+  background-color: #252b3d !important;
+  border-color: #414a63 !important;
+  color: #f5f4ef !important;
+}
+
+body.theme-app-dark :is(.btn-side-arrow, .btn-nav-prev, .btn-nav-next):hover {
+  background-color: #ff1744 !important;
+  border-color: #ff1744 !important;
+  color: #ffffff !important;
+}
+
+/* Recuadres de carrusel Twitch i stage de professionals */
+body.theme-app-dark .twitch-carousel-stage {
+  background: #141724 !important;
+  border-color: #363e55 !important;
+}
+
+body.theme-app-dark .side-preview-card {
+  border-color: #3d4661 !important;
+}
+
+body.theme-app-dark .side-card-glass {
+  background: rgba(16, 19, 28, 0.88) !important;
+  border-color: #363e55 !important;
+}
+
+body.theme-app-dark .center-hero-card {
+  background-color: #1b2030 !important;
+  border-color: #414a63 !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6) !important;
+}
+
+body.theme-app-dark .center-hero-glass-header {
+  background: rgba(16, 19, 28, 0.85) !important;
+  border-bottom-color: #363e55 !important;
+}
+
+body.theme-app-dark .carousel-live-indicator {
+  background-color: #252b3d !important;
+  border-color: #3d4661 !important;
+  color: #dedcd4 !important;
+}
+
+/* Recuadres de notificacions i avisos */
+body.theme-app-dark .avis-card {
+  background-color: #1b2030 !important;
+  border-color: #363e55 !important;
+  color: #f5f4ef !important;
+}
+
+body.theme-app-dark .avis-card.no-llegit {
+  background-color: #22293d !important;
+  border-left: 4px solid #ff1744 !important;
+}
+
+body.theme-app-dark .avis-titol {
+  color: #f5f4ef !important;
+}
+
+body.theme-app-dark .avis-missatge {
+  color: #bab8ae !important;
+}
+
+body.theme-app-dark .avis-data {
+  color: #7f7d73 !important;
+}
+
+/* Recuadres d'alertes i banners informatius */
+body.theme-app-dark .notice-banner {
+  background-color: rgba(255, 23, 68, 0.12) !important;
+  border: 1px solid rgba(255, 23, 68, 0.4) !important;
+  color: #f5f4ef !important;
+}
+
+body.theme-app-dark .notice-banner .btn-dismiss {
+  color: #f5f4ef !important;
+}
+
+body.theme-app-dark .alert-info {
+  background-color: rgba(59, 130, 246, 0.12) !important;
+  border-color: rgba(59, 130, 246, 0.35) !important;
+  color: #93c5fd !important;
+}
+
+body.theme-app-dark .alert-danger {
+  background-color: rgba(239, 68, 68, 0.12) !important;
+  border-color: rgba(239, 68, 68, 0.35) !important;
+  color: #fca5a5 !important;
+}
+
+body.theme-app-dark .alert-success {
+  background-color: rgba(16, 185, 129, 0.12) !important;
+  border-color: rgba(16, 185, 129, 0.35) !important;
+  color: #6ee7b7 !important;
+}
+
+/* Recuadres de perfil d'usuari i passos de verificació */
+body.theme-app-dark .perfil-header-box,
+body.theme-app-dark .verif-step-card,
+body.theme-app-dark .stat-box,
+body.theme-app-dark .profile-stat-box {
+  background-color: #22283a !important;
+  border-color: #3d4661 !important;
+  color: #f5f4ef !important;
+}
+
+body.theme-app-dark .stat-box-val,
+body.theme-app-dark .stat-val {
+  color: #f5f4ef !important;
+}
+
+body.theme-app-dark .stat-box-label,
+body.theme-app-dark .stat-label {
+  color: #8e8c82 !important;
+}
+
+/* Recuadres modals i finestres emergents */
+body.theme-app-dark .modal-content,
+body.theme-app-dark .review-modal-card,
+body.theme-app-dark .peticio-exit-card {
+  background-color: #141724 !important;
+  border: 1px solid #363e55 !important;
+  color: #f5f4ef !important;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.8) !important;
+}
+
+body.theme-app-dark .modal-backdrop,
+body.theme-app-dark .review-modal-overlay {
+  background-color: rgba(5, 7, 12, 0.82) !important;
+}
+
+/* Badges d'estat de tasques i ofertes */
+body.theme-app-dark .status.status-oberta,
+body.theme-app-dark .status.status-task.oberta {
+  background-color: rgba(16, 185, 129, 0.15) !important;
+  color: #34d399 !important;
+  border: 1px solid rgba(16, 185, 129, 0.4) !important;
+}
+
+body.theme-app-dark .status.status-en-curs,
+body.theme-app-dark .status.status-task.en-curs {
+  background-color: rgba(59, 130, 246, 0.15) !important;
+  color: #60a5fa !important;
+  border: 1px solid rgba(59, 130, 246, 0.4) !important;
+}
+
+body.theme-app-dark .status.status-finalitzada,
+body.theme-app-dark .status.status-task.finalitzada {
+  background-color: rgba(107, 114, 128, 0.2) !important;
+  color: #9ca3af !important;
+  border: 1px solid rgba(107, 114, 128, 0.4) !important;
+}
+
+body.theme-app-dark .status.status-offer {
+  background-color: rgba(255, 23, 68, 0.15) !important;
+  color: #ff6b81 !important;
+  border: 1px solid rgba(255, 23, 68, 0.4) !important;
+}
+
+/* Enllaços de perfil d'usuari i professionals sobre fons fosc */
+body.theme-app-dark .user-inline-link,
+body.theme-app-dark .pro-title-link,
+body.theme-app-dark .user-profile-link {
+  color: #ff6b81 !important;
+}
+
+body.theme-app-dark .user-inline-link:hover,
+body.theme-app-dark .pro-title-link:hover,
+body.theme-app-dark .user-profile-link:hover {
+  color: #ffffff !important;
+  text-shadow: 0 0 10px rgba(255, 23, 68, 0.6) !important;
+}
+
 /* Scrollbars en mode fosc */
 body.theme-app-dark ::-webkit-scrollbar-track {
   background: #10131c;
