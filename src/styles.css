@@ -324,6 +324,7 @@ body.theme-app-dark .dashboard-body,
 body.theme-app-dark .market-page,
 body.theme-app-dark .perfil-container,
 body.theme-app-dark .avisos-container,
+body.theme-app-dark .admin-container,
 body.theme-app-dark .admin-panel-container,
 body.theme-app-dark .tasca-detall-container,
 body.theme-app-dark .blog-page,
@@ -979,6 +980,24 @@ body.theme-app-dark .commission-simulation-box {
 
 body.theme-app-dark .commission-simulation-box strong {
   color: #f5f4ef !important;
+}
+
+body.theme-app-dark .user-badge-tag.client {
+  background-color: rgba(59, 130, 246, 0.16) !important;
+  color: #93c5fd !important;
+  border: 1px solid rgba(59, 130, 246, 0.4) !important;
+}
+
+body.theme-app-dark .user-badge-tag.ambdos {
+  background-color: rgba(168, 85, 247, 0.16) !important;
+  color: #d8b4fe !important;
+  border: 1px solid rgba(168, 85, 247, 0.4) !important;
+}
+
+body.theme-app-dark .tag-cat {
+  background-color: #252b3d !important;
+  border-color: #3d4661 !important;
+  color: #bab8ae !important;
 }
 
 /* Enllaços de perfil d'usuari i professionals sobre fons fosc */
