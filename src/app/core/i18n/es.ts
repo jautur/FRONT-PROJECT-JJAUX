@@ -21,7 +21,9 @@ export const es = {
     "DETALL": "Detalle",
     "ACCIONS": "Acciones",
     "CARREGANT": "Cargando...",
-    "SENSE_DADES": "Sin datos disponibles"
+    "SENSE_DADES": "Sin datos disponibles",
+    "TORNAR": "Volver",
+    "ACTUALITZAR": "Actualizar"
   },
   "NAV": {
     "MENU": "Menú",

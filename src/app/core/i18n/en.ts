@@ -21,7 +21,9 @@ export const en = {
     "DETALL": "Detail",
     "ACCIONS": "Actions",
     "CARREGANT": "Loading...",
-    "SENSE_DADES": "No data available"
+    "SENSE_DADES": "No data available",
+    "TORNAR": "Back",
+    "ACTUALITZAR": "Refresh"
   },
   "NAV": {
     "MENU": "Menu",

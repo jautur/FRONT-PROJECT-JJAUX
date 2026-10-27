@@ -495,9 +495,9 @@
     <router-outlet />
   </main>
 
-  <!-- Botó / Icona flotant d'avisos baix a la dreta si l'usuari en té algun pendent -->
+  <!-- Botó / Icona flotant d'avisos baix a la dreta si l'usuari en té algun pendent (només a la versió web sense barra inferior per evitar solapaments) -->
   <aside
-    *ngIf="authService.isLoggedIn() && avisosPendents > 0 && !isAvisosPage"
+    *ngIf="authService.isLoggedIn() && avisosPendents > 0 && !isAvisosPage && !showBottomNav"
     class="floating-avisos-wrapper"
     aria-label="Avisos pendents"
   >

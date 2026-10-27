@@ -1545,7 +1545,7 @@
    BARRA DE NAVEGACIÓ INFERIOR DE L'APLICACIÓ (/app - INICI / TASQUES / PERFIL)
    ========================================================================== */
 .shell.has-bottom-nav .content {
-  padding-bottom: calc(78px + env(safe-area-inset-bottom, 0px)) !important;
+  padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)) !important;
 }
 
 .shell.has-bottom-nav .floating-avisos-wrapper {
@@ -1643,9 +1643,18 @@
   color: #f5f4ef;
 }
 
+.bottom-nav-item:active {
+  transform: scale(0.92);
+  transition: transform 0.1s ease;
+}
+
 .bottom-nav-item:hover .bottom-nav-icon {
   transform: translateY(-2px);
   color: #ff1744;
+}
+
+.bottom-nav-item:active .bottom-nav-icon {
+  transform: scale(0.95);
 }
 
 .bottom-nav-item.active-bottom-tab {

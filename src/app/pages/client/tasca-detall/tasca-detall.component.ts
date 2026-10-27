@@ -27,6 +27,16 @@ import { Pressupost } from '../../../models/pressupost.model';
   imports: [CommonModule, FormsModule, RouterLink, TranslatePipe],
   template: `
     <section class="detall-container" *ngIf="tasca">
+      <!-- Barra de navegació de retorn ràpid -->
+      <div class="app-back-nav">
+        <button type="button" class="btn-app-back" (click)="goBack()" [title]="'COMMON.TORNAR' | translate">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+          <span>{{ 'COMMON.TORNAR' | translate }}</span>
+        </button>
+      </div>
+
       <!-- Capçalera de la tasca o incidència -->
       <header class="detall-header" [class.converged-header]="isTascaConvergida">
         <div class="top-row">
@@ -282,6 +292,38 @@ import { Pressupost } from '../../../models/pressupost.model';
         display: flex;
         flex-direction: column;
         gap: 1.5rem;
+      }
+
+      .app-back-nav {
+        display: flex;
+        align-items: center;
+        margin-bottom: -0.5rem;
+      }
+
+      .btn-app-back {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        background: var(--bg-card, #ffffff);
+        color: var(--color-text-muted, #57554e);
+        border: 1px solid var(--border-subtle, #e5e0d7);
+        padding: 0.45rem 0.95rem;
+        border-radius: var(--radius-sm, 8px);
+        font-family: inherit;
+        font-weight: 700;
+        font-size: 0.88rem;
+        cursor: pointer;
+        transition: all 0.18s ease;
+      }
+
+      .btn-app-back:hover {
+        background: var(--bg-surface, #faf8f4);
+        color: var(--color-text, #09090c);
+        border-color: var(--neon, #ff1744);
+      }
+
+      .btn-app-back:active {
+        transform: scale(0.96);
       }
 
       .detall-header {
@@ -1146,6 +1188,14 @@ export class TascaDetallComponent implements OnInit {
       return path.startsWith('/') ? `/app${path}` : `/app/${path}`;
     }
     return path;
+  }
+
+  goBack(): void {
+    if (typeof window !== 'undefined' && window.history.length > 1) {
+      window.history.back();
+    } else {
+      this.router.navigate([this.getNavUrl('/tasques-ofertes')]);
+    }
   }
 
   get assignedProfessional(): string {

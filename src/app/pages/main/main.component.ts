@@ -54,7 +54,31 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
             <span class="eyebrow-tag">{{ 'HOME.PLATAFORMA_AVISA' | translate }}</span>
             <h2 class="dashboard-title">{{ 'HOME.DASHBOARD_TITLE' | translate }}</h2>
           </div>
-          <a [routerLink]="getNavUrl('/tasques-ofertes')" class="btn-create-task">{{ 'HOME.PUBLICAR_BTN' | translate }}</a>
+          <div class="dashboard-header-actions">
+            <button
+              *ngIf="authService.isLoggedIn() && authService.isClient()"
+              type="button"
+              class="btn-create-task"
+              (click)="onNovaTasca()"
+            >
+              {{ 'TASQUES_OFERTES.BTN_NOVA_INCIDENCIA' | translate }}
+            </button>
+            <button
+              *ngIf="authService.isLoggedIn() && authService.isProfessional()"
+              type="button"
+              class="btn-create-offer-dash"
+              (click)="onNovaOferta()"
+            >
+              {{ 'TASQUES_OFERTES.BTN_NOVA_OFERTA' | translate }}
+            </button>
+            <a
+              *ngIf="!authService.isLoggedIn()"
+              [routerLink]="getNavUrl('/tasques-ofertes')"
+              class="btn-create-task"
+            >
+              {{ 'HOME.PUBLICAR_BTN' | translate }}
+            </a>
+          </div>
         </div>
 
         <div *ngIf="noticeMessage" class="notice-banner">
@@ -898,6 +922,13 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
       }
 
+      .dashboard-header-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+      }
+
       .eyebrow-tag {
         font-size: 0.75rem;
         font-weight: 900;
@@ -967,6 +998,39 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         border-color: #ff1744;
         box-shadow: 0 4px 16px rgba(255, 23, 68, 0.35);
         transform: translateY(-2px);
+      }
+
+      .btn-create-offer-dash {
+        background: #09090c;
+        color: #ffffff;
+        border: 1px solid #23232f;
+        border-radius: 8px;
+        padding: 0.8rem 1.6rem;
+        font-weight: 900;
+        font-size: 0.95rem;
+        cursor: pointer;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        transition: all 0.2s ease;
+      }
+
+      .btn-create-offer-dash:hover {
+        background: #ff1744;
+        border-color: #ff1744;
+        box-shadow: 0 4px 16px rgba(255, 23, 68, 0.4);
+        transform: translateY(-2px);
+      }
+
+      body.theme-app-dark .btn-create-offer-dash {
+        background: #252b3d;
+        border-color: #3d4661;
+        color: #f5f4ef;
+      }
+
+      body.theme-app-dark .btn-create-offer-dash:hover {
+        background: #ff1744;
+        border-color: #ff1744;
+        color: #ffffff;
       }
 
       .stats {
@@ -3813,6 +3877,10 @@ export class MainComponent implements OnInit, OnDestroy {
 
   onNovaTasca(): void {
     this.router.navigate([this.getNavUrl('/tasques-ofertes')], { queryParams: { tipus: 'incidencies', accio: 'crear-incidencia' } });
+  }
+
+  onNovaOferta(): void {
+    this.router.navigate([this.getNavUrl('/tasques-ofertes')], { queryParams: { tipus: 'ofertes', accio: 'crear-oferta' } });
   }
 
   onNavegarTasquesOfertes(tipus: 'tots' | 'tasques' | 'ofertes' | 'incidencies' = 'tots'): void {

@@ -46,6 +46,11 @@ interface CategoriaFiltre {
           </p>
         </div>
         <div class="market-header-actions">
+          <button type="button" class="btn-refresh-market" (click)="carregarDades()" [class.spinning]="loading" [title]="'COMMON.ACTUALITZAR' | translate" [attr.aria-label]="'COMMON.ACTUALITZAR' | translate">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+            </svg>
+          </button>
           <button *ngIf="!authService.isLoggedIn() || isClient()" type="button" class="btn-create-task" (click)="onNovaIncidencia()">
             {{ 'TASQUES_OFERTES.BTN_NOVA_INCIDENCIA' | translate }}
           </button>
@@ -659,6 +664,39 @@ interface CategoriaFiltre {
         gap: 0.75rem;
         flex-wrap: wrap;
         align-items: center;
+      }
+
+      .btn-refresh-market {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 42px;
+        height: 42px;
+        background: var(--bg-card, #ffffff);
+        color: var(--color-text-muted, #57554e);
+        border: 1px solid var(--border-subtle, #e5e0d7);
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .btn-refresh-market:hover {
+        background: var(--bg-surface, #faf8f4);
+        color: var(--color-text, #09090c);
+        border-color: var(--neon, #ff1744);
+      }
+
+      .btn-refresh-market:active {
+        transform: scale(0.92);
+      }
+
+      .btn-refresh-market.spinning svg {
+        animation: spinRefresh 0.8s linear infinite;
+      }
+
+      @keyframes spinRefresh {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
       }
 
       .btn-create-task {

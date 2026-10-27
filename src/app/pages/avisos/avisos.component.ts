@@ -30,8 +30,13 @@ type FiltreAvisos = 'totes' | 'pendents' | 'llegides';
           <h2>{{ 'AVISOS_PAGE.TITLE' | translate }}</h2>
           <p class="subtitle">{{ 'AVISOS_PAGE.SUBTITLE' | translate }}</p>
         </div>
-        <div class="header-actions" *ngIf="avisos.length > 0">
-          <button type="button" class="btn-action-alt" (click)="marcarTotesLlegides()" [disabled]="pendentsCount === 0">
+        <div class="header-actions">
+          <button type="button" class="btn-refresh-avisos" (click)="carregarAvisos()" [class.spinning]="loading" [title]="'COMMON.ACTUALITZAR' | translate" [attr.aria-label]="'COMMON.ACTUALITZAR' | translate">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+            </svg>
+          </button>
+          <button *ngIf="avisos.length > 0" type="button" class="btn-action-alt" (click)="marcarTotesLlegides()" [disabled]="pendentsCount === 0">
             {{ 'AVISOS_PAGE.MARK_ALL_READ' | translate }}
           </button>
         </div>
@@ -346,6 +351,39 @@ type FiltreAvisos = 'totes' | 'pendents' | 'llegides';
       background: #fee2e2;
       border-color: #dc2626;
     }
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+    }
+    .btn-refresh-avisos {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 38px;
+      height: 38px;
+      background: var(--bg-card, #ffffff);
+      color: var(--color-text-muted, #57554e);
+      border: 1px solid var(--border-subtle, #e5e0d7);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .btn-refresh-avisos:hover {
+      background: var(--bg-surface, #faf8f4);
+      color: var(--color-text, #09090c);
+      border-color: var(--neon, #ff1744);
+    }
+    .btn-refresh-avisos:active {
+      transform: scale(0.92);
+    }
+    .btn-refresh-avisos.spinning svg {
+      animation: spinRefreshAvisos 0.8s linear infinite;
+    }
+    @keyframes spinRefreshAvisos {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
     .btn-action-alt {
       background: #ffffff;
       border: 1px solid #d6d0c4;
@@ -437,7 +475,7 @@ type FiltreAvisos = 'totes' | 'pendents' | 'llegides';
         gap: 0.85rem;
       }
       .btn-action-alt {
-        width: 100%;
+        flex: 1;
         text-align: center;
       }
       .filter-tabs {

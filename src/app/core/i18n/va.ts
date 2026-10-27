@@ -21,7 +21,9 @@ export const va = {
     "DETALL": "Detall",
     "ACCIONS": "Accions",
     "CARREGANT": "Carregant...",
-    "SENSE_DADES": "Sense dades disponibles"
+    "SENSE_DADES": "Sense dades disponibles",
+    "TORNAR": "Tornar",
+    "ACTUALITZAR": "Actualitzar"
   },
   "NAV": {
     "MENU": "Menú",
