@@ -3080,11 +3080,10 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         overflow: hidden;
       }
 
-      /* Les targetes veïnes mantenen la mateixa escala que la central.
-         Només se'n veu el lateral, que s'esvaeix cap als extrems de l'escenari. */
+      /* Les targetes veïnes (anterior i següent) són un 20% més petites (scale 0.8) que la central per a un efecte visual més estètic. */
       .side-preview-card {
         position: absolute;
-        top: 0.5rem;
+        top: 50%;
         width: clamp(640px, 72vw, 980px);
         height: 380px;
         border-radius: 20px;
@@ -3093,25 +3092,25 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         background: #0f172a;
         box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.35);
         opacity: 0.82;
-        transform: none;
         transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
         user-select: none;
         z-index: 1;
         border: 1px solid rgba(255, 255, 255, 0.12);
+        transform-origin: center center;
       }
 
       .prev-card {
         left: 50%;
-        transform: translateX(-95%);
-        -webkit-mask-image: linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.45) 32%, #000 66%);
-        mask-image: linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.45) 32%, #000 66%);
+        transform: translateY(-50%) translateX(-92%) scale(0.8);
+        -webkit-mask-image: linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.45) 30%, #000 66%);
+        mask-image: linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.45) 30%, #000 66%);
       }
 
       .next-card {
         right: 50%;
-        transform: translateX(95%);
-        -webkit-mask-image: linear-gradient(to left, transparent 0%, rgba(0, 0, 0, 0.45) 32%, #000 66%);
-        mask-image: linear-gradient(to left, transparent 0%, rgba(0, 0, 0, 0.45) 32%, #000 66%);
+        transform: translateY(-50%) translateX(92%) scale(0.8);
+        -webkit-mask-image: linear-gradient(to left, transparent 0%, rgba(0, 0, 0, 0.45) 30%, #000 66%);
+        mask-image: linear-gradient(to left, transparent 0%, rgba(0, 0, 0, 0.45) 30%, #000 66%);
       }
 
       .twitch-carousel-stage.is-transitioning .main-showcase-card {
@@ -3132,19 +3131,27 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       }
 
       @keyframes carouselPrevEnter {
-        from { opacity: 0; transform: translateX(-101%); }
-        to { opacity: 0.82; transform: translateX(-95%); }
+        from { opacity: 0; transform: translateY(-50%) translateX(-98%) scale(0.76); }
+        to { opacity: 0.82; transform: translateY(-50%) translateX(-92%) scale(0.8); }
       }
 
       @keyframes carouselNextEnter {
-        from { opacity: 0; transform: translateX(101%); }
-        to { opacity: 0.82; transform: translateX(95%); }
+        from { opacity: 0; transform: translateY(-50%) translateX(98%) scale(0.76); }
+        to { opacity: 0.82; transform: translateY(-50%) translateX(92%) scale(0.8); }
       }
 
-      .side-preview-card:hover {
+      .prev-card:hover {
         opacity: 1;
         box-shadow: 0 16px 36px -5px rgba(0, 0, 0, 0.45);
         border-color: #ff1744;
+        transform: translateY(-50%) translateX(-90%) scale(0.82);
+      }
+
+      .next-card:hover {
+        opacity: 1;
+        box-shadow: 0 16px 36px -5px rgba(0, 0, 0, 0.45);
+        border-color: #ff1744;
+        transform: translateY(-50%) translateX(90%) scale(0.82);
       }
 
       .side-card-bg {
@@ -3190,20 +3197,29 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
 
       .prev-card .btn-side-arrow {
         position: absolute;
-        left: 37%;
-        top: 1.35rem;
+        left: 28%;
+        top: 1.5rem;
+        transform: translateX(-50%);
+      }
+
+      .prev-card .btn-side-arrow:hover {
+        background: #ff1744;
+        border-color: #ff1744;
+        transform: translateX(-50%) scale(1.14);
+        box-shadow: 0 6px 18px rgba(255, 23, 68, 0.45);
       }
 
       .next-card .btn-side-arrow {
         position: absolute;
-        left: 60%;
-        top: 1.35rem;
+        left: 72%;
+        top: 1.5rem;
+        transform: translateX(-50%);
       }
 
-      .btn-side-arrow:hover {
+      .next-card .btn-side-arrow:hover {
         background: #ff1744;
         border-color: #ff1744;
-        transform: scale(1.14);
+        transform: translateX(-50%) scale(1.14);
         box-shadow: 0 6px 18px rgba(255, 23, 68, 0.45);
       }
 
@@ -3214,6 +3230,24 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         text-align: center;
         gap: 0.5rem;
         width: 100%;
+      }
+
+      .prev-card .side-card-info {
+        position: absolute;
+        left: 28%;
+        bottom: 1.5rem;
+        transform: translateX(-50%);
+        width: auto;
+        max-width: 200px;
+      }
+
+      .next-card .side-card-info {
+        position: absolute;
+        left: 72%;
+        bottom: 1.5rem;
+        transform: translateX(-50%);
+        width: auto;
+        max-width: 200px;
       }
 
       .side-avatar {
