@@ -300,18 +300,18 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       align-items: center;
       gap: 0.5rem;
       padding: 0.55rem 1.15rem;
-      background: #ffffff;
-      border: 1px solid #ded8cd;
-      border-radius: 8px;
-      color: #0c0c10;
+      background: var(--bg-card, #ffffff);
+      border: 1px solid var(--border-subtle, #ded8cd);
+      border-radius: var(--radius-sm, 8px);
+      color: var(--color-text, #0c0c10);
       font-size: 0.9rem;
       font-weight: 700;
       text-decoration: none;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
-      transition: all 0.2s ease;
+      box-shadow: var(--shadow-xs, 0 2px 8px rgba(0, 0, 0, 0.03));
+      transition: all var(--transition-fast, 0.2s ease);
     }
     .btn-back:hover {
-      background: #ffffff;
+      background: var(--bg-card, #ffffff);
       border-color: #ff1744;
       color: #ff1744;
       transform: translateX(-3px);
@@ -320,11 +320,11 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
 
     /* Targeta d'article complet */
     .article-full-view {
-      background: #ffffff;
-      border: 1px solid #e5e0d7;
-      border-radius: 20px;
+      background: var(--bg-card, #ffffff);
+      border: 1px solid var(--border-subtle, #e5e0d7);
+      border-radius: var(--radius-xl, 20px);
       padding: 3rem 2.75rem;
-      box-shadow: 0 6px 30px rgba(0, 0, 0, 0.04);
+      box-shadow: var(--shadow-md, 0 6px 30px rgba(0, 0, 0, 0.04));
     }
 
     /* Capçalera de l'article */
@@ -365,14 +365,14 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       font-size: 2.35rem;
       line-height: 1.22;
       font-weight: 900;
-      color: #09090c;
+      color: var(--color-text, #09090c);
       margin: 0.5rem 0 1rem;
       letter-spacing: -0.025em;
     }
     .article-subtitle {
       font-size: 1.15rem;
       line-height: 1.6;
-      color: #555249;
+      color: var(--color-text-muted, #555249);
       margin: 0 0 1.75rem;
       font-weight: 500;
     }
@@ -385,8 +385,8 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       justify-content: space-between;
       gap: 1.25rem;
       padding: 1rem 1.35rem;
-      background: #faf8f4;
-      border: 1px solid #e8e3d8;
+      background: var(--bg-surface, #faf8f4);
+      border: 1px solid var(--border-subtle, #e8e3d8);
       border-radius: 12px;
     }
     .author-avatar {
@@ -405,11 +405,11 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
     .author-name {
       font-weight: 800;
       font-size: 1rem;
-      color: #09090c;
+      color: var(--color-text, #09090c);
     }
     .author-role {
       font-size: 0.82rem;
-      color: #716f67;
+      color: var(--color-text-muted, #716f67);
       font-weight: 600;
     }
     .reading-meta {
@@ -417,7 +417,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       align-items: center;
       gap: 1.25rem;
       font-size: 0.85rem;
-      color: #716f67;
+      color: var(--color-text-muted, #716f67);
       font-weight: 600;
     }
     .meta-item {
@@ -451,9 +451,9 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       display: flex;
       align-items: flex-start;
       gap: 1rem;
-      background: #fff8f8;
+      background: rgba(255, 23, 68, 0.05);
       border-left: 4px solid #ff1744;
-      border: 1px solid #fecdd3;
+      border: 1px solid rgba(255, 23, 68, 0.2);
       border-radius: 12px;
       padding: 1.25rem 1.5rem;
       margin: 2.25rem 0;
@@ -476,7 +476,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       margin: 0;
       font-size: 1.02rem;
       line-height: 1.65;
-      color: #09090c;
+      color: var(--color-text, #09090c);
       font-weight: 600;
     }
 
@@ -487,24 +487,24 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
     .section-title {
       font-size: 1.55rem;
       font-weight: 900;
-      color: #09090c;
+      color: var(--color-text, #09090c);
       margin: 0 0 1.15rem;
       letter-spacing: -0.02em;
-      border-bottom: 2px solid #eee9e0;
+      border-bottom: 2px solid var(--border-subtle, #eee9e0);
       padding-bottom: 0.65rem;
     }
     .section-paragraphs p {
       font-size: 1.05rem;
       line-height: 1.82;
-      color: #262522;
+      color: var(--color-text, #262522);
       font-weight: 500;
       margin-bottom: 1.25rem;
     }
 
     /* Punts clau / Checklist */
     .key-points-box {
-      background: #faf8f4;
-      border: 1px solid #e5e0d7;
+      background: var(--bg-surface, #faf8f4);
+      border: 1px solid var(--border-subtle, #e5e0d7);
       border-radius: 12px;
       padding: 1.35rem 1.6rem;
       margin: 1.75rem 0;
@@ -512,7 +512,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
     .key-points-title {
       font-size: 1.05rem;
       font-weight: 800;
-      color: #09090c;
+      color: var(--color-text, #09090c);
       margin: 0 0 0.85rem;
     }
     .key-points-list {
@@ -529,7 +529,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       gap: 0.75rem;
       font-size: 0.98rem;
       line-height: 1.55;
-      color: #262522;
+      color: var(--color-text, #262522);
       font-weight: 500;
     }
     .check-icon {
@@ -546,23 +546,23 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
     .table-title {
       font-size: 1.15rem;
       font-weight: 800;
-      color: #09090c;
+      color: var(--color-text, #09090c);
       margin-bottom: 0.85rem;
     }
     .price-table-responsive {
       overflow-x: auto;
       border-radius: 12px;
-      border: 1px solid #e2ddd3;
+      border: 1px solid var(--border-subtle, #e2ddd3);
     }
     .price-table {
       width: 100%;
       border-collapse: collapse;
       text-align: left;
       font-size: 0.93rem;
-      background: #ffffff;
+      background: var(--bg-card, #ffffff);
     }
     .price-table th {
-      background: #09090c;
+      background: var(--bg-surface-elevated, #09090c);
       color: #f7f3ed;
       padding: 0.95rem 1.1rem;
       font-weight: 800;
@@ -571,15 +571,15 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
     }
     .price-table td {
       padding: 0.9rem 1.1rem;
-      border-bottom: 1px solid #eee9e0;
+      border-bottom: 1px solid var(--border-subtle, #eee9e0);
       vertical-align: middle;
-      color: #262522;
+      color: var(--color-text, #262522);
     }
     .price-table tr:last-child td {
       border-bottom: none;
     }
     .col-concept {
-      color: #09090c;
+      color: var(--color-text, #09090c);
       font-weight: 700;
       min-width: 220px;
     }
@@ -597,7 +597,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       font-size: 0.92rem;
     }
     .col-advice {
-      color: #555249;
+      color: var(--color-text-muted, #555249);
       font-size: 0.88rem;
       line-height: 1.45;
     }
@@ -746,7 +746,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
     /* Articles relacionats */
     .related-articles-section {
       margin-top: 3.5rem;
-      border-top: 1px solid #e5e0d7;
+      border-top: 1px solid var(--border-subtle, #e5e0d7);
       padding-top: 2.5rem;
     }
     .related-header {
@@ -758,7 +758,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
     .related-header h3 {
       font-size: 1.4rem;
       font-weight: 900;
-      color: #09090c;
+      color: var(--color-text, #09090c);
       margin: 0;
     }
     .link-all-articles {
@@ -776,8 +776,8 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       gap: 1.5rem;
     }
     .related-card {
-      background: #ffffff;
-      border: 1px solid #e5e0d7;
+      background: var(--bg-card, #ffffff);
+      border: 1px solid var(--border-subtle, #e5e0d7);
       border-radius: 14px;
       overflow: hidden;
       text-decoration: none;
@@ -785,13 +785,13 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       cursor: pointer;
       display: flex;
       flex-direction: column;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+      box-shadow: var(--shadow-xs, 0 4px 16px rgba(0, 0, 0, 0.03));
       transition: all 0.25s ease;
     }
     .related-card:hover {
       border-color: #ff1744;
       transform: translateY(-4px);
-      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
+      box-shadow: var(--shadow-sm, 0 12px 28px rgba(0, 0, 0, 0.08));
     }
     .related-media {
       position: relative;
@@ -823,21 +823,21 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
     }
     .related-time {
       font-size: 0.78rem;
-      color: #716f67;
+      color: var(--color-text-muted, #716f67);
       font-weight: 700;
       margin-bottom: 0.5rem;
     }
     .related-body h4 {
       font-size: 1.08rem;
       font-weight: 800;
-      color: #09090c;
+      color: var(--color-text, #09090c);
       line-height: 1.4;
       margin: 0 0 0.6rem;
     }
     .related-body p {
       font-size: 0.88rem;
       line-height: 1.55;
-      color: #555249;
+      color: var(--color-text-muted, #555249);
       margin: 0 0 1rem;
       display: -webkit-box;
       -webkit-line-clamp: 2;
@@ -855,8 +855,8 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
     .article-not-found-card {
       text-align: center;
       padding: 4rem 1.5rem;
-      background: #ffffff;
-      border: 1px solid #e5e0d7;
+      background: var(--bg-card, #ffffff);
+      border: 1px solid var(--border-subtle, #e5e0d7);
       border-radius: 16px;
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
     }

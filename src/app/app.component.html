@@ -1,4 +1,4 @@
-<div class="shell" [class.has-solid-header]="isScrolled" [class.sidebar-open]="menuObert && isScrolled" [class.not-home-page]="!isHomePage" [class.has-bottom-nav]="showBottomNav">
+<div class="shell" [class.theme-app-dark]="isAppPage || isAppMode" [class.has-solid-header]="isScrolled" [class.sidebar-open]="menuObert && isScrolled" [class.not-home-page]="!isHomePage" [class.has-bottom-nav]="showBottomNav">
   <!-- Capçalera superior que es mostra exclusivament després de fer scroll cap avall o en pàgines secundàries -->
   <header class="topbar" [class.visible-bar]="!isHomePage || isScrolled" [class.solid-header]="isScrolled || !isHomePage">
     <!-- Botó per obrir/tancar el menú a l'esquerra -->

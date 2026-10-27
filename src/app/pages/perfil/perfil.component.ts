@@ -736,15 +736,15 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       }
 
       .perfil-header {
-        background: #ffffff;
-        color: #09090c;
+        background: var(--bg-card, #ffffff);
+        color: var(--color-text, #09090c);
         padding: 2.2rem;
-        border-radius: 20px;
-        border: 1px solid #e5e0d7;
+        border-radius: var(--radius-xl, 20px);
+        border: 1px solid var(--border-subtle, #e5e0d7);
         display: flex;
         align-items: center;
         gap: 1.75rem;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        box-shadow: var(--shadow-md, 0 4px 20px rgba(0, 0, 0, 0.05));
         box-sizing: border-box;
         max-width: 100%;
       }
@@ -778,11 +778,11 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         display: grid;
         grid-template-columns: repeat(4, 1fr);
         gap: 0.5rem;
-        background: #ffffff;
-        border: 1px solid #e5e0d7;
+        background: var(--bg-card, #ffffff);
+        border: 1px solid var(--border-subtle, #e5e0d7);
         padding: 0.45rem;
-        border-radius: 16px;
-        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+        border-radius: var(--radius-lg, 16px);
+        box-shadow: var(--shadow-sm, 0 4px 14px rgba(0, 0, 0, 0.04));
         width: 100%;
         box-sizing: border-box;
         overflow: hidden;
@@ -796,26 +796,26 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         justify-content: center;
         gap: 0.45rem;
         padding: 0.75rem 0.6rem;
-        border-radius: 12px;
+        border-radius: var(--radius-md, 12px);
         border: 1px solid transparent;
         background: transparent;
-        color: #55524b;
+        color: var(--color-text-muted, #55524b);
         font-weight: 800;
         font-size: 0.86rem;
         cursor: pointer;
-        transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: all var(--transition-fast, 0.22s ease);
         user-select: none;
         box-sizing: border-box;
         text-align: center;
       }
 
       .perfil-tab-btn:hover {
-        background: #faf8f4;
-        color: #09090c;
+        background: var(--bg-surface, #faf8f4);
+        color: var(--color-text, #09090c);
       }
 
       .perfil-tab-btn.active {
-        background: #09090c;
+        background: var(--color-text, #09090c);
         color: #ffffff;
         box-shadow: 0 4px 16px rgba(9, 9, 12, 0.25);
       }
@@ -842,12 +842,12 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       }
 
       .tab-loading-state {
-        background: #ffffff;
-        border: 1px solid #e5e0d7;
-        border-radius: 16px;
+        background: var(--bg-card, #ffffff);
+        border: 1px solid var(--border-subtle, #e5e0d7);
+        border-radius: var(--radius-lg, 16px);
         padding: 3rem;
         text-align: center;
-        color: #78756e;
+        color: var(--color-text-dim, #78756e);
         font-weight: 700;
       }
 

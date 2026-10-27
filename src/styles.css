@@ -4,21 +4,23 @@
 /* ============================================================== */
 
 :root {
-  /* Fons de pàgina blanc brut */
+  /* Fons de pàgina i superfícies (Tema Clar / Web) */
   --bg-page: #f7f3ed;
   --bg-card: #ffffff;
   --bg-surface: #faf8f4;
+  --bg-surface-elevated: #ffffff;
   --border-subtle: #e5e0d7;
+  --border-card: #e5e0d7;
+  --border-dark: #23232f;
 
   /* Negres per a la barra superior i menú lateral */
   --bg-black: #09090c;
   --bg-sidebar: #0d0d12;
-  --border-dark: #23232f;
 
   /* Colors de text per al fons blanc brut (contrast WCAG 2.2 AA) */
   --color-text: #09090c;
   --color-text-muted: #57554e;
-  --color-text-dim: #5c5952;
+  --color-text-dim: #716f67;
 
   /* Blancs per a la barra i menú negres (contrast WCAG 2.2 AA) */
   --color-bone: #f5f4ef;
@@ -31,7 +33,27 @@
   --neon-glow: 0 0 18px rgba(255, 23, 68, 0.45);
   --neon-glow-lg: 0 0 32px rgba(255, 23, 68, 0.65);
   --neon-bg: rgba(255, 23, 68, 0.12);
-  --neon-border: rgba(255, 23, 68, 0.5);
+  --neon-border: rgba(255, 23, 68, 0.4);
+
+  /* Ràdios de vora estandarditzats (consistent 4/8/12/16/20px) */
+  --radius-xs: 6px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-full: 9999px;
+
+  /* Ombres suaus estandarditzades */
+  --shadow-xs: 0 1px 3px rgba(0, 0, 0, 0.04);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 18px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.08);
+  --shadow-hover: 0 8px 26px rgba(0, 0, 0, 0.09);
+
+  /* Transicions suaus */
+  --transition-fast: 0.16s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-smooth: 0.32s cubic-bezier(0.16, 1, 0.3, 1);
 
   /* Tipografia per a títols d'alt impacte */
   --font-title: 'Boldonse', 'Climate Crisis', sans-serif;
@@ -119,27 +141,31 @@ button, .btn {
   font-family: inherit;
   font-weight: 800;
   letter-spacing: 0.02em;
-  border-radius: 8px;
+  border-radius: var(--radius-sm, 8px);
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all var(--transition-fast, 0.16s ease);
 }
 
 /* Inputs i formularis en estil clar i net */
 input, select, textarea {
   font-family: inherit;
-  background-color: #ffffff;
-  color: #09090c;
-  border: 1px solid #dcd7ce;
-  border-radius: 8px;
+  background-color: var(--bg-card, #ffffff);
+  color: var(--color-text, #09090c);
+  border: 1px solid var(--border-subtle, #dcd7ce);
+  border-radius: var(--radius-sm, 8px);
   padding: 0.75rem 1rem;
+  font-size: 0.92rem;
   font-weight: 600;
   outline: none;
-  transition: all 0.2s ease;
+  transition: border-color var(--transition-fast, 0.16s ease),
+              box-shadow var(--transition-fast, 0.16s ease),
+              background-color var(--transition-fast, 0.16s ease);
+  box-sizing: border-box;
 }
 
 input:focus, select:focus, textarea:focus {
   border-color: var(--neon, #ff1744);
-  box-shadow: 0 0 0 3px rgba(255, 23, 68, 0.15), var(--neon-glow);
+  box-shadow: 0 0 0 3px rgba(255, 23, 68, 0.16), var(--neon-glow);
 }
 
 /* Scrollbars modernes */
@@ -184,4 +210,353 @@ input:focus, select:focus, textarea:focus {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+}
+
+
+/* ============================================================== */
+/* MODE FOSC EXCLUSIU PER A L'ENTORN APP (/app i PWA MÒBIL)       */
+/* ============================================================== */
+
+/* Variables de tema fosc aplicades a nivell global quan l'usuari és a /app */
+body.theme-app-dark,
+html.theme-app-dark,
+.shell.theme-app-dark {
+  --bg-page: #090a0f;
+  --bg-card: #13141d;
+  --bg-surface: #191b26;
+  --bg-surface-elevated: #202232;
+  --border-subtle: #25273a;
+  --border-card: #282a3e;
+  --border-dark: #32354c;
+  --color-text: #f5f4ef;
+  --color-text-muted: #bab8ae;
+  --color-text-dim: #7f7d73;
+  --shadow-xs: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 14px 40px rgba(0, 0, 0, 0.65);
+  --shadow-hover: 0 8px 30px rgba(255, 23, 68, 0.15), 0 4px 16px rgba(0, 0, 0, 0.55);
+}
+
+body.theme-app-dark {
+  background-color: #090a0f !important;
+  color: #f5f4ef !important;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+body.theme-app-dark .shell,
+.shell.theme-app-dark {
+  background-color: #090a0f !important;
+  color: #f5f4ef !important;
+}
+
+body.theme-app-dark .shell.not-home-page .content,
+.shell.theme-app-dark.not-home-page .content {
+  background-color: #090a0f !important;
+}
+
+/* Encapçalaments i tipografia en mode fosc */
+body.theme-app-dark h1,
+body.theme-app-dark h2,
+body.theme-app-dark h3,
+body.theme-app-dark h4,
+body.theme-app-dark h5,
+body.theme-app-dark h6,
+body.theme-app-dark .hero-title,
+body.theme-app-dark .featured-title,
+body.theme-app-dark .card-title,
+body.theme-app-dark .article-title,
+body.theme-app-dark .author-name,
+body.theme-app-dark .breadcrumb-current,
+body.theme-app-dark .section-heading h2,
+body.theme-app-dark .section-heading h3,
+body.theme-app-dark .guide-header h3,
+body.theme-app-dark .testi-author strong,
+body.theme-app-dark .verif-step-card h4,
+body.theme-app-dark .transparency-text h3,
+body.theme-app-dark .section-title,
+body.theme-app-dark .table-title,
+body.theme-app-dark .key-points-title,
+body.theme-app-dark .related-header h3,
+body.theme-app-dark .related-body h4,
+body.theme-app-dark .offer-header h3,
+body.theme-app-dark .modal-header h2,
+body.theme-app-dark .modal-task-summary h3,
+body.theme-app-dark strong,
+body.theme-app-dark b,
+.theme-app-dark h1,
+.theme-app-dark h2,
+.theme-app-dark h3,
+.theme-app-dark h4,
+.theme-app-dark .hero-title,
+.theme-app-dark strong {
+  color: #f5f4ef !important;
+}
+
+body.theme-app-dark p,
+body.theme-app-dark .hero-subtitle,
+body.theme-app-dark .hero-lead,
+body.theme-app-dark .featured-excerpt,
+body.theme-app-dark .card-summary,
+body.theme-app-dark .subtitle,
+body.theme-app-dark .description-text,
+body.theme-app-dark .section-heading p,
+body.theme-app-dark .guide-subtitle,
+body.theme-app-dark .guide-paragraphs p,
+body.theme-app-dark .guide-checklist ul,
+body.theme-app-dark .testi-quote,
+body.theme-app-dark .verif-step-card p,
+body.theme-app-dark .transparency-text p,
+body.theme-app-dark .section-paragraphs p,
+body.theme-app-dark .key-points-list li,
+body.theme-app-dark .related-body p,
+body.theme-app-dark .related-time,
+body.theme-app-dark .col-advice,
+body.theme-app-dark .offer-note,
+body.theme-app-dark .summary-pro,
+.theme-app-dark p {
+  color: #bab8ae !important;
+}
+
+/* Contenidors de pàgines en l'entorn App */
+body.theme-app-dark .main-page,
+body.theme-app-dark .dashboard-body,
+body.theme-app-dark .market-page,
+body.theme-app-dark .perfil-container,
+body.theme-app-dark .avisos-container,
+body.theme-app-dark .admin-panel-container,
+body.theme-app-dark .tasca-detall-container,
+body.theme-app-dark .blog-page,
+body.theme-app-dark .comunitat-container,
+body.theme-app-dark .pro-community-page {
+  background-color: #090a0f !important;
+  color: #f5f4ef !important;
+}
+
+/* Targetes, panells i caixes d'informació */
+body.theme-app-dark .dashboard-header-bar,
+body.theme-app-dark .market-header,
+body.theme-app-dark .search-filter-bar,
+body.theme-app-dark .categories-card,
+body.theme-app-dark .panel,
+body.theme-app-dark .stat-card,
+body.theme-app-dark .card,
+body.theme-app-dark .market-card,
+body.theme-app-dark .perfil-card,
+body.theme-app-dark .perfil-header-card,
+body.theme-app-dark .avis-card,
+body.theme-app-dark .avis-item,
+body.theme-app-dark .form-card,
+body.theme-app-dark .notice-banner,
+body.theme-app-dark .modal-dialog,
+body.theme-app-dark .modal-content,
+body.theme-app-dark .modal-header,
+body.theme-app-dark .modal-body,
+body.theme-app-dark .modal-footer,
+body.theme-app-dark .exit-offer-summary,
+body.theme-app-dark .exit-contact-section,
+body.theme-app-dark .pro-hero-section,
+body.theme-app-dark .featured-card,
+body.theme-app-dark .article-card,
+body.theme-app-dark .reason-card,
+body.theme-app-dark .article-full-view,
+body.theme-app-dark .comparison-section,
+body.theme-app-dark .verif-step-card,
+body.theme-app-dark .transparency-card,
+body.theme-app-dark .guide-card,
+body.theme-app-dark .testi-card,
+body.theme-app-dark .author-meta-card,
+body.theme-app-dark .key-points-box,
+body.theme-app-dark .price-table-responsive,
+body.theme-app-dark .related-card,
+body.theme-app-dark .offer-card,
+body.theme-app-dark .article-not-found-card {
+  background-color: #13141d !important;
+  border-color: #25273a !important;
+  color: #f5f4ef !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.45) !important;
+}
+
+/* Taula comparativa en mode fosc */
+body.theme-app-dark .comparison-table th {
+  background-color: #191b26 !important;
+  color: #f5f4ef !important;
+  border-bottom-color: #25273a !important;
+}
+body.theme-app-dark .comparison-table th.col-avisa {
+  background-color: rgba(255, 23, 68, 0.15) !important;
+  color: #ff1744 !important;
+  border-left-color: #ff1744 !important;
+  border-right-color: #ff1744 !important;
+}
+body.theme-app-dark .comparison-table td {
+  border-bottom-color: #222436 !important;
+  color: #bab8ae !important;
+}
+body.theme-app-dark .comparison-table td strong {
+  color: #f5f4ef !important;
+}
+body.theme-app-dark .comparison-table td.col-avisa {
+  background-color: rgba(255, 23, 68, 0.07) !important;
+  color: #f5f4ef !important;
+  border-left-color: #ff1744 !important;
+  border-right-color: #ff1744 !important;
+}
+
+/* Taules de preus i elements de contingut en mode fosc */
+body.theme-app-dark .price-table {
+  background-color: #13141d !important;
+}
+body.theme-app-dark .price-table th {
+  background-color: #1f2130 !important;
+  color: #f5f4ef !important;
+  border-bottom-color: #ff1744 !important;
+}
+body.theme-app-dark .price-table td {
+  border-bottom-color: #222436 !important;
+  color: #bab8ae !important;
+}
+body.theme-app-dark .col-concept {
+  color: #f5f4ef !important;
+}
+body.theme-app-dark .guide-checklist {
+  background-color: #191b26 !important;
+  border-left-color: #ff1744 !important;
+}
+body.theme-app-dark .guide-checklist strong {
+  color: #f5f4ef !important;
+}
+body.theme-app-dark .guide-content-body {
+  border-top-color: #25273a !important;
+}
+body.theme-app-dark .step-icon {
+  background-color: #191b26 !important;
+  color: #f5f4ef !important;
+  border-color: #25273a !important;
+}
+body.theme-app-dark .step-badge {
+  background-color: #202232 !important;
+  color: #bab8ae !important;
+}
+
+/* Sub-targetes niades (com les targetes de tasques/ofertes dins del panell o graella) */
+body.theme-app-dark .card,
+body.theme-app-dark .market-card,
+body.theme-app-dark .search-input-wrap,
+body.theme-app-dark .mobile-native-select,
+body.theme-app-dark .avis-item {
+  background-color: #191b26 !important;
+  border-color: #27293d !important;
+}
+
+body.theme-app-dark .card:hover,
+body.theme-app-dark .market-card:hover,
+body.theme-app-dark .stat-card:hover,
+body.theme-app-dark .avis-item:hover {
+  background-color: #1f2130 !important;
+  border-color: #ff1744 !important;
+  box-shadow: 0 6px 24px rgba(255, 23, 68, 0.15), 0 4px 16px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Botons de previsualització i canvi a la vista /app */
+body.theme-app-dark .btn-preview-toggle {
+  background-color: #13141d !important;
+  border: 1px dashed #2f3248 !important;
+  color: #f5f4ef !important;
+}
+
+body.theme-app-dark .btn-preview-toggle:hover {
+  background-color: #191b26 !important;
+  border-color: #ff1744 !important;
+  color: #ff1744 !important;
+}
+
+/* Títols de capçalera de panells i taulers */
+body.theme-app-dark .dashboard-title,
+body.theme-app-dark .market-header h1,
+body.theme-app-dark .panel-header h2,
+body.theme-app-dark .stat-card strong,
+body.theme-app-dark .card h3,
+body.theme-app-dark .card-footer span,
+body.theme-app-dark .cat-name,
+body.theme-app-dark .categories-card-header h3 {
+  color: #f5f4ef !important;
+}
+
+body.theme-app-dark .panel-header {
+  border-bottom-color: #25273a !important;
+}
+
+body.theme-app-dark .panel-header a {
+  color: #f5f4ef !important;
+}
+
+body.theme-app-dark .meta,
+body.theme-app-dark .label,
+body.theme-app-dark .market-subtitle,
+body.theme-app-dark .categories-card-desc {
+  color: #8e8c82 !important;
+}
+
+/* Formularis i controls d'entrada en mode fosc */
+body.theme-app-dark input,
+body.theme-app-dark select,
+body.theme-app-dark textarea {
+  background-color: #171825 !important;
+  color: #f5f4ef !important;
+  border-color: #2b2e42 !important;
+}
+
+body.theme-app-dark input:focus,
+body.theme-app-dark select:focus,
+body.theme-app-dark textarea:focus {
+  background-color: #1c1d2d !important;
+  border-color: #ff1744 !important;
+  box-shadow: 0 0 0 3px rgba(255, 23, 68, 0.2), 0 0 16px rgba(255, 23, 68, 0.35) !important;
+}
+
+body.theme-app-dark .search-input-wrap input {
+  background: transparent !important;
+  color: #f5f4ef !important;
+}
+
+body.theme-app-dark .search-input-wrap:focus-within {
+  background-color: #1c1d2d !important;
+  border-color: #ff1744 !important;
+  box-shadow: 0 0 0 3px rgba(255, 23, 68, 0.2) !important;
+}
+
+/* Píndoles, xips i etiquetes */
+body.theme-app-dark .tag,
+body.theme-app-dark .filter-pill,
+body.theme-app-dark .cat-pill,
+body.theme-app-dark .cat-badge,
+body.theme-app-dark .count-tag {
+  background-color: #1d1f2e !important;
+  border-color: #2c2f44 !important;
+  color: #dedcd4 !important;
+}
+
+body.theme-app-dark .filter-pill.active,
+body.theme-app-dark .category-row-btn.active {
+  background-color: #ff1744 !important;
+  border-color: #ff1744 !important;
+  color: #ffffff !important;
+}
+
+body.theme-app-dark .category-row-btn:hover {
+  background-color: #191b26 !important;
+  border-color: #2f3248 !important;
+}
+
+/* Scrollbars en mode fosc */
+body.theme-app-dark ::-webkit-scrollbar-track {
+  background: #090a0f;
+}
+body.theme-app-dark ::-webkit-scrollbar-thumb {
+  background: #25273a;
+  border-radius: 4px;
+}
+body.theme-app-dark ::-webkit-scrollbar-thumb:hover {
+  background: var(--neon, #ff1744);
 }

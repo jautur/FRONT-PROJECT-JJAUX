@@ -254,7 +254,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       color: #d6d0c4;
     }
     .breadcrumb-current {
-      color: #09090c;
+      color: var(--color-text, #09090c);
       font-weight: 700;
     }
 
@@ -287,14 +287,14 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
     .hero-title {
       font-size: 2.6rem;
       font-weight: 900;
-      color: #09090c;
+      color: var(--color-text, #09090c);
       line-height: 1.15;
       margin: 0 0 1rem;
       letter-spacing: -0.03em;
     }
     .hero-subtitle {
       font-size: 1.12rem;
-      color: #636058;
+      color: var(--color-text-muted, #636058);
       line-height: 1.6;
       margin: 0 0 2rem;
       font-weight: 500;
@@ -325,10 +325,10 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       border-radius: 9999px;
       font-size: 1rem;
       font-weight: 500;
-      color: #09090c;
-      background: #ffffff;
-      transition: all 0.2s ease;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+      color: var(--color-text, #09090c);
+      background: var(--bg-card, #ffffff);
+      transition: all var(--transition-fast, 0.2s ease);
+      box-shadow: var(--shadow-sm, 0 4px 20px rgba(0, 0, 0, 0.04));
     }
     .search-input:focus {
       outline: none;
@@ -343,13 +343,13 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       background: none;
       border: none;
       font-size: 1.1rem;
-      color: #8c8980;
+      color: var(--color-text-dim, #8c8980);
       cursor: pointer;
       padding: 0.25rem;
       line-height: 1;
     }
     .btn-clear-search:hover {
-      color: #09090c;
+      color: var(--color-text, #09090c);
     }
 
     /* Píndoles de categories */
@@ -360,13 +360,13 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       gap: 0.65rem;
     }
     .category-pill {
-      background: #ffffff;
-      border: 1px solid #d6d0c4;
+      background: var(--bg-card, #ffffff);
+      border: 1px solid var(--border-subtle, #d6d0c4);
       padding: 0.5rem 1.1rem;
-      border-radius: 9999px;
+      border-radius: var(--radius-full, 9999px);
       font-size: 0.88rem;
       font-weight: 800;
-      color: #636058;
+      color: var(--color-text-muted, #636058);
       cursor: pointer;
       transition: all 0.2s ease;
     }
@@ -389,12 +389,12 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
     .featured-card {
       display: grid;
       grid-template-columns: 1.1fr 1fr;
-      background: #ffffff;
-      border: 1px solid #e5e0d7;
-      border-radius: 16px;
+      background: var(--bg-card, #ffffff);
+      border: 1px solid var(--border-subtle, #e5e0d7);
+      border-radius: var(--radius-lg, 16px);
       overflow: hidden;
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
-      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      box-shadow: var(--shadow-md, 0 8px 30px rgba(0, 0, 0, 0.06));
+      transition: transform var(--transition-fast, 0.25s ease), box-shadow var(--transition-fast, 0.25s ease);
     }
     .featured-card:hover {
       transform: translateY(-4px);
@@ -459,7 +459,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
     .featured-title {
       font-size: 1.65rem;
       font-weight: 900;
-      color: #09090c;
+      color: var(--color-text, #09090c);
       line-height: 1.25;
       margin: 0 0 1rem;
       cursor: pointer;
@@ -471,7 +471,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
     }
     .featured-excerpt {
       font-size: 0.98rem;
-      color: #636058;
+      color: var(--color-text-muted, #636058);
       line-height: 1.6;
       margin: 0 0 1.5rem;
       font-weight: 500;
@@ -547,16 +547,16 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
     .section-results-header h2 {
       font-size: 1.5rem;
       font-weight: 900;
-      color: #09090c;
+      color: var(--color-text, #09090c);
       margin: 0;
     }
     .results-count {
-      color: #8c8980;
+      color: var(--color-text-dim, #8c8980);
       font-weight: 700;
     }
     .active-filter-label {
       font-size: 0.88rem;
-      color: #636058;
+      color: var(--color-text-muted, #636058);
     }
     .btn-reset-filters {
       background: none;
@@ -575,19 +575,19 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       gap: 1.75rem;
     }
     .article-card {
-      background: #ffffff;
-      border: 1px solid #e5e0d7;
-      border-radius: 14px;
+      background: var(--bg-card, #ffffff);
+      border: 1px solid var(--border-subtle, #e5e0d7);
+      border-radius: var(--radius-md, 14px);
       overflow: hidden;
       display: flex;
       flex-direction: column;
-      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
-      transition: all 0.25s ease;
+      box-shadow: var(--shadow-sm, 0 4px 18px rgba(0, 0, 0, 0.04));
+      transition: all var(--transition-fast, 0.25s ease);
     }
     .article-card:hover {
       transform: translateY(-4px);
-      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.09);
-      border-color: #09090c;
+      box-shadow: var(--shadow-hover, 0 10px 28px rgba(0, 0, 0, 0.09));
+      border-color: #ff1744;
     }
     .card-media {
       position: relative;
@@ -631,14 +631,14 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       align-items: center;
       gap: 0.45rem;
       font-size: 0.8rem;
-      color: #8c8980;
+      color: var(--color-text-dim, #8c8980);
       font-weight: 600;
       margin-bottom: 0.65rem;
     }
     .card-title {
       font-size: 1.18rem;
       font-weight: 800;
-      color: #09090c;
+      color: var(--color-text, #09090c);
       line-height: 1.35;
       margin: 0 0 0.65rem;
       cursor: pointer;
@@ -649,7 +649,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
     }
     .card-summary {
       font-size: 0.9rem;
-      color: #636058;
+      color: var(--color-text-muted, #636058);
       line-height: 1.55;
       margin: 0 0 1rem;
       flex-grow: 1;

@@ -105,6 +105,7 @@ export class AppComponent implements OnInit, OnDestroy {
         }
 
         this.actualitzarAvisos();
+        this.actualitzarTemaApp();
         if (!this.isHomePage) {
           // A les pàgines secundàries la barra superior està disponible directament
           this.isScrolled = true;
@@ -124,6 +125,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.actualitzarAvisos();
+    this.actualitzarTemaApp();
     this.checkScroll();
 
     // Comprovació periòdica dels avisos cada 15 segons
@@ -138,6 +140,10 @@ export class AppComponent implements OnInit, OnDestroy {
     }
     if (this.authSub) {
       this.authSub.unsubscribe();
+    }
+    if (typeof document !== 'undefined') {
+      document.body.classList.remove('theme-app-dark');
+      document.documentElement.classList.remove('theme-app-dark');
     }
   }
 
@@ -314,6 +320,7 @@ export class AppComponent implements OnInit, OnDestroy {
     this.isAppMode = true;
     this.isAppPage = true;
     this.showBottomNav = true;
+    this.actualitzarTemaApp();
 
     if (typeof window !== 'undefined') {
       try {
@@ -342,6 +349,7 @@ export class AppComponent implements OnInit, OnDestroy {
     this.isAppMode = false;
     this.isAppPage = false;
     this.showBottomNav = false;
+    this.actualitzarTemaApp();
 
     if (typeof window !== 'undefined') {
       try {
@@ -448,5 +456,23 @@ export class AppComponent implements OnInit, OnDestroy {
       return false;
     }
     return !this.isHomePage;
+  }
+
+  /**
+   * Aplica o retira la classe de fons fosc per a l'entorn de l'aplicació (/app i PWA).
+   * Assegura que la transició visual siga immediata a nivell de document i shell.
+   */
+  private actualitzarTemaApp(): void {
+    if (typeof document !== 'undefined') {
+      const url = this.router?.url || '';
+      const esApp = this.isAppPage || this.isAppMode || url.startsWith('/app');
+      if (esApp) {
+        document.body.classList.add('theme-app-dark');
+        document.documentElement.classList.add('theme-app-dark');
+      } else {
+        document.body.classList.remove('theme-app-dark');
+        document.documentElement.classList.remove('theme-app-dark');
+      }
+    }
   }
 }

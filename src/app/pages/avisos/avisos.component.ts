@@ -195,19 +195,19 @@ type FiltreAvisos = 'totes' | 'pendents' | 'llegides';
       padding-bottom: 0.75rem;
     }
     .tab-btn {
-      background: #ffffff;
-      border: 1px solid #d6d0c4;
+      background: var(--bg-card, #ffffff);
+      border: 1px solid var(--border-subtle, #d6d0c4);
       padding: 0.5rem 1.15rem;
-      border-radius: 9999px;
+      border-radius: var(--radius-full, 9999px);
       font-size: 0.88rem;
       font-weight: 800;
-      color: #636058;
+      color: var(--color-text-muted, #636058);
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all var(--transition-fast, 0.2s ease);
     }
     .tab-btn:hover {
       border-color: #ff1744;
-      color: #09090c;
+      color: var(--color-text, #09090c);
     }
     .tab-btn.active {
       background: #ff1744;
@@ -225,23 +225,23 @@ type FiltreAvisos = 'totes' | 'pendents' | 'llegides';
       display: flex;
       align-items: center;
       gap: 1.1rem;
-      background: #ffffff;
-      border: 1px solid #e5e0d7;
-      border-radius: 12px;
+      background: var(--bg-card, #ffffff);
+      border: 1px solid var(--border-subtle, #e5e0d7);
+      border-radius: var(--radius-md, 12px);
       padding: 1.1rem 1.35rem;
-      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.03);
+      box-shadow: var(--shadow-sm, 0 2px 12px rgba(0, 0, 0, 0.03));
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all var(--transition-fast, 0.2s ease);
     }
     .avis-card:hover {
-      border-color: #09090c;
-      background: #faf8f4;
+      border-color: var(--neon, #ff1744);
+      background: var(--bg-surface, #faf8f4);
       transform: translateY(-2px);
-      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+      box-shadow: var(--shadow-hover, 0 6px 18px rgba(0, 0, 0, 0.08));
     }
     .avis-card.no-llegit {
       border-left: 4px solid #ff1744;
-      background: #ffffff;
+      background: var(--bg-card, #ffffff);
     }
     .badge-category {
       font-size: 0.72rem;

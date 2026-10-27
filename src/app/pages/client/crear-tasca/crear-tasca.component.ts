@@ -136,11 +136,11 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
       }
 
       .card {
-        background: #ffffff;
+        background: var(--bg-card, #ffffff);
         padding: 2.2rem;
-        border-radius: 18px;
-        border: 1px solid #e5e0d7;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        border-radius: var(--radius-lg, 18px);
+        border: 1px solid var(--border-subtle, #e5e0d7);
+        box-shadow: var(--shadow-md, 0 4px 20px rgba(0, 0, 0, 0.05));
         display: flex;
         flex-direction: column;
         gap: 1.35rem;
@@ -152,7 +152,7 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
         gap: 0.5rem;
         font-weight: 800;
         font-size: 0.9rem;
-        color: #09090c;
+        color: var(--color-text, #09090c);
       }
 
       input, select, textarea {

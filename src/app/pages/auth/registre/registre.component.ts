@@ -222,12 +222,12 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
     `
       .auth-card {
         width: min(540px, 100%);
-        background: #ffffff;
+        background: var(--bg-card, #ffffff);
         padding: 2.4rem;
-        border-radius: 20px;
-        border: 1px solid #e5e0d7;
-        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.06);
-        color: #09090c;
+        border-radius: var(--radius-xl, 20px);
+        border: 1px solid var(--border-subtle, #e5e0d7);
+        box-shadow: var(--shadow-lg, 0 16px 40px rgba(0, 0, 0, 0.06));
+        color: var(--color-text, #09090c);
         box-sizing: border-box;
       }
 
@@ -235,13 +235,13 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
         margin: 0 0 0.4rem;
         font-size: 1.85rem;
         font-weight: 900;
-        color: #09090c;
+        color: var(--color-text, #09090c);
         letter-spacing: -0.03em;
       }
 
       .subtitle {
         margin: 0 0 1.4rem;
-        color: #57554e;
+        color: var(--color-text-muted, #57554e);
         font-size: 0.95rem;
         font-weight: 600;
       }

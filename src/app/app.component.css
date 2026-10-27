@@ -1670,8 +1670,8 @@
 
 @media (max-width: 480px) {
   .app-bottom-nav {
-    height: 60px;
-    padding: 0 0.5rem;
+    height: calc(60px + env(safe-area-inset-bottom, 0px));
+    padding: 0.35rem 0.5rem calc(0.35rem + env(safe-area-inset-bottom, 0px));
   }
   .bottom-nav-item {
     font-size: 0.68rem;
@@ -1681,3 +1681,43 @@
     height: 20px;
   }
 }
+
+/* Adaptació del modal de confirmació al mode fosc */
+.shell.theme-app-dark .custom-confirm-card,
+body.theme-app-dark .custom-confirm-card {
+  background: #14141d !important;
+  color: #f5f4ef !important;
+  border: 1px solid #28283a;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7);
+}
+
+.shell.theme-app-dark .confirm-modal-title,
+body.theme-app-dark .confirm-modal-title {
+  color: #f5f4ef !important;
+}
+
+.shell.theme-app-dark .confirm-modal-message,
+body.theme-app-dark .confirm-modal-message {
+  color: #bab8ae !important;
+}
+
+.shell.theme-app-dark .btn-confirm-cancel,
+body.theme-app-dark .btn-confirm-cancel {
+  background: #1e202f !important;
+  color: #bab8ae !important;
+  border-color: #2e3146 !important;
+}
+
+.shell.theme-app-dark .btn-confirm-cancel:hover,
+body.theme-app-dark .btn-confirm-cancel:hover {
+  background: #272a3e !important;
+  color: #ffffff !important;
+}
+
+.shell.theme-app-dark .btn-confirm-accept,
+body.theme-app-dark .btn-confirm-accept {
+  background: #ff1744 !important;
+  border-color: #ff1744 !important;
+  color: #ffffff !important;
+}
+
