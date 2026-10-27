@@ -100,6 +100,15 @@ export const en = {
     "Disponible": "Available"
   },
   "HOME": {
+    "WELCOME_GUEST_TITLE": "Welcome to the AVISA community",
+    "WELCOME_GUEST_SUBTITLE": "The trusted network connecting clients with service needs and verified trade professionals, guaranteed with transparent direct contact.",
+    "WELCOME_USER_TITLE": "Welcome back, {{nom}}",
+    "WELCOME_USER_SUBTITLE_CLIENT": "Your platform is ready to manage job requests and connect with verified specialists.",
+    "WELCOME_USER_SUBTITLE_PRO": "Discover new client requests and grow your reputation across the AVISA community.",
+    "WELCOME_USER_SUBTITLE_ADMIN": "Global supervisory and platform management dashboard ready.",
+    "WELCOME_BTN_MARKET": "Explore Tasks & Offers",
+    "WELCOME_BTN_REGISTER": "Join AVISA",
+    "WELCOME_BTN_PROFILE": "My profile",
     "HERO_SLOGAN": "Connecting needs and verified professionals",
     "SCROLL_DOWN": "Scroll down",
     "PLATAFORMA_AVISA": "AVISA Platform",

@@ -100,6 +100,15 @@ export const es = {
     "Disponible": "Disponible"
   },
   "HOME": {
+    "WELCOME_GUEST_TITLE": "Bienvenido/a a la comunidad AVISA",
+    "WELCOME_GUEST_SUBTITLE": "La red de confianza que conecta personas con incidencias y profesionales cualificados, con garantía y transparencia directa.",
+    "WELCOME_USER_TITLE": "Hola de nuevo, {{nom}}",
+    "WELCOME_USER_SUBTITLE_CLIENT": "Tienes la plataforma lista para gestionar tus incidencias y conectar con profesionales verificados.",
+    "WELCOME_USER_SUBTITLE_PRO": "Descubre nuevos trabajos de clientes y haz crecer tu reputación en la comunidad AVISA.",
+    "WELCOME_USER_SUBTITLE_ADMIN": "Panel de supervisión y gestión global de la plataforma AVISA listo.",
+    "WELCOME_BTN_MARKET": "Explorar mercado de tareas",
+    "WELCOME_BTN_REGISTER": "Únete a AVISA",
+    "WELCOME_BTN_PROFILE": "Mi perfil",
     "HERO_SLOGAN": "Conectando necesidades y profesionales",
     "SCROLL_DOWN": "Desliza hacia abajo",
     "PLATAFORMA_AVISA": "Plataforma AVISA",

@@ -49,6 +49,58 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
 
       <!-- CONTINGUT PRINCIPAL DE LA PLATAFORMA (VISUALITZAT EN FER SCROLL) -->
       <div class="dashboard-body">
+        <!-- MISSATGE DE BENVINGUDA -->
+        <section class="dashboard-welcome-banner" aria-label="Missatge de benvinguda">
+          <div class="welcome-banner-content">
+            <div class="welcome-badge-row">
+              <span class="welcome-badge">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                </svg>
+                AVISA
+              </span>
+              <span *ngIf="authService.isLoggedIn()" class="welcome-user-role-chip" [ngClass]="getWelcomeRoleClass()">
+                {{ getWelcomeRoleLabel() }}
+              </span>
+            </div>
+
+            <h1 class="welcome-title">
+              {{ authService.isLoggedIn() ? getUserWelcomeTitle() : ('HOME.WELCOME_GUEST_TITLE' | translate) }}
+            </h1>
+            <p class="welcome-subtitle">
+              {{ authService.isLoggedIn() ? getUserWelcomeSubtitle() : ('HOME.WELCOME_GUEST_SUBTITLE' | translate) }}
+            </p>
+
+            <div class="welcome-banner-actions">
+              <a [routerLink]="getNavUrl('/tasques-ofertes')" class="btn-welcome-primary">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <span>{{ 'HOME.WELCOME_BTN_MARKET' | translate }}</span>
+              </a>
+
+              <a *ngIf="!authService.isLoggedIn()" [routerLink]="getNavUrl('/login')" class="btn-welcome-secondary">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="8.5" cy="7" r="4"></circle>
+                  <line x1="20" y1="8" x2="20" y2="14"></line>
+                  <line x1="23" y1="11" x2="17" y2="11"></line>
+                </svg>
+                <span>{{ 'HOME.WELCOME_BTN_REGISTER' | translate }}</span>
+              </a>
+
+              <a *ngIf="authService.isLoggedIn()" [routerLink]="getNavUrl('/perfil')" class="btn-welcome-secondary">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+                <span>{{ 'HOME.WELCOME_BTN_PROFILE' | translate }}</span>
+              </a>
+            </div>
+          </div>
+        </section>
+
         <div class="dashboard-header-bar">
           <div>
             <span class="eyebrow-tag">{{ 'HOME.PLATAFORMA_AVISA' | translate }}</span>
@@ -91,94 +143,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
           </button>
         </div>
 
-        <div class="columns">
-          <!-- SECCIÓ D'OFERTES RECENTS (PROFESSIONALS PRIMER) -->
-          <section class="panel panel-offers">
-            <div class="panel-header">
-              <h2>{{ 'HOME.OFERTES_TITLE' | translate }}</h2>
-              <a [routerLink]="getNavUrl('/tasques-ofertes')" [queryParams]="{ tipus: 'ofertes' }">
-                {{ 'HOME.VEURE_TOTES' | translate }} ({{ offers.length }})
-              </a>
-            </div>
 
-            <article class="card offer-card" *ngFor="let offer of previewOffers">
-              <div class="card-top">
-                <span class="tag alt">{{ (offer.category || 'Altres Serveis') | translate }}</span>
-                <span class="status status-offer" [ngClass]="getOfferStatusClass(offer.status)">
-                  {{ offer.status | translate }}
-                </span>
-              </div>
-              <h3>{{ getOfertaTitol(offer) }}</h3>
-              <p class="meta">
-                {{ 'HOME.PRO_LABEL' | translate }}<a [routerLink]="[getNavUrl('/perfil'), offer.professional]" class="user-inline-link pro-title-link" title="Veure perfil de {{ offer.professional }}">{{ offer.professional }}</a>
-                <span class="pro-preview-rating" *ngIf="getRatingInfo(offer.professional) as r" style="display: inline-flex; margin-left: 0.5rem; align-items: center;">
-                  <span class="stars-gold">
-                    <svg viewBox="0 0 24 24" width="13" height="13" fill="#f59e0b" style="vertical-align: -1px; margin-right: 2px;" aria-hidden="true">
-                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-                    </svg>
-                    {{ r.mitjana }}
-                  </span>
-                  <span class="reviews-count">({{ r.total }})</span>
-                </span>
-              </p>
-              <p>{{ getOfertaDescripcio(offer) }}</p>
-              <div class="card-footer">
-                <span>{{ 'HOME.PREU_LABEL' | translate }}{{ offer.price }}</span>
-                <div class="actions">
-                  <button type="button" class="btn-contractar" (click)="onInteressatOferta(offer)">{{ 'TASQUES_OFERTES.BTN_INTERESSA' | translate }}</button>
-                </div>
-              </div>
-            </article>
-
-            <div class="preview-toggle-wrap">
-              <button type="button" class="btn-preview-toggle" (click)="onNavegarTasquesOfertes('ofertes')">
-                {{ 'HOME.EXPLORAR_OFERTES' | translate }} ({{ offers.length }})
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 6px; vertical-align: middle;">
-                  <line x1="5" y1="12" x2="19" y2="12"></line>
-                  <polyline points="12 5 19 12 12 19"></polyline>
-                </svg>
-              </button>
-            </div>
-          </section>
-
-          <!-- SECCIÓ DE TASQUES RECENTS (CLIENTS SEGON) -->
-          <section class="panel panel-tasks">
-            <div class="panel-header">
-              <h2>{{ 'HOME.INCIDENCIES_TITLE' | translate }}</h2>
-              <a [routerLink]="getNavUrl('/tasques-ofertes')" [queryParams]="{ tipus: 'incidencies' }">
-                {{ 'HOME.VEURE_TOTES' | translate }} ({{ tasks.length }})
-              </a>
-            </div>
-
-            <article class="card" *ngFor="let task of previewTasks">
-              <div class="card-top">
-                <span class="tag">{{ task.category | translate }}</span>
-                <span class="status status-task" [ngClass]="getTaskStatusClass(task.status)">
-                  {{ task.status | translate }}
-                </span>
-              </div>
-              <h3>{{ task.title }}</h3>
-              <p class="meta">{{ 'HOME.CLIENT_LABEL' | translate }}<a [routerLink]="[getNavUrl('/perfil'), task.client]" class="user-inline-link" title="Veure perfil de {{ task.client }}">{{ task.client }}</a></p>
-              <div class="card-footer">
-                <span>{{ 'HOME.PRESSUPOST_LABEL' | translate }}{{ task.budget }}</span>
-                <div class="actions">
-                  <button type="button" (click)="onDetallTasca(task.id)">{{ 'HOME.DETALL' | translate }}</button>
-                  <button *ngIf="!authService.isLoggedIn() || authService.isProfessional()" type="button" class="btn-secondary" (click)="onFerOferta(task.id)">{{ 'HOME.PROPOSAR_PRESSUPOST' | translate }}</button>
-                </div>
-              </div>
-            </article>
-
-            <div class="preview-toggle-wrap">
-              <button type="button" class="btn-preview-toggle" (click)="onNavegarTasquesOfertes('incidencies')">
-                {{ 'HOME.EXPLORAR_INCIDENCIES' | translate }} ({{ tasks.length }})
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 6px; vertical-align: middle;">
-                  <line x1="5" y1="12" x2="19" y2="12"></line>
-                  <polyline points="12 5 19 12 12 19"></polyline>
-                </svg>
-              </button>
-            </div>
-          </section>
-        </div>
 
         <!-- ============================================================== -->
         <!-- CARRUSEL ESTIL TWITCH DE PROFESSIONALS DE CONFIANÇA RECOMANATS -->
@@ -909,6 +874,224 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         gap: 2.2rem;
         box-sizing: border-box;
         background-color: var(--bg-page, #f7f3ed);
+      }
+
+      /* ============================================================== */
+      /* BANNER DE BENVINGUDA SOBRE DASHBOARD-HEADER-BAR                */
+      /* ============================================================== */
+      .dashboard-welcome-banner {
+        position: relative;
+        background: var(--bg-card, #ffffff);
+        border: 1px solid var(--border-subtle, #e5e0d7);
+        border-radius: 20px;
+        padding: 2rem 2.2rem;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+        overflow: hidden;
+        transition: background-color 0.25s ease, border-color 0.25s ease;
+      }
+
+      .dashboard-welcome-banner::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: 5px;
+        background: linear-gradient(180deg, #ff1744 0%, #b00020 100%);
+        border-top-left-radius: 20px;
+        border-bottom-left-radius: 20px;
+      }
+
+      .welcome-banner-content {
+        display: flex;
+        flex-direction: column;
+        gap: 0.85rem;
+      }
+
+      .welcome-badge-row {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        flex-wrap: wrap;
+      }
+
+      .welcome-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        padding: 0.32rem 0.8rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        background: rgba(255, 23, 68, 0.1);
+        color: #ff1744;
+        border: 1px solid rgba(255, 23, 68, 0.25);
+      }
+
+      .welcome-user-role-chip {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.32rem 0.8rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+
+      .welcome-user-role-chip.role-client {
+        background: #e0f2fe;
+        color: #0369a1;
+        border: 1px solid #bae6fd;
+      }
+
+      .welcome-user-role-chip.role-pro {
+        background: #d1fae5;
+        color: #047857;
+        border: 1px solid #a7f3d0;
+      }
+
+      .welcome-user-role-chip.role-admin {
+        background: #f3e8ff;
+        color: #7e22ce;
+        border: 1px solid #e9d5ff;
+      }
+
+      .welcome-title {
+        margin: 0;
+        font-size: 1.85rem;
+        font-weight: 900;
+        color: var(--color-text, #09090c);
+        line-height: 1.25;
+        letter-spacing: -0.025em;
+      }
+
+      .welcome-subtitle {
+        margin: 0;
+        font-size: 1rem;
+        line-height: 1.6;
+        color: var(--color-text-muted, #4b5563);
+        max-width: 860px;
+      }
+
+      .welcome-banner-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+        margin-top: 0.4rem;
+        flex-wrap: wrap;
+      }
+
+      .btn-welcome-primary {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.55rem;
+        background: #ff1744;
+        color: #ffffff !important;
+        border: 1px solid #ff1744;
+        border-radius: 10px;
+        padding: 0.7rem 1.4rem;
+        font-size: 0.92rem;
+        font-weight: 800;
+        text-decoration: none;
+        letter-spacing: 0.02em;
+        box-shadow: 0 4px 14px rgba(255, 23, 68, 0.35);
+        transition: all 0.2s ease;
+        cursor: pointer;
+      }
+
+      .btn-welcome-primary:hover {
+        background: #09090c;
+        border-color: #09090c;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+      }
+
+      .btn-welcome-secondary {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.55rem;
+        background: var(--bg-surface, #ece7dd);
+        color: var(--color-text, #09090c) !important;
+        border: 1px solid var(--border-subtle, #d8d2c4);
+        border-radius: 10px;
+        padding: 0.7rem 1.4rem;
+        font-size: 0.92rem;
+        font-weight: 700;
+        text-decoration: none;
+        letter-spacing: 0.02em;
+        transition: all 0.2s ease;
+        cursor: pointer;
+      }
+
+      .btn-welcome-secondary:hover {
+        background: var(--bg-surface-elevated, #ded8cc);
+        border-color: #09090c;
+        transform: translateY(-2px);
+      }
+
+      .btn-welcome-primary:focus-visible,
+      .btn-welcome-secondary:focus-visible {
+        outline: 3px solid #ff1744;
+        outline-offset: 2px;
+      }
+
+      /* Dark mode estil per al banner de benvinguda */
+      body.theme-app-dark .dashboard-welcome-banner {
+        background: var(--bg-card, #1b2030);
+        border-color: var(--border-subtle, #363e55);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+      }
+
+      body.theme-app-dark .welcome-badge {
+        background: rgba(255, 23, 68, 0.18);
+        color: #ff5252;
+        border-color: rgba(255, 23, 68, 0.4);
+      }
+
+      body.theme-app-dark .welcome-user-role-chip.role-client {
+        background: rgba(14, 165, 233, 0.2);
+        color: #7dd3fc;
+        border-color: rgba(56, 189, 248, 0.4);
+      }
+
+      body.theme-app-dark .welcome-user-role-chip.role-pro {
+        background: rgba(16, 185, 129, 0.2);
+        color: #6ee7b7;
+        border-color: rgba(52, 211, 153, 0.4);
+      }
+
+      body.theme-app-dark .welcome-user-role-chip.role-admin {
+        background: rgba(168, 85, 247, 0.2);
+        color: #d8b4fe;
+        border-color: rgba(192, 132, 252, 0.4);
+      }
+
+      body.theme-app-dark .welcome-title {
+        color: #f5f4ef;
+      }
+
+      body.theme-app-dark .welcome-subtitle {
+        color: #cbd5e1;
+      }
+
+      body.theme-app-dark .btn-welcome-secondary {
+        background: #252b3d;
+        color: #f5f4ef !important;
+        border-color: #3d4661;
+      }
+
+      body.theme-app-dark .btn-welcome-secondary:hover {
+        background: #30374c;
+        border-color: #ff1744;
+      }
+
+      body.theme-app-dark .btn-welcome-primary:hover {
+        background: #ffffff;
+        color: #09090c !important;
+        border-color: #ffffff;
       }
 
       .dashboard-header-bar {
@@ -2270,6 +2453,27 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         .dashboard-body {
           padding: 1rem 0.65rem 3.5rem;
           gap: 1.25rem;
+        }
+        .dashboard-welcome-banner {
+          padding: 1.25rem 1rem;
+          border-radius: 14px;
+        }
+        .welcome-title {
+          font-size: 1.35rem;
+        }
+        .welcome-subtitle {
+          font-size: 0.9rem;
+        }
+        .welcome-banner-actions {
+          flex-direction: column;
+          align-items: stretch;
+          gap: 0.55rem;
+        }
+        .btn-welcome-primary,
+        .btn-welcome-secondary {
+          justify-content: center;
+          width: 100%;
+          box-sizing: border-box;
         }
         .dashboard-header-bar {
           flex-direction: column;
@@ -3788,16 +3992,49 @@ export class MainComponent implements OnInit, OnDestroy {
     return this.articleService.getArticles();
   }
 
-  /** Retorna la vista prèvia aleatòria de 3 tasques per a la pàgina principal */
+  /** Retorna la vista prèvia aleatòria de tasques (desactivada en favor del tauler net) */
   get previewTasks() {
-    const llista = this.randomPreviewTasks.length > 0 ? this.randomPreviewTasks : this.tasks;
-    return llista.slice(0, 1);
+    return [];
   }
 
-  /** Retorna la vista prèvia d'ofertes per a la pàgina principal: 1 tant a la versió /app com a la versió web (/inici) */
+  /** Retorna la vista prèvia d'ofertes (desactivada en favor del tauler net) */
   get previewOffers() {
-    const llista = this.randomPreviewOffers.length > 0 ? this.randomPreviewOffers : this.offers;
-    return llista.slice(0, 1);
+    return [];
+  }
+
+  /** Retorna el títol personalitzat de benvinguda amb el nom d'usuari */
+  getUserWelcomeTitle(): string {
+    const user = this.authService.getCurrentUser();
+    const nom = (user?.nom || user?.email || '').trim() || 'Usuari';
+    return this.translationService.t('HOME.WELCOME_USER_TITLE', { nom });
+  }
+
+  /** Retorna el subtítol personalitzat segons el rol de l'usuari */
+  getUserWelcomeSubtitle(): string {
+    if (this.authService.isAdmin()) {
+      return this.translationService.t('HOME.WELCOME_USER_SUBTITLE_ADMIN');
+    }
+    if (this.authService.isProfessional()) {
+      return this.translationService.t('HOME.WELCOME_USER_SUBTITLE_PRO');
+    }
+    return this.translationService.t('HOME.WELCOME_USER_SUBTITLE_CLIENT');
+  }
+
+  /** Retorna la classe CSS identificativa del rol per al xip de benvinguda */
+  getWelcomeRoleClass(): string {
+    if (this.authService.isAdmin()) return 'role-admin';
+    if (this.authService.isProfessional()) return 'role-pro';
+    return 'role-client';
+  }
+
+  /** Retorna l'etiqueta llegible del rol per a l'usuari connectat */
+  getWelcomeRoleLabel(): string {
+    const user = this.authService.getCurrentUser();
+    if (!user) return '';
+    const rol = (user.rol || '').toLowerCase();
+    if (rol === 'administrador' || rol === 'admin') return 'Administrador';
+    if (rol === 'professional' || rol === 'pro') return 'Professional';
+    return 'Client';
   }
 
   getTaskStatusClass(status: string): string {
