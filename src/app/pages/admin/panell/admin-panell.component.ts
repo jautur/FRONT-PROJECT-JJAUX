@@ -2423,38 +2423,11 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'pressupostos' | 'usuari
       color: #ff6b81 !important;
     }
 
-    :host-context(body.theme-app-dark) .nav-tabs,
-    :host-context(.theme-app-dark) .nav-tabs {
-      background: #141824 !important;
-      border-color: #363e55 !important;
-    }
-
-    :host-context(body.theme-app-dark) .tab-btn,
-    :host-context(.theme-app-dark) .tab-btn {
-      background: #1b2030 !important;
-      border-color: #363e55 !important;
-      color: #bab8ae !important;
-    }
-
-    :host-context(body.theme-app-dark) .tab-btn:hover,
-    :host-context(.theme-app-dark) .tab-btn:hover {
-      border-color: #ff1744 !important;
-      color: #f5f4ef !important;
-      background: #252b3d !important;
-    }
-
-    :host-context(body.theme-app-dark) .tab-btn.active,
-    :host-context(.theme-app-dark) .tab-btn.active {
-      background: #ff1744 !important;
-      border-color: #ff1744 !important;
-      color: #ffffff !important;
-      box-shadow: 0 4px 15px rgba(255, 23, 68, 0.4) !important;
-    }
-
     :host-context(body.theme-app-dark) .tab-content,
     :host-context(.theme-app-dark) .tab-content {
       background: #1b2030 !important;
-      border-color: #363e55 !important;
+      border: 1px solid #363e55 !important;
+      border-radius: 14px !important;
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35) !important;
     }
 
@@ -2729,16 +2702,6 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'pressupostos' | 'usuari
       }
       .metric-label {
         font-size: 0.75rem;
-      }
-      .nav-tabs {
-        display: flex;
-        gap: 0.4rem;
-      }
-      .tab-btn {
-        width: auto;
-        text-align: center;
-        padding: 0.55rem 0.65rem;
-        font-size: 0.8rem;
       }
       .filter-bar {
         flex-direction: column;
