@@ -171,7 +171,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
             <!-- Percentil de comissió reservat per a la plataforma (0-100%, defecte 3%) -->
             <label class="percentil-form-group">
               {{ 'PERFIL.COMMISSION_PERCENTILE' | translate }}
-              <div class="percentil-input-row" style="display: flex; align-items: center; gap: 0.75rem; margin-top: 0.35rem;">
+              <div class="percentil-input-row">
                 <input
                   type="number"
                   [(ngModel)]="formData.percentil"
@@ -180,19 +180,19 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
                   max="100"
                   step="1"
                   required
-                  style="max-width: 130px; font-weight: 700;"
+                  class="percentil-input"
                 />
-                <span class="percentil-badge-pill" style="background: #eff6ff; color: #1d4ed8; font-weight: 800; padding: 0.35rem 0.75rem; border-radius: 6px; font-size: 0.85rem; border: 1px solid #bfdbfe;">
+                <span class="percentil-badge-pill">
                   {{ formData.percentil ?? (usuari?.percentil ?? 3) }}% {{ 'PERFIL.COMMISSION_RESERVED' | translate }}
                 </span>
               </div>
-              <small class="hint" *ngIf="isAdmin" style="color: #059669; font-weight: 600; margin-top: 0.3rem; display: block;">
+              <small class="hint percentil-admin-hint" *ngIf="isAdmin">
                 {{ 'PERFIL.ADMIN_PERCENTILE_HINT' | translate }}
               </small>
-              <small class="hint" *ngIf="!isAdmin" style="margin-top: 0.3rem; display: block;">
+              <small class="hint percentil-user-hint" *ngIf="!isAdmin">
                 {{ 'PERFIL.USER_PERCENTILE_HINT' | translate }}
               </small>
-              <div class="commission-simulation-box" style="margin-top: 0.5rem; padding: 0.6rem 0.85rem; background: #fdfbf7; border: 1px dashed #dcd6cb; border-radius: 6px; font-size: 0.82rem; color: #4b4841;">
+              <div class="commission-simulation-box">
                 <strong>{{ 'PERFIL.COMMISSION_SIMULATION_TITLE' | translate }}</strong> {{ 'PERFIL.COMMISSION_SIMULATION_TEXT' | translate }} <strong>{{ getCommissionSimulation() }}€</strong> {{ 'PERFIL.COMMISSION_SIMULATION_END' | translate }}
               </div>
             </label>
@@ -315,11 +315,11 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
             </div>
 
             <!-- Accions de l'Administrador -->
-            <div *ngIf="isAdmin" class="admin-verif-actions" style="margin-top: 1.15rem; padding-top: 0.85rem; border-top: 1px dashed #cbd5e1;">
-              <p style="font-size: 0.8rem; font-weight: 700; color: #475569; margin-bottom: 0.5rem;">
+            <div *ngIf="isAdmin" class="admin-verif-actions">
+              <p class="admin-verif-title">
                 {{ 'PERFIL.ADMIN_VERIF_TITLE' | translate }}
               </p>
-              <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+              <div class="admin-verif-buttons">
                 <button
                   type="button"
                   class="btn btn-success-sm"
@@ -426,11 +426,11 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
               {{ getPublicVerifDescription() }}
             </p>
 
-            <div *ngIf="isAdmin" class="admin-verif-actions" style="margin-top: 1rem; padding-top: 0.75rem; border-top: 1px dashed #cbd5e1;">
-              <p style="font-size: 0.8rem; font-weight: 700; color: #475569; margin-bottom: 0.5rem;">
+            <div *ngIf="isAdmin" class="admin-verif-actions">
+              <p class="admin-verif-title">
                 {{ 'PERFIL.ADMIN_VERIF_TITLE' | translate }}
               </p>
-              <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+              <div class="admin-verif-buttons">
                 <button
                   type="button"
                   class="btn btn-success-sm"
@@ -981,7 +981,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
 
       .estat-oberta {
         background: #eff6ff;
-        color: #1d4ed8;
+        color: #1e40af;
         border: 1px solid #bfdbfe;
       }
 
@@ -1687,8 +1687,9 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       }
 
       .badge-cat {
-        background: #e0f2fe;
-        color: #0369a1;
+        background: #eff6ff;
+        color: #1e40af;
+        border: 1px solid #bfdbfe;
         font-size: 0.72rem;
         font-weight: 700;
         padding: 0.15rem 0.5rem;
@@ -1920,6 +1921,258 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         background: #fef2f2;
         border: 1px solid #fecaca;
         color: #991b1b;
+      }
+
+      .alert-info {
+        background: rgba(59, 130, 246, 0.12);
+        color: #1e40af;
+        border: 1px solid rgba(59, 130, 246, 0.28);
+      }
+
+      .percentil-input-row {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-top: 0.35rem;
+      }
+
+      .percentil-input {
+        max-width: 130px;
+        font-weight: 700;
+      }
+
+      .percentil-badge-pill {
+        background: #eff6ff;
+        color: #1e40af;
+        font-weight: 800;
+        padding: 0.35rem 0.75rem;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        border: 1px solid #bfdbfe;
+        display: inline-block;
+        transition: all 0.2s ease;
+      }
+
+      .percentil-admin-hint {
+        color: #059669;
+        font-weight: 600;
+        margin-top: 0.3rem;
+        display: block;
+      }
+
+      .percentil-user-hint {
+        margin-top: 0.3rem;
+        display: block;
+      }
+
+      .commission-simulation-box {
+        margin-top: 0.5rem;
+        padding: 0.6rem 0.85rem;
+        background: #fdfbf7;
+        border: 1px dashed #dcd6cb;
+        border-radius: 6px;
+        font-size: 0.82rem;
+        color: #4b4841;
+      }
+
+      .admin-verif-actions {
+        margin-top: 1.15rem;
+        padding-top: 0.85rem;
+        border-top: 1px dashed #cbd5e1;
+      }
+
+      .admin-verif-title {
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: #475569;
+        margin-bottom: 0.5rem;
+      }
+
+      .admin-verif-buttons {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+      }
+
+      /* ============================================================== */
+      /* Adaptacions d'alta accessibilitat i contrast en mode fosc      */
+      /* ============================================================== */
+      :host-context(body.theme-app-dark) .percentil-badge-pill,
+      :host-context(.theme-app-dark) .percentil-badge-pill {
+        background: rgba(59, 130, 246, 0.16);
+        color: #93c5fd;
+        border-color: rgba(59, 130, 246, 0.4);
+      }
+
+      :host-context(body.theme-app-dark) .commission-simulation-box,
+      :host-context(.theme-app-dark) .commission-simulation-box {
+        background: #22283a;
+        border-color: #3d4661;
+        color: #bab8ae;
+      }
+
+      :host-context(body.theme-app-dark) .commission-simulation-box strong,
+      :host-context(.theme-app-dark) .commission-simulation-box strong {
+        color: #f5f4ef;
+      }
+
+      :host-context(body.theme-app-dark) .percentil-admin-hint,
+      :host-context(.theme-app-dark) .percentil-admin-hint {
+        color: #34d399;
+      }
+
+      :host-context(body.theme-app-dark) .admin-verif-actions,
+      :host-context(.theme-app-dark) .admin-verif-actions {
+        border-top-color: #3d4661;
+      }
+
+      :host-context(body.theme-app-dark) .admin-verif-title,
+      :host-context(.theme-app-dark) .admin-verif-title {
+        color: #bab8ae;
+      }
+
+      :host-context(body.theme-app-dark) .badge-cat,
+      :host-context(.theme-app-dark) .badge-cat {
+        background: rgba(56, 189, 248, 0.16);
+        color: #7dd3fc;
+        border-color: rgba(56, 189, 248, 0.38);
+      }
+
+      :host-context(body.theme-app-dark) .estat-oberta,
+      :host-context(.theme-app-dark) .estat-oberta {
+        background: rgba(59, 130, 246, 0.18);
+        color: #93c5fd;
+        border-color: rgba(59, 130, 246, 0.45);
+      }
+
+      :host-context(body.theme-app-dark) .estat-en-curs,
+      :host-context(.theme-app-dark) .estat-en-curs {
+        background: rgba(6, 182, 212, 0.18);
+        color: #67e8f9;
+        border-color: rgba(6, 182, 212, 0.45);
+      }
+
+      :host-context(body.theme-app-dark) .estat-finalitzada,
+      :host-context(.theme-app-dark) .estat-finalitzada {
+        background: rgba(16, 185, 129, 0.16);
+        color: #6ee7b7;
+        border-color: rgba(16, 185, 129, 0.4);
+      }
+
+      :host-context(body.theme-app-dark) .estat-default,
+      :host-context(.theme-app-dark) .estat-default {
+        background: rgba(148, 163, 184, 0.15);
+        color: #cbd5e1;
+        border-color: rgba(148, 163, 184, 0.35);
+      }
+
+      :host-context(body.theme-app-dark) .reviewer-avatar,
+      :host-context(.theme-app-dark) .reviewer-avatar {
+        background: rgba(99, 102, 241, 0.22);
+        color: #c7d2fe;
+        border: 1px solid rgba(99, 102, 241, 0.4);
+      }
+
+      :host-context(body.theme-app-dark) .badge-price,
+      :host-context(.theme-app-dark) .badge-price {
+        background: rgba(16, 185, 129, 0.16);
+        color: #6ee7b7;
+        border: 1px solid rgba(16, 185, 129, 0.35);
+      }
+
+      :host-context(body.theme-app-dark) .badge-origen,
+      :host-context(.theme-app-dark) .badge-origen {
+        background: rgba(148, 163, 184, 0.15);
+        color: #cbd5e1;
+        border: 1px solid rgba(148, 163, 184, 0.3);
+      }
+
+      :host-context(body.theme-app-dark) .verif-checklist,
+      :host-context(.theme-app-dark) .verif-checklist {
+        background: #22283a;
+        border-color: #3d4661;
+      }
+
+      :host-context(body.theme-app-dark) .check-item,
+      :host-context(.theme-app-dark) .check-item {
+        color: #94a3b8;
+      }
+
+      :host-context(body.theme-app-dark) .check-item.valid,
+      :host-context(.theme-app-dark) .check-item.valid {
+        color: #f5f4ef;
+      }
+
+      :host-context(body.theme-app-dark) .unverified-badge,
+      :host-context(body.theme-app-dark) .verif-status-pill.status-unverified,
+      :host-context(.theme-app-dark) .unverified-badge,
+      :host-context(.theme-app-dark) .verif-status-pill.status-unverified {
+        background: rgba(148, 163, 184, 0.15);
+        color: #cbd5e1;
+        border-color: rgba(148, 163, 184, 0.35);
+      }
+
+      :host-context(body.theme-app-dark) .verif-icon,
+      :host-context(.theme-app-dark) .verif-icon {
+        background: #22283a;
+        border-color: #3d4661;
+        color: #94a3b8;
+      }
+
+      :host-context(body.theme-app-dark) .verif-icon.verified,
+      :host-context(.theme-app-dark) .verif-icon.verified {
+        background: rgba(16, 185, 129, 0.16);
+        border-color: rgba(16, 185, 129, 0.4);
+        color: #34d399;
+      }
+
+      :host-context(body.theme-app-dark) .pending-notice-box,
+      :host-context(.theme-app-dark) .pending-notice-box {
+        background: rgba(245, 158, 11, 0.12);
+        border-color: rgba(245, 158, 11, 0.35);
+        color: #fcd34d;
+      }
+
+      :host-context(body.theme-app-dark) .verified-notice-box,
+      :host-context(.theme-app-dark) .verified-notice-box {
+        background: rgba(16, 185, 129, 0.12);
+        border-color: rgba(16, 185, 129, 0.35);
+        color: #6ee7b7;
+      }
+
+      :host-context(body.theme-app-dark) .public-bio-box,
+      :host-context(body.theme-app-dark) .review-profile-item,
+      :host-context(.theme-app-dark) .public-bio-box,
+      :host-context(.theme-app-dark) .review-profile-item {
+        background: #22283a;
+        border-color: #3d4661;
+      }
+
+      :host-context(body.theme-app-dark) .bio-text,
+      :host-context(body.theme-app-dark) .review-item-comment,
+      :host-context(.theme-app-dark) .bio-text,
+      :host-context(.theme-app-dark) .review-item-comment {
+        color: #bab8ae;
+      }
+
+      :host-context(body.theme-app-dark) .task-work-desc,
+      :host-context(.theme-app-dark) .task-work-desc {
+        color: #bab8ae;
+      }
+
+      :host-context(body.theme-app-dark) .task-work-title,
+      :host-context(body.theme-app-dark) .reviewer-name,
+      :host-context(body.theme-app-dark) .info-value,
+      :host-context(.theme-app-dark) .task-work-title,
+      :host-context(.theme-app-dark) .reviewer-name,
+      :host-context(.theme-app-dark) .info-value {
+        color: #f5f4ef;
+      }
+
+      :host-context(body.theme-app-dark) .task-opinion-box,
+      :host-context(.theme-app-dark) .task-opinion-box {
+        background: #181d2a;
+        border-left-color: var(--neon, #ff1744);
       }
 
       @media (max-width: 800px) {

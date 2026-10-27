@@ -923,6 +923,64 @@ body.theme-app-dark .status.status-offer {
   border: 1px solid rgba(255, 23, 68, 0.4) !important;
 }
 
+/* Cartells blaus i badges d'estat/categories en /app/perfil i mòbil */
+body.theme-app-dark .percentil-badge-pill {
+  background-color: rgba(59, 130, 246, 0.16) !important;
+  color: #93c5fd !important;
+  border: 1px solid rgba(59, 130, 246, 0.4) !important;
+}
+
+body.theme-app-dark .badge-cat,
+body.theme-app-dark .badge-category {
+  background-color: rgba(56, 189, 248, 0.16) !important;
+  color: #7dd3fc !important;
+  border: 1px solid rgba(56, 189, 248, 0.38) !important;
+}
+
+body.theme-app-dark .estat-oberta,
+body.theme-app-dark .badge-estat-pill.estat-oberta {
+  background-color: rgba(59, 130, 246, 0.18) !important;
+  color: #93c5fd !important;
+  border: 1px solid rgba(59, 130, 246, 0.45) !important;
+}
+
+body.theme-app-dark .estat-en-curs,
+body.theme-app-dark .badge-estat-pill.estat-en-curs {
+  background-color: rgba(6, 182, 212, 0.18) !important;
+  color: #67e8f9 !important;
+  border: 1px solid rgba(6, 182, 212, 0.45) !important;
+}
+
+body.theme-app-dark .estat-finalitzada,
+body.theme-app-dark .badge-estat-pill.estat-finalitzada {
+  background-color: rgba(16, 185, 129, 0.16) !important;
+  color: #6ee7b7 !important;
+  border: 1px solid rgba(16, 185, 129, 0.4) !important;
+}
+
+body.theme-app-dark .estat-default,
+body.theme-app-dark .badge-estat-pill.estat-default {
+  background-color: rgba(148, 163, 184, 0.15) !important;
+  color: #cbd5e1 !important;
+  border: 1px solid rgba(148, 163, 184, 0.35) !important;
+}
+
+body.theme-app-dark .reviewer-avatar {
+  background-color: rgba(99, 102, 241, 0.22) !important;
+  color: #c7d2fe !important;
+  border: 1px solid rgba(99, 102, 241, 0.4) !important;
+}
+
+body.theme-app-dark .commission-simulation-box {
+  background-color: #22283a !important;
+  border: 1px dashed #3d4661 !important;
+  color: #bab8ae !important;
+}
+
+body.theme-app-dark .commission-simulation-box strong {
+  color: #f5f4ef !important;
+}
+
 /* Enllaços de perfil d'usuari i professionals sobre fons fosc */
 body.theme-app-dark .user-inline-link,
 body.theme-app-dark .pro-title-link,
