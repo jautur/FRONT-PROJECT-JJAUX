@@ -221,13 +221,13 @@ input:focus, select:focus, textarea:focus {
 body.theme-app-dark,
 html.theme-app-dark,
 .shell.theme-app-dark {
-  --bg-page: #090a0f;
-  --bg-card: #13141d;
-  --bg-surface: #191b26;
-  --bg-surface-elevated: #202232;
-  --border-subtle: #25273a;
-  --border-card: #282a3e;
-  --border-dark: #32354c;
+  --bg-page: #10131c;
+  --bg-card: #1b2030;
+  --bg-surface: #252b3d;
+  --bg-surface-elevated: #30374c;
+  --border-subtle: #363e55;
+  --border-card: #414a63;
+  --border-dark: #515c78;
   --color-text: #f5f4ef;
   --color-text-muted: #bab8ae;
   --color-text-dim: #7f7d73;
@@ -239,20 +239,20 @@ html.theme-app-dark,
 }
 
 body.theme-app-dark {
-  background-color: #090a0f !important;
+  background-color: #10131c !important;
   color: #f5f4ef !important;
   transition: background-color 0.25s ease, color 0.25s ease;
 }
 
 body.theme-app-dark .shell,
 .shell.theme-app-dark {
-  background-color: #090a0f !important;
+  background-color: #10131c !important;
   color: #f5f4ef !important;
 }
 
 body.theme-app-dark .shell.not-home-page .content,
 .shell.theme-app-dark.not-home-page .content {
-  background-color: #090a0f !important;
+  background-color: #10131c !important;
 }
 
 /* Encapçalaments i tipografia en mode fosc */
@@ -329,7 +329,7 @@ body.theme-app-dark .tasca-detall-container,
 body.theme-app-dark .blog-page,
 body.theme-app-dark .comunitat-container,
 body.theme-app-dark .pro-community-page {
-  background-color: #090a0f !important;
+  background-color: #10131c !important;
   color: #f5f4ef !important;
 }
 
@@ -371,17 +371,17 @@ body.theme-app-dark .price-table-responsive,
 body.theme-app-dark .related-card,
 body.theme-app-dark .offer-card,
 body.theme-app-dark .article-not-found-card {
-  background-color: #13141d !important;
-  border-color: #25273a !important;
+  background-color: #1b2030 !important;
+  border-color: #363e55 !important;
   color: #f5f4ef !important;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.45) !important;
 }
 
 /* Taula comparativa en mode fosc */
 body.theme-app-dark .comparison-table th {
-  background-color: #191b26 !important;
+  background-color: #252b3d !important;
   color: #f5f4ef !important;
-  border-bottom-color: #25273a !important;
+  border-bottom-color: #363e55 !important;
 }
 body.theme-app-dark .comparison-table th.col-avisa {
   background-color: rgba(255, 23, 68, 0.15) !important;
@@ -390,7 +390,7 @@ body.theme-app-dark .comparison-table th.col-avisa {
   border-right-color: #ff1744 !important;
 }
 body.theme-app-dark .comparison-table td {
-  border-bottom-color: #222436 !important;
+  border-bottom-color: #343b52 !important;
   color: #bab8ae !important;
 }
 body.theme-app-dark .comparison-table td strong {
@@ -405,37 +405,37 @@ body.theme-app-dark .comparison-table td.col-avisa {
 
 /* Taules de preus i elements de contingut en mode fosc */
 body.theme-app-dark .price-table {
-  background-color: #13141d !important;
+  background-color: #1b2030 !important;
 }
 body.theme-app-dark .price-table th {
-  background-color: #1f2130 !important;
+  background-color: #2a3044 !important;
   color: #f5f4ef !important;
   border-bottom-color: #ff1744 !important;
 }
 body.theme-app-dark .price-table td {
-  border-bottom-color: #222436 !important;
+  border-bottom-color: #343b52 !important;
   color: #bab8ae !important;
 }
 body.theme-app-dark .col-concept {
   color: #f5f4ef !important;
 }
 body.theme-app-dark .guide-checklist {
-  background-color: #191b26 !important;
+  background-color: #252b3d !important;
   border-left-color: #ff1744 !important;
 }
 body.theme-app-dark .guide-checklist strong {
   color: #f5f4ef !important;
 }
 body.theme-app-dark .guide-content-body {
-  border-top-color: #25273a !important;
+  border-top-color: #363e55 !important;
 }
 body.theme-app-dark .step-icon {
-  background-color: #191b26 !important;
+  background-color: #252b3d !important;
   color: #f5f4ef !important;
-  border-color: #25273a !important;
+  border-color: #363e55 !important;
 }
 body.theme-app-dark .step-badge {
-  background-color: #202232 !important;
+  background-color: #30374c !important;
   color: #bab8ae !important;
 }
 
@@ -445,28 +445,28 @@ body.theme-app-dark .market-card,
 body.theme-app-dark .search-input-wrap,
 body.theme-app-dark .mobile-native-select,
 body.theme-app-dark .avis-item {
-  background-color: #191b26 !important;
-  border-color: #27293d !important;
+  background-color: #252b3d !important;
+  border-color: #3b435b !important;
 }
 
 body.theme-app-dark .card:hover,
 body.theme-app-dark .market-card:hover,
 body.theme-app-dark .stat-card:hover,
 body.theme-app-dark .avis-item:hover {
-  background-color: #1f2130 !important;
+  background-color: #2a3044 !important;
   border-color: #ff1744 !important;
   box-shadow: 0 6px 24px rgba(255, 23, 68, 0.15), 0 4px 16px rgba(0, 0, 0, 0.5) !important;
 }
 
 /* Botons de previsualització i canvi a la vista /app */
 body.theme-app-dark .btn-preview-toggle {
-  background-color: #13141d !important;
-  border: 1px dashed #2f3248 !important;
+  background-color: #1b2030 !important;
+  border: 1px dashed #454f6a !important;
   color: #f5f4ef !important;
 }
 
 body.theme-app-dark .btn-preview-toggle:hover {
-  background-color: #191b26 !important;
+  background-color: #252b3d !important;
   border-color: #ff1744 !important;
   color: #ff1744 !important;
 }
@@ -484,7 +484,7 @@ body.theme-app-dark .categories-card-header h3 {
 }
 
 body.theme-app-dark .panel-header {
-  border-bottom-color: #25273a !important;
+  border-bottom-color: #363e55 !important;
 }
 
 body.theme-app-dark .panel-header a {
@@ -502,15 +502,15 @@ body.theme-app-dark .categories-card-desc {
 body.theme-app-dark input,
 body.theme-app-dark select,
 body.theme-app-dark textarea {
-  background-color: #171825 !important;
+  background-color: #171c2a !important;
   color: #f5f4ef !important;
-  border-color: #2b2e42 !important;
+  border-color: #434d68 !important;
 }
 
 body.theme-app-dark input:focus,
 body.theme-app-dark select:focus,
 body.theme-app-dark textarea:focus {
-  background-color: #1c1d2d !important;
+  background-color: #22283a !important;
   border-color: #ff1744 !important;
   box-shadow: 0 0 0 3px rgba(255, 23, 68, 0.2), 0 0 16px rgba(255, 23, 68, 0.35) !important;
 }
@@ -521,7 +521,7 @@ body.theme-app-dark .search-input-wrap input {
 }
 
 body.theme-app-dark .search-input-wrap:focus-within {
-  background-color: #1c1d2d !important;
+  background-color: #22283a !important;
   border-color: #ff1744 !important;
   box-shadow: 0 0 0 3px rgba(255, 23, 68, 0.2) !important;
 }
@@ -532,8 +532,8 @@ body.theme-app-dark .filter-pill,
 body.theme-app-dark .cat-pill,
 body.theme-app-dark .cat-badge,
 body.theme-app-dark .count-tag {
-  background-color: #1d1f2e !important;
-  border-color: #2c2f44 !important;
+  background-color: #292f43 !important;
+  border-color: #414b65 !important;
   color: #dedcd4 !important;
 }
 
@@ -545,16 +545,96 @@ body.theme-app-dark .category-row-btn.active {
 }
 
 body.theme-app-dark .category-row-btn:hover {
-  background-color: #191b26 !important;
-  border-color: #2f3248 !important;
+  background-color: #252b3d !important;
+  border-color: #454f6a !important;
+}
+
+/* Superfícies que encara declaraven blanc directament dins de pantalles.
+   Es mantenen fosques només en /app perquè el text herete el contrast del tema. */
+body.theme-app-dark .content :is(
+  [class~="card"], [class$="-card"], [class*="-card "],
+  [class~="panel"], [class$="-panel"], [class*="-panel "],
+  [class~="modal"], [class$="-modal"], [class*="-modal "],
+  .empty-state, .empty-box, .empty-tab-box, .task-opinion-box,
+  .tab-content, .table-wrapper, .data-table, .admin-table,
+  .legal-body, .terms-tabs, .tab-header-card, .blacklist-add-card,
+  .assigned-task-card, .role-box, .seo-feature-section
+) {
+  background-color: var(--bg-card) !important;
+  border-color: var(--border-card) !important;
+  color: var(--color-text) !important;
+}
+
+body.theme-app-dark .content :is(.data-table, .admin-table) :is(th, td),
+body.theme-app-dark .content :is(.empty-state, .empty-box, .empty-tab-box, .task-opinion-box) {
+  color: var(--color-text-muted) !important;
+}
+
+body.theme-app-dark .content :is(.data-table, .admin-table) th,
+body.theme-app-dark .content :is(.data-table, .admin-table) td strong,
+body.theme-app-dark .content :is(.empty-state, .empty-box, .empty-tab-box) h1,
+body.theme-app-dark .content :is(.empty-state, .empty-box, .empty-tab-box) h2,
+body.theme-app-dark .content :is(.empty-state, .empty-box, .empty-tab-box) h3 {
+  color: var(--color-text) !important;
+}
+
+/* Perfil: l'estat actiu no pot usar --color-text com a fons en tema fosc,
+   perquè eixa variable és clara. Les accions secundàries recuperen contrast. */
+body.theme-app-dark .perfil-nav-tabs {
+  background-color: var(--bg-card) !important;
+  border-color: var(--border-card) !important;
+}
+
+body.theme-app-dark .perfil-tab-btn {
+  color: var(--color-text-muted) !important;
+}
+
+body.theme-app-dark .perfil-tab-btn:hover {
+  background-color: var(--bg-surface) !important;
+  color: var(--color-text) !important;
+}
+
+body.theme-app-dark .perfil-tab-btn.active {
+  background-color: var(--bg-surface-elevated) !important;
+  color: var(--color-text) !important;
+  border-color: rgba(255, 23, 68, 0.45) !important;
+  box-shadow: inset 0 0 0 1px rgba(255, 23, 68, 0.12), 0 5px 14px rgba(0, 0, 0, 0.24) !important;
+}
+
+body.theme-app-dark .perfil-tab-btn.active svg {
+  color: var(--neon) !important;
+}
+
+body.theme-app-dark .tab-filter-btn,
+body.theme-app-dark .btn-secondary,
+body.theme-app-dark .btn-task-detail,
+body.theme-app-dark .btn-verif {
+  background-color: var(--bg-surface) !important;
+  color: var(--color-text) !important;
+  border: 1px solid var(--border-card) !important;
+}
+
+body.theme-app-dark .tab-filter-btn:hover,
+body.theme-app-dark .btn-secondary:hover:not(:disabled),
+body.theme-app-dark .btn-task-detail:hover,
+body.theme-app-dark .btn-verif:hover:not(:disabled) {
+  background-color: var(--bg-surface-elevated) !important;
+  border-color: var(--neon) !important;
+  color: var(--color-text) !important;
+}
+
+body.theme-app-dark .tab-filter-btn.active {
+  background-color: var(--neon) !important;
+  border-color: var(--neon) !important;
+  color: #ffffff !important;
 }
 
 /* Scrollbars en mode fosc */
 body.theme-app-dark ::-webkit-scrollbar-track {
-  background: #090a0f;
+  background: #10131c;
 }
 body.theme-app-dark ::-webkit-scrollbar-thumb {
-  background: #25273a;
+  background: #363e55;
   border-radius: 4px;
 }
 body.theme-app-dark ::-webkit-scrollbar-thumb:hover {

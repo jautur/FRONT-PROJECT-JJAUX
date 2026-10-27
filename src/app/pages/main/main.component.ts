@@ -182,7 +182,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
           </div>
 
           <!-- ESCENARI TWITCH: PREV, CENTER (GRAN), NEXT -->
-          <div class="twitch-carousel-stage" *ngIf="verifiedProfessionals.length > 0">
+          <div class="twitch-carousel-stage" [class.is-transitioning]="isProCarouselTransitioning" *ngIf="verifiedProfessionals.length > 0">
             <!-- TARGETA PREVISUALITZACIÓ ANTERIOR (ESQUERRA) -->
             <div
               class="side-preview-card prev-card"
@@ -2800,36 +2800,78 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 1.25rem;
         width: 100%;
         box-sizing: border-box;
         position: relative;
         perspective: 1000px;
         padding: 0.5rem 0;
+        min-height: 396px;
+        overflow: hidden;
       }
 
-      /* TARGETA LATERAL (PREVISUALITZACIÓ PREV / NEXT) */
+      /* Les targetes veïnes mantenen la mateixa escala que la central.
+         Només se'n veu el lateral, que s'esvaeix cap als extrems de l'escenari. */
       .side-preview-card {
-        flex: 0 0 170px;
-        width: 170px;
-        height: 350px;
+        position: absolute;
+        top: 0.5rem;
+        width: clamp(640px, 72vw, 980px);
+        height: 380px;
         border-radius: 20px;
-        position: relative;
         overflow: hidden;
         cursor: pointer;
         background: #0f172a;
         box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.35);
-        opacity: 0.55;
-        transform: scale(0.86);
+        opacity: 0.82;
+        transform: none;
         transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
         user-select: none;
         z-index: 1;
         border: 1px solid rgba(255, 255, 255, 0.12);
       }
 
+      .prev-card {
+        left: 50%;
+        transform: translateX(-95%);
+        -webkit-mask-image: linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.45) 32%, #000 66%);
+        mask-image: linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.45) 32%, #000 66%);
+      }
+
+      .next-card {
+        right: 50%;
+        transform: translateX(95%);
+        -webkit-mask-image: linear-gradient(to left, transparent 0%, rgba(0, 0, 0, 0.45) 32%, #000 66%);
+        mask-image: linear-gradient(to left, transparent 0%, rgba(0, 0, 0, 0.45) 32%, #000 66%);
+      }
+
+      .twitch-carousel-stage.is-transitioning .main-showcase-card {
+        animation: carouselMainEnter 0.48s cubic-bezier(0.16, 1, 0.3, 1) both;
+      }
+
+      .twitch-carousel-stage.is-transitioning .prev-card {
+        animation: carouselPrevEnter 0.48s cubic-bezier(0.16, 1, 0.3, 1) both;
+      }
+
+      .twitch-carousel-stage.is-transitioning .next-card {
+        animation: carouselNextEnter 0.48s cubic-bezier(0.16, 1, 0.3, 1) both;
+      }
+
+      @keyframes carouselMainEnter {
+        from { opacity: 0; transform: translateY(10px) scale(0.975); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
+      }
+
+      @keyframes carouselPrevEnter {
+        from { opacity: 0; transform: translateX(-101%); }
+        to { opacity: 0.82; transform: translateX(-95%); }
+      }
+
+      @keyframes carouselNextEnter {
+        from { opacity: 0; transform: translateX(101%); }
+        to { opacity: 0.82; transform: translateX(95%); }
+      }
+
       .side-preview-card:hover {
-        opacity: 0.92;
-        transform: scale(0.92);
+        opacity: 1;
         box-shadow: 0 16px 36px -5px rgba(0, 0, 0, 0.45);
         border-color: #ff1744;
       }
@@ -2873,6 +2915,18 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         cursor: pointer;
         transition: all 0.2s ease;
         box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+      }
+
+      .prev-card .btn-side-arrow {
+        position: absolute;
+        left: 37%;
+        top: 1.35rem;
+      }
+
+      .next-card .btn-side-arrow {
+        position: absolute;
+        left: 60%;
+        top: 1.35rem;
       }
 
       .btn-side-arrow:hover {
@@ -2934,8 +2988,9 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
 
       /* TARGETA PRINCIPAL EN GRAN (SHOWCASE HERO) */
       .main-showcase-card {
-        flex: 1 1 680px;
-        max-width: 820px;
+        flex: 0 1 clamp(640px, 72vw, 980px);
+        width: clamp(640px, 72vw, 980px);
+        max-width: 980px;
         min-height: 380px;
         display: flex;
         background: #0f172a;
@@ -3231,12 +3286,6 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
 
       /* RESPONSIVE BREAKPOINTS */
       @media (max-width: 992px) {
-        .side-preview-card {
-          flex: 0 0 130px;
-          width: 130px;
-          height: 310px;
-        }
-
         .showcase-banner {
           flex: 0 0 42%;
         }
@@ -3342,7 +3391,9 @@ export class MainComponent implements OnInit, OnDestroy {
   /** Index del professional actiu mostrat en gran al carrusel Twitch */
   currentProIndex = 0;
   proCarouselInterval?: any;
+  private proTransitionTimeout?: ReturnType<typeof setTimeout>;
   isProCarouselPaused = false;
+  isProCarouselTransitioning = false;
 
   /** Retorna el professional actiu mostrat en gran al centre */
   get currentPro(): Usuari | null {
@@ -3371,7 +3422,7 @@ export class MainComponent implements OnInit, OnDestroy {
   goToNextPro(): void {
     const list = this.verifiedProfessionals;
     if (list.length <= 1) return;
-    this.currentProIndex = (this.currentProIndex + 1) % list.length;
+    this.seleccionarProfessional((this.currentProIndex + 1) % list.length);
     this.restartProCarouselTimer();
   }
 
@@ -3379,14 +3430,24 @@ export class MainComponent implements OnInit, OnDestroy {
   goToPrevPro(): void {
     const list = this.verifiedProfessionals;
     if (list.length <= 1) return;
-    this.currentProIndex = (this.currentProIndex - 1 + list.length) % list.length;
+    this.seleccionarProfessional((this.currentProIndex - 1 + list.length) % list.length);
     this.restartProCarouselTimer();
   }
 
   /** Salta directament a un professional determinat pels indicadors de posició */
   goToProIndex(idx: number): void {
-    this.currentProIndex = idx;
+    this.seleccionarProfessional(idx);
     this.restartProCarouselTimer();
+  }
+
+  /** Actualitza la targeta destacada i reinicia l'animació visual del carrusel. */
+  private seleccionarProfessional(idx: number): void {
+    this.isProCarouselTransitioning = false;
+    if (this.proTransitionTimeout) clearTimeout(this.proTransitionTimeout);
+    this.currentProIndex = idx;
+    this.proTransitionTimeout = setTimeout(() => {
+      this.isProCarouselTransitioning = true;
+    });
   }
 
   /** Inicia el temporitzador de rotació automàtica cada 5 segons */
@@ -3394,7 +3455,7 @@ export class MainComponent implements OnInit, OnDestroy {
     this.stopProCarouselTimer();
     this.proCarouselInterval = setInterval(() => {
       if (!this.isProCarouselPaused && this.verifiedProfessionals.length > 1) {
-        this.currentProIndex = (this.currentProIndex + 1) % this.verifiedProfessionals.length;
+        this.seleccionarProfessional((this.currentProIndex + 1) % this.verifiedProfessionals.length);
       }
     }, 5000);
   }
@@ -3508,6 +3569,7 @@ export class MainComponent implements OnInit, OnDestroy {
       this.routerEventsSub.unsubscribe();
     }
     this.stopProCarouselTimer();
+    if (this.proTransitionTimeout) clearTimeout(this.proTransitionTimeout);
   }
 
   ngOnInit(): void {

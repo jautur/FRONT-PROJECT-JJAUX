@@ -1572,6 +1572,34 @@
   box-sizing: border-box;
 }
 
+/* Indicador únic: acompanya la pestanya activa darrere de la seua icona. */
+.app-bottom-nav::before {
+  content: '';
+  position: absolute;
+  top: 5px;
+  left: calc(12.5% - 21px);
+  width: 42px;
+  height: 42px;
+  border: 1px solid rgba(255, 23, 68, 0.5);
+  border-radius: 50%;
+  background: rgba(255, 23, 68, 0.1);
+  box-shadow: 0 0 16px rgba(255, 23, 68, 0.16);
+  pointer-events: none;
+  transition: left 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.app-bottom-nav:has(.bottom-nav-item:nth-child(2).active-bottom-tab)::before {
+  left: calc(37.5% - 21px);
+}
+
+.app-bottom-nav:has(.bottom-nav-item:nth-child(3).active-bottom-tab)::before {
+  left: calc(62.5% - 21px);
+}
+
+.app-bottom-nav:has(.bottom-nav-item:nth-child(4).active-bottom-tab)::before {
+  left: calc(87.5% - 21px);
+}
+
 .bottom-nav-item {
   flex: 1;
   max-width: 160px;
@@ -1588,6 +1616,7 @@
   letter-spacing: 0.05em;
   text-transform: uppercase;
   position: relative;
+  z-index: 1;
   transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
   user-select: none;
@@ -1608,16 +1637,6 @@
 
 .bottom-nav-label {
   transition: color 0.22s ease, font-weight 0.22s ease;
-}
-
-.bottom-nav-item .active-indicator {
-  position: absolute;
-  top: 0;
-  width: 32px;
-  height: 3px;
-  background: transparent;
-  border-radius: 0 0 3px 3px;
-  transition: all 0.25s ease;
 }
 
 .bottom-nav-item:hover {
@@ -1643,11 +1662,6 @@
   color: #ffffff;
   font-weight: 900;
   text-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
-}
-
-.bottom-nav-item.active-bottom-tab .active-indicator {
-  background: #ff1744;
-  box-shadow: 0 0 10px #ff1744, 0 0 18px rgba(255, 23, 68, 0.8);
 }
 
 .bottom-nav-badge {
