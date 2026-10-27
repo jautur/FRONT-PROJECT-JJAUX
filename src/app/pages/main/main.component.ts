@@ -207,8 +207,9 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
                   </svg>
                 </button>
                 <div class="side-card-info">
-                  <div class="side-avatar" [style.background]="getCompanyLogo(prev).bg">
-                    <span>{{ getCompanyLogo(prev).initial }}</span>
+                  <div class="side-avatar" [style.background]="getProFotoPerfil(prev) ? 'transparent' : getCompanyLogo(prev).bg">
+                    <img *ngIf="getProFotoPerfil(prev) as isotip" [src]="isotip" [alt]="prev.nom" class="pro-isotip-img" />
+                    <span *ngIf="!getProFotoPerfil(prev)">{{ getCompanyLogo(prev).initial }}</span>
                   </div>
                   <div class="side-meta">
                     <h5 class="side-pro-name">{{ prev.nom }}</h5>
@@ -246,8 +247,9 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
 
               <div class="showcase-details">
                 <div class="pro-header-brand">
-                  <div class="brand-logo" [style.background]="getCompanyLogo(pro).bg">
-                    <span class="brand-monogram">{{ getCompanyLogo(pro).initial }}</span>
+                  <div class="brand-logo" [style.background]="getProFotoPerfil(pro) ? 'transparent' : getCompanyLogo(pro).bg">
+                    <img *ngIf="getProFotoPerfil(pro) as isotip" [src]="isotip" [alt]="pro.nom" class="pro-isotip-img" />
+                    <span *ngIf="!getProFotoPerfil(pro)" class="brand-monogram">{{ getCompanyLogo(pro).initial }}</span>
                     <span class="brand-verified-tick" [title]="'HOME.PRO_CAROUSEL_VERIFIED_BADGE' | translate">
                       <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
                         <polyline points="20 6 9 17 4 12"></polyline>
@@ -324,8 +326,9 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
                   </svg>
                 </button>
                 <div class="side-card-info">
-                  <div class="side-avatar" [style.background]="getCompanyLogo(next).bg">
-                    <span>{{ getCompanyLogo(next).initial }}</span>
+                  <div class="side-avatar" [style.background]="getProFotoPerfil(next) ? 'transparent' : getCompanyLogo(next).bg">
+                    <img *ngIf="getProFotoPerfil(next) as isotip" [src]="isotip" [alt]="next.nom" class="pro-isotip-img" />
+                    <span *ngIf="!getProFotoPerfil(next)">{{ getCompanyLogo(next).initial }}</span>
                   </div>
                   <div class="side-meta">
                     <h5 class="side-pro-name">{{ next.nom }}</h5>
@@ -3126,6 +3129,15 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         position: relative;
         flex-shrink: 0;
         box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+        overflow: hidden;
+      }
+
+      .pro-isotip-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: inherit;
+        display: block;
       }
 
       .brand-monogram {
@@ -3483,26 +3495,35 @@ export class MainComponent implements OnInit, OnDestroy {
     this.isProCarouselPaused = false;
   }
 
+  /** Obté la foto de perfil o isotip d'empresa si està disponible */
+  getProFotoPerfil(pro: any): string | null {
+    if (!pro) return null;
+    return pro.fotoPerfil || pro.foto_perfil || null;
+  }
+
   /** Imatge de fons del banner principal del professional destacat */
-  getProMainBackground(pro: Usuari): string {
-    if (pro.foto) {
-      return `url('${pro.foto}')`;
+  getProMainBackground(pro: any): string {
+    const bg = pro.logo || pro.foto;
+    if (bg) {
+      return `url('${bg}')`;
     }
     return 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)';
   }
 
   /** Imatge de fons amb degradat fosc per a les previsualitzacions laterals */
-  getProSideBackground(pro: Usuari): string {
-    if (pro.foto) {
-      return `linear-gradient(180deg, rgba(15, 23, 42, 0.45) 0%, rgba(15, 23, 42, 0.88) 100%), url('${pro.foto}')`;
+  getProSideBackground(pro: any): string {
+    const bg = pro.logo || pro.foto;
+    if (bg) {
+      return `linear-gradient(180deg, rgba(15, 23, 42, 0.45) 0%, rgba(15, 23, 42, 0.88) 100%), url('${bg}')`;
     }
     return 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)';
   }
 
   /** Retorna el fons degradat + fotografia assignada per a la targeta del professional recomanat */
-  getProCardBackground(pro: Usuari): string {
-    if (!pro.foto) return '';
-    return `linear-gradient(180deg, rgba(15, 23, 42, 0.72) 0%, rgba(15, 23, 42, 0.90) 100%), url('${pro.foto}')`;
+  getProCardBackground(pro: any): string {
+    const bg = pro.logo || pro.foto;
+    if (!bg) return '';
+    return `linear-gradient(180deg, rgba(15, 23, 42, 0.72) 0%, rgba(15, 23, 42, 0.90) 100%), url('${bg}')`;
   }
 
   /** Genera el logo representatiu de l'empresa / professional amb inicials i paleta corporativa */

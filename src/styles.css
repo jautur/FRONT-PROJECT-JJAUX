@@ -640,3 +640,53 @@ body.theme-app-dark ::-webkit-scrollbar-thumb {
 body.theme-app-dark ::-webkit-scrollbar-thumb:hover {
   background: var(--neon, #ff1744);
 }
+
+/* Base responsive compartida: evita que un component aïllat force amplària
+   d'escriptori quan la web es consulta des d'un telèfon. */
+@media (max-width: 640px) {
+  html,
+  body {
+    width: 100%;
+    overflow-x: hidden;
+  }
+
+  app-root,
+  app-root .shell,
+  app-root .content {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overflow-x: clip;
+  }
+
+  app-root .content > * {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  /* Camps amb 16 px: Safari no amplia la pàgina en enfocar-los. */
+  app-root .content :is(input, select, textarea) {
+    max-width: 100%;
+    font-size: 16px;
+  }
+
+  /* Les taules conserven les columnes i es desplacen dins del seu contenidor. */
+  app-root .content :is(.table-wrapper, .table-responsive, .comparison-table-wrapper, .price-table-responsive) {
+    max-width: 100%;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Accions i filtres llargs passen a la línia següent sense eixir del contenidor. */
+  app-root .content :is(.action-buttons, .modal-actions, .confirm-modal-actions, .tab-filters-row, .showcase-cta-bar) {
+    flex-wrap: wrap;
+  }
+
+  app-root .content :is(.modal-card, .modal-dialog, .modal-content) {
+    width: calc(100vw - 1.5rem);
+    max-width: calc(100vw - 1.5rem);
+    margin-left: auto;
+    margin-right: auto;
+  }
+}

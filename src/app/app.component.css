@@ -1685,10 +1685,12 @@
 @media (max-width: 480px) {
   .app-bottom-nav {
     height: calc(60px + env(safe-area-inset-bottom, 0px));
-    padding: 0.35rem 0.5rem calc(0.35rem + env(safe-area-inset-bottom, 0px));
+    padding: 0.35rem 0.2rem calc(0.35rem + env(safe-area-inset-bottom, 0px));
   }
   .bottom-nav-item {
-    font-size: 0.68rem;
+    min-width: 0;
+    font-size: 0.64rem;
+    letter-spacing: 0.025em;
   }
   .bottom-nav-icon svg {
     width: 20px;

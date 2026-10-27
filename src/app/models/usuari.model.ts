@@ -42,4 +42,10 @@ export interface Usuari {
 
   /** Fotografia o imatge de fons de la targeta del professional recomanat */
   foto?: string;
+
+  /** Foto de perfil o isotip d'empresa */
+  fotoPerfil?: string;
+
+  /** Logotip o imatge de fons distintiva de la targeta d'empresa */
+  logo?: string;
 }
