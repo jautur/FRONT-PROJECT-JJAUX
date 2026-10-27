@@ -182,7 +182,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
           </div>
 
           <!-- ESCENARI TWITCH: PREV, CENTER (GRAN), NEXT -->
-          <div class="twitch-carousel-stage" *ngIf="verifiedProfessionals.length > 0">
+          <div class="twitch-carousel-stage" [class.is-transitioning]="isProCarouselTransitioning" *ngIf="verifiedProfessionals.length > 0">
             <!-- TARGETA PREVISUALITZACIÓ ANTERIOR (ESQUERRA) -->
             <div
               class="side-preview-card prev-card"
@@ -207,8 +207,9 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
                   </svg>
                 </button>
                 <div class="side-card-info">
-                  <div class="side-avatar" [style.background]="getCompanyLogo(prev).bg">
-                    <span>{{ getCompanyLogo(prev).initial }}</span>
+                  <div class="side-avatar" [style.background]="getProFotoPerfil(prev) ? 'transparent' : getCompanyLogo(prev).bg">
+                    <img *ngIf="getProFotoPerfil(prev) as isotip" [src]="isotip" [alt]="prev.nom" class="pro-isotip-img" />
+                    <span *ngIf="!getProFotoPerfil(prev)">{{ getCompanyLogo(prev).initial }}</span>
                   </div>
                   <div class="side-meta">
                     <h5 class="side-pro-name">{{ prev.nom }}</h5>
@@ -246,8 +247,9 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
 
               <div class="showcase-details">
                 <div class="pro-header-brand">
-                  <div class="brand-logo" [style.background]="getCompanyLogo(pro).bg">
-                    <span class="brand-monogram">{{ getCompanyLogo(pro).initial }}</span>
+                  <div class="brand-logo" [style.background]="getProFotoPerfil(pro) ? 'transparent' : getCompanyLogo(pro).bg">
+                    <img *ngIf="getProFotoPerfil(pro) as isotip" [src]="isotip" [alt]="pro.nom" class="pro-isotip-img" />
+                    <span *ngIf="!getProFotoPerfil(pro)" class="brand-monogram">{{ getCompanyLogo(pro).initial }}</span>
                     <span class="brand-verified-tick" [title]="'HOME.PRO_CAROUSEL_VERIFIED_BADGE' | translate">
                       <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
                         <polyline points="20 6 9 17 4 12"></polyline>
@@ -324,8 +326,9 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
                   </svg>
                 </button>
                 <div class="side-card-info">
-                  <div class="side-avatar" [style.background]="getCompanyLogo(next).bg">
-                    <span>{{ getCompanyLogo(next).initial }}</span>
+                  <div class="side-avatar" [style.background]="getProFotoPerfil(next) ? 'transparent' : getCompanyLogo(next).bg">
+                    <img *ngIf="getProFotoPerfil(next) as isotip" [src]="isotip" [alt]="next.nom" class="pro-isotip-img" />
+                    <span *ngIf="!getProFotoPerfil(next)">{{ getCompanyLogo(next).initial }}</span>
                   </div>
                   <div class="side-meta">
                     <h5 class="side-pro-name">{{ next.nom }}</h5>
@@ -2800,36 +2803,78 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 1.25rem;
         width: 100%;
         box-sizing: border-box;
         position: relative;
         perspective: 1000px;
         padding: 0.5rem 0;
+        min-height: 396px;
+        overflow: hidden;
       }
 
-      /* TARGETA LATERAL (PREVISUALITZACIÓ PREV / NEXT) */
+      /* Les targetes veïnes mantenen la mateixa escala que la central.
+         Només se'n veu el lateral, que s'esvaeix cap als extrems de l'escenari. */
       .side-preview-card {
-        flex: 0 0 170px;
-        width: 170px;
-        height: 350px;
+        position: absolute;
+        top: 0.5rem;
+        width: clamp(640px, 72vw, 980px);
+        height: 380px;
         border-radius: 20px;
-        position: relative;
         overflow: hidden;
         cursor: pointer;
         background: #0f172a;
         box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.35);
-        opacity: 0.55;
-        transform: scale(0.86);
+        opacity: 0.82;
+        transform: none;
         transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
         user-select: none;
         z-index: 1;
         border: 1px solid rgba(255, 255, 255, 0.12);
       }
 
+      .prev-card {
+        left: 50%;
+        transform: translateX(-95%);
+        -webkit-mask-image: linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.45) 32%, #000 66%);
+        mask-image: linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.45) 32%, #000 66%);
+      }
+
+      .next-card {
+        right: 50%;
+        transform: translateX(95%);
+        -webkit-mask-image: linear-gradient(to left, transparent 0%, rgba(0, 0, 0, 0.45) 32%, #000 66%);
+        mask-image: linear-gradient(to left, transparent 0%, rgba(0, 0, 0, 0.45) 32%, #000 66%);
+      }
+
+      .twitch-carousel-stage.is-transitioning .main-showcase-card {
+        animation: carouselMainEnter 0.48s cubic-bezier(0.16, 1, 0.3, 1) both;
+      }
+
+      .twitch-carousel-stage.is-transitioning .prev-card {
+        animation: carouselPrevEnter 0.48s cubic-bezier(0.16, 1, 0.3, 1) both;
+      }
+
+      .twitch-carousel-stage.is-transitioning .next-card {
+        animation: carouselNextEnter 0.48s cubic-bezier(0.16, 1, 0.3, 1) both;
+      }
+
+      @keyframes carouselMainEnter {
+        from { opacity: 0; transform: translateY(10px) scale(0.975); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
+      }
+
+      @keyframes carouselPrevEnter {
+        from { opacity: 0; transform: translateX(-101%); }
+        to { opacity: 0.82; transform: translateX(-95%); }
+      }
+
+      @keyframes carouselNextEnter {
+        from { opacity: 0; transform: translateX(101%); }
+        to { opacity: 0.82; transform: translateX(95%); }
+      }
+
       .side-preview-card:hover {
-        opacity: 0.92;
-        transform: scale(0.92);
+        opacity: 1;
         box-shadow: 0 16px 36px -5px rgba(0, 0, 0, 0.45);
         border-color: #ff1744;
       }
@@ -2873,6 +2918,18 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         cursor: pointer;
         transition: all 0.2s ease;
         box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+      }
+
+      .prev-card .btn-side-arrow {
+        position: absolute;
+        left: 37%;
+        top: 1.35rem;
+      }
+
+      .next-card .btn-side-arrow {
+        position: absolute;
+        left: 60%;
+        top: 1.35rem;
       }
 
       .btn-side-arrow:hover {
@@ -2934,8 +2991,9 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
 
       /* TARGETA PRINCIPAL EN GRAN (SHOWCASE HERO) */
       .main-showcase-card {
-        flex: 1 1 680px;
-        max-width: 820px;
+        flex: 0 1 clamp(640px, 72vw, 980px);
+        width: clamp(640px, 72vw, 980px);
+        max-width: 980px;
         min-height: 380px;
         display: flex;
         background: #0f172a;
@@ -3071,6 +3129,15 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         position: relative;
         flex-shrink: 0;
         box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+        overflow: hidden;
+      }
+
+      .pro-isotip-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: inherit;
+        display: block;
       }
 
       .brand-monogram {
@@ -3231,12 +3298,6 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
 
       /* RESPONSIVE BREAKPOINTS */
       @media (max-width: 992px) {
-        .side-preview-card {
-          flex: 0 0 130px;
-          width: 130px;
-          height: 310px;
-        }
-
         .showcase-banner {
           flex: 0 0 42%;
         }
@@ -3342,7 +3403,9 @@ export class MainComponent implements OnInit, OnDestroy {
   /** Index del professional actiu mostrat en gran al carrusel Twitch */
   currentProIndex = 0;
   proCarouselInterval?: any;
+  private proTransitionTimeout?: ReturnType<typeof setTimeout>;
   isProCarouselPaused = false;
+  isProCarouselTransitioning = false;
 
   /** Retorna el professional actiu mostrat en gran al centre */
   get currentPro(): Usuari | null {
@@ -3371,7 +3434,7 @@ export class MainComponent implements OnInit, OnDestroy {
   goToNextPro(): void {
     const list = this.verifiedProfessionals;
     if (list.length <= 1) return;
-    this.currentProIndex = (this.currentProIndex + 1) % list.length;
+    this.seleccionarProfessional((this.currentProIndex + 1) % list.length);
     this.restartProCarouselTimer();
   }
 
@@ -3379,14 +3442,24 @@ export class MainComponent implements OnInit, OnDestroy {
   goToPrevPro(): void {
     const list = this.verifiedProfessionals;
     if (list.length <= 1) return;
-    this.currentProIndex = (this.currentProIndex - 1 + list.length) % list.length;
+    this.seleccionarProfessional((this.currentProIndex - 1 + list.length) % list.length);
     this.restartProCarouselTimer();
   }
 
   /** Salta directament a un professional determinat pels indicadors de posició */
   goToProIndex(idx: number): void {
-    this.currentProIndex = idx;
+    this.seleccionarProfessional(idx);
     this.restartProCarouselTimer();
+  }
+
+  /** Actualitza la targeta destacada i reinicia l'animació visual del carrusel. */
+  private seleccionarProfessional(idx: number): void {
+    this.isProCarouselTransitioning = false;
+    if (this.proTransitionTimeout) clearTimeout(this.proTransitionTimeout);
+    this.currentProIndex = idx;
+    this.proTransitionTimeout = setTimeout(() => {
+      this.isProCarouselTransitioning = true;
+    });
   }
 
   /** Inicia el temporitzador de rotació automàtica cada 5 segons */
@@ -3394,7 +3467,7 @@ export class MainComponent implements OnInit, OnDestroy {
     this.stopProCarouselTimer();
     this.proCarouselInterval = setInterval(() => {
       if (!this.isProCarouselPaused && this.verifiedProfessionals.length > 1) {
-        this.currentProIndex = (this.currentProIndex + 1) % this.verifiedProfessionals.length;
+        this.seleccionarProfessional((this.currentProIndex + 1) % this.verifiedProfessionals.length);
       }
     }, 5000);
   }
@@ -3422,26 +3495,35 @@ export class MainComponent implements OnInit, OnDestroy {
     this.isProCarouselPaused = false;
   }
 
+  /** Obté la foto de perfil o isotip d'empresa si està disponible */
+  getProFotoPerfil(pro: any): string | null {
+    if (!pro) return null;
+    return pro.fotoPerfil || pro.foto_perfil || null;
+  }
+
   /** Imatge de fons del banner principal del professional destacat */
-  getProMainBackground(pro: Usuari): string {
-    if (pro.foto) {
-      return `url('${pro.foto}')`;
+  getProMainBackground(pro: any): string {
+    const bg = pro.logo || pro.foto;
+    if (bg) {
+      return `url('${bg}')`;
     }
     return 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)';
   }
 
   /** Imatge de fons amb degradat fosc per a les previsualitzacions laterals */
-  getProSideBackground(pro: Usuari): string {
-    if (pro.foto) {
-      return `linear-gradient(180deg, rgba(15, 23, 42, 0.45) 0%, rgba(15, 23, 42, 0.88) 100%), url('${pro.foto}')`;
+  getProSideBackground(pro: any): string {
+    const bg = pro.logo || pro.foto;
+    if (bg) {
+      return `linear-gradient(180deg, rgba(15, 23, 42, 0.45) 0%, rgba(15, 23, 42, 0.88) 100%), url('${bg}')`;
     }
     return 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)';
   }
 
   /** Retorna el fons degradat + fotografia assignada per a la targeta del professional recomanat */
-  getProCardBackground(pro: Usuari): string {
-    if (!pro.foto) return '';
-    return `linear-gradient(180deg, rgba(15, 23, 42, 0.72) 0%, rgba(15, 23, 42, 0.90) 100%), url('${pro.foto}')`;
+  getProCardBackground(pro: any): string {
+    const bg = pro.logo || pro.foto;
+    if (!bg) return '';
+    return `linear-gradient(180deg, rgba(15, 23, 42, 0.72) 0%, rgba(15, 23, 42, 0.90) 100%), url('${bg}')`;
   }
 
   /** Genera el logo representatiu de l'empresa / professional amb inicials i paleta corporativa */
@@ -3508,6 +3590,7 @@ export class MainComponent implements OnInit, OnDestroy {
       this.routerEventsSub.unsubscribe();
     }
     this.stopProCarouselTimer();
+    if (this.proTransitionTimeout) clearTimeout(this.proTransitionTimeout);
   }
 
   ngOnInit(): void {

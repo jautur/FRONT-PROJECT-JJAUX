@@ -2301,14 +2301,53 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'pressupostos' | 'usuari
       color: #ffffff;
     }
 
+    /* Refinament visual i millor ús en pantalles estretes */
+    .admin-container { max-width: 1480px; padding: 1.25rem clamp(1rem, 2.5vw, 2.25rem); }
+    .admin-header {
+      padding: 1.5rem 1.65rem;
+      border: 1px solid #e5e0d7;
+      border-radius: 18px;
+      background: linear-gradient(120deg, #fff 0%, #fff 68%, #fff5f5 100%);
+      box-shadow: 0 8px 28px rgba(28, 23, 16, 0.045);
+    }
+    .title-group h2 { font-size: clamp(1.65rem, 2.5vw, 2.15rem); }
+    .btn-refresh { background: #09090c; border-color: #09090c; color: #fff; border-radius: 10px; }
+    .btn-refresh:hover:not(:disabled) {
+      border-color: #ff1744; background: #ff1744; color: #fff;
+      box-shadow: 0 6px 16px rgba(255, 23, 68, 0.22);
+    }
+    .metrics-grid { gap: 0.85rem; margin-bottom: 1.5rem; }
+    .metric-card { border-radius: 14px; padding: 1.1rem 1.2rem; box-shadow: 0 3px 12px rgba(28, 23, 16, 0.035); }
+    .metric-card:focus-visible { outline: 3px solid rgba(255, 23, 68, 0.38); outline-offset: 3px; }
+    .metric-icon {
+      display: grid; place-items: center; width: 48px; height: 48px; flex: 0 0 48px;
+      border-radius: 12px; background: #f7f3ed;
+    }
+    .metric-icon svg { width: 25px; height: 25px; }
+    .nav-tabs {
+      gap: 0.45rem; margin-bottom: 0; padding: 0.7rem 0.8rem; flex-wrap: nowrap;
+      overflow-x: auto; scrollbar-width: thin; border: 1px solid #e5e0d7;
+      border-radius: 14px 14px 0 0; background: #f2eee7;
+    }
+    .tab-btn { flex: 0 0 auto; padding: 0.62rem 0.95rem; border-radius: 9px; font-size: 0.84rem; white-space: nowrap; }
+    .tab-content {
+      padding: 1.25rem; border: 1px solid #e5e0d7; border-top: 0;
+      border-radius: 0 0 14px 14px; background: #fff;
+      box-shadow: 0 8px 24px rgba(28, 23, 16, 0.04);
+    }
+    .table-wrapper { border: 1px solid #eee9e1; border-radius: 12px; background: #fff; }
+    .data-table tbody tr, .admin-table tbody tr { transition: background 0.15s ease; }
+    .data-table tbody tr:hover, .admin-table tbody tr:hover { background: #fff8f8; }
+
     @media (max-width: 768px) {
       .admin-container {
-        padding: 1rem 0.5rem;
+        padding: 0.75rem 0.5rem;
       }
       .admin-header {
         flex-direction: column;
         align-items: stretch;
         gap: 0.85rem;
+        padding: 1.15rem;
       }
       .title-group h2 {
         font-size: 1.45rem;
@@ -2336,12 +2375,11 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'pressupostos' | 'usuari
         font-size: 0.75rem;
       }
       .nav-tabs {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 0.45rem;
+        display: flex;
+        gap: 0.4rem;
       }
       .tab-btn {
-        width: 100%;
+        width: auto;
         text-align: center;
         padding: 0.55rem 0.65rem;
         font-size: 0.8rem;
@@ -2356,6 +2394,7 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'pressupostos' | 'usuari
       .select-filter {
         width: 100%;
       }
+      .tab-content { padding: 0.85rem; }
       .modal-card {
         margin: 1rem;
         max-width: calc(100vw - 2rem);

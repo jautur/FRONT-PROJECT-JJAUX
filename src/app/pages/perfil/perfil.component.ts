@@ -34,8 +34,9 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
     <section class="perfil-container">
       <!-- Capçalera del Perfil -->
       <header class="perfil-header">
-        <div class="avatar-badge">
-          {{ userInitial }}
+        <div class="avatar-badge" [class.has-img]="usuariFotoPerfil">
+          <img *ngIf="usuariFotoPerfil" [src]="usuariFotoPerfil" [alt]="usuari?.nom" class="avatar-img" />
+          <span *ngIf="!usuariFotoPerfil">{{ userInitial }}</span>
         </div>
         <div class="header-info">
           <div class="header-name-row">
@@ -1182,6 +1183,15 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         font-size: 2.2rem;
         font-weight: 900;
         box-shadow: 0 0 16px rgba(255, 23, 68, 0.35);
+        overflow: hidden;
+      }
+
+      .avatar-badge img.avatar-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 50%;
+        display: block;
       }
 
       .header-info h1 {
@@ -2317,6 +2327,11 @@ export class PerfilComponent implements OnInit {
    */
   get userInitial(): string {
     return this.usuari?.nom ? this.usuari.nom.charAt(0).toUpperCase() : 'U';
+  }
+
+  get usuariFotoPerfil(): string | null {
+    if (!this.usuari) return null;
+    return (this.usuari as any).fotoPerfil || (this.usuari as any).foto_perfil || null;
   }
 
   /**
