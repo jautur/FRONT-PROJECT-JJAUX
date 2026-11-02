@@ -81,6 +81,13 @@ export class AuthService {
   }
 
   /**
+   * Retorna el token JWT actual de l'usuari autenticat o null si no n'hi ha.
+   */
+  getToken(): string | null {
+    return this.getCurrentUser()?.token || null;
+  }
+
+  /**
    * Desa o actualitza les dades de l'usuari a la sessió local.
    * @param user Dades de l'usuari a persistir
    */

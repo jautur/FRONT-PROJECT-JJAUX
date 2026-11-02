@@ -181,7 +181,7 @@ type FiltreAvisos = 'totes' | 'pendents' | 'llegides';
     }
     .avisos-header h2 {
       margin: 0 0 0.35rem 0;
-      color: #09090c;
+      color: var(--color-text, #09090c);
       font-size: 1.85rem;
       font-weight: 900;
       letter-spacing: -0.02em;
@@ -309,7 +309,7 @@ type FiltreAvisos = 'totes' | 'pendents' | 'llegides';
     }
     .avis-text {
       margin: 0;
-      color: #09090c;
+      color: var(--color-text, #09090c);
       font-size: 0.95rem;
       font-weight: 600;
       line-height: 1.45;
@@ -326,7 +326,7 @@ type FiltreAvisos = 'totes' | 'pendents' | 'llegides';
       font-size: 0.8rem;
       font-weight: 800;
       cursor: pointer;
-      color: #09090c;
+      color: var(--color-text, #09090c);
       transition: all 0.2s;
     }
     .btn-icon:hover {
@@ -392,7 +392,7 @@ type FiltreAvisos = 'totes' | 'pendents' | 'llegides';
       font-size: 0.85rem;
       cursor: pointer;
       font-weight: 800;
-      color: #09090c;
+      color: var(--color-text, #09090c);
       transition: all 0.2s;
     }
     .btn-action-alt:hover:not(:disabled) {
@@ -430,7 +430,7 @@ type FiltreAvisos = 'totes' | 'pendents' | 'llegides';
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
     }
     .empty-state h3 {
-      color: #09090c;
+      color: var(--color-text, #09090c);
       font-size: 1.25rem;
       font-weight: 800;
       margin-top: 0.75rem;

@@ -1260,12 +1260,22 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'pressupostos' | 'usuari
     </div>
   `,
   styles: [`
+    :host {
+      display: block;
+      width: 100%;
+      box-sizing: border-box;
+    }
     .admin-container {
-      max-width: 1200px;
+      width: 100%;
+      max-width: 1440px;
       margin: 0 auto;
-      padding: 1.5rem 1rem;
+      box-sizing: border-box;
+      padding: 1.25rem clamp(1rem, 2.5vw, 2.25rem);
+      min-width: 0;
     }
     .admin-header {
+      width: 100%;
+      box-sizing: border-box;
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
@@ -1432,34 +1442,42 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'pressupostos' | 'usuari
       border-color: #ff1744;
     }
     .table-wrapper {
+      width: 100%;
+      box-sizing: border-box;
       background: var(--bg-card, #ffffff);
       border: 1px solid var(--border-subtle, #e5e0d7);
       border-radius: var(--radius-md, 12px);
       overflow-x: auto;
       box-shadow: var(--shadow-sm, 0 4px 20px rgba(0, 0, 0, 0.04));
+      min-width: 0;
     }
-    .data-table {
+    .data-table,
+    .admin-table {
       width: 100%;
+      min-width: 100%;
       border-collapse: collapse;
       text-align: left;
       font-size: 0.9rem;
     }
-    .data-table th {
+    .data-table th,
+    .admin-table th {
       background: var(--bg-surface, #faf8f4);
       color: var(--color-text, #09090c);
       padding: 0.9rem 1rem;
       font-weight: 800;
-      border-bottom: 1px solid #e5e0d7;
+      border-bottom: 1px solid var(--border-subtle, #e5e0d7);
       white-space: nowrap;
       letter-spacing: 0.03em;
     }
-    .data-table td {
+    .data-table td,
+    .admin-table td {
       padding: 0.9rem 1rem;
-      border-bottom: 1px solid #f0ece3;
+      border-bottom: 1px solid var(--border-subtle, #f0ece3);
       vertical-align: middle;
-      color: #09090c;
+      color: var(--color-text, #09090c);
     }
-    .data-table tr:hover {
+    .data-table tr:hover,
+    .admin-table tr:hover {
       background: #faf8f4;
     }
     .font-mono {
@@ -2213,8 +2231,17 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'pressupostos' | 'usuari
     }
 
     /* Refinament visual i millor ús en pantalles estretes */
-    .admin-container { max-width: 1480px; padding: 1.25rem clamp(1rem, 2.5vw, 2.25rem); }
+    .admin-container {
+      width: 100%;
+      max-width: 1440px;
+      margin: 0 auto;
+      box-sizing: border-box;
+      padding: 1.25rem clamp(1rem, 2.5vw, 2.25rem);
+      min-width: 0;
+    }
     .admin-header {
+      width: 100%;
+      box-sizing: border-box;
       padding: 1.5rem 1.65rem;
       border: 1px solid #e5e0d7;
       border-radius: 18px;
@@ -2227,7 +2254,12 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'pressupostos' | 'usuari
       border-color: #ff1744; background: #ff1744; color: #fff;
       box-shadow: 0 6px 16px rgba(255, 23, 68, 0.22);
     }
-    .metrics-grid { gap: 0.85rem; margin-bottom: 1.5rem; }
+    .metrics-grid {
+      width: 100%;
+      box-sizing: border-box;
+      gap: 0.85rem;
+      margin-bottom: 1.5rem;
+    }
     .metric-card { border-radius: 14px; padding: 1.1rem 1.2rem; box-shadow: 0 3px 12px rgba(28, 23, 16, 0.035); }
     .metric-card:focus-visible { outline: 3px solid rgba(255, 23, 68, 0.38); outline-offset: 3px; }
     .metric-icon {
@@ -2236,11 +2268,24 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'pressupostos' | 'usuari
     }
     .metric-icon svg { width: 25px; height: 25px; }
     .tab-content {
-      padding: 1.25rem; border: 1px solid #e5e0d7;
-      border-radius: 14px; background: #fff;
+      width: 100%;
+      box-sizing: border-box;
+      padding: 1.25rem;
+      border: 1px solid #e5e0d7;
+      border-radius: 14px;
+      background: #fff;
       box-shadow: 0 8px 24px rgba(28, 23, 16, 0.04);
+      min-width: 0;
     }
-    .table-wrapper { border: 1px solid #eee9e1; border-radius: 12px; background: #fff; }
+    .table-wrapper {
+      width: 100%;
+      box-sizing: border-box;
+      border: 1px solid #eee9e1;
+      border-radius: 12px;
+      background: #fff;
+      overflow-x: auto;
+      min-width: 0;
+    }
     .data-table tbody tr, .admin-table tbody tr { transition: background 0.15s ease; }
     .data-table tbody tr:hover, .admin-table tbody tr:hover { background: #fff8f8; }
 
@@ -2249,78 +2294,78 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'pressupostos' | 'usuari
     /* ============================================================== */
     :host-context(body.theme-app-dark) .admin-container,
     :host-context(.theme-app-dark) .admin-container {
-      color: #f5f4ef;
+      color: var(--color-text);
     }
 
     :host-context(body.theme-app-dark) .admin-header,
     :host-context(.theme-app-dark) .admin-header {
-      background: #1b2030 !important;
-      border-color: #363e55 !important;
-      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.4) !important;
+      background: var(--bg-card) !important;
+      border-color: var(--border-card) !important;
+      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35) !important;
     }
 
     :host-context(body.theme-app-dark) .title-group h2,
     :host-context(.theme-app-dark) .title-group h2 {
-      color: #f5f4ef !important;
+      color: var(--color-text) !important;
     }
 
     :host-context(body.theme-app-dark) .subtitle,
     :host-context(.theme-app-dark) .subtitle {
-      color: #bab8ae !important;
+      color: var(--color-text-muted) !important;
     }
 
     :host-context(body.theme-app-dark) .btn-refresh,
     :host-context(.theme-app-dark) .btn-refresh {
-      background: #252b3d !important;
-      border-color: #414a63 !important;
-      color: #f5f4ef !important;
+      background: var(--bg-surface) !important;
+      border-color: var(--border-card) !important;
+      color: var(--color-text) !important;
     }
 
     :host-context(body.theme-app-dark) .btn-refresh:hover:not(:disabled),
     :host-context(.theme-app-dark) .btn-refresh:hover:not(:disabled) {
-      background: #ff1744 !important;
-      border-color: #ff1744 !important;
+      background: var(--neon, #ff1744) !important;
+      border-color: var(--neon, #ff1744) !important;
       color: #ffffff !important;
     }
 
     :host-context(body.theme-app-dark) .metric-card,
     :host-context(.theme-app-dark) .metric-card {
-      background: #1b2030 !important;
-      border-color: #363e55 !important;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3) !important;
+      background: var(--bg-card) !important;
+      border-color: var(--border-card) !important;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25) !important;
     }
 
     :host-context(body.theme-app-dark) .metric-card:hover,
     :host-context(.theme-app-dark) .metric-card:hover {
-      border-color: #ff1744 !important;
-      box-shadow: 0 6px 18px rgba(255, 23, 68, 0.16) !important;
+      border-color: var(--neon, #ff1744) !important;
+      box-shadow: 0 6px 18px rgba(255, 23, 68, 0.2) !important;
     }
 
     :host-context(body.theme-app-dark) .metric-card.active-card,
     :host-context(.theme-app-dark) .metric-card.active-card {
-      background: #22283a !important;
-      border-color: #ff1744 !important;
-      box-shadow: 0 6px 20px rgba(255, 23, 68, 0.22) !important;
+      background: var(--bg-surface) !important;
+      border-color: var(--neon, #ff1744) !important;
+      box-shadow: 0 6px 20px rgba(255, 23, 68, 0.25) !important;
     }
 
     :host-context(body.theme-app-dark) .metric-icon,
     :host-context(.theme-app-dark) .metric-icon {
-      background: #252b3d !important;
+      background: var(--bg-surface) !important;
     }
 
     :host-context(body.theme-app-dark) .metric-value,
     :host-context(.theme-app-dark) .metric-value {
-      color: #f5f4ef !important;
+      color: var(--color-text) !important;
     }
 
     :host-context(body.theme-app-dark) .metric-label,
     :host-context(.theme-app-dark) .metric-label {
-      color: #bab8ae !important;
+      color: var(--color-text-muted) !important;
     }
 
     :host-context(body.theme-app-dark) .metric-sub,
     :host-context(.theme-app-dark) .metric-sub {
-      color: #8e8c82 !important;
+      color: var(--color-text-dim) !important;
     }
 
     :host-context(body.theme-app-dark) .clickable-sub:hover,
@@ -2330,51 +2375,55 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'pressupostos' | 'usuari
 
     :host-context(body.theme-app-dark) .tab-content,
     :host-context(.theme-app-dark) .tab-content {
-      background: #1b2030 !important;
-      border: 1px solid #363e55 !important;
+      background: var(--bg-card) !important;
+      border: 1px solid var(--border-card) !important;
       border-radius: 14px !important;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35) !important;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28) !important;
     }
 
     :host-context(body.theme-app-dark) .filter-bar .search-input,
     :host-context(body.theme-app-dark) .filter-bar .select-filter,
     :host-context(.theme-app-dark) .filter-bar .search-input,
     :host-context(.theme-app-dark) .filter-bar .select-filter {
-      background: #141824 !important;
-      border-color: #363e55 !important;
-      color: #f5f4ef !important;
+      background: var(--bg-input) !important;
+      border-color: var(--border-card) !important;
+      color: var(--color-text) !important;
     }
 
     :host-context(body.theme-app-dark) .table-wrapper,
     :host-context(.theme-app-dark) .table-wrapper {
-      background: #1b2030 !important;
-      border-color: #363e55 !important;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25) !important;
+      background: var(--bg-card) !important;
+      border-color: var(--border-card) !important;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2) !important;
     }
 
     :host-context(body.theme-app-dark) .data-table th,
-    :host-context(.theme-app-dark) .data-table th {
-      background: #141824 !important;
-      color: #f5f4ef !important;
-      border-bottom-color: #363e55 !important;
+    :host-context(body.theme-app-dark) .admin-table th,
+    :host-context(.theme-app-dark) .data-table th,
+    :host-context(.theme-app-dark) .admin-table th {
+      background: var(--bg-input) !important;
+      color: var(--color-text) !important;
+      border-bottom-color: var(--border-card) !important;
     }
 
     :host-context(body.theme-app-dark) .data-table td,
-    :host-context(.theme-app-dark) .data-table td {
-      color: #f5f4ef !important;
-      border-bottom-color: #252b3d !important;
+    :host-context(body.theme-app-dark) .admin-table td,
+    :host-context(.theme-app-dark) .data-table td,
+    :host-context(.theme-app-dark) .admin-table td {
+      color: var(--color-text) !important;
+      border-bottom-color: var(--border-subtle) !important;
     }
 
     :host-context(body.theme-app-dark) .data-table tbody tr:hover,
     :host-context(body.theme-app-dark) .admin-table tbody tr:hover,
     :host-context(.theme-app-dark) .data-table tbody tr:hover,
     :host-context(.theme-app-dark) .admin-table tbody tr:hover {
-      background: #22283a !important;
+      background: var(--bg-surface) !important;
     }
 
     :host-context(body.theme-app-dark) .table-titol,
     :host-context(.theme-app-dark) .table-titol {
-      color: #f5f4ef !important;
+      color: var(--color-text) !important;
     }
 
     :host-context(body.theme-app-dark) .table-desc,
@@ -2383,14 +2432,14 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'pressupostos' | 'usuari
     :host-context(.theme-app-dark) .table-desc,
     :host-context(.theme-app-dark) .note-cell,
     :host-context(.theme-app-dark) .bio-cell {
-      color: #bab8ae !important;
+      color: var(--color-text-muted) !important;
     }
 
     :host-context(body.theme-app-dark) .tag-cat,
     :host-context(.theme-app-dark) .tag-cat {
-      background: #252b3d !important;
-      border-color: #3d4661 !important;
-      color: #bab8ae !important;
+      background: var(--bg-surface) !important;
+      border-color: var(--border-card) !important;
+      color: var(--color-text-muted) !important;
     }
 
     :host-context(body.theme-app-dark) .user-badge-tag.client,
@@ -2426,7 +2475,7 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'pressupostos' | 'usuari
     :host-context(body.theme-app-dark) .badge-finalitzada,
     :host-context(.theme-app-dark) .badge-finalitzada {
       background: rgba(148, 163, 184, 0.15) !important;
-      color: #cbd5e1 !important;
+      color: var(--color-text-muted) !important;
       border-color: rgba(148, 163, 184, 0.35) !important;
     }
 
@@ -2466,18 +2515,18 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'pressupostos' | 'usuari
     :host-context(body.theme-app-dark) .btn-secondary,
     :host-context(.theme-app-dark) .btn-info,
     :host-context(.theme-app-dark) .btn-secondary {
-      background: #252b3d !important;
-      border-color: #3d4661 !important;
-      color: #f5f4ef !important;
+      background: var(--bg-surface) !important;
+      border-color: var(--border-card) !important;
+      color: var(--color-text) !important;
     }
 
     :host-context(body.theme-app-dark) .btn-info:hover,
     :host-context(body.theme-app-dark) .btn-secondary:hover,
     :host-context(.theme-app-dark) .btn-info:hover,
     :host-context(.theme-app-dark) .btn-secondary:hover {
-      border-color: #ff1744 !important;
-      color: #ff1744 !important;
-      background: #30374c !important;
+      border-color: var(--neon, #ff1744) !important;
+      color: var(--neon, #ff1744) !important;
+      background: var(--bg-surface-elevated) !important;
     }
 
     :host-context(body.theme-app-dark) .btn-foto,
@@ -2503,74 +2552,74 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'pressupostos' | 'usuari
     :host-context(.theme-app-dark) .modal-card,
     :host-context(.theme-app-dark) .blacklist-add-card,
     :host-context(.theme-app-dark) .empty-box {
-      background: #1b2030 !important;
-      border-color: #363e55 !important;
-      color: #f5f4ef !important;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6) !important;
+      background: var(--bg-card) !important;
+      border-color: var(--border-card) !important;
+      color: var(--color-text) !important;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5) !important;
     }
 
     :host-context(body.theme-app-dark) .modal-header,
     :host-context(body.theme-app-dark) .modal-footer,
     :host-context(.theme-app-dark) .modal-header,
     :host-context(.theme-app-dark) .modal-footer {
-      background: #141824 !important;
-      border-color: #363e55 !important;
+      background: var(--bg-input) !important;
+      border-color: var(--border-card) !important;
     }
 
     :host-context(body.theme-app-dark) .modal-header h3,
     :host-context(.theme-app-dark) .modal-header h3 {
-      color: #f5f4ef !important;
+      color: var(--color-text) !important;
     }
 
     :host-context(body.theme-app-dark) .btn-close,
     :host-context(.theme-app-dark) .btn-close {
-      color: #bab8ae !important;
+      color: var(--color-text-muted) !important;
     }
 
     :host-context(body.theme-app-dark) .btn-close:hover,
     :host-context(.theme-app-dark) .btn-close:hover {
-      color: #ff1744 !important;
+      color: var(--neon, #ff1744) !important;
     }
 
     :host-context(body.theme-app-dark) .user-highlight,
     :host-context(.theme-app-dark) .user-highlight {
-      background: #22283a !important;
-      border-color: #363e55 !important;
-      color: #f5f4ef !important;
+      background: var(--bg-surface) !important;
+      border-color: var(--border-card) !important;
+      color: var(--color-text) !important;
     }
 
     :host-context(body.theme-app-dark) .alert-info-box,
     :host-context(.theme-app-dark) .alert-info-box {
       background: rgba(255, 23, 68, 0.08) !important;
-      border-left-color: #ff1744 !important;
-      color: #bab8ae !important;
+      border-left-color: var(--neon, #ff1744) !important;
+      color: var(--color-text-muted) !important;
     }
 
     :host-context(body.theme-app-dark) .form-group label,
     :host-context(body.theme-app-dark) .blacklist-add-form .form-field,
     :host-context(.theme-app-dark) .form-group label,
     :host-context(.theme-app-dark) .blacklist-add-form .form-field {
-      color: #f5f4ef !important;
+      color: var(--color-text) !important;
     }
 
     :host-context(body.theme-app-dark) .form-control,
     :host-context(body.theme-app-dark) .blacklist-add-form .form-field input,
     :host-context(.theme-app-dark) .form-control,
     :host-context(.theme-app-dark) .blacklist-add-form .form-field input {
-      background: #141824 !important;
-      border-color: #363e55 !important;
-      color: #f5f4ef !important;
+      background: var(--bg-input) !important;
+      border-color: var(--border-card) !important;
+      color: var(--color-text) !important;
     }
 
     :host-context(body.theme-app-dark) .preset-card-btn,
     :host-context(.theme-app-dark) .preset-card-btn {
-      background: #22283a !important;
-      border-color: #363e55 !important;
+      background: var(--bg-surface) !important;
+      border-color: var(--border-card) !important;
     }
 
     :host-context(body.theme-app-dark) .preset-label,
     :host-context(.theme-app-dark) .preset-label {
-      color: #f5f4ef !important;
+      color: var(--color-text) !important;
     }
 
     @media (max-width: 768px) {

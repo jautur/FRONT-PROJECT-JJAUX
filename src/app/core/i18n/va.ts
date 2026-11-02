@@ -22,11 +22,13 @@ export const va = {
     "ACCIONS": "Accions",
     "CARREGANT": "Carregant...",
     "SENSE_DADES": "Sense dades disponibles",
+    "NO_RESULTS": "Sense resultats disponibles",
     "TORNAR": "Tornar",
     "ACTUALITZAR": "Actualitzar"
   },
   "NAV": {
     "MENU": "Menú",
+    "HOME": "Inici",
     "OBRE_MENU": "Obre el menú de navegació",
     "OCULTAR_MENU": "Ocultar menú",
     "OCULTAR_MENU_LATERAL": "Ocultar menú lateral",
@@ -841,5 +843,12 @@ export const va = {
     "ACCEPT_BUDGET_ERROR": "No s’ha pogut acceptar el pressupost.",
     "OFFLINE_TITLE": "Sense connexió a Internet",
     "OFFLINE_DESC": "Estàs navegant en mode fora de línia. Les noves dades se sincronitzaran en recuperar la xarxa."
+  },
+  "MERCAT": {
+    "LOADING": "Carregant dades...",
+    "DETALL": "Veure detall",
+    "AGREED_NATURE": "Tasca acordada",
+    "MOBILE_CAT_LABEL": "Categoria:",
+    "AVAILABLE": "disponibles"
   }
 };

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, NgZone, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Router, RouterLink, NavigationEnd } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { DashboardResponse, DashboardService } from '../../services/dashboard.service';
@@ -64,81 +64,22 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
           </p>
         </header>
 
-        <!-- GINY OPERATIU PER A USUARIS CONNECTATS -->
-        <div class="user-quick-dashboard" *ngIf="authService.isLoggedIn()">
-          <div class="quick-status-card" *ngIf="authService.isClient()">
-            <div class="quick-status-header">
-              <span class="quick-status-title">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
-                  <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
-                </svg>
-                {{ 'NAV.LES_MEVES_TASQUES' | translate }}
-              </span>
-              <span class="quick-badge" *ngIf="myActiveTasksCount > 0">{{ myActiveTasksCount }} actives</span>
-            </div>
-            <p class="quick-status-desc">
-              {{ myActiveTasksCount > 0 ? ('Tens ' + myActiveTasksCount + ' incidències o tasques en seguiment.') : 'No tens cap incidència activa ara mateix.' }}
-            </p>
-            <div class="quick-actions-row">
-              <a [routerLink]="getNavUrl('/client/les-meves-tasques')" class="btn-quick-primary">
-                {{ 'NAV.LES_MEVES_TASQUES' | translate }} →
-              </a>
-              <button type="button" class="btn-quick-outline" (click)="onNovaTasca()">
-                + {{ 'TASQUES_OFERTES.BTN_NOVA_INCIDENCIA' | translate }}
-              </button>
-            </div>
-          </div>
-
-          <div class="quick-status-card" *ngIf="authService.isProfessional() && !authService.isClient()">
-            <div class="quick-status-header">
-              <span class="quick-status-title">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
-                  <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
-                </svg>
-                {{ 'NAV.ELS_MEUS_PRESSUPOSTOS' | translate }}
-              </span>
-              <span class="quick-badge" *ngIf="myActiveOffersCount > 0">{{ myActiveOffersCount }} ofertes</span>
-            </div>
-            <p class="quick-status-desc">
-              {{ myActiveOffersCount > 0 ? ('Has presentat ' + myActiveOffersCount + ' pressupostos o ofertes.') : 'Explora noves feines al mercat per enviar pressupostos.' }}
-            </p>
-            <div class="quick-actions-row">
-              <a [routerLink]="getNavUrl('/professional/les-meves-ofertes')" class="btn-quick-primary">
-                {{ 'NAV.ELS_MEUS_PRESSUPOSTOS' | translate }} →
-              </a>
-              <button type="button" class="btn-quick-outline" (click)="onNovaOferta()">
-                + {{ 'TASQUES_OFERTES.BTN_NOVA_OFERTA' | translate }}
-              </button>
-            </div>
-          </div>
-
-          <div class="quick-status-card admin-quick-card" *ngIf="authService.isAdmin()">
-            <div class="quick-status-header">
-              <span class="quick-status-title">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <circle cx="12" cy="12" r="3"></circle>
-                  <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-                </svg>
-                {{ 'NAV.ADMINISTRACIO' | translate }}
-              </span>
-            </div>
-            <p class="quick-status-desc">
-              Accés ràpid al panell d'auditoria global, usuaris i moderació del mercat.
-            </p>
-            <div class="quick-actions-row">
-              <a [routerLink]="getNavUrl('/admin/panell')" class="btn-quick-primary">
-                {{ 'NAV.PANELL_CONTROL_GLOBAL' | translate }} →
-              </a>
-            </div>
-          </div>
-        </div>
-
         <div class="dashboard-header-bar">
           <div>
             <span class="eyebrow-tag">{{ 'HOME.PLATAFORMA_AVISA' | translate }}</span>
-            <h2 class="dashboard-title">{{ 'HOME.DASHBOARD_TITLE' | translate }}</h2>
+            <h2 class="dashboard-title">
+              <a
+                [routerLink]="getNavUrl('/tasques-ofertes')"
+                class="dashboard-title-link"
+                [title]="'NAV.TASQUES_OFERTES' | translate"
+              >
+                {{ 'HOME.DASHBOARD_TITLE' | translate }}
+                <svg class="dashboard-title-icon" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M5 12h14"></path>
+                  <path d="m12 5 7 7-7 7"></path>
+                </svg>
+              </a>
+            </h2>
           </div>
           <div class="dashboard-header-actions">
             <button
@@ -206,6 +147,20 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
 
           <!-- ESCENARI TWITCH: PREV, CENTER (GRAN), NEXT -->
           <div class="twitch-carousel-stage" [class.is-transitioning]="isProCarouselTransitioning" *ngIf="verifiedProfessionals.length > 0">
+            <!-- FLETXA ALS COSTATS DEL CARRUSEL: ESQUERRA (ANTERIOR) -->
+            <button
+              type="button"
+              class="carousel-nav-arrow btn-nav-prev"
+              *ngIf="verifiedProfessionals.length > 1"
+              (click)="goToPrevPro()"
+              aria-label="Passar a la targeta anterior"
+              title="Anterior"
+            >
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="15 18 9 12 15 6"></polyline>
+              </svg>
+            </button>
+
             <!-- TARGETA PREVISUALITZACIÓ ANTERIOR (ESQUERRA) -->
             <div
               class="side-preview-card prev-card"
@@ -360,6 +315,20 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
                 </div>
               </div>
             </div>
+
+            <!-- FLETXA ALS COSTATS DEL CARRUSEL: DRETA (SEGÜENT) -->
+            <button
+              type="button"
+              class="carousel-nav-arrow btn-nav-next"
+              *ngIf="verifiedProfessionals.length > 1"
+              (click)="goToNextPro()"
+              aria-label="Passar a la targeta següent"
+              title="Següent"
+            >
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </button>
           </div>
 
           <!-- INDICADORS DE POSICIÓ / PAGINACIÓ (DOTS TWITCH) -->
@@ -938,143 +907,11 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       }
 
       body.theme-app-dark .welcome-simple-title {
-        color: #f5f4ef;
+        color: var(--color-text);
       }
 
       body.theme-app-dark .welcome-simple-sub {
-        color: #bab8ae;
-      }
-
-      /* GINY OPERATIU PER A USUARIS CONNECTATS */
-      .user-quick-dashboard {
-        display: flex;
-        flex-direction: column;
-        gap: 0.85rem;
-      }
-
-      .quick-status-card {
-        background: var(--bg-card, #ffffff);
-        border: 1px solid var(--border-subtle, #e5e0d7);
-        border-radius: 16px;
-        padding: 1.25rem 1.4rem;
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
-        display: flex;
-        flex-direction: column;
-        gap: 0.65rem;
-        transition: all 0.2s ease;
-      }
-
-      .quick-status-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 0.5rem;
-      }
-
-      .quick-status-title {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        font-size: 0.95rem;
-        font-weight: 800;
-        color: var(--color-text, #09090c);
-      }
-
-      .quick-badge {
-        background: #fee2e2;
-        color: #dc2626;
-        border: 1px solid #fca5a5;
-        border-radius: 9999px;
-        padding: 0.15rem 0.6rem;
-        font-size: 0.72rem;
-        font-weight: 800;
-        letter-spacing: 0.03em;
-        text-transform: uppercase;
-      }
-
-      .quick-status-desc {
-        margin: 0;
-        font-size: 0.88rem;
-        color: var(--color-text-muted, #636058);
-        line-height: 1.4;
-      }
-
-      .quick-actions-row {
-        display: flex;
-        align-items: center;
-        gap: 0.65rem;
-        flex-wrap: wrap;
-        margin-top: 0.25rem;
-      }
-
-      .btn-quick-primary {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.35rem;
-        background: #09090c;
-        color: #ffffff !important;
-        border: 1px solid #09090c;
-        border-radius: 8px;
-        padding: 0.55rem 1.05rem;
-        font-size: 0.82rem;
-        font-weight: 800;
-        text-decoration: none;
-        transition: all 0.2s ease;
-      }
-
-      .btn-quick-primary:hover {
-        background: #ff1744;
-        border-color: #ff1744;
-      }
-
-      .btn-quick-outline {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.35rem;
-        background: transparent;
-        color: #ff1744;
-        border: 1.5px solid #ff1744;
-        border-radius: 8px;
-        padding: 0.5rem 0.95rem;
-        font-size: 0.82rem;
-        font-weight: 800;
-        cursor: pointer;
-        transition: all 0.2s ease;
-      }
-
-      .btn-quick-outline:hover {
-        background: rgba(255, 23, 68, 0.08);
-      }
-
-      body.theme-app-dark .quick-status-card {
-        background: #1b2030;
-        border-color: #363e55;
-      }
-
-      body.theme-app-dark .quick-status-title {
-        color: #f5f4ef;
-      }
-
-      body.theme-app-dark .quick-status-desc {
-        color: #bab8ae;
-      }
-
-      body.theme-app-dark .btn-quick-primary {
-        background: #ff1744;
-        border-color: #ff1744;
-        color: #ffffff !important;
-      }
-
-      body.theme-app-dark .btn-quick-primary:hover {
-        background: #ffffff;
-        color: #09090c !important;
-        border-color: #ffffff;
-      }
-
-      body.theme-app-dark .quick-badge {
-        background: rgba(255, 23, 68, 0.2);
-        color: #ff6b81;
-        border-color: rgba(255, 23, 68, 0.4);
+        color: var(--color-text-muted);
       }
 
       .dashboard-header-bar {
@@ -1111,6 +948,32 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         color: var(--color-text, #09090c);
         font-weight: 900;
         letter-spacing: -0.03em;
+      }
+
+      .dashboard-title-link {
+        color: inherit;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: color 0.2s ease, transform 0.2s ease;
+      }
+
+      .dashboard-title-link:hover,
+      .dashboard-title-link:focus-visible {
+        color: #ff1744;
+        text-decoration: none;
+      }
+
+      .dashboard-title-link:hover .dashboard-title-icon,
+      .dashboard-title-link:focus-visible .dashboard-title-icon {
+        transform: translateX(4px);
+      }
+
+      .dashboard-title-icon {
+        flex-shrink: 0;
+        transition: transform 0.2s ease;
+        opacity: 0.85;
       }
 
       .btn-create-task {
@@ -1188,14 +1051,14 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       }
 
       body.theme-app-dark .btn-create-offer-dash {
-        background: #252b3d;
-        border-color: #3d4661;
-        color: #f5f4ef;
+        background: var(--bg-surface);
+        border-color: var(--border-card);
+        color: var(--color-text);
       }
 
       body.theme-app-dark .btn-create-offer-dash:hover {
-        background: #ff1744;
-        border-color: #ff1744;
+        background: var(--neon, #ff1744);
+        border-color: var(--neon, #ff1744);
         color: #ffffff;
       }
 
@@ -1206,8 +1069,8 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       }
 
       .stat-card {
-        background: #ffffff;
-        border: 1px solid #e5e0d7;
+        background: var(--bg-card, #ffffff);
+        border: 1px solid var(--border-subtle, #e5e0d7);
         border-radius: 16px;
         padding: 1.5rem 1.6rem;
         display: flex;
@@ -1223,7 +1086,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       }
 
       .label {
-        color: #716f67;
+        color: var(--color-text-dim, #716f67);
         font-size: 0.85rem;
         font-weight: 800;
         text-transform: uppercase;
@@ -1232,7 +1095,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
 
       .stat-card strong {
         font-size: 2.4rem;
-        color: #09090c;
+        color: var(--color-text, #09090c);
         font-weight: 900;
         line-height: 1;
       }
@@ -1436,14 +1299,15 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       }
 
       .card-footer .btn-secondary {
-        background: #eee9e0 !important;
-        color: #09090c !important;
-        border: 1px solid #ded8cd !important;
+        background: var(--bg-surface-elevated, #eee9e0);
+        color: var(--color-text, #09090c);
+        border: 1px solid var(--border-card, #ded8cd);
       }
 
       .card-footer .btn-secondary:hover {
-        border-color: #09090c !important;
-        background: #e3ded4 !important;
+        border-color: var(--neon, #ff1744);
+        background: var(--bg-surface, #e3ded4);
+        color: var(--neon, #ff1744);
       }
 
       .offer-card button {
@@ -1453,15 +1317,15 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       }
 
       .offer-card button:hover {
-        background: #09090c;
+        background: var(--bg-surface-elevated, #1e2433);
         color: #ff1744;
       }
 
       .notice-banner {
-        background: #ffffff;
+        background: var(--bg-card, #ffffff);
         border: 1px solid rgba(255, 23, 68, 0.4);
         border-left: 4px solid #ff1744;
-        color: #09090c;
+        color: var(--color-text, #09090c);
         padding: 0.9rem 1.25rem;
         border-radius: 10px;
         display: flex;
@@ -1474,14 +1338,14 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       .btn-dismiss {
         background: transparent !important;
         border: none !important;
-        color: #716f67 !important;
+        color: var(--color-text-dim, #716f67) !important;
         cursor: pointer;
         font-size: 1.1rem;
         padding: 0 !important;
       }
 
       .btn-dismiss:hover {
-        color: #09090c !important;
+        color: var(--color-text, #09090c) !important;
       }
 
       @keyframes fadeIn {
@@ -1559,7 +1423,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       .seo-section-title {
         font-size: clamp(1.8rem, 3.5vw, 2.4rem);
         font-weight: 900;
-        color: #09090c;
+        color: var(--color-text, #09090c);
         margin: 0 0 1rem;
         line-height: 1.2;
         letter-spacing: -0.02em;
@@ -1610,7 +1474,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         margin: 0 0 0.6rem;
         font-size: 1.15rem;
         font-weight: 900;
-        color: #09090c;
+        color: var(--color-text, #09090c);
       }
 
       .feature-card p {
@@ -1662,13 +1526,13 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         font-size: clamp(1.6rem, 3.2vw, 2.2rem);
         font-weight: 900;
         margin: 0 0 0.8rem;
-        color: #f7f3ed;
+        color: #ffffff;
       }
 
       .app-sync-content p {
         font-size: 1rem;
         line-height: 1.6;
-        color: #bab8ae;
+        color: #cbd5e1;
         max-width: 780px;
         margin: 0 0 1.8rem;
       }
@@ -1815,7 +1679,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       .role-box-header h3 {
         font-size: 1.35rem;
         font-weight: 900;
-        color: #09090c;
+        color: var(--color-text, #09090c);
         margin: 0 0 0.5rem;
       }
 
@@ -2027,7 +1891,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         margin: 0 0 0.75rem;
         font-size: 1.12rem;
         font-weight: 900;
-        color: #09090c;
+        color: var(--color-text, #09090c);
         line-height: 1.35;
       }
 
@@ -2054,7 +1918,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       }
 
       .btn-read-article:hover {
-        color: #09090c;
+        color: var(--color-text, #09090c);
         transform: translateX(4px);
       }
 
@@ -2122,7 +1986,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
 
       .btn-cta-main:hover {
         background: #ffffff;
-        color: #09090c;
+        color: #ff1744;
         border-color: #ffffff;
         transform: translateY(-2px);
       }
@@ -2307,7 +2171,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         margin: 0 0 0.5rem;
         font-size: 1.45rem;
         font-weight: 900;
-        color: #09090c;
+        color: var(--color-text, #09090c);
         line-height: 1.3;
       }
 
@@ -2328,7 +2192,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         align-items: center;
         justify-content: center;
         cursor: pointer;
-        color: #09090c;
+        color: var(--color-text, #09090c);
         transition: all 0.2s ease;
       }
 
@@ -3570,6 +3434,48 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         width: 100%;
       }
 
+      /* FLETXES ALS COSTATS DEL CARRUSEL */
+      .carousel-nav-arrow {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 25;
+        width: 52px;
+        height: 52px;
+        border-radius: 50%;
+        background: rgba(19, 23, 34, 0.88);
+        border: 2px solid rgba(255, 255, 255, 0.25);
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        backdrop-filter: blur(8px);
+        transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+        user-select: none;
+      }
+
+      .carousel-nav-arrow.btn-nav-prev {
+        left: clamp(0.75rem, 2.5vw, 2.5rem);
+      }
+
+      .carousel-nav-arrow.btn-nav-next {
+        right: clamp(0.75rem, 2.5vw, 1.75rem);
+      }
+
+      .carousel-nav-arrow:hover {
+        background: #ff1744;
+        border-color: #ff1744;
+        color: #ffffff;
+        transform: translateY(-50%) scale(1.14);
+        box-shadow: 0 0 24px rgba(255, 23, 68, 0.65), 0 6px 20px rgba(0, 0, 0, 0.4);
+      }
+
+      .carousel-nav-arrow:active {
+        transform: translateY(-50%) scale(0.96);
+      }
+
       /* RESPONSIVE BREAKPOINTS */
       @media (max-width: 992px) {
         .showcase-banner {
@@ -3582,6 +3488,22 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       }
 
       @media (max-width: 768px) {
+        .carousel-nav-arrow {
+          width: 44px;
+          height: 44px;
+          background: rgba(19, 23, 34, 0.92);
+          border-color: rgba(255, 23, 68, 0.5);
+          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.55);
+        }
+
+        .carousel-nav-arrow.btn-nav-prev {
+          left: 0.35rem;
+        }
+
+        .carousel-nav-arrow.btn-nav-next {
+          right: 0.35rem;
+        }
+
         .side-preview-card {
           display: none;
         }
@@ -3736,14 +3658,21 @@ export class MainComponent implements OnInit, OnDestroy {
     });
   }
 
-  /** Inicia el temporitzador de rotació automàtica cada 5 segons */
+  /** Inicia el temporitzador de rotació automàtica cada 5 segons fora de la zona d'Angular */
   startProCarouselTimer(): void {
     this.stopProCarouselTimer();
-    this.proCarouselInterval = setInterval(() => {
-      if (!this.isProCarouselPaused && this.verifiedProfessionals.length > 1) {
-        this.seleccionarProfessional((this.currentProIndex + 1) % this.verifiedProfessionals.length);
-      }
-    }, 5000);
+    this.ngZone.runOutsideAngular(() => {
+      this.proCarouselInterval = setInterval(() => {
+        if (typeof document !== 'undefined' && document.hidden) {
+          return;
+        }
+        if (!this.isProCarouselPaused && this.verifiedProfessionals.length > 1) {
+          this.ngZone.run(() => {
+            this.seleccionarProfessional((this.currentProIndex + 1) % this.verifiedProfessionals.length);
+          });
+        }
+      }, 5000);
+    });
   }
 
   /** Atura el temporitzador per evitar fugues de memòria */
@@ -3850,7 +3779,8 @@ export class MainComponent implements OnInit, OnDestroy {
     private readonly confirmService: ConfirmService,
     private readonly router: Router,
     public readonly pwaService: PwaService,
-    private readonly translationService: TranslationService
+    private readonly translationService: TranslationService,
+    private readonly ngZone: NgZone
   ) {
     this.routerEventsSub = this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
@@ -4019,30 +3949,6 @@ export class MainComponent implements OnInit, OnDestroy {
       return user.email.split('@')[0];
     }
     return 'usuari';
-  }
-
-  /** Retorna el nombre d'incidències actives del client connectat */
-  get myActiveTasksCount(): number {
-    const user = this.authService.getCurrentUser();
-    if (!user) return 0;
-    const nom = (user.nom || '').trim().toLowerCase();
-    const email = (user.email || '').trim().toLowerCase();
-    return this.tasks.filter((t: any) => {
-      const c = (t.client || '').trim().toLowerCase();
-      return (c === nom || c === email) && t.status !== 'Finalitzada';
-    }).length;
-  }
-
-  /** Retorna el nombre de pressupostos o ofertes actives del professional connectat */
-  get myActiveOffersCount(): number {
-    const user = this.authService.getCurrentUser();
-    if (!user) return 0;
-    const nom = (user.nom || '').trim().toLowerCase();
-    const email = (user.email || '').trim().toLowerCase();
-    return this.offers.filter((o: any) => {
-      const p = (o.professional || '').trim().toLowerCase();
-      return p === nom || p === email;
-    }).length;
   }
 
   getTaskStatusClass(status: string): string {

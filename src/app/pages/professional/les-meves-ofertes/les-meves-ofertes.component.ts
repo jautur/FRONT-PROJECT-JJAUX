@@ -195,7 +195,7 @@ import { Tasca } from '../../../models/tasca.model';
     }
     .panell-header h2 {
       margin: 0 0 0.35rem 0;
-      color: #09090c;
+      color: var(--color-text, #09090c);
       font-size: 1.85rem;
       font-weight: 900;
       letter-spacing: -0.02em;
@@ -307,7 +307,7 @@ import { Tasca } from '../../../models/tasca.model';
       margin: 0 0 0.5rem 0;
       font-size: 1.2rem;
       font-weight: 800;
-      color: #09090c;
+      color: var(--color-text, #09090c);
     }
     .tasca-desc {
       margin: 0 0 0.85rem 0;
@@ -371,7 +371,7 @@ import { Tasca } from '../../../models/tasca.model';
     .nota-label {
       font-weight: 800;
       font-style: normal;
-      color: #09090c;
+      color: var(--color-text, #09090c);
     }
     .card-actions {
       display: flex;
@@ -456,7 +456,7 @@ import { Tasca } from '../../../models/tasca.model';
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
     }
     .empty-state h3 {
-      color: #09090c;
+      color: var(--color-text, #09090c);
       font-size: 1.25rem;
       font-weight: 800;
       margin-top: 0.75rem;
@@ -510,7 +510,7 @@ import { Tasca } from '../../../models/tasca.model';
       margin: 0;
       font-size: 1.25rem;
       font-weight: 900;
-      color: #09090c;
+      color: var(--color-text, #09090c);
     }
     .pro-assigned-pill {
       background: #ecfdf5;

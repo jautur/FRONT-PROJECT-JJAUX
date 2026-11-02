@@ -22,11 +22,13 @@ export const es = {
     "ACCIONS": "Acciones",
     "CARREGANT": "Cargando...",
     "SENSE_DADES": "Sin datos disponibles",
+    "NO_RESULTS": "Sin resultados disponibles",
     "TORNAR": "Volver",
     "ACTUALITZAR": "Actualizar"
   },
   "NAV": {
     "MENU": "Menú",
+    "HOME": "Inicio",
     "OBRE_MENU": "Abrir el menú de navegación",
     "OCULTAR_MENU": "Ocultar menú",
     "OCULTAR_MENU_LATERAL": "Ocultar menú lateral",
@@ -841,5 +843,12 @@ export const es = {
     "ACCEPT_BUDGET_ERROR": "No se ha podido aceptar el presupuesto.",
     "OFFLINE_TITLE": "Sin conexión a Internet",
     "OFFLINE_DESC": "Estás navegando en modo sin conexión. Los nuevos datos se sincronizarán al recuperar la red."
+  },
+  "MERCAT": {
+    "LOADING": "Cargando datos...",
+    "DETALL": "Ver detalle",
+    "AGREED_NATURE": "Tarea acordada",
+    "MOBILE_CAT_LABEL": "Categoría:",
+    "AVAILABLE": "disponibles"
   }
 };

@@ -48,4 +48,7 @@ export interface Usuari {
 
   /** Logotip o imatge de fons distintiva de la targeta d'empresa */
   logo?: string;
+
+  /** Token JWT d'autenticació i sessió de l'usuari */
+  token?: string;
 }

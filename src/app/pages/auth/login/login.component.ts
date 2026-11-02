@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, isDevMode } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -178,8 +178,8 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
         <div *ngIf="pasRecuperacio === 2" class="modal-body">
           <p class="modal-desc">{{ 'AUTH.LOGIN.RECOVERY_STEP2_DESC' | translate }}</p>
 
-          <!-- Banner informatiu en mode desenvolupament / local -->
-          <div *ngIf="recuperarCodiDev" class="dev-code-banner">
+          <!-- Banner informatiu únicament en mode desenvolupament / local (mai a producció) -->
+          <div *ngIf="isDev && recuperarCodiDev" class="dev-code-banner">
             <span class="dev-badge">DEV CODE</span>
             <span class="dev-code-text">{{ 'AUTH.LOGIN.RECOVERY_DEV_HINT' | translate }}<strong>{{ recuperarCodiDev }}</strong></span>
             <button
@@ -758,6 +758,7 @@ export class LoginComponent implements OnInit {
   recuperarEmail = '';
   recuperarCodi = '';
   recuperarCodiDev = '';
+  readonly isDev = isDevMode();
   novaContrasenya = '';
   confirmarContrasenya = '';
   recuperarLoading = false;
@@ -863,7 +864,7 @@ export class LoginComponent implements OnInit {
   }
 
   autoOmplirCodiDev(): void {
-    if (this.recuperarCodiDev) {
+    if (this.isDev && this.recuperarCodiDev) {
       this.recuperarCodi = this.recuperarCodiDev;
     }
   }
@@ -880,9 +881,9 @@ export class LoginComponent implements OnInit {
     this.authService.demanarRecuperacio(mail).subscribe({
       next: (resp) => {
         this.recuperarLoading = false;
-        if (resp && resp.codiDev) {
+        if (resp && resp.codiDev && this.isDev) {
           this.recuperarCodiDev = resp.codiDev;
-          this.recuperarCodi = resp.codiDev; // Auto-omplim de conveniència per facilitar el test ràpid
+          // A producció no s'auto-omple mai: l'usuari ha de consultar el seu email
         }
         this.pasRecuperacio = 2;
       },

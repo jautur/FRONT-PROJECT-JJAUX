@@ -900,9 +900,9 @@ import { Pressupost } from '../../../models/pressupost.model';
       }
 
       body.theme-app-dark .task-loading-state {
-        background: #1b2030;
-        border-color: #363e55;
-        color: #bab8ae;
+        background: var(--bg-card);
+        border-color: var(--border-card);
+        color: var(--color-text-muted);
       }
 
       .not-found {

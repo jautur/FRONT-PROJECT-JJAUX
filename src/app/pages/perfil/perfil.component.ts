@@ -94,6 +94,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         </button>
 
         <button
+          *ngIf="canViewTasquesTab"
           type="button"
           class="perfil-tab-btn"
           [class.active]="activeTab === 'tasques'"
@@ -117,7 +118,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
             <line x1="12" y1="1" x2="12" y2="23"></line>
             <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
           </svg>
-          <span>{{ 'PERFIL.TAB_PRESSUPOSTOS' | translate }}</span>
+          <span>{{ (usuari?.rol === 'professional' ? 'TASQUES_OFERTES.FILTER_OFFERS' : 'PERFIL.TAB_PRESSUPOSTOS') | translate }}</span>
           <span class="tab-count-pill" *ngIf="ofertesUsuari.length > 0">{{ ofertesUsuari.length }}</span>
         </button>
 
@@ -472,7 +473,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       <!-- =========================================================================
            PESTANYA 2: TASQUES DE L'USUARI (CREADES O ASSIGNADES)
            ========================================================================= -->
-      <section class="tab-content-section" *ngIf="!loadingTabData && activeTab === 'tasques'">
+      <section class="tab-content-section" *ngIf="!loadingTabData && activeTab === 'tasques' && canViewTasquesTab">
         <div class="tab-header-card">
           <div class="tab-header-titles">
             <h2>{{ 'PERFIL.TAB_TASQUES' | translate }} ({{ tasquesUsuari.length }})</h2>
@@ -580,8 +581,8 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       <section class="tab-content-section" *ngIf="!loadingTabData && activeTab === 'pressupostos'">
         <div class="tab-header-card">
           <div class="tab-header-titles">
-            <h2>{{ 'PERFIL.TAB_PRESSUPOSTOS' | translate }} ({{ ofertesUsuari.length }})</h2>
-            <p>{{ 'LES_MEVES_OFERTES.PROPOSALS_SECTION_HINT' | translate }}</p>
+            <h2>{{ (usuari?.rol === 'professional' ? 'TASQUES_OFERTES.FILTER_OFFERS' : 'PERFIL.TAB_PRESSUPOSTOS') | translate }} ({{ ofertesUsuari.length }})</h2>
+            <p>{{ (usuari?.rol === 'professional' ? 'TASQUES_OFERTES.OFFERS_BLOCK_TITLE' : 'LES_MEVES_OFERTES.PROPOSALS_SECTION_HINT') | translate }}</p>
           </div>
 
           <a *ngIf="isOwnProfile && (usuari?.rol === 'professional' || isAdmin)" [routerLink]="getNavUrl('/professional/crear-oferta')" class="btn-tab-create">
@@ -883,13 +884,13 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       .tab-header-titles h2 {
         font-size: 1.3rem;
         font-weight: 900;
-        color: #09090c;
+        color: var(--color-text, #09090c);
         margin: 0;
       }
 
       .tab-header-titles p {
         font-size: 0.85rem;
-        color: #78756e;
+        color: var(--color-text-muted, #78756e);
         margin: 0.25rem 0 0;
       }
 
@@ -901,9 +902,9 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       }
 
       .tab-filter-btn {
-        background: #f6f4ee;
-        border: 1px solid #e2ddd4;
-        color: #55524b;
+        background: var(--bg-surface, #f6f4ee);
+        border: 1px solid var(--border-subtle, #e2ddd4);
+        color: var(--color-text-muted, #55524b);
         font-size: 0.82rem;
         font-weight: 800;
         padding: 0.45rem 0.9rem;
@@ -913,8 +914,8 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       }
 
       .tab-filter-btn:hover {
-        background: #ebe6dc;
-        color: #09090c;
+        background: var(--bg-surface-elevated, #ebe6dc);
+        color: var(--color-text, #09090c);
       }
 
       .tab-filter-btn.active {
@@ -1046,7 +1047,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       .task-card-title {
         font-size: 1.15rem;
         font-weight: 900;
-        color: #09090c;
+        color: var(--color-text, #09090c);
         margin: 0;
         line-height: 1.35;
       }
@@ -1054,15 +1055,15 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       .task-card-desc,
       .offer-card-note {
         font-size: 0.86rem;
-        color: #5a5750;
+        color: var(--color-text-muted, #5a5750);
         line-height: 1.5;
         margin: 0;
       }
 
       .task-card-meta,
       .offer-card-meta {
-        background: #faf8f4;
-        border: 1px solid #ebe5da;
+        background: var(--bg-surface, #faf8f4);
+        border: 1px solid var(--border-subtle, #ebe5da);
         border-radius: 10px;
         padding: 0.75rem 0.9rem;
         display: flex;
@@ -1079,8 +1080,8 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       .meta-ref {
         font-weight: 800;
         font-family: monospace;
-        color: #09090c;
-        background: #ede8dd;
+        color: var(--color-text, #09090c);
+        background: var(--bg-surface-elevated, #ede8dd);
         padding: 0.15rem 0.4rem;
         border-radius: 4px;
         font-size: 0.78rem;
@@ -1158,7 +1159,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       .empty-tab-box h4 {
         font-size: 1.2rem;
         font-weight: 900;
-        color: #09090c;
+        color: var(--color-text, #09090c);
         margin: 0;
       }
 
@@ -1176,7 +1177,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       }
 
       .btn-create-tab:hover {
-        background: #09090c;
+        background: var(--bg-surface-elevated, #09090c);
       }
 
       .avatar-badge {
@@ -1207,13 +1208,13 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         margin: 0;
         font-size: 2rem;
         font-weight: 900;
-        color: #09090c;
+        color: var(--color-text, #09090c);
         letter-spacing: -0.03em;
       }
 
       .header-info .email {
         margin: 0.35rem 0 0.65rem;
-        color: #636058;
+        color: var(--color-text-muted, #636058);
         font-size: 0.95rem;
         font-weight: 600;
       }
@@ -1230,9 +1231,9 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       }
 
       .role-badge.client {
-        background: #f0ece3;
-        color: #09090c;
-        border-color: #dcd6cb;
+        background: var(--bg-surface-elevated, #f0ece3);
+        color: var(--color-text, #09090c);
+        border-color: var(--border-card, #dcd6cb);
       }
 
       .role-badge.professional {
@@ -1349,7 +1350,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         margin: 0;
         font-size: 1.15rem;
         font-weight: 800;
-        color: #09090c;
+        color: var(--color-text, #09090c);
       }
 
       .verif-status-pill {
@@ -1551,7 +1552,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
 
       .info-value {
         font-size: 0.95rem;
-        color: #111827;
+        color: var(--color-text, #111827);
       }
 
       .tel-value {
@@ -1560,8 +1561,8 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       }
 
       .public-bio-box {
-        background: #fafaf9;
-        border: 1px solid #e7e5e4;
+        background: var(--bg-surface, #fafaf9);
+        border: 1px solid var(--border-card, #e7e5e4);
         border-radius: 10px;
         padding: 1rem;
         margin-top: 0.5rem;
@@ -1571,7 +1572,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         margin: 0.4rem 0 0;
         font-size: 0.92rem;
         line-height: 1.5;
-        color: #374151;
+        color: var(--color-text-muted, #374151);
       }
 
       /* Ressenyes Section */
@@ -1654,12 +1655,12 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       .reviewer-name {
         display: block;
         font-size: 0.92rem;
-        color: #111827;
+        color: var(--color-text, #111827);
       }
 
       .review-date {
         font-size: 0.76rem;
-        color: #59606d;
+        color: var(--color-text-dim, #59606d);
       }
 
       .review-stars-badge {
@@ -1676,7 +1677,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       .star-number {
         font-size: 0.8rem;
         font-weight: 700;
-        color: #4b5563;
+        color: var(--color-text-muted, #4b5563);
         margin-left: 0.25rem;
       }
 
@@ -1684,7 +1685,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         margin: 0;
         font-size: 0.9rem;
         line-height: 1.5;
-        color: #374151;
+        color: var(--color-text-muted, #374151);
         font-style: italic;
       }
 
@@ -1733,13 +1734,13 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         margin: 0 0 0.35rem;
         font-size: 1rem;
         font-weight: 800;
-        color: #09090c;
+        color: var(--color-text, #09090c);
       }
 
       .task-work-desc {
         margin: 0 0 0.6rem;
         font-size: 0.88rem;
-        color: #57554e;
+        color: var(--color-text-muted, #57554e);
         line-height: 1.5;
       }
 
@@ -1796,12 +1797,12 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         margin: 0 0 0.35rem;
         font-size: 1.35rem;
         font-weight: 900;
-        color: #09090c;
+        color: var(--color-text, #09090c);
       }
 
       .subtitle {
         margin: 0 0 1.4rem;
-        color: #636058;
+        color: var(--color-text-muted, #636058);
         font-size: 0.9rem;
         font-weight: 600;
       }
@@ -1818,15 +1819,15 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         gap: 0.45rem;
         font-weight: 800;
         font-size: 0.85rem;
-        color: #09090c;
+        color: var(--color-text, #09090c);
         text-transform: uppercase;
         letter-spacing: 0.05em;
       }
 
       input, textarea {
-        background: #ffffff;
-        color: #09090c;
-        border: 1.5px solid #d6d0c4;
+        background: var(--bg-input, #ffffff);
+        color: var(--color-text, #09090c);
+        border: 1.5px solid var(--border-card, #d6d0c4);
         border-radius: 10px;
         padding: 0.85rem 1rem;
         font-size: 0.95rem;
@@ -1842,15 +1843,15 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       }
 
       .input-disabled {
-        background: #f5f2eb;
-        color: #8c887e;
-        border-color: #e5e0d7;
+        background: var(--bg-surface, #f5f2eb);
+        color: var(--color-text-dim, #8c887e);
+        border-color: var(--border-subtle, #e5e0d7);
         cursor: not-allowed;
       }
 
       .hint {
         font-size: 0.78rem;
-        color: #7d796f;
+        color: var(--color-text-dim, #7d796f);
         font-weight: 600;
       }
 
@@ -1879,22 +1880,22 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       }
 
       .btn-primary:hover:not(:disabled) {
-        background: #09090c;
+        background: var(--bg-surface-elevated, #09090c);
         color: #ffffff;
         box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
         transform: translateY(-2px);
       }
 
       .btn-secondary {
-        background: #f0ece3;
-        color: #09090c;
-        border: 1px solid #dcd6cb;
+        background: var(--bg-surface-elevated, #f0ece3);
+        color: var(--color-text, #09090c);
+        border: 1px solid var(--border-card, #dcd6cb);
         margin-top: 0.6rem;
       }
 
       .btn-secondary:hover:not(:disabled) {
-        border-color: #09090c;
-        background: #09090c;
+        border-color: var(--neon, #09090c);
+        background: var(--neon, #09090c);
         color: #ffffff;
       }
 
@@ -1902,12 +1903,12 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         margin: 0 0 0.5rem;
         font-size: 1.15rem;
         font-weight: 900;
-        color: #09090c;
+        color: var(--color-text, #09090c);
       }
 
       .info-card p {
         margin: 0;
-        color: #57554e;
+        color: var(--color-text-muted, #57554e);
         line-height: 1.55;
         font-size: 0.92rem;
         font-weight: 600;
@@ -2015,14 +2016,14 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
 
       :host-context(body.theme-app-dark) .commission-simulation-box,
       :host-context(.theme-app-dark) .commission-simulation-box {
-        background: #22283a;
-        border-color: #3d4661;
-        color: #bab8ae;
+        background: var(--bg-surface);
+        border-color: var(--border-card);
+        color: var(--color-text-muted);
       }
 
       :host-context(body.theme-app-dark) .commission-simulation-box strong,
       :host-context(.theme-app-dark) .commission-simulation-box strong {
-        color: #f5f4ef;
+        color: var(--color-text);
       }
 
       :host-context(body.theme-app-dark) .percentil-admin-hint,
@@ -2032,12 +2033,12 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
 
       :host-context(body.theme-app-dark) .admin-verif-actions,
       :host-context(.theme-app-dark) .admin-verif-actions {
-        border-top-color: #3d4661;
+        border-top-color: var(--border-card);
       }
 
       :host-context(body.theme-app-dark) .admin-verif-title,
       :host-context(.theme-app-dark) .admin-verif-title {
-        color: #bab8ae;
+        color: var(--color-text-muted);
       }
 
       :host-context(body.theme-app-dark) .badge-cat,
@@ -2153,20 +2154,20 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       :host-context(body.theme-app-dark) .review-profile-item,
       :host-context(.theme-app-dark) .public-bio-box,
       :host-context(.theme-app-dark) .review-profile-item {
-        background: #22283a;
-        border-color: #3d4661;
+        background: var(--bg-surface);
+        border-color: var(--border-card);
       }
 
       :host-context(body.theme-app-dark) .bio-text,
       :host-context(body.theme-app-dark) .review-item-comment,
       :host-context(.theme-app-dark) .bio-text,
       :host-context(.theme-app-dark) .review-item-comment {
-        color: #bab8ae;
+        color: var(--color-text-muted);
       }
 
       :host-context(body.theme-app-dark) .task-work-desc,
       :host-context(.theme-app-dark) .task-work-desc {
-        color: #bab8ae;
+        color: var(--color-text-muted);
       }
 
       :host-context(body.theme-app-dark) .task-work-title,
@@ -2175,12 +2176,12 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       :host-context(.theme-app-dark) .task-work-title,
       :host-context(.theme-app-dark) .reviewer-name,
       :host-context(.theme-app-dark) .info-value {
-        color: #f5f4ef;
+        color: var(--color-text);
       }
 
       :host-context(body.theme-app-dark) .task-opinion-box,
       :host-context(.theme-app-dark) .task-opinion-box {
-        background: #181d2a;
+        background: var(--bg-input);
         border-left-color: var(--neon, #ff1744);
       }
 
@@ -2393,6 +2394,12 @@ export class PerfilComponent implements OnInit {
     return Math.round(p * 10) / 10;
   }
 
+  get canViewTasquesTab(): boolean {
+    // Si s'accedeix al perfil d'un altre usuari, NO es mostra MAI l'apartat tasques.
+    // Només el propi usuari connectat té accés a la pestanya de les seues tasques personals.
+    return this.isOwnProfile;
+  }
+
   /**
    * Cicle de vida OnInit:
    * Comprova l'autenticació, sincronitza pestanya activa de la URL i carrega les dades actuals des de PostgreSQL.
@@ -2401,7 +2408,11 @@ export class PerfilComponent implements OnInit {
     this.route.queryParamMap.subscribe((qp) => {
       const tab = qp.get('tab');
       if (tab && ['dades', 'tasques', 'pressupostos', 'ressenyes'].includes(tab)) {
-        this.activeTab = tab as any;
+        if (tab === 'tasques' && !this.canViewTasquesTab) {
+          this.activeTab = (this.usuari?.rol === 'professional') ? 'pressupostos' : 'dades';
+        } else {
+          this.activeTab = tab as any;
+        }
       }
     });
 
@@ -2409,8 +2420,25 @@ export class PerfilComponent implements OnInit {
       const targetId = params.get('id');
       const currentUser = this.authService.getCurrentUser();
 
-      if (targetId && (!currentUser || currentUser.id !== targetId)) {
-        this.isOwnProfile = false;
+      if (targetId) {
+        const isSelf = !!currentUser && (
+          currentUser.id === targetId ||
+          (!!currentUser.nom && currentUser.nom.toLowerCase() === targetId.toLowerCase())
+        );
+        this.isOwnProfile = isSelf;
+
+        if (!this.isOwnProfile && (!this.activeTab || this.activeTab === 'tasques')) {
+          this.activeTab = 'dades';
+        }
+
+        if (this.isOwnProfile && currentUser) {
+          this.usuari = currentUser;
+          this.formData.nom = currentUser.nom || '';
+          this.formData.telefon = currentUser.telefon || '';
+          this.formData.bio = currentUser.bio || '';
+          this.formData.percentil = currentUser.percentil ?? 3;
+        }
+
         this.carregarPerfilUsuari(targetId);
       } else {
         if (!currentUser) {
@@ -2439,6 +2467,16 @@ export class PerfilComponent implements OnInit {
             this.formData.bio = freshUser.bio || '';
             this.formData.percentil = freshUser.percentil ?? 3;
             this.authService.setCurrentUser(freshUser);
+          } else {
+            if (freshUser.rol === 'professional') {
+              if (!this.activeTab || this.activeTab === 'tasques') {
+                this.activeTab = 'pressupostos';
+              }
+            } else {
+              if (this.activeTab === 'tasques') {
+                this.activeTab = 'dades';
+              }
+            }
           }
           this.carregarDadesCompletasPerfil(freshUser);
         }
@@ -2497,10 +2535,11 @@ export class PerfilComponent implements OnInit {
             createdAt: inc.createdAt
           }));
 
-        this.tasquesUsuari = [...userTasks, ...mappedIncidencies];
+        const combinedTasks = [...userTasks, ...mappedIncidencies];
+        this.tasquesUsuari = this.isOwnProfile ? combinedTasks : [];
 
-        // 2. Tasques finalitzades amb valoració (per a la pestanya de ressenyes)
-        this.tasquesFinalitzades = this.tasquesUsuari.filter(
+        // 2. Tasques finalitzades amb valoració (per a la pestanya de ressenyes públiques)
+        this.tasquesFinalitzades = combinedTasks.filter(
           t => t.estat === 'Finalitzada' || (t.valoracio != null && t.valoracio > 0)
         );
         const rated = this.tasquesFinalitzades.filter(t => t.valoracio != null && t.valoracio > 0);
@@ -2538,6 +2577,9 @@ export class PerfilComponent implements OnInit {
    * Canvia la pestanya activa del perfil i actualitza el paràmetre de consulta de la URL.
    */
   setTab(tab: 'dades' | 'tasques' | 'pressupostos' | 'ressenyes'): void {
+    if (tab === 'tasques' && !this.canViewTasquesTab) {
+      tab = (this.usuari?.rol === 'professional') ? 'pressupostos' : 'dades';
+    }
     this.activeTab = tab;
     this.router.navigate([], {
       relativeTo: this.route,

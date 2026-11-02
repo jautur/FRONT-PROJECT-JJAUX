@@ -22,11 +22,13 @@ export const en = {
     "ACCIONS": "Actions",
     "CARREGANT": "Loading...",
     "SENSE_DADES": "No data available",
+    "NO_RESULTS": "No results available",
     "TORNAR": "Back",
     "ACTUALITZAR": "Refresh"
   },
   "NAV": {
     "MENU": "Menu",
+    "HOME": "Home",
     "OBRE_MENU": "Open navigation menu",
     "OCULTAR_MENU": "Hide menu",
     "OCULTAR_MENU_LATERAL": "Hide sidebar menu",
@@ -841,5 +843,12 @@ export const en = {
     "ACCEPT_BUDGET_ERROR": "Could not accept quote.",
     "OFFLINE_TITLE": "No Internet Connection",
     "OFFLINE_DESC": "You are currently offline. New data will be synchronized once network is restored."
+  },
+  "MERCAT": {
+    "LOADING": "Loading data...",
+    "DETALL": "View details",
+    "AGREED_NATURE": "Agreed task",
+    "MOBILE_CAT_LABEL": "Category:",
+    "AVAILABLE": "available"
   }
 };
