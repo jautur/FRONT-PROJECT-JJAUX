@@ -83,6 +83,11 @@ interface CategoriaFiltre {
           </button>
         </div>
 
+        <!-- Anunciador accessible per a lectors de pantalla (WCAG 2.2 Status Messages) -->
+        <div class="sr-only" aria-live="polite" aria-atomic="true">
+          {{ totalElements }} elements disponibles segons els filtres aplicats
+        </div>
+
         <div class="type-filter-pills">
           <button
             type="button"
@@ -2777,7 +2782,7 @@ export class TasquesOfertesComponent implements OnInit {
   onNovaIncidencia(): void {
     if (!this.requireLogin('publicar una incidència', '/client/crear-tasca')) return;
     if (this.authService.isClient()) {
-      this.router.navigate([this.getNavUrl('/client/crear-tasca')], { queryParams: { origen: 'tasques-ofertes' } });
+      this.router.navigate([this.getNavUrl('/client/crear-tasca')]);
     } else {
       this.noticeMessage = 'Només els comptes amb rol de "Client" o "Ambdós" poden publicar incidències.';
     }
@@ -2786,7 +2791,7 @@ export class TasquesOfertesComponent implements OnInit {
   onNovaOferta(): void {
     if (!this.requireLogin('publicar una oferta professional', '/professional/crear-oferta')) return;
     if (this.authService.isProfessional()) {
-      this.router.navigate([this.getNavUrl('/professional/crear-oferta')], { queryParams: { origen: 'tasques-ofertes' } });
+      this.router.navigate([this.getNavUrl('/professional/crear-oferta')]);
     } else {
       this.noticeMessage = 'Només els comptes amb rol de "Professional" o "Ambdós" poden publicar ofertes de servei.';
     }

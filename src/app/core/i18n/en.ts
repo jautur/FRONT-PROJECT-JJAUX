@@ -817,5 +817,29 @@ export const en = {
     "IOS_STEP_2": "Scroll down and select 'Add to Home Screen'",
     "IOS_STEP_3": "Tap 'Add' in the top right corner",
     "IOS_CLOSE": "Got it"
+  },
+  "ERRORS": {
+    "REQUIRED_FIELDS": "Please fill in all required fields.",
+    "TASK_SAVE_ERROR": "An error occurred while saving the task to the database.",
+    "PACK_FIELDS_REQUIRED": "Please fill in all service package fields.",
+    "OFFER_PUBLISH_ERROR": "An error occurred while publishing the service offer.",
+    "BUDGET_FIELDS_REQUIRED": "Please fill in all required quote fields.",
+    "BUDGET_REGISTER_ERROR": "An error occurred while registering the quote on the server.",
+    "INCIDENTS_LOAD_ERROR": "Could not load open tasks.",
+    "TERMS_REQUIRED": "You must accept the terms and conditions to register.",
+    "PRIVACY_REQUIRED": "You must accept the privacy policy to register.",
+    "REGISTER_FORM_CHECK": "Please review the required form fields.",
+    "PRO_PHONE_REQUIRED": "As a Contractor, a contact phone number is required to resolve requests.",
+    "SERVER_UNREACHABLE": "The server is unreachable. Check your connection or backend status.",
+    "REGISTER_ERROR": "Could not complete registration. Please check the data or try again.",
+    "PERCENTILE_RANGE": "Commission percentile must be an integer between 0 and 100.",
+    "PASS_MIN_LENGTH": "Password must be at least 6 characters.",
+    "PASS_MISMATCH": "Passwords do not match.",
+    "PASS_UPDATE_ERROR": "Could not update password. Check connection with the server.",
+    "PROFILE_SAVE_ERROR": "An error occurred while saving profile. Please try again.",
+    "VERIFY_PHONE_REQUIRED": "A contact phone is required before requesting verification.",
+    "ACCEPT_BUDGET_ERROR": "Could not accept quote.",
+    "OFFLINE_TITLE": "No Internet Connection",
+    "OFFLINE_DESC": "You are currently offline. New data will be synchronized once network is restored."
   }
 };

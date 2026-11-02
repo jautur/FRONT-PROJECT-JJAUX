@@ -18,15 +18,26 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
   imports: [CommonModule, FormsModule, RouterLink, TranslatePipe],
   template: `
     <section class="auth-card">
+      <div class="app-back-nav" *ngIf="isAppPage">
+        <button type="button" class="btn-app-back" (click)="goBack()" [title]="'COMMON.TORNAR' | translate">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+          <span>{{ 'COMMON.TORNAR' | translate }}</span>
+        </button>
+      </div>
+
       <h1>{{ 'AUTH.LOGIN.TITLE' | translate }}</h1>
       <p *ngIf="message" class="alert-message">{{ message }}</p>
       <p *ngIf="!message">{{ 'AUTH.LOGIN.SUBTITLE' | translate }}</p>
 
       <form (ngSubmit)="onSubmit()">
-        <label>
-          {{ 'AUTH.LOGIN.EMAIL_LABEL' | translate }}
+        <div class="form-field-group">
+          <label for="login-email">{{ 'AUTH.LOGIN.EMAIL_LABEL' | translate }}</label>
           <input
-            type="text"
+            id="login-email"
+            type="email"
+            inputmode="email"
             [(ngModel)]="email"
             name="email"
             required
@@ -36,11 +47,11 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
             spellcheck="false"
             autocomplete="username"
           />
-        </label>
+        </div>
 
-        <label>
+        <div class="form-field-group">
           <div class="label-with-action">
-            <span>{{ 'AUTH.LOGIN.PASSWORD_LABEL' | translate }}</span>
+            <label for="login-password">{{ 'AUTH.LOGIN.PASSWORD_LABEL' | translate }}</label>
             <button
               type="button"
               class="link-forgot"
@@ -51,6 +62,7 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
             </button>
           </div>
           <input
+            id="login-password"
             type="password"
             [(ngModel)]="password"
             name="password"
@@ -59,8 +71,9 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
             autocorrect="off"
             spellcheck="false"
             autocomplete="current-password"
+            required
           />
-        </label>
+        </div>
 
         <button type="submit" [disabled]="loading">
           {{ loading ? ('AUTH.LOGIN.SUBMITTING' | translate) : ('AUTH.LOGIN.SUBMIT_BTN' | translate) }}
@@ -306,7 +319,8 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
         flex-direction: column;
         gap: 1.1rem;
       }
-      label {
+      label,
+      .form-field-group {
         display: flex;
         flex-direction: column;
         gap: 0.45rem;
@@ -776,6 +790,14 @@ export class LoginComponent implements OnInit {
   get isAppPage(): boolean {
     const url = this.router.url || '';
     return url.startsWith('/app');
+  }
+
+  goBack(): void {
+    if (typeof window !== 'undefined' && window.history.length > 1) {
+      window.history.back();
+    } else {
+      this.router.navigate([this.getNavUrl('/inici')]);
+    }
   }
 
   getNavUrl(path: string): string {

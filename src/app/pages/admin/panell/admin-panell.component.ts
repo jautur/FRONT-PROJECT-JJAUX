@@ -43,6 +43,15 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'pressupostos' | 'usuari
   imports: [CommonModule, FormsModule, RouterLink, TranslatePipe],
   template: `
     <div class="admin-container">
+      <div class="app-back-nav" *ngIf="isAppPage">
+        <button type="button" class="btn-app-back" (click)="goBack()" [title]="'COMMON.TORNAR' | translate">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+          <span>{{ 'COMMON.TORNAR' | translate }}</span>
+        </button>
+      </div>
+
       <!-- Capçalera del Panell -->
       <div class="admin-header">
         <div class="title-group">
@@ -252,74 +261,6 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'pressupostos' | 'usuari
       <!-- Missatges de feedback -->
       <div *ngIf="successMsg" class="alert-success">{{ successMsg }}</div>
       <div *ngIf="errorMsg" class="alert-error">{{ errorMsg }}</div>
-
-      <!-- Pestanyes de navegació interna -->
-      <div class="nav-tabs">
-        <button
-          type="button"
-          class="tab-btn"
-          [class.active]="tabActiva === 'tasques'"
-          (click)="canviarTab('tasques')"
-        >
-          {{ 'ADMIN.TAB_TASKS' | translate }} ({{ tasques.length }})
-        </button>
-        <button
-          type="button"
-          class="tab-btn"
-          [class.active]="tabActiva === 'ofertes'"
-          (click)="canviarTab('ofertes')"
-        >
-          {{ 'ADMIN.TAB_OFFERS' | translate }} ({{ ofertes.length }})
-        </button>
-        <button
-          type="button"
-          class="tab-btn"
-          [class.active]="tabActiva === 'incidencies'"
-          (click)="canviarTab('incidencies')"
-        >
-          {{ 'ADMIN.TAB_INCIDENCIES' | translate }} ({{ incidencies.length }})
-        </button>
-        <button
-          type="button"
-          class="tab-btn"
-          [class.active]="tabActiva === 'pressupostos'"
-          (click)="canviarTab('pressupostos')"
-        >
-          {{ 'ADMIN.TAB_PRESSUPOSTOS' | translate }} ({{ pressupostos.length }})
-        </button>
-        <button
-          type="button"
-          class="tab-btn"
-          [class.active]="tabActiva === 'usuaris'"
-          (click)="canviarTab('usuaris')"
-        >
-          {{ 'ADMIN.TAB_USERS' | translate }} ({{ usuaris.length }})
-        </button>
-        <button
-          type="button"
-          class="tab-btn"
-          [class.active]="tabActiva === 'blacklist'"
-          (click)="canviarTab('blacklist')"
-        >
-          {{ 'ADMIN.TAB_BLACKLIST' | translate }} ({{ blacklist.length }})
-        </button>
-        <button
-          type="button"
-          class="tab-btn"
-          [class.active]="tabActiva === 'resenyes'"
-          (click)="canviarTab('resenyes')"
-        >
-          {{ 'ADMIN.TAB_RESENYES' | translate }} ({{ resenyes.length }})
-        </button>
-        <button
-          type="button"
-          class="tab-btn"
-          [class.active]="tabActiva === 'avisos'"
-          (click)="canviarTab('avisos')"
-        >
-          {{ 'ADMIN.TAB_AVISOS' | translate }} ({{ avisos.length }})
-        </button>
-      </div>
 
       <!-- ============================================================== -->
       <!-- PESTANYA 1: TOTES LES TASQUES -->
@@ -1454,36 +1395,6 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'pressupostos' | 'usuari
       margin-top: 0.2rem;
       font-weight: 600;
     }
-    .nav-tabs {
-      display: flex;
-      gap: 0.65rem;
-      margin-bottom: 1.5rem;
-      border-bottom: 1px solid #e5e0d7;
-      padding-bottom: 0.75rem;
-      flex-wrap: wrap;
-    }
-    .tab-btn {
-      background: #ffffff;
-      border: 1px solid #d6d0c4;
-      padding: 0.65rem 1.25rem;
-      border-radius: 8px;
-      font-size: 0.92rem;
-      font-weight: 800;
-      color: #636058;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-    .tab-btn:hover {
-      border-color: #ff1744;
-      color: #09090c;
-    }
-    .tab-btn.active {
-      background: #ff1744;
-      border-color: #ff1744;
-      color: #ffffff;
-      font-weight: 900;
-      box-shadow: 0 4px 15px rgba(255, 23, 68, 0.35);
-    }
     .filter-bar {
       display: flex;
       gap: 1rem;
@@ -2324,15 +2235,9 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'pressupostos' | 'usuari
       border-radius: 12px; background: #f7f3ed;
     }
     .metric-icon svg { width: 25px; height: 25px; }
-    .nav-tabs {
-      gap: 0.45rem; margin-bottom: 0; padding: 0.7rem 0.8rem; flex-wrap: nowrap;
-      overflow-x: auto; scrollbar-width: thin; border: 1px solid #e5e0d7;
-      border-radius: 14px 14px 0 0; background: #f2eee7;
-    }
-    .tab-btn { flex: 0 0 auto; padding: 0.62rem 0.95rem; border-radius: 9px; font-size: 0.84rem; white-space: nowrap; }
     .tab-content {
-      padding: 1.25rem; border: 1px solid #e5e0d7; border-top: 0;
-      border-radius: 0 0 14px 14px; background: #fff;
+      padding: 1.25rem; border: 1px solid #e5e0d7;
+      border-radius: 14px; background: #fff;
       box-shadow: 0 8px 24px rgba(28, 23, 16, 0.04);
     }
     .table-wrapper { border: 1px solid #eee9e1; border-radius: 12px; background: #fff; }
@@ -2825,6 +2730,14 @@ export class AdminPanellComponent implements OnInit {
   get isAppPage(): boolean {
     const url = this.router.url || '';
     return url.startsWith('/app');
+  }
+
+  goBack(): void {
+    if (typeof window !== 'undefined' && window.history.length > 1) {
+      window.history.back();
+    } else {
+      this.router.navigate([this.getNavUrl('/inici')]);
+    }
   }
 
   getNavUrl(path: string): string {

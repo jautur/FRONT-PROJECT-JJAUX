@@ -57,6 +57,11 @@ export class AppComponent implements OnInit, OnDestroy {
   /** Estat del desplegable de vista prèvia de perfil */
   perfilDropdownObert = false;
 
+  /** Estat de connexió a la xarxa */
+  isOffline = false;
+  private onlineHandler = () => { this.isOffline = false; };
+  private offlineHandler = () => { this.isOffline = true; };
+
   /** Controla la visibilitat de la barra de navegació inferior de l'aplicació (/app) */
   showBottomNav = false;
 
@@ -124,6 +129,11 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    if (typeof window !== 'undefined') {
+      this.isOffline = !navigator.onLine;
+      window.addEventListener('online', this.onlineHandler);
+      window.addEventListener('offline', this.offlineHandler);
+    }
     this.actualitzarAvisos();
     this.actualitzarTemaApp();
     this.checkScroll();
@@ -135,6 +145,10 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    if (typeof window !== 'undefined') {
+      window.removeEventListener('online', this.onlineHandler);
+      window.removeEventListener('offline', this.offlineHandler);
+    }
     if (this.avisosInterval) {
       clearInterval(this.avisosInterval);
     }

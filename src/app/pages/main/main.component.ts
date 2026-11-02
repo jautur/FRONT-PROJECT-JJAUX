@@ -64,6 +64,77 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
           </p>
         </header>
 
+        <!-- GINY OPERATIU PER A USUARIS CONNECTATS -->
+        <div class="user-quick-dashboard" *ngIf="authService.isLoggedIn()">
+          <div class="quick-status-card" *ngIf="authService.isClient()">
+            <div class="quick-status-header">
+              <span class="quick-status-title">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                  <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                </svg>
+                {{ 'NAV.LES_MEVES_TASQUES' | translate }}
+              </span>
+              <span class="quick-badge" *ngIf="myActiveTasksCount > 0">{{ myActiveTasksCount }} actives</span>
+            </div>
+            <p class="quick-status-desc">
+              {{ myActiveTasksCount > 0 ? ('Tens ' + myActiveTasksCount + ' incidències o tasques en seguiment.') : 'No tens cap incidència activa ara mateix.' }}
+            </p>
+            <div class="quick-actions-row">
+              <a [routerLink]="getNavUrl('/client/les-meves-tasques')" class="btn-quick-primary">
+                {{ 'NAV.LES_MEVES_TASQUES' | translate }} →
+              </a>
+              <button type="button" class="btn-quick-outline" (click)="onNovaTasca()">
+                + {{ 'TASQUES_OFERTES.BTN_NOVA_INCIDENCIA' | translate }}
+              </button>
+            </div>
+          </div>
+
+          <div class="quick-status-card" *ngIf="authService.isProfessional() && !authService.isClient()">
+            <div class="quick-status-header">
+              <span class="quick-status-title">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                  <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                </svg>
+                {{ 'NAV.ELS_MEUS_PRESSUPOSTOS' | translate }}
+              </span>
+              <span class="quick-badge" *ngIf="myActiveOffersCount > 0">{{ myActiveOffersCount }} ofertes</span>
+            </div>
+            <p class="quick-status-desc">
+              {{ myActiveOffersCount > 0 ? ('Has presentat ' + myActiveOffersCount + ' pressupostos o ofertes.') : 'Explora noves feines al mercat per enviar pressupostos.' }}
+            </p>
+            <div class="quick-actions-row">
+              <a [routerLink]="getNavUrl('/professional/les-meves-ofertes')" class="btn-quick-primary">
+                {{ 'NAV.ELS_MEUS_PRESSUPOSTOS' | translate }} →
+              </a>
+              <button type="button" class="btn-quick-outline" (click)="onNovaOferta()">
+                + {{ 'TASQUES_OFERTES.BTN_NOVA_OFERTA' | translate }}
+              </button>
+            </div>
+          </div>
+
+          <div class="quick-status-card admin-quick-card" *ngIf="authService.isAdmin()">
+            <div class="quick-status-header">
+              <span class="quick-status-title">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <circle cx="12" cy="12" r="3"></circle>
+                  <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                </svg>
+                {{ 'NAV.ADMINISTRACIO' | translate }}
+              </span>
+            </div>
+            <p class="quick-status-desc">
+              Accés ràpid al panell d'auditoria global, usuaris i moderació del mercat.
+            </p>
+            <div class="quick-actions-row">
+              <a [routerLink]="getNavUrl('/admin/panell')" class="btn-quick-primary">
+                {{ 'NAV.PANELL_CONTROL_GLOBAL' | translate }} →
+              </a>
+            </div>
+          </div>
+        </div>
+
         <div class="dashboard-header-bar">
           <div>
             <span class="eyebrow-tag">{{ 'HOME.PLATAFORMA_AVISA' | translate }}</span>
@@ -872,6 +943,138 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
 
       body.theme-app-dark .welcome-simple-sub {
         color: #bab8ae;
+      }
+
+      /* GINY OPERATIU PER A USUARIS CONNECTATS */
+      .user-quick-dashboard {
+        display: flex;
+        flex-direction: column;
+        gap: 0.85rem;
+      }
+
+      .quick-status-card {
+        background: var(--bg-card, #ffffff);
+        border: 1px solid var(--border-subtle, #e5e0d7);
+        border-radius: 16px;
+        padding: 1.25rem 1.4rem;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+        display: flex;
+        flex-direction: column;
+        gap: 0.65rem;
+        transition: all 0.2s ease;
+      }
+
+      .quick-status-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.5rem;
+      }
+
+      .quick-status-title {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.95rem;
+        font-weight: 800;
+        color: var(--color-text, #09090c);
+      }
+
+      .quick-badge {
+        background: #fee2e2;
+        color: #dc2626;
+        border: 1px solid #fca5a5;
+        border-radius: 9999px;
+        padding: 0.15rem 0.6rem;
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+      }
+
+      .quick-status-desc {
+        margin: 0;
+        font-size: 0.88rem;
+        color: var(--color-text-muted, #636058);
+        line-height: 1.4;
+      }
+
+      .quick-actions-row {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        flex-wrap: wrap;
+        margin-top: 0.25rem;
+      }
+
+      .btn-quick-primary {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        background: #09090c;
+        color: #ffffff !important;
+        border: 1px solid #09090c;
+        border-radius: 8px;
+        padding: 0.55rem 1.05rem;
+        font-size: 0.82rem;
+        font-weight: 800;
+        text-decoration: none;
+        transition: all 0.2s ease;
+      }
+
+      .btn-quick-primary:hover {
+        background: #ff1744;
+        border-color: #ff1744;
+      }
+
+      .btn-quick-outline {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        background: transparent;
+        color: #ff1744;
+        border: 1.5px solid #ff1744;
+        border-radius: 8px;
+        padding: 0.5rem 0.95rem;
+        font-size: 0.82rem;
+        font-weight: 800;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .btn-quick-outline:hover {
+        background: rgba(255, 23, 68, 0.08);
+      }
+
+      body.theme-app-dark .quick-status-card {
+        background: #1b2030;
+        border-color: #363e55;
+      }
+
+      body.theme-app-dark .quick-status-title {
+        color: #f5f4ef;
+      }
+
+      body.theme-app-dark .quick-status-desc {
+        color: #bab8ae;
+      }
+
+      body.theme-app-dark .btn-quick-primary {
+        background: #ff1744;
+        border-color: #ff1744;
+        color: #ffffff !important;
+      }
+
+      body.theme-app-dark .btn-quick-primary:hover {
+        background: #ffffff;
+        color: #09090c !important;
+        border-color: #ffffff;
+      }
+
+      body.theme-app-dark .quick-badge {
+        background: rgba(255, 23, 68, 0.2);
+        color: #ff6b81;
+        border-color: rgba(255, 23, 68, 0.4);
       }
 
       .dashboard-header-bar {
@@ -3818,6 +4021,30 @@ export class MainComponent implements OnInit, OnDestroy {
     return 'usuari';
   }
 
+  /** Retorna el nombre d'incidències actives del client connectat */
+  get myActiveTasksCount(): number {
+    const user = this.authService.getCurrentUser();
+    if (!user) return 0;
+    const nom = (user.nom || '').trim().toLowerCase();
+    const email = (user.email || '').trim().toLowerCase();
+    return this.tasks.filter((t: any) => {
+      const c = (t.client || '').trim().toLowerCase();
+      return (c === nom || c === email) && t.status !== 'Finalitzada';
+    }).length;
+  }
+
+  /** Retorna el nombre de pressupostos o ofertes actives del professional connectat */
+  get myActiveOffersCount(): number {
+    const user = this.authService.getCurrentUser();
+    if (!user) return 0;
+    const nom = (user.nom || '').trim().toLowerCase();
+    const email = (user.email || '').trim().toLowerCase();
+    return this.offers.filter((o: any) => {
+      const p = (o.professional || '').trim().toLowerCase();
+      return p === nom || p === email;
+    }).length;
+  }
+
   getTaskStatusClass(status: string): string {
     return status.toLowerCase().replace(/\s+/g, '-');
   }
@@ -3894,11 +4121,13 @@ export class MainComponent implements OnInit, OnDestroy {
   }
 
   onNovaTasca(): void {
-    this.router.navigate([this.getNavUrl('/tasques-ofertes')], { queryParams: { tipus: 'incidencies', accio: 'crear-incidencia' } });
+    if (!this.requireLogin('publicar una incidència', '/client/crear-tasca')) return;
+    this.router.navigate([this.getNavUrl('/client/crear-tasca')]);
   }
 
   onNovaOferta(): void {
-    this.router.navigate([this.getNavUrl('/tasques-ofertes')], { queryParams: { tipus: 'ofertes', accio: 'crear-oferta' } });
+    if (!this.requireLogin('publicar una oferta professional', '/professional/crear-oferta')) return;
+    this.router.navigate([this.getNavUrl('/professional/crear-oferta')]);
   }
 
   onNavegarTasquesOfertes(tipus: 'tots' | 'tasques' | 'ofertes' | 'incidencies' = 'tots'): void {

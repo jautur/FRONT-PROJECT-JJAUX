@@ -717,19 +717,9 @@ export class CrearOfertaComponent implements OnInit {
   }
 
   /**
-   * Càrrega d'incidències i tasques obertes i comprovació de paràmetres d'URL.
+   * Càrrega d'incidències i tasques obertes per a l'usuari professional.
    */
   ngOnInit(): void {
-    const origen = this.route.snapshot.queryParams['origen'] || (typeof history !== 'undefined' ? history.state?.origen : null);
-    if (origen !== 'tasques-ofertes') {
-      this.router.navigate([this.getNavUrl('/tasques-ofertes')], {
-        queryParams: {
-          avís: 'Per a publicar una oferta o pressupost cal accedir des de la secció de Tasques i Ofertes.'
-        }
-      });
-      return;
-    }
-
     const user = this.authService.getCurrentUser();
     if (user) {
       this.formData.professional = user.nom;
@@ -816,7 +806,7 @@ export class CrearOfertaComponent implements OnInit {
         });
       },
       error: () => {
-        this.errorMessage = 'No s’han pogut carregar les incidències obertes.';
+        this.errorMessage = 'ERRORS.INCIDENTS_LOAD_ERROR';
       }
     });
   }
@@ -833,7 +823,7 @@ export class CrearOfertaComponent implements OnInit {
   onSubmitOfertaServei(): void {
     const user = this.authService.getCurrentUser();
     if (!this.ofertaServei.titol || !this.ofertaServei.categoria || !this.ofertaServei.price || !this.ofertaServei.note) {
-      this.errorMessage = 'Cal emplenar tots els camps del pack de servei.';
+      this.errorMessage = 'ERRORS.PACK_FIELDS_REQUIRED';
       return;
     }
 
@@ -860,7 +850,7 @@ export class CrearOfertaComponent implements OnInit {
       },
       error: () => {
         this.submitting = false;
-        this.errorMessage = 'S’ha produït un error en publicar l’oferta de servei.';
+        this.errorMessage = 'ERRORS.OFFER_PUBLISH_ERROR';
       }
     });
   }
@@ -870,7 +860,7 @@ export class CrearOfertaComponent implements OnInit {
    */
   onSubmitPressupost(): void {
     if (!this.formData.tascaId || !this.formData.price || !this.formData.note) {
-      this.errorMessage = 'Cal emplenar tots els camps obligatoris del pressupost.';
+      this.errorMessage = 'ERRORS.BUDGET_FIELDS_REQUIRED';
       return;
     }
 
@@ -897,7 +887,7 @@ export class CrearOfertaComponent implements OnInit {
       },
       error: () => {
         this.submitting = false;
-        this.errorMessage = 'S’ha produït un error en registrar el pressupost al servidor.';
+        this.errorMessage = 'ERRORS.BUDGET_REGISTER_ERROR';
       }
     });
   }

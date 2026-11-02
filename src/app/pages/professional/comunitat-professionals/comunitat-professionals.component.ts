@@ -17,6 +17,15 @@ import { GuiaProfessional, GUIES_PRO_VA, GUIES_PRO_ES, GUIES_PRO_EN } from '../.
   imports: [CommonModule, RouterLink, TranslatePipe],
   template: `
     <div class="pro-community-page">
+      <div class="app-back-nav" *ngIf="isAppPage">
+        <button type="button" class="btn-app-back" (click)="goBack()" [title]="'COMMON.TORNAR' | translate">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+          <span>{{ 'COMMON.TORNAR' | translate }}</span>
+        </button>
+      </div>
+
       <!-- Breadcrumbs de navegació -->
       <nav class="pro-breadcrumbs" aria-label="Fil d'ariadna">
         <a [routerLink]="getNavUrl('/inici')" class="breadcrumb-link">
@@ -1281,6 +1290,14 @@ export class ComunitatProfessionalsComponent implements OnInit {
   get isAppPage(): boolean {
     const url = this.router.url || '';
     return url.startsWith('/app');
+  }
+
+  goBack(): void {
+    if (typeof window !== 'undefined' && window.history.length > 1) {
+      window.history.back();
+    } else {
+      this.router.navigate([this.getNavUrl('/inici')]);
+    }
   }
 
   getNavUrl(path: string): string {

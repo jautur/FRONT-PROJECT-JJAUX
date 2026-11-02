@@ -203,10 +203,25 @@ input:focus, select:focus, textarea:focus {
   color: #d1d5db;
 }
 
-/* Àrea tàctil millorada per a botons de tancament */
-.btn-close-modal {
-  min-width: 36px;
-  min-height: 36px;
+/* Àrea tàctil millorada per a botons d'acció i tancament (WCAG 2.2 Target Size: min 44x44px) */
+.btn-close-modal,
+.btn-close,
+.btn-close-sidebar,
+.notice-banner .btn-dismiss,
+.btn-dismiss {
+  min-width: 44px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+/* Assegurar mida tàctil mínima de 44px per a pestanyes de filtrat a la versió /app */
+body.theme-app-dark .filter-tabs button,
+.filter-tabs button,
+.tab-btn {
+  min-height: 44px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -633,6 +648,41 @@ body.theme-app-dark .tab-filter-btn.active {
 /* ============================================================== */
 /* REVISIÓ I CORRECCIÓ DE COLORS DE CADA BOTÓ I RECUADRE A /APP/  */
 /* ============================================================== */
+
+/* Barra de retorn unificada per a pantalles secundàries a l'app */
+.app-back-nav {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.btn-app-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: var(--bg-card, #ffffff);
+  color: var(--color-text-muted, #57554e);
+  border: 1px solid var(--border-subtle, #e5e0d7);
+  padding: 0.45rem 0.95rem;
+  min-height: 44px;
+  border-radius: var(--radius-sm, 8px);
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  user-select: none;
+}
+
+.btn-app-back:hover {
+  background: var(--bg-surface, #faf8f4);
+  color: var(--color-text, #09090c);
+  border-color: var(--neon, #ff1744);
+}
+
+.btn-app-back:active {
+  transform: scale(0.96);
+}
 
 /* Botons secundaris, accions i botons de retorn a /app/ */
 body.theme-app-dark .btn-action-alt,
@@ -1073,5 +1123,41 @@ body.theme-app-dark ::-webkit-scrollbar-thumb:hover {
     max-width: calc(100vw - 1.5rem);
     margin-left: auto;
     margin-right: auto;
+  }
+}
+
+/* Banner de desconnexió / mode fora de línia accessible */
+.offline-network-banner {
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  background-color: #f59e0b;
+  color: #1a1608;
+  padding: 8px 16px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  animation: slideDown 0.25s ease-out;
+}
+
+body.theme-app-dark .offline-network-banner {
+  background-color: #d97706;
+  color: #ffffff;
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
   }
 }

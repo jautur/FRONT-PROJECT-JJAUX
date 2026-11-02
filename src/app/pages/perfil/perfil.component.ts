@@ -32,6 +32,15 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
   imports: [CommonModule, FormsModule, RouterLink, TranslatePipe],
   template: `
     <section class="perfil-container">
+      <div class="app-back-nav" *ngIf="!isOwnProfile">
+        <button type="button" class="btn-app-back" (click)="goBack()" [title]="'COMMON.TORNAR' | translate">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+          <span>{{ 'COMMON.TORNAR' | translate }}</span>
+        </button>
+      </div>
+
       <!-- Capçalera del Perfil -->
       <header class="perfil-header">
         <div class="avatar-badge" [class.has-img]="usuariFotoPerfil">
@@ -131,7 +140,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         {{ successMessage }}
       </div>
       <div *ngIf="errorMessage" class="alert alert-danger">
-        {{ errorMessage }}
+        {{ errorMessage | translate }}
       </div>
 
       <!-- Estat de càrrega de dades del perfil -->
@@ -2341,6 +2350,14 @@ export class PerfilComponent implements OnInit {
     return url.startsWith('/app');
   }
 
+  goBack(): void {
+    if (typeof window !== 'undefined' && window.history.length > 1) {
+      window.history.back();
+    } else {
+      this.router.navigate([this.getNavUrl('/tasques-ofertes')]);
+    }
+  }
+
   getNavUrl(path: string): string {
     if (this.isAppPage) {
       if (path === '/' || path === '/inici' || path === '/app') return '/app';
@@ -2594,13 +2611,13 @@ export class PerfilComponent implements OnInit {
     if (!this.usuari) return;
 
     if (this.usuari.rol === 'professional' && (!this.formData.telefon || !this.formData.telefon.trim())) {
-      this.errorMessage = 'Com a Professional, el telèfon de contacte és obligatori per resoldre peticions.';
+      this.errorMessage = 'ERRORS.PRO_PHONE_REQUIRED';
       return;
     }
 
     const p = Number(this.formData.percentil);
     if (isNaN(p) || p < 0 || p > 100) {
-      this.errorMessage = 'El percentil de comissió ha de ser un número sencer comprès entre 0 i 100.';
+      this.errorMessage = 'ERRORS.PERCENTILE_RANGE';
       return;
     }
 
@@ -2631,7 +2648,7 @@ export class PerfilComponent implements OnInit {
       error: (err) => {
         this.saving = false;
         const msg = err?.error?.message || err?.error?.error;
-        this.errorMessage = msg || 'S’ha produït un error en desar el perfil. Torna-ho a provar.';
+        this.errorMessage = msg || 'ERRORS.PROFILE_SAVE_ERROR';
       }
     });
   }
@@ -2645,12 +2662,12 @@ export class PerfilComponent implements OnInit {
     this.clearAlerts();
 
     if (this.passwordData.newPassword.length < 6) {
-      this.errorMessage = 'La contrasenya ha de tenir com a mínim 6 caràcters.';
+      this.errorMessage = 'ERRORS.PASS_MIN_LENGTH';
       return;
     }
 
     if (this.passwordData.newPassword !== this.passwordData.confirmPassword) {
-      this.errorMessage = 'Les contrasenyes introduïdes no coincideixen.';
+      this.errorMessage = 'ERRORS.PASS_MISMATCH';
       return;
     }
 
@@ -2665,7 +2682,7 @@ export class PerfilComponent implements OnInit {
       },
       error: () => {
         this.changingPassword = false;
-        this.errorMessage = 'No s’ha pogut actualitzar la contrasenya. Comprova la connexió amb el servidor.';
+        this.errorMessage = 'ERRORS.PASS_UPDATE_ERROR';
       }
     });
   }
@@ -2706,7 +2723,7 @@ export class PerfilComponent implements OnInit {
   onSollicitarVerificacio(): void {
     if (!this.usuari) return;
     if (!this.usuari.telefon || !this.usuari.telefon.trim()) {
-      this.errorMessage = 'Cal registrar un telèfon de contacte abans de sol·licitar la verificació.';
+      this.errorMessage = 'ERRORS.VERIFY_PHONE_REQUIRED';
       return;
     }
     this.sollicitantVerificacio = true;
@@ -2839,7 +2856,7 @@ export class PerfilComponent implements OnInit {
             }, 1200);
           },
           error: () => {
-            this.errorMessage = 'No s’ha pogut acceptar el pressupost.';
+            this.errorMessage = 'ERRORS.ACCEPT_BUDGET_ERROR';
             setTimeout(() => this.errorMessage = '', 3500);
           }
         });
