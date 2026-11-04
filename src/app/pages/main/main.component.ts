@@ -706,7 +706,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
               <h3 class="exit-offer-title">{{ peticioExitDades.titol }}</h3>
               <div class="exit-offer-meta">
                 <span class="exit-pro-info">
-                  <strong>{{ 'TASQUES_OFERTES.PRO_ASSIGNED' | translate }}</strong> {{ peticioExitDades.professional }}
+                  <strong>{{ 'TASQUES_OFERTES.PRO_WHO_OFFERS' | translate }}</strong> {{ peticioExitDades.professional }}
                 </span>
                 <span class="exit-price-pill">{{ peticioExitDades.preu }}</span>
               </div>

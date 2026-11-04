@@ -111,6 +111,7 @@ interface Seleccio {
     .canc-badge { padding: 0.2rem 0.6rem; border-radius: 999px; font-size: 0.72rem; font-weight: 800; background: #f1f5f9; color: #334155; }
     .canc-badge.pendent { background: #fef3c7; color: #92400e; }
     .canc-linia, .canc-motiu, .canc-nota, .canc-buit { margin: 0; font-size: 0.85rem; }
+    .canc-linia span { margin-right: 0.3rem; }
     .canc-motiu { font-style: italic; }
     .canc-nota { color: #57534e; }
     .canc-resol { display: flex; flex-direction: column; gap: 0.35rem; margin-top: 0.4rem; }
