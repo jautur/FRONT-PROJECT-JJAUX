@@ -546,29 +546,24 @@ export class AvisosComponent implements OnInit {
 
   /**
    * Obté la ruta URL de destinació segons la informació de l'avís.
+   * El botó sempre adreça a l'apartat personal: /professional/les-meves-ofertes o /client/les-meves-tasques.
    * @param a Notificació
    * @returns Ruta de navegació interna
    */
   getDestinacioAvis(a: Avis): string {
-    if (a.enllac && a.enllac.trim() !== '') {
-      return a.enllac;
-    }
-    const text = (a.missatge || '').toLowerCase();
     const user = this.authService.getCurrentUser();
     const isProf = user?.rol === 'PROFESSIONAL';
 
-    if (text.includes('oferta') || text.includes('contractaci') || text.includes('servei')) {
-      return isProf ? '/professional/les-meves-ofertes' : '/tasques-ofertes';
+    if (a.enllac && a.enllac.trim() !== '' && !a.enllac.includes('tasques-ofertes')) {
+      return a.enllac;
     }
-    if (text.includes('pressupost')) {
-      return isProf ? '/tasques-ofertes' : '/client/les-meves-tasques';
-    }
-    if (text.includes('tasca') || text.includes('treball') || text.includes('finalitzat') || text.includes('contractada') || text.includes('incidència') || text.includes('incidencia')) {
-      return isProf ? '/professional/les-meves-ofertes' : '/client/les-meves-tasques';
-    }
-    if (text.includes('perfil') || text.includes('comissió') || text.includes('percentil') || text.includes('ressenya') || text.includes('resenya')) {
+
+    const text = (a.missatge || '').toLowerCase();
+    if (text.includes('perfil') || text.includes('comissió') || text.includes('percentil')) {
       return '/perfil';
     }
+
+    // Apartat personal segons rol:
     return isProf ? '/professional/les-meves-ofertes' : '/client/les-meves-tasques';
   }
 
@@ -579,12 +574,10 @@ export class AvisosComponent implements OnInit {
    */
   getNomDestinacio(a: Avis): string {
     const ruta = this.getDestinacioAvis(a);
-    if (ruta.includes('les-meves-tasques')) return 'Veure les meves tasques';
+    if (ruta.includes('les-meves-tasques')) return 'Veure les meves incidències';
     if (ruta.includes('les-meves-ofertes')) return 'Veure les meves ofertes';
-    if (ruta.includes('tasques-ofertes')) return 'Veure mercat d\'ofertes';
-    if (ruta.includes('tasca-detall')) return 'Veure detall de la tasca';
     if (ruta.includes('perfil')) return 'Anar al meu perfil';
-    return 'Veure apartat';
+    return 'Veure apartat personal';
   }
 
   /**

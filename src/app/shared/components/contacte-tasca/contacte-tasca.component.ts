@@ -47,9 +47,51 @@ import { UsuariService } from '../../../services/usuari.service';
       border: 1px solid #86efac;
       color: #166534;
       background: #ffffff;
+      display: inline-flex;
+      align-items: center;
+      transition: all 0.2s ease;
     }
     .contacte-link:hover { background: #166534; color: #ffffff; }
     .contacte-buit { color: #57534e; }
+
+    :host-context(.theme-app-dark) .contacte-box {
+      background: rgba(16, 185, 129, 0.12);
+      border-color: rgba(52, 211, 153, 0.35);
+    }
+    :host-context(.theme-app-dark) .contacte-titol {
+      color: #34d399;
+    }
+    :host-context(.theme-app-dark) .contacte-nom {
+      color: #ffffff;
+    }
+    :host-context(.theme-app-dark) .contacte-link {
+      background: #1e2433;
+      border-color: rgba(52, 211, 153, 0.45);
+      color: #34d399;
+    }
+    :host-context(.theme-app-dark) .contacte-link.wa {
+      background: rgba(37, 211, 102, 0.12);
+      border-color: rgba(37, 211, 102, 0.4);
+      color: #4ade80;
+    }
+    :host-context(.theme-app-dark) .contacte-link.wa:hover {
+      background: #16a34a;
+      border-color: #16a34a;
+      color: #ffffff;
+    }
+    :host-context(.theme-app-dark) .contacte-link.mail {
+      background: rgba(59, 130, 246, 0.12);
+      border-color: rgba(59, 130, 246, 0.4);
+      color: #60a5fa;
+    }
+    :host-context(.theme-app-dark) .contacte-link.mail:hover {
+      background: #2563eb;
+      border-color: #2563eb;
+      color: #ffffff;
+    }
+    :host-context(.theme-app-dark) .contacte-buit {
+      color: #94a3b8;
+    }
   `]
 })
 export class ContacteTascaComponent {

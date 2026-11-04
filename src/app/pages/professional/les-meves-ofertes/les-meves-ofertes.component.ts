@@ -560,8 +560,8 @@ import { CancellarTascaModalComponent } from '../../../shared/components/cancell
       font-weight: 700;
     }
     .assigned-section {
-      background: #fdfbf7;
-      border: 1px solid #e7e2d6;
+      background: var(--bg-surface, #fdfbf7);
+      border: 1px solid var(--border-subtle, #e7e2d6);
       border-radius: 16px;
       padding: 1.5rem 1.6rem;
       margin-bottom: 2rem;
@@ -611,8 +611,8 @@ import { CancellarTascaModalComponent } from '../../../shared/components/cancell
       gap: 1.25rem;
     }
     .assigned-task-card {
-      background: #ffffff;
-      border: 1px solid #e2ddd3;
+      background: var(--bg-card, #ffffff);
+      border: 1px solid var(--border-subtle, #e2ddd3);
       border-left: 4px solid #10b981;
       border-radius: 12px;
       padding: 1.25rem;
@@ -660,6 +660,122 @@ import { CancellarTascaModalComponent } from '../../../shared/components/cancell
     }
     .user-inline-link:hover {
       color: #ff1744;
+    }
+
+    /* Suport per a mode fosc (/app) */
+    :host-context(.theme-app-dark) .assigned-section,
+    .theme-app-dark .assigned-section {
+      background: rgba(255, 255, 255, 0.03);
+      border-color: var(--border-card, #43506e);
+    }
+
+    :host-context(.theme-app-dark) .assigned-task-card,
+    .theme-app-dark .assigned-task-card {
+      background: var(--bg-card, #1e2433);
+      border-color: var(--border-card, #43506e);
+      border-left: 4px solid #10b981;
+    }
+
+    :host-context(.theme-app-dark) .pro-assigned-pill,
+    .theme-app-dark .pro-assigned-pill {
+      background: rgba(16, 185, 129, 0.2);
+      color: #34d399;
+      border-color: rgba(52, 211, 153, 0.35);
+    }
+
+    :host-context(.theme-app-dark) .section-badge-hint,
+    .theme-app-dark .section-badge-hint {
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--color-text-dim, #cbd5e1);
+      border-color: var(--border-card, #43506e);
+    }
+
+    :host-context(.theme-app-dark) .assigned-task-card .badge-nature,
+    .theme-app-dark .assigned-task-card .badge-nature {
+      background: rgba(16, 185, 129, 0.2);
+      color: #34d399;
+      border-color: rgba(52, 211, 153, 0.35);
+    }
+
+    :host-context(.theme-app-dark) .assigned-task-card .tasca-desc,
+    .theme-app-dark .assigned-task-card .tasca-desc {
+      color: var(--color-text-muted, #cbd5e1);
+    }
+
+    :host-context(.theme-app-dark) .subtitle,
+    .theme-app-dark .subtitle {
+      color: var(--color-text-muted, #cbd5e1);
+    }
+
+    :host-context(.theme-app-dark) .section-divider,
+    .theme-app-dark .section-divider {
+      background: var(--border-card, #43506e);
+    }
+
+    :host-context(.theme-app-dark) .btn-action.neutral,
+    .theme-app-dark .btn-action.neutral {
+      background: var(--bg-surface, #272f42);
+      color: var(--color-text, #ffffff);
+      border-color: var(--border-card, #43506e);
+    }
+
+    :host-context(.theme-app-dark) .btn-action.neutral:hover,
+    .theme-app-dark .btn-action.neutral:hover {
+      background: #ff1744;
+      border-color: #ff1744;
+      color: #ffffff;
+    }
+
+    :host-context(.theme-app-dark) .btn-action.danger,
+    .theme-app-dark .btn-action.danger {
+      background: rgba(239, 68, 68, 0.15);
+      color: #f87171;
+      border-color: rgba(239, 68, 68, 0.4);
+    }
+
+    :host-context(.theme-app-dark) .btn-action.danger:hover,
+    .theme-app-dark .btn-action.danger:hover {
+      background: #dc2626;
+      border-color: #dc2626;
+      color: #ffffff;
+    }
+
+    :host-context(.theme-app-dark) .revisio-avis,
+    .theme-app-dark .revisio-avis {
+      background: rgba(234, 88, 12, 0.15);
+      border-color: rgba(234, 88, 12, 0.35);
+      color: #fb923c;
+    }
+
+    :host-context(.theme-app-dark) .preu-box,
+    .theme-app-dark .preu-box {
+      background: var(--bg-surface, #272f42);
+      border-color: var(--border-card, #43506e);
+    }
+
+    :host-context(.theme-app-dark) .preu-label,
+    .theme-app-dark .preu-label {
+      color: var(--color-text-dim, #cbd5e1);
+    }
+
+    :host-context(.theme-app-dark) .preu-value.muted,
+    .theme-app-dark .preu-value.muted {
+      color: var(--color-text, #ffffff);
+    }
+
+    :host-context(.theme-app-dark) .oferta-nota,
+    .theme-app-dark .oferta-nota {
+      background: var(--bg-surface, #272f42);
+      border-color: var(--border-card, #43506e);
+      border-left: 3px solid #ff1744;
+      color: var(--color-text-muted, #cbd5e1);
+    }
+
+    :host-context(.theme-app-dark) .tab-btn:not(.active),
+    .theme-app-dark .tab-btn:not(.active) {
+      background: var(--bg-surface, #272f42);
+      border-color: var(--border-card, #43506e);
+      color: var(--color-text-muted, #cbd5e1);
     }
 
     @media (max-width: 768px) {

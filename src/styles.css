@@ -1205,6 +1205,177 @@ body.theme-app-dark .user-profile-link:hover {
   text-shadow: 0 0 10px rgba(255, 23, 68, 0.6) !important;
 }
 
+/* Enllaç i xip de perfil professional en mode fosc */
+body.theme-app-dark .user-profile-link.pro-profile-link,
+body.theme-app-dark .pro-profile-link {
+  color: #34d399 !important;
+}
+body.theme-app-dark .user-profile-link.pro-profile-link:hover,
+body.theme-app-dark .pro-profile-link:hover {
+  color: #6ee7b7 !important;
+  text-shadow: 0 0 10px rgba(52, 211, 153, 0.6) !important;
+}
+body.theme-app-dark .pro-avatar-mini {
+  background: rgba(16, 185, 129, 0.2) !important;
+  color: #34d399 !important;
+}
+body.theme-app-dark .pro-name-val {
+  color: #34d399 !important;
+}
+
+/* Quadre de dades de contacte (app-contacte-tasca) en mode fosc */
+body.theme-app-dark app-contacte-tasca .contacte-box,
+body.theme-app-dark .contacte-box {
+  background: rgba(16, 185, 129, 0.12) !important;
+  border-color: rgba(52, 211, 153, 0.35) !important;
+}
+body.theme-app-dark app-contacte-tasca .contacte-titol,
+body.theme-app-dark .contacte-titol {
+  color: #34d399 !important;
+}
+body.theme-app-dark app-contacte-tasca .contacte-nom,
+body.theme-app-dark .contacte-nom {
+  color: #ffffff !important;
+}
+body.theme-app-dark app-contacte-tasca .contacte-link,
+body.theme-app-dark .contacte-link {
+  background: #1e2433 !important;
+  border-color: rgba(52, 211, 153, 0.45) !important;
+  color: #34d399 !important;
+}
+body.theme-app-dark app-contacte-tasca .contacte-link.wa,
+body.theme-app-dark .contacte-link.wa {
+  background: rgba(37, 211, 102, 0.15) !important;
+  border-color: rgba(37, 211, 102, 0.4) !important;
+  color: #4ade80 !important;
+}
+body.theme-app-dark app-contacte-tasca .contacte-link.wa:hover,
+body.theme-app-dark .contacte-link.wa:hover {
+  background: #16a34a !important;
+  border-color: #16a34a !important;
+  color: #ffffff !important;
+}
+body.theme-app-dark app-contacte-tasca .contacte-link.mail,
+body.theme-app-dark .contacte-link.mail {
+  background: rgba(59, 130, 246, 0.15) !important;
+  border-color: rgba(59, 130, 246, 0.4) !important;
+  color: #60a5fa !important;
+}
+body.theme-app-dark app-contacte-tasca .contacte-link.mail:hover,
+body.theme-app-dark .contacte-link.mail:hover {
+  background: #2563eb !important;
+  border-color: #2563eb !important;
+  color: #ffffff !important;
+}
+body.theme-app-dark app-contacte-tasca .contacte-buit,
+body.theme-app-dark .contacte-buit {
+  color: #94a3b8 !important;
+}
+
+/* Bloc meta dual de client i professional (card-meta-dual) en mode fosc */
+body.theme-app-dark .card-meta-dual {
+  background: var(--bg-surface, #272f42) !important;
+  border-color: var(--border-card, #43506e) !important;
+}
+body.theme-app-dark .card-meta-dual .card-meta-line {
+  color: var(--color-text-dim, #cbd5e1) !important;
+}
+body.theme-app-dark .card-meta-dual .meta-label {
+  color: var(--color-text-dim, #cbd5e1) !important;
+}
+body.theme-app-dark .card-meta-dual .meta-value {
+  color: var(--color-text, #ffffff) !important;
+}
+body.theme-app-dark .card-meta-dual .user-profile-link:not(.pro-profile-link) {
+  color: var(--color-text, #ffffff) !important;
+}
+body.theme-app-dark .card-meta-dual .user-avatar-mini:not(.pro-avatar-mini) {
+  background: rgba(59, 130, 246, 0.2) !important;
+  color: #93c5fd !important;
+}
+
+/* Altres quadres de dades i metadades en mode fosc */
+body.theme-app-dark .budget-wrap,
+body.theme-app-dark .tasca-meta,
+body.theme-app-dark .assigned-meta,
+body.theme-app-dark .preu-box,
+body.theme-app-dark .review-display-card {
+  background: var(--bg-surface, #272f42) !important;
+  border-color: var(--border-card, #43506e) !important;
+}
+body.theme-app-dark .budget-wrap .budget-label,
+body.theme-app-dark .tasca-meta .meta-label,
+body.theme-app-dark .assigned-meta-item .lbl,
+body.theme-app-dark .preu-label {
+  color: var(--color-text-dim, #cbd5e1) !important;
+}
+body.theme-app-dark .budget-wrap .budget-value,
+body.theme-app-dark .tasca-meta .meta-value,
+body.theme-app-dark .preu-value.muted {
+  color: var(--color-text, #ffffff) !important;
+}
+body.theme-app-dark .oferta-nota {
+  background: var(--bg-surface, #272f42) !important;
+  border-color: var(--border-card, #43506e) !important;
+  border-left: 3px solid #ff1744 !important;
+  color: var(--color-text-muted, #cbd5e1) !important;
+}
+
+/* Seccions assigned-section de Les Meves Ofertes en mode fosc */
+body.theme-app-dark .assigned-section {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border-color: var(--border-card, #43506e) !important;
+}
+body.theme-app-dark .assigned-task-card {
+  background: var(--bg-card, #1e2433) !important;
+  border-color: var(--border-card, #43506e) !important;
+  border-left: 4px solid #10b981 !important;
+}
+body.theme-app-dark .pro-assigned-pill {
+  background: rgba(16, 185, 129, 0.2) !important;
+  color: #34d399 !important;
+  border-color: rgba(52, 211, 153, 0.35) !important;
+}
+body.theme-app-dark .section-badge-hint {
+  background: rgba(255, 255, 255, 0.06) !important;
+  color: var(--color-text-dim, #cbd5e1) !important;
+  border-color: var(--border-card, #43506e) !important;
+}
+body.theme-app-dark .assigned-task-card .badge-nature {
+  background: rgba(16, 185, 129, 0.2) !important;
+  color: #34d399 !important;
+  border-color: rgba(52, 211, 153, 0.35) !important;
+}
+body.theme-app-dark .assigned-task-card .tasca-titol {
+  color: var(--color-text, #ffffff) !important;
+}
+body.theme-app-dark .assigned-task-card .tasca-desc {
+  color: var(--color-text-muted, #cbd5e1) !important;
+}
+body.theme-app-dark .section-divider {
+  background: var(--border-card, #43506e) !important;
+}
+body.theme-app-dark .assigned-task-card .btn-action.neutral {
+  background: var(--bg-surface, #272f42) !important;
+  color: var(--color-text, #ffffff) !important;
+  border-color: var(--border-card, #43506e) !important;
+}
+body.theme-app-dark .assigned-task-card .btn-action.neutral:hover {
+  background: #ff1744 !important;
+  border-color: #ff1744 !important;
+  color: #ffffff !important;
+}
+body.theme-app-dark .assigned-task-card .btn-action.danger {
+  background: rgba(239, 68, 68, 0.15) !important;
+  color: #f87171 !important;
+  border-color: rgba(239, 68, 68, 0.4) !important;
+}
+body.theme-app-dark .assigned-task-card .btn-action.danger:hover {
+  background: #dc2626 !important;
+  border-color: #dc2626 !important;
+  color: #ffffff !important;
+}
+
 /* Scrollbars en mode fosc */
 body.theme-app-dark ::-webkit-scrollbar-track {
   background: var(--bg-page);

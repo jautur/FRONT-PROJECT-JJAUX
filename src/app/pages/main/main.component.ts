@@ -3845,7 +3845,10 @@ export class MainComponent implements OnInit, OnDestroy {
 
   get tasks() {
     const rawIncidencies = (this.dashboard?.incidencies ?? [])
-      .filter((inc) => !inc.estat || inc.estat === 'Oberta')
+      .filter((inc) => {
+        const estat = (inc.estat || '').toLowerCase().trim();
+        return !estat || estat === 'oberta' || estat === 'pendent';
+      })
       .map((inc) => ({
         id: inc.id,
         title: inc.titol,
@@ -3856,7 +3859,7 @@ export class MainComponent implements OnInit, OnDestroy {
       }));
 
     const rawTasks = (this.dashboard?.tasks ?? [])
-      .filter((task) => (task.tipus === 'incidencia' || !task.professional) && task.estat === 'Oberta' && task.tipus !== 'oferta' && !rawIncidencies.some(i => i.id === task.id))
+      .filter((task) => (task.tipus === 'incidencia' || !task.professional) && (task.estat || '').toLowerCase() === 'oberta' && task.tipus !== 'oferta' && !rawIncidencies.some(i => i.id === task.id))
       .map((task) => ({
         id: task.id,
         title: task.titol,
@@ -3866,11 +3869,17 @@ export class MainComponent implements OnInit, OnDestroy {
         status: task.estat
       }));
 
-    return [...rawIncidencies, ...rawTasks];
+    const map = new Map<string, any>();
+    for (const t of [...rawIncidencies, ...rawTasks]) {
+      if (t && t.id && !map.has(t.id)) {
+        map.set(t.id, t);
+      }
+    }
+    return Array.from(map.values());
   }
 
   get offers() {
-    return this.dashboard?.offers.map((offer) => {
+    const rawOffers = this.dashboard?.offers.map((offer) => {
       const associatedTask = this.dashboard?.tasks.find((task) => task.id === offer.tascaId);
       const rawCat = (offer as any).categoria || associatedTask?.categoria;
       const category = (rawCat && rawCat.trim()) ? rawCat.trim() : 'Altres Serveis';
@@ -3884,6 +3893,14 @@ export class MainComponent implements OnInit, OnDestroy {
         status: offer.estat
       };
     }) ?? [];
+
+    const map = new Map<string, any>();
+    for (const o of rawOffers) {
+      if (o && o.id && !map.has(o.id)) {
+        map.set(o.id, o);
+      }
+    }
+    return Array.from(map.values());
   }
 
   /** Articles informatius del blog gestionats a través d'ArticleService */

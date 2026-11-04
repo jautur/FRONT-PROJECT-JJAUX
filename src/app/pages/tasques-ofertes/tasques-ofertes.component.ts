@@ -1079,10 +1079,10 @@ interface CategoriaFiltre {
         display: flex;
         flex-direction: column;
         gap: 0.35rem;
-        background: #faf8f4;
+        background: var(--bg-surface, #faf8f4);
         padding: 0.65rem 0.85rem;
         border-radius: 8px;
-        border: 1px solid #eeeae0;
+        border: 1px solid var(--border-subtle, #eeeae0);
       }
 
       .pro-profile-link {
@@ -1094,6 +1094,38 @@ interface CategoriaFiltre {
       }
       .pro-name-val {
         color: #059669 !important;
+      }
+
+      :host-context(.theme-app-dark) .card-meta-dual,
+      .theme-app-dark .card-meta-dual {
+        background: var(--bg-surface, #272f42);
+        border-color: var(--border-card, #43506e);
+      }
+      :host-context(.theme-app-dark) .card-meta-dual .meta-label,
+      .theme-app-dark .card-meta-dual .meta-label {
+        color: var(--color-text-dim, #cbd5e1);
+      }
+      :host-context(.theme-app-dark) .card-meta-dual .meta-value,
+      .theme-app-dark .card-meta-dual .meta-value {
+        color: var(--color-text, #ffffff);
+      }
+      :host-context(.theme-app-dark) .pro-avatar-mini,
+      .theme-app-dark .pro-avatar-mini {
+        background: rgba(16, 185, 129, 0.2) !important;
+        color: #34d399 !important;
+      }
+      :host-context(.theme-app-dark) .pro-name-val,
+      .theme-app-dark .pro-name-val {
+        color: #34d399 !important;
+      }
+      :host-context(.theme-app-dark) .pro-profile-link,
+      .theme-app-dark .pro-profile-link {
+        color: #34d399 !important;
+      }
+      :host-context(.theme-app-dark) .user-avatar-mini:not(.pro-avatar-mini),
+      .theme-app-dark .user-avatar-mini:not(.pro-avatar-mini) {
+        background: rgba(59, 130, 246, 0.2);
+        color: #93c5fd;
       }
 
       .status-pill {
@@ -1742,10 +1774,10 @@ interface CategoriaFiltre {
           flex-direction: row;
           justify-content: space-between;
           align-items: center;
-          background: #faf8f4;
+          background: var(--bg-surface, #faf8f4);
           padding: 0.5rem 0.75rem;
           border-radius: 8px;
-          border: 1px solid #eeeae0;
+          border: 1px solid var(--border-card, #eeeae0);
         }
 
         .budget-label {
@@ -2430,7 +2462,7 @@ export class TasquesOfertesComponent implements OnInit {
 
   comptarElementsPerCategoria(nomCat: string): number {
     const q = nomCat.toLowerCase();
-    const countIncidencies = (this.dashboard?.incidencies ?? []).filter((i) => {
+    const countIncidencies = this.incidenciesFiltrades.filter((i) => {
       const cat = (i.categoria?.trim() || 'Altres Serveis').toLowerCase();
       return cat.includes(q) || q.includes(cat);
     }).length;
@@ -2440,7 +2472,7 @@ export class TasquesOfertesComponent implements OnInit {
       return cat.includes(q) || q.includes(cat);
     }).length;
 
-    const countOffers = (this.dashboard?.offers ?? []).filter((o) => {
+    const countOffers = this.ofertesFiltrades.filter((o) => {
       const cat = this.getOfertaCategoria(o).toLowerCase();
       return cat.includes(q) || q.includes(cat);
     }).length;
@@ -2450,7 +2482,8 @@ export class TasquesOfertesComponent implements OnInit {
 
   /**
    * Incidències obertes creades per clients:
-   * Provenen de la taula incidencies (sols tenen client, no tenen professional assignat encara).
+   * Provenen de la taula publicacions (tipus 'INCIDENCIA') i només han de mostrar-se
+   * aquelles estrictament obertes que no han estat assignades, tancades o retirades.
    */
   get incidenciesFiltrades() {
     const rawIncidencies = (this.dashboard?.incidencies ?? []).map((inc) => ({
@@ -2470,8 +2503,6 @@ export class TasquesOfertesComponent implements OnInit {
       .filter(
         (t) =>
           (t.tipus === 'incidencia' || !t.professional) &&
-          t.estat !== 'Finalitzada' &&
-          t.estat !== 'En curs' &&
           t.tipus !== 'oferta' &&
           !rawIncidencies.some((i) => i.id === t.id)
       )
@@ -2488,9 +2519,23 @@ export class TasquesOfertesComponent implements OnInit {
         tipus: 'incidencia'
       }));
 
-    let llista = [...rawIncidencies, ...rawTasks].filter(
-      (t) => t.estat !== 'Finalitzada' && t.estat !== 'En curs'
-    );
+    // Retirada estricta: descartar qualsevol incidència assignada, tancada, retirada, finalitzada o en curs
+    let llista = [...rawIncidencies, ...rawTasks].filter((t) => {
+      const estat = (t.estat || '').toLowerCase().trim();
+      if (!estat || estat === 'oberta' || estat === 'pendent') {
+        return true;
+      }
+      return false;
+    });
+
+    // Deduplicació per ID
+    const incMap = new Map<string, any>();
+    for (const item of llista) {
+      if (item && item.id && !incMap.has(item.id)) {
+        incMap.set(item.id, item);
+      }
+    }
+    llista = Array.from(incMap.values());
 
     if (this.searchQuery.trim()) {
       const q = this.searchQuery.toLowerCase().trim();
@@ -2522,7 +2567,14 @@ export class TasquesOfertesComponent implements OnInit {
    */
   get ofertesFiltrades() {
     // /api/offers només retorna ofertes de servei: els pressupostos són privats i van per /api/pressupostos
-    let llista = [...(this.dashboard?.offers ?? [])];
+    // Deduplicació estricta per evitar ofertes duplicades al tauler
+    const offerMap = new Map<string, any>();
+    for (const o of (this.dashboard?.offers ?? [])) {
+      if (o && o.id && !offerMap.has(o.id)) {
+        offerMap.set(o.id, o);
+      }
+    }
+    let llista = Array.from(offerMap.values());
 
     if (this.searchQuery.trim()) {
       const q = this.searchQuery.toLowerCase().trim();

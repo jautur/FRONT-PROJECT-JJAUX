@@ -43,7 +43,7 @@ export const en = {
     "NAVEGACIO": "NAVIGATION",
     "EL_MEU_COMPTE": "MY ACCOUNT",
     "GESTIO_FEINA": "WORK MANAGEMENT",
-    "LES_MEVES_TASQUES": "My tasks",
+    "LES_MEVES_TASQUES": "My incidents",
     "CREAR_INCIDENCIA_MERCAT": "Create Ticket (in Market)",
     "SERVEIS_PROFESSIONALS": "PROFESSIONAL SERVICES",
     "ELS_MEUS_PRESSUPOSTOS": "My quotes",

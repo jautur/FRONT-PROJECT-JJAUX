@@ -43,7 +43,7 @@ export const va = {
     "NAVEGACIO": "NAVEGACIÓ",
     "EL_MEU_COMPTE": "EL MEU COMPTE",
     "GESTIO_FEINA": "GESTIÓ DE FEINA",
-    "LES_MEVES_TASQUES": "Les meves tasques",
+    "LES_MEVES_TASQUES": "Les meves incidències",
     "CREAR_INCIDENCIA_MERCAT": "Crear Incidència (al Mercat)",
     "SERVEIS_PROFESSIONALS": "SERVEIS PROFESSIONALS",
     "ELS_MEUS_PRESSUPOSTOS": "Els meus pressupostos",

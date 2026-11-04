@@ -1136,21 +1136,25 @@ export class LesMevesTasquesComponent implements OnInit {
       interessos: this.interesService.getByClient(user.id).pipe(catchError(() => of([] as Interes[])))
     }).subscribe({
       next: ({ tasques, incidencies, interessos }) => {
-        const incidenciesMapped: Tasca[] = incidencies.map((inc) => ({
-          id: inc.id,
-          titol: inc.titol,
-          descripcio: inc.descripcio,
-          categoria: inc.categoria,
-          clientId: inc.clientId,
-          client: inc.clientNom || inc.client || user.nom,
-          clientNom: inc.clientNom || inc.client || user.nom,
-          professional: undefined,
-          professionalNom: undefined,
-          budget: inc.budget,
-          estat: inc.estat || '',
-          tipus: 'incidencia',
-          createdAt: inc.createdAt
-        }));
+        // Només incidències obertes: si ja han passat a ser tasca, es retiren
+        const tasquesPublicacioIds = new Set(tasques.map(t => (t as any).publicacioId || t.id));
+        const incidenciesMapped: Tasca[] = incidencies
+          .filter((inc) => (!inc.estat || inc.estat.toLowerCase() === 'oberta') && !tasquesPublicacioIds.has(inc.id))
+          .map((inc) => ({
+            id: inc.id,
+            titol: inc.titol,
+            descripcio: inc.descripcio,
+            categoria: inc.categoria,
+            clientId: inc.clientId,
+            client: inc.clientNom || inc.client || user.nom,
+            clientNom: inc.clientNom || inc.client || user.nom,
+            professional: undefined,
+            professionalNom: undefined,
+            budget: inc.budget,
+            estat: inc.estat || '',
+            tipus: 'incidencia',
+            createdAt: inc.createdAt
+          }));
 
         // Només les sol·licituds que el professional encara no ha acceptat: les acceptades ja són tasques
         const sollicituds: Tasca[] = interessos
