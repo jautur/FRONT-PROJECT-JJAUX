@@ -21,11 +21,12 @@ import { Avis } from '../../../models/avis.model';
 import { AuthService } from '../../../core/services/auth.service';
 import { ConfirmService } from '../../../core/services/confirm.service';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
+import { AdminCancellacionsComponent } from '../cancellacions/admin-cancellacions.component';
 
 /**
  * Pestanya activa al panell d'administració.
  */
-type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'pressupostos' | 'usuaris' | 'blacklist' | 'resenyes' | 'avisos';
+type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'pressupostos' | 'usuaris' | 'blacklist' | 'resenyes' | 'avisos' | 'cancellacions';
 
 /**
  * Component del Panell d'Administració Global (/admin/panell).
@@ -40,7 +41,7 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'pressupostos' | 'usuari
 @Component({
   selector: 'app-admin-panell',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, TranslatePipe],
+  imports: [CommonModule, FormsModule, RouterLink, TranslatePipe, AdminCancellacionsComponent],
   template: `
     <div class="admin-container">
       <div class="app-back-nav" *ngIf="isAppPage">
@@ -256,6 +257,27 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'pressupostos' | 'usuari
             <small class="metric-sub">{{ blacklist.length }} {{ 'ADMIN.USER_PHONE_BLOCKED' | translate }}</small>
           </div>
         </div>
+
+        <div
+          class="metric-card"
+          [class.active-card]="tabActiva === 'cancellacions'"
+          (click)="canviarTab('cancellacions')"
+          (keydown.enter)="canviarTab('cancellacions')"
+          role="button"
+          tabindex="0"
+          [title]="'TREBALL.ADMIN_CANCEL_CARD_HINT' | translate"
+        >
+          <span class="metric-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="#ff1744" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="4.9" y1="4.9" x2="19.1" y2="19.1"></line>
+            </svg>
+          </span>
+          <div class="metric-info">
+            <span class="metric-label">{{ 'TREBALL.ADMIN_CANCEL_CARD' | translate }}</span>
+            <small class="metric-sub">{{ 'TREBALL.ADMIN_CANCEL_CARD_HINT' | translate }}</small>
+          </div>
+        </div>
       </div>
 
       <!-- Missatges de feedback -->
@@ -323,7 +345,7 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'pressupostos' | 'usuari
                       {{ 'MERCAT.DETALL' | translate }}
                     </a>
                     <button
-                      *ngIf="t.estat !== 'Finalitzada'"
+                      *ngIf="t.estat === 'En curs'"
                       type="button"
                       class="btn-sm btn-success"
                       (click)="finalitzarTasca(t.id)"
@@ -333,19 +355,6 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'pressupostos' | 'usuari
                         <polyline points="20 6 9 17 4 12"></polyline>
                       </svg>
                       {{ 'ADMIN.BTN_FINALIZE' | translate }}
-                    </button>
-                    <button
-                      type="button"
-                      class="btn-sm btn-danger"
-                      (click)="eliminarTasca(t.id)"
-                      title="Eliminar tasca de la base de dades"
-                      aria-label="Eliminar"
-                    >
-                      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;">
-                        <polyline points="3 6 5 6 21 6"></polyline>
-                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                      </svg>
-                      {{ 'ADMIN.BTN_DELETE' | translate }}
                     </button>
                   </div>
                 </td>
@@ -402,17 +411,6 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'pressupostos' | 'usuari
                 <td class="note-cell">{{ o.note || '-' }}</td>
                 <td>
                   <div class="action-buttons">
-                    <button
-                      type="button"
-                      class="btn-sm btn-success"
-                      (click)="acceptarOferta(o.id)"
-                      title="Acceptar oferta"
-                    >
-                      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;">
-                        <polyline points="20 6 9 17 4 12"></polyline>
-                      </svg>
-                      {{ 'ADMIN.BTN_ACCEPT' | translate }}
-                    </button>
                     <button
                       type="button"
                       class="btn-sm btn-danger"
@@ -654,7 +652,7 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'pressupostos' | 'usuari
                       {{ 'ADMIN.BTN_SEND_NOTICE' | translate }}
                     </button>
                     <button
-                      *ngIf="u.id !== 'u-admin' && u.email !== 'admin@admin' && u.email !== 'admin@admin.es'"
+                      *ngIf="u.rol !== 'ADMIN'"
                       type="button"
                       class="btn-sm btn-danger"
                       (click)="eliminarUsuari(u)"
@@ -681,6 +679,10 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'pressupostos' | 'usuari
       <!-- ============================================================== -->
       <!-- PESTANYA 5: LLISTA NEGRA DE TELÈFONS -->
       <!-- ============================================================== -->
+      <section class="tab-content" *ngIf="tabActiva === 'cancellacions'">
+        <app-admin-cancellacions></app-admin-cancellacions>
+      </section>
+
       <section class="tab-content" *ngIf="tabActiva === 'blacklist'">
         <!-- Formulari d'afegir telèfon a la llista negra -->
         <div class="blacklist-add-card">
@@ -2970,46 +2972,7 @@ export class AdminPanellComponent implements OnInit {
     });
   }
 
-  /**
-   * Acció d'administrador: elimina una tasca del sistema.
-   * @param id Identificador de la tasca a suprimir
-   */
-  async eliminarTasca(id: string): Promise<void> {
-    const confirmacio = await this.confirmService.confirm({
-      title: 'CONFIRM_MODAL.DELETE_TASK_TITLE',
-      message: 'CONFIRM_MODAL.DELETE_TASK_MSG',
-      confirmText: 'CONFIRM_MODAL.DEFAULT_CONFIRM',
-      cancelText: 'CONFIRM_MODAL.DEFAULT_CANCEL',
-      isDanger: true,
-      icon: 'danger'
-    });
-    if (!confirmacio) return;
 
-    this.tascaService.delete(id).subscribe({
-      next: () => {
-        this.tasques = this.tasques.filter(t => t.id !== id);
-        this.ofertes = this.ofertes.filter(o => o.tascaId !== id);
-        this.successMsg = `Tasca ${id} eliminada correctament.`;
-        setTimeout(() => this.successMsg = '', 3500);
-      },
-      error: () => this.errorMsg = 'Error en eliminar la tasca.'
-    });
-  }
-
-  /**
-   * Acció d'administrador: accepta una oferta i adjudica la tasca.
-   * @param offerId Identificador de l'oferta
-   */
-  acceptarOferta(offerId: string): void {
-    this.ofertaService.accept(offerId).subscribe({
-      next: () => {
-        this.successMsg = `Oferta ${offerId} acceptada com a Administrador!`;
-        this.carregarDades();
-        setTimeout(() => this.successMsg = '', 3500);
-      },
-      error: () => this.errorMsg = 'Error en acceptar l’oferta.'
-    });
-  }
 
   /**
    * Acció d'administrador: elimina/borra una oferta concreta.
@@ -3440,7 +3403,7 @@ export class AdminPanellComponent implements OnInit {
    * @param u Usuari seleccionat per a ser donat de baixa
    */
   async eliminarUsuari(u: Usuari): Promise<void> {
-    if (u.id === 'u-admin' || u.email?.toLowerCase() === 'admin@admin' || u.email?.toLowerCase() === 'admin@admin.es') {
+    if (u.rol === 'ADMIN') {
       this.confirmService.alert("No es pot eliminar el compte d'administrador principal del sistema.", "Acció no permesa");
       return;
     }

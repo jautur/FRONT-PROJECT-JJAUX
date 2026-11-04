@@ -467,21 +467,7 @@ interface CategoriaFiltre {
 
           <div class="modal-body">
             <!-- Dades de contacte i descripció del professional -->
-            <div class="pro-details-box" *ngIf="modalProfessionalBio || modalProfessionalTelefon">
-              <div class="pro-contact-line" *ngIf="modalProfessionalTelefon">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
-                </svg>
-                <span>{{ 'TASQUES_OFERTES.MODAL_PHONE_LABEL' | translate }} <strong>{{ modalProfessionalTelefon }}</strong></span>
-                <div class="pro-modal-quick-actions" style="margin-left: auto; display: inline-flex; gap: 0.35rem;">
-                  <button type="button" class="btn-quick-contact btn-quick-wa" (click)="contactarWhatsappDirecte(modalProfessionalNom, modalProfessionalTelefon)" [attr.title]="'TASQUES_OFERTES.CONTACTAR_WHATSAPP' | translate">
-                    <span>WhatsApp</span>
-                  </button>
-                  <button type="button" class="btn-quick-contact btn-quick-email" (click)="contactarEmailDirecte(modalProfessionalNom)" [attr.title]="'TASQUES_OFERTES.CONTACTAR_EMAIL' | translate">
-                    <span>Correu</span>
-                  </button>
-                </div>
-              </div>
+            <div class="pro-details-box" *ngIf="modalProfessionalBio">
               <p class="pro-bio-text" *ngIf="modalProfessionalBio">{{ modalProfessionalBio }}</p>
             </div>
 
@@ -564,46 +550,11 @@ interface CategoriaFiltre {
               </div>
             </div>
 
-            <!-- Opcions de contacte directe amb el professional -->
+            <!-- La sol·licitud queda pendent: el contacte només es mostra quan el professional l'accepta -->
             <div class="exit-contact-section">
               <p class="exit-contact-intro">
-                {{ 'TASQUES_OFERTES.PETICIO_CONTACT_PROMPT' | translate }}
+                {{ 'TASQUES_OFERTES.PETICIO_PENDENT_PROMPT' | translate }}
               </p>
-
-              <div class="exit-contact-buttons">
-                <!-- WhatsApp -->
-                <button type="button" class="exit-channel-btn exit-channel-wa" (click)="contactarWhatsappPeticio()">
-                  <div class="exit-channel-icon wa-bg">
-                    <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
-                      <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.664-.698c.97.587 1.761.883 2.796.883 3.183 0 5.769-2.587 5.77-5.767 0-3.181-2.586-5.769-5.77-5.769zm3.388 8.163c-.144.405-.837.774-1.17.822-.313.044-.725.074-2.385-.615-1.996-.826-3.268-2.862-3.368-2.996-.099-.133-.807-1.074-.807-2.048 0-.974.51-1.452.691-1.652.181-.199.395-.249.527-.249.132 0 .264.002.378.007.123.006.287-.047.45.344.167.399.57 1.391.62 1.492.051.101.085.22.018.354-.067.133-.101.217-.201.334-.101.118-.212.263-.303.353-.101.1-.207.21-.089.412.118.202.525.867 1.127 1.403.774.688 1.427.901 1.629 1.002.202.1.32.083.438-.051.118-.135.506-.59.641-.792.135-.202.27-.169.455-.101.185.067 1.176.554 1.378.655.202.101.337.151.387.236.05.084.05.489-.094.894z"></path>
-                    </svg>
-                  </div>
-                  <div class="exit-channel-info">
-                    <span class="exit-channel-title">{{ 'TASQUES_OFERTES.CONTACTAR_WHATSAPP_BTN' | translate }}</span>
-                    <span class="exit-channel-sub">{{ peticioExitDades.telefon }}</span>
-                  </div>
-                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="exit-channel-arrow">
-                    <polyline points="9 18 15 12 9 6"></polyline>
-                  </svg>
-                </button>
-
-                <!-- Correu -->
-                <button type="button" class="exit-channel-btn exit-channel-email" (click)="contactarEmailPeticio()">
-                  <div class="exit-channel-icon email-bg">
-                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                      <polyline points="22,6 12,13 2,6"></polyline>
-                    </svg>
-                  </div>
-                  <div class="exit-channel-info">
-                    <span class="exit-channel-title">{{ 'TASQUES_OFERTES.CONTACTAR_EMAIL_BTN' | translate }}</span>
-                    <span class="exit-channel-sub">{{ peticioExitDades.email }}</span>
-                  </div>
-                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="exit-channel-arrow">
-                    <polyline points="9 18 15 12 9 6"></polyline>
-                  </svg>
-                </button>
-              </div>
             </div>
           </div>
 
@@ -2205,7 +2156,6 @@ export class TasquesOfertesComponent implements OnInit {
 
   modalProfessionalNom: string | null = null;
   modalProfessionalBio: string | null = null;
-  modalProfessionalTelefon: string | null = null;
   modalProfessionalRating: { mitjana: string; total: number } | null = null;
   modalReviews: Resenya[] = [];
   modalContacteOferta: any | null = null;
@@ -2214,8 +2164,6 @@ export class TasquesOfertesComponent implements OnInit {
     titol: string;
     professional: string;
     preu: string;
-    telefon: string;
-    email: string;
   } | null = null;
 
   constructor(
@@ -2340,22 +2288,7 @@ export class TasquesOfertesComponent implements OnInit {
     return user ? user.id : proNom;
   }
 
-  getProfessionalPhone(proNom: string): string {
-    const user = this.getProfessionalUser(proNom);
-    if (user?.telefon && user.telefon.trim()) {
-      return user.telefon.trim();
-    }
-    return '611223344';
-  }
 
-  getProfessionalEmail(proNom: string): string {
-    const user = this.getProfessionalUser(proNom);
-    if (user?.email && user.email.trim() && user.email.includes('@')) {
-      return user.email.trim();
-    }
-    const clean = (proNom || 'pro').toLowerCase().replace(/[^a-z0-9]/g, '');
-    return `${clean}@prof.es`;
-  }
 
   obrirModalContacte(offer: any): void {
     this.modalContacteOferta = offer;
@@ -2365,79 +2298,14 @@ export class TasquesOfertesComponent implements OnInit {
     this.modalContacteOferta = null;
   }
 
-  contactarWhatsapp(offer: any, event?: Event): void {
-    if (event) {
-      event.stopPropagation();
-    }
-    const proNom = offer.professional || 'Professional';
-    const rawPhone = this.getProfessionalPhone(proNom);
-    const cleanPhone = rawPhone.replace(/\D/g, '');
-    const phoneWithCountry = cleanPhone.length === 9 ? '34' + cleanPhone : cleanPhone;
 
-    const titol = this.getOfertaTitol(offer);
-    const preu = offer.price || '';
-    const clientUser = this.authService.getCurrentUser();
-    const clientNom = clientUser ? clientUser.nom : 'un client interessat';
 
-    const missatge = `Hola ${proNom}, m'interessa la teva oferta a AVISA: "${titol}" (${preu}). Sóc ${clientNom}. Podem parlar dels detalls del servei?`;
-    const url = `https://wa.me/${phoneWithCountry}?text=${encodeURIComponent(missatge)}`;
 
-    if (typeof window !== 'undefined') {
-      window.open(url, '_blank', 'noopener,noreferrer');
-    }
-  }
-
-  contactarEmail(offer: any, event?: Event): void {
-    if (event) {
-      event.stopPropagation();
-    }
-    const proNom = offer.professional || 'Professional';
-    const email = this.getProfessionalEmail(proNom);
-    const titol = this.getOfertaTitol(offer);
-    const preu = offer.price || '';
-    const clientUser = this.authService.getCurrentUser();
-    const clientNom = clientUser ? clientUser.nom : 'Client interessat';
-
-    const assumpte = `Interès en l'oferta AVISA: ${titol}`;
-    const cos = `Hola ${proNom},\n\nM'interessa la teva oferta de servei publicada a AVISA:\n- Servei: ${titol}\n- Preu indicat: ${preu}\n\nEm pots respondre a aquest correu per poder coordinar els detalls i la data del servei.\n\nSalutacions cordials,\n${clientNom}`;
-
-    const mailtoUrl = `mailto:${email}?subject=${encodeURIComponent(assumpte)}&body=${encodeURIComponent(cos)}`;
-
-    if (typeof window !== 'undefined') {
-      window.location.href = mailtoUrl;
-    }
-  }
-
-  contactarWhatsappDirecte(proNom: string | null, telefon: string | null): void {
-    const rawPhone = telefon || this.getProfessionalPhone(proNom || '');
-    const cleanPhone = rawPhone.replace(/\D/g, '');
-    const phoneWithCountry = cleanPhone.length === 9 ? '34' + cleanPhone : cleanPhone;
-    const clientUser = this.authService.getCurrentUser();
-    const clientNom = clientUser ? clientUser.nom : 'un client interessat';
-    const missatge = `Hola ${proNom || 'Professional'}, t'he vist a AVISA. Sóc ${clientNom}. M'agradaria consultar-te sobre els teus serveis professionals.`;
-    const url = `https://wa.me/${phoneWithCountry}?text=${encodeURIComponent(missatge)}`;
-    if (typeof window !== 'undefined') {
-      window.open(url, '_blank', 'noopener,noreferrer');
-    }
-  }
-
-  contactarEmailDirecte(proNom: string | null): void {
-    const email = this.getProfessionalEmail(proNom || '');
-    const clientUser = this.authService.getCurrentUser();
-    const clientNom = clientUser ? clientUser.nom : 'Client interessat';
-    const assumpte = `Consulta de serveis a través d'AVISA`;
-    const cos = `Hola ${proNom || 'Professional'},\n\nT'he trobat a la comunitat AVISA i m'agradaria demanar-te informació i disponibilitat per a una feina.\n\nSalutacions cordials,\n${clientNom}`;
-    const mailtoUrl = `mailto:${email}?subject=${encodeURIComponent(assumpte)}&body=${encodeURIComponent(cos)}`;
-    if (typeof window !== 'undefined') {
-      window.location.href = mailtoUrl;
-    }
-  }
 
   obrirModalRessenyes(proNom: string): void {
     this.modalProfessionalNom = proNom;
     const user = this.getProfessionalUser(proNom);
     this.modalProfessionalBio = user?.bio ?? 'Professional verificat i certificat per la comunitat AVISA.';
-    this.modalProfessionalTelefon = user?.telefon ?? null;
     const q = proNom.toLowerCase().trim();
     this.modalReviews = this.allResenyes.filter(
       (r) =>
@@ -2653,13 +2521,8 @@ export class TasquesOfertesComponent implements OnInit {
    * Sols tenen professional, no tenen client assignat encara.
    */
   get ofertesFiltrades() {
-    let llista = (this.dashboard?.offers ?? []).filter((o) => {
-      // Un pressupost NO és una oferta de servei pública: pertany a la seua pròpia taula i és estrictament privat
-      if ((o as any).categoria === 'Pressupost') return false;
-      if ((o as any).incidenciaId) return false;
-      if (o.tascaId && o.tascaId !== 'standalone' && (o.tascaId.startsWith('I-') || o.tascaId.startsWith('T-'))) return false;
-      return true;
-    });
+    // /api/offers només retorna ofertes de servei: els pressupostos són privats i van per /api/pressupostos
+    let llista = [...(this.dashboard?.offers ?? [])];
 
     if (this.searchQuery.trim()) {
       const q = this.searchQuery.toLowerCase().trim();
@@ -2784,7 +2647,7 @@ export class TasquesOfertesComponent implements OnInit {
     if (this.authService.isClient()) {
       this.router.navigate([this.getNavUrl('/client/crear-tasca')]);
     } else {
-      this.noticeMessage = 'Només els comptes amb rol de "Client" o "Ambdós" poden publicar incidències.';
+      this.noticeMessage = 'Només els comptes amb rol de "Client" poden publicar incidències.';
     }
   }
 
@@ -2793,7 +2656,7 @@ export class TasquesOfertesComponent implements OnInit {
     if (this.authService.isProfessional()) {
       this.router.navigate([this.getNavUrl('/professional/crear-oferta')]);
     } else {
-      this.noticeMessage = 'Només els comptes amb rol de "Professional" o "Ambdós" poden publicar ofertes de servei.';
+      this.noticeMessage = 'Només els comptes amb rol de "Professional" poden publicar ofertes de servei.';
     }
   }
 
@@ -2811,26 +2674,11 @@ export class TasquesOfertesComponent implements OnInit {
     if (this.authService.isProfessional()) {
       this.router.navigate([this.getNavUrl('/professional/crear-oferta')], { queryParams: { taskId, origen: 'tasques-ofertes' } });
     } else {
-      this.noticeMessage = 'Només els comptes amb rol de "Professional" o "Ambdós" poden fer ofertes econòmiques.';
+      this.noticeMessage = 'Només els comptes amb rol de "Professional" poden fer ofertes econòmiques.';
     }
   }
 
-  onAcceptarOferta(offerId: string): void {
-    if (!this.requireLogin(`acceptar l'oferta ${offerId}`, '/tasques-ofertes')) return;
-    if (this.authService.isClient()) {
-      this.ofertaService.accept(offerId).subscribe({
-        next: () => {
-          this.noticeMessage = `S'ha acceptat la proposta ${offerId} correctament.`;
-          this.carregarDades();
-        },
-        error: () => {
-          this.noticeMessage = 'No s’ha pogut acceptar l’oferta.';
-        }
-      });
-    } else {
-      this.noticeMessage = 'Només el client autor de la tasca pot acceptar aquesta oferta.';
-    }
-  }
+ 
 
   /**
    * Envia la petició d'interès per una oferta i, un cop confirmada a l'app, mostra l'opció de contactar.
@@ -2840,7 +2688,7 @@ export class TasquesOfertesComponent implements OnInit {
     if (!this.requireLogin(`sol·licitar l'oferta de ${pro}`, '/tasques-ofertes')) return;
     const user = this.authService.getCurrentUser();
     if (!this.authService.isClient()) {
-      this.noticeMessage = 'Només els comptes amb rol de "Client" o "Ambdós" poden sol·licitar ofertes de professionals.';
+      this.noticeMessage = 'Només els comptes amb rol de "Client" poden sol·licitar ofertes de professionals.';
       return;
     }
 
@@ -2848,7 +2696,7 @@ export class TasquesOfertesComponent implements OnInit {
     const titol = this.getOfertaTitol(offer);
     const confirmacio = await this.confirmService.confirm({
       title: this.translationService.t('TASQUES_OFERTES.CONFIRM_INTERES_TITLE'),
-      message: `Vols enviar la petició per a l'oferta de ${pro} (${titol}) per ${preu}?\n\nEs confirmarà a l'aplicació AVISA i es generarà la tasca en curs al teu panell.`,
+      message: this.translationService.t('TREBALL.SOL_CONFIRM_MSG', { pro, titol, preu }),
       confirmText: this.translationService.t('TASQUES_OFERTES.CONFIRM_INTERES_BTN'),
       cancelText: this.translationService.t('COMMON.CANCEL_LAR'),
       icon: 'question'
@@ -2861,11 +2709,9 @@ export class TasquesOfertesComponent implements OnInit {
           tascaId: tascaCreada?.id,
           titol,
           professional: pro,
-          preu,
-          telefon: this.getProfessionalPhone(pro),
-          email: this.getProfessionalEmail(pro)
+          preu
         };
-        this.noticeMessage = `Petició enviada correctament! S'ha generat la tasca en curs amb ${pro}. Ara pots contactar-hi per WhatsApp o correu.`;
+        this.noticeMessage = this.translationService.t('TREBALL.SOL_BANNER', { pro });
         this.carregarDades();
       },
       error: () => {
@@ -2883,32 +2729,7 @@ export class TasquesOfertesComponent implements OnInit {
     this.peticioExitDades = null;
   }
 
-  contactarWhatsappPeticio(): void {
-    if (!this.peticioExitDades) return;
-    const { professional, telefon, titol, preu } = this.peticioExitDades;
-    const cleanPhone = telefon.replace(/\D/g, '');
-    const phoneWithCountry = cleanPhone.length === 9 ? '34' + cleanPhone : cleanPhone;
-    const clientUser = this.authService.getCurrentUser();
-    const clientNom = clientUser ? clientUser.nom : 'Client AVISA';
-    const missatge = `Hola ${professional}, acabe de sol·licitar la teva oferta a AVISA: "${titol}" (${preu}). Sóc ${clientNom}. Podem parlar dels detalls del servei?`;
-    const url = `https://wa.me/${phoneWithCountry}?text=${encodeURIComponent(missatge)}`;
-    if (typeof window !== 'undefined') {
-      window.open(url, '_blank', 'noopener,noreferrer');
-    }
-  }
 
-  contactarEmailPeticio(): void {
-    if (!this.peticioExitDades) return;
-    const { professional, email, titol, preu } = this.peticioExitDades;
-    const clientUser = this.authService.getCurrentUser();
-    const clientNom = clientUser ? clientUser.nom : 'Client interessat';
-    const assumpte = `Petició de servei AVISA: ${titol}`;
-    const cos = `Hola ${professional},\n\nAcabe de contractar / sol·licitar la teva oferta a l'aplicació AVISA:\n- Servei: ${titol}\n- Preu indicat: ${preu}\n\nEm poso en contacte amb tu per poder coordinar dates, horaris i detalls de l'actuació.\n\nSalutacions cordials,\n${clientNom}`;
-    const mailtoUrl = `mailto:${email}?subject=${encodeURIComponent(assumpte)}&body=${encodeURIComponent(cos)}`;
-    if (typeof window !== 'undefined') {
-      window.location.href = mailtoUrl;
-    }
-  }
 
   anarTascaPeticio(tascaId: string): void {
     this.tancarModalPeticioExit();
@@ -2918,18 +2739,14 @@ export class TasquesOfertesComponent implements OnInit {
   isOfferOwner(offer: any): boolean {
     const user = this.authService.getCurrentUser();
     if (!user) return false;
-    if (user.rol === 'ADMIN') return true;
-    const pro = (offer.professional || '').toLowerCase().trim();
-    const curNom = (user.nom || '').toLowerCase().trim();
-    const curId = (user.id || '').toLowerCase().trim();
-    return pro === curNom || pro === curId;
+    return user.rol === 'ADMIN' || (!!offer.professionalId && offer.professionalId === user.id);
   }
 
   async onDeleteOferta(offerId: string): Promise<void> {
     const confirmacio = await this.confirmService.confirm({
-      title: 'Eliminar Oferta',
-      message: 'Vols borrar aquesta oferta? Aquesta acció no es pot desfer.',
-      confirmText: 'Borrar Oferta',
+      title: 'TREBALL.RETIRE_OFFER_TITLE',
+      message: 'TREBALL.RETIRE_OFFER_MSG',
+      confirmText: 'CONFIRM_MODAL.DEFAULT_CONFIRM',
       cancelText: 'Cancel·lar',
       isDanger: true,
       icon: 'danger'
@@ -2940,8 +2757,8 @@ export class TasquesOfertesComponent implements OnInit {
         this.noticeMessage = 'Oferta esborrada correctament.';
         this.carregarDades();
       },
-      error: () => {
-        this.noticeMessage = 'No s’ha pogut borrar l’oferta.';
+      error: (e) => {
+        this.noticeMessage = e?.error?.error || 'No s’ha pogut borrar l’oferta.';
       }
     });
   }

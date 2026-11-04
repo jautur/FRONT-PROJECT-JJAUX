@@ -16,6 +16,9 @@ export interface Oferta {
   /** Nom o identificador del professional que ha enviat l'oferta */
   professional: string;
 
+  /** Identificador del professional que ha enviat la proposta */
+  professionalId?: string;
+
   /** Àlies per al nom del professional */
   professionalNom?: string;
 

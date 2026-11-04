@@ -50,5 +50,9 @@ export class IncidenciaService {
   delete(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${encodeURIComponent(id)}`);
   }
-}
 
+  /** Tanca una incidència oberta: els pressupostos pendents es rebutgen */
+  close(id: string): Observable<Incidencia> {
+    return this.http.post<Incidencia>(`${this.apiUrl}/${encodeURIComponent(id)}/tancar`, {});
+  }
+}

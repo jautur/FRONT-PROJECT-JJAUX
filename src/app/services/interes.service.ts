@@ -59,5 +59,10 @@ export class InteresService {
   reject(id: string): Observable<void> {
     return this.http.post<void>(`${this.apiUrl}/${id}/rebutjar`, {});
   }
+
+  /** El client retira la seua sol·licitud sense passar per l'administrador */
+  withdraw(id: string): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}/${id}/retirar`, {});
+  }
 }
 

@@ -60,7 +60,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
               <span class="count-head">({{ totalValoracions }} {{ totalValoracions === 1 ? ('PERFIL.RATING_COUNT_SINGULAR' | translate) : ('PERFIL.RATING_COUNT_PLURAL' | translate) }})</span>
             </div>
           </div>
-          <p class="email">{{ usuari?.email }}</p>
+          <p class="email" *ngIf="isOwnProfile || isAdmin">{{ usuari?.email }}</p>
           <div class="badges-row">
             <span class="role-badge" [ngClass]="usuari?.rol?.toLowerCase()">
               {{ usuari?.rol | uppercase }}
@@ -373,7 +373,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
           <p class="subtitle">{{ 'PERFIL.PUBLIC_CONTACT_SUB' | translate }}</p>
 
           <div class="public-info-list">
-            <div class="public-info-row" *ngIf="usuari?.telefon">
+            <div class="public-info-row" *ngIf="usuari?.telefon && isAdmin">
               <span class="info-label">{{ 'PERFIL.DIRECT_PHONE' | translate }}</span>
               <div style="display: flex; align-items: center; gap: 0.65rem; flex-wrap: wrap;">
                 <strong class="info-value tel-value">{{ usuari?.telefon }}</strong>
@@ -386,7 +386,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
               </div>
             </div>
 
-            <div class="public-info-row" *ngIf="usuari?.email">
+            <div class="public-info-row" *ngIf="usuari?.email && isAdmin">
               <span class="info-label">{{ 'PERFIL.EMAIL' | translate }}:</span>
               <div style="display: flex; align-items: center; gap: 0.65rem; flex-wrap: wrap;">
                 <span class="info-value">{{ usuari?.email }}</span>
@@ -617,18 +617,6 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
             </div>
 
             <div class="offer-card-actions">
-              <button
-                *ngIf="isOwnProfile && isClient() && canAcceptOffer(o)"
-                type="button"
-                class="btn-accept-budget"
-                (click)="onAcceptarPressupost(o)"
-              >
-                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                  <polyline points="20 6 9 17 4 12"></polyline>
-                </svg>
-                <span>{{ 'TASCA_DETALL.BTN_ACCEPT_QUOTE' | translate }}</span>
-              </button>
-
               <a *ngIf="o.tascaId" [routerLink]="[getNavUrl('/tasca-detall'), o.tascaId]" class="btn-task-detail">
                 <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                   <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
@@ -2496,26 +2484,17 @@ export class PerfilComponent implements OnInit {
     this.loadingTabData = true;
     const userNom = user.nom || '';
     const userId = user.id || '';
-    const nomLower = userNom.toLowerCase();
-    const idLower = userId.toLowerCase();
 
     forkJoin({
       allTasks: this.tascaService.getAll().pipe(catchError(() => of([]))),
-      clientIncidencies: (userNom ? this.incidenciaService.getByClient(userNom) : of([])).pipe(catchError(() => of([]))),
+      clientIncidencies: (userId ? this.incidenciaService.getByClient(userId) : of([])).pipe(catchError(() => of([]))),
       allOffers: this.ofertaService.getAll().pipe(catchError(() => of([])))
     }).subscribe({
       next: ({ allTasks, clientIncidencies, allOffers }) => {
         this.loadingTabData = false;
 
         // 1. Tasques de l'usuari (on és client o professional assignat)
-        const userTasks = (allTasks ?? []).filter(t => {
-          const cNom = (t.clientNom || t.client || '').toLowerCase();
-          const cId = (t.clientId || '').toLowerCase();
-          const pNom = (t.professionalNom || t.professional || '').toLowerCase();
-          const pId = (t.professionalId || '').toLowerCase();
-          return (cNom && cNom === nomLower) || (cId && cId === idLower) ||
-                 (pNom && pNom === nomLower) || (pId && pId === idLower);
-        });
+        const userTasks = (allTasks ?? []).filter(t => t.clientId === userId || t.professionalId === userId);
 
         // Mapejar incidències obertes que no tinguin encara tasca acordada
         const existingTaskIds = new Set(userTasks.map(t => t.id));
@@ -2552,15 +2531,7 @@ export class PerfilComponent implements OnInit {
         }
 
         // 3. Ofertes públiques associades a l'usuari (els pressupostos privats no es barregen amb ofertes)
-        const allUserTaskIds = new Set(this.tasquesUsuari.map(t => t.id));
-        this.ofertesUsuari = (allOffers ?? []).filter(o => {
-          if (o.categoria === 'Pressupost') return false;
-          if ((o as any).incidenciaId) return false;
-          const oPro = (o.professionalNom || o.professional || '').toLowerCase();
-          const isAuthor = oPro && (oPro === nomLower || oPro === idLower);
-          const isRecipient = !!(o.tascaId && allUserTaskIds.has(o.tascaId));
-          return isAuthor || isRecipient;
-        });
+        this.ofertesUsuari = (allOffers ?? []).filter(o => o.professionalId === userId);
       },
       error: () => {
         this.loadingTabData = false;
@@ -2603,7 +2574,7 @@ export class PerfilComponent implements OnInit {
       return this.tasquesUsuari.filter(t => (t.estat || '').toLowerCase().includes('obert') || t.tipus === 'incidencia');
     }
     if (this.filtreTasques === 'en_curs') {
-      return this.tasquesUsuari.filter(t => (t.estat || '').toLowerCase().includes('curs'));
+      return this.tasquesUsuari.filter(t => t.estat === 'En curs' || t.estat === 'En revisió');
     }
     if (this.filtreTasques === 'finalitzada') {
       return this.tasquesUsuari.filter(t => (t.estat || '').toLowerCase().includes('finalitzad'));
@@ -2616,7 +2587,7 @@ export class PerfilComponent implements OnInit {
   }
 
   countTasquesEnCurs(): number {
-    return this.tasquesUsuari.filter(t => (t.estat || '').toLowerCase().includes('curs')).length;
+    return this.tasquesUsuari.filter(t => t.estat === 'En curs' || t.estat === 'En revisió').length;
   }
 
   countTasquesFinalitzades(): number {
@@ -2844,66 +2815,7 @@ export class PerfilComponent implements OnInit {
     window.location.href = `mailto:${this.usuari.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   }
 
-  /**
-   * Determina si l'usuari connectat és un client.
-   */
-  isClient(): boolean {
-    return this.authService.isClient();
-  }
 
-  /**
-   * Comprova si el pressupost correspon a una tasca oberta del client i pot ser acceptat.
-   */
-  canAcceptOffer(o: Oferta): boolean {
-    if (!o.tascaId) return false;
-    return this.tasquesUsuari.some(t => t.id === o.tascaId && (t.estat === 'Oberta' || t.tipus === 'incidencia'));
-  }
 
-  /**
-   * Accepta un pressupost des del perfil: passa a ser una Tasca en curs i el pressupost s'elimina.
-   */
-  async onAcceptarPressupost(oferta: Oferta): Promise<void> {
-    const proNom = oferta.professionalNom || oferta.professional || 'aquest professional';
-    const confirmacio = await this.confirmService.confirm({
-      title: 'CONFIRM_MODAL.ACCEPT_BUDGET_TITLE',
-      message: this.translationService.t('CONFIRM_MODAL.ACCEPT_BUDGET_MSG', { pro: proNom, preu: oferta.price || '' }),
-      confirmText: 'CONFIRM_MODAL.DEFAULT_CONFIRM',
-      cancelText: 'CONFIRM_MODAL.DEFAULT_CANCEL',
-      icon: 'success'
-    });
-    if (!confirmacio) return;
-
-    this.pressupostService.accept(oferta.id).subscribe({
-      next: () => {
-        this.successMessage = 'Pressupost acceptat correctament! Ha passat a ser una Tasca en curs i el pressupost s’ha eliminat.';
-        if (this.usuari) {
-          this.carregarDadesCompletasPerfil(this.usuari);
-        }
-        setTimeout(() => {
-          this.setTab('tasques');
-          this.successMessage = '';
-        }, 1200);
-      },
-      error: () => {
-        // Fallback per ofertes
-        this.ofertaService.accept(oferta.id).subscribe({
-          next: () => {
-            this.successMessage = 'Pressupost acceptat correctament! Ha passat a ser una Tasca en curs i el pressupost s’ha eliminat.';
-            if (this.usuari) {
-              this.carregarDadesCompletasPerfil(this.usuari);
-            }
-            setTimeout(() => {
-              this.setTab('tasques');
-              this.successMessage = '';
-            }, 1200);
-          },
-          error: () => {
-            this.errorMessage = 'ERRORS.ACCEPT_BUDGET_ERROR';
-            setTimeout(() => this.errorMessage = '', 3500);
-          }
-        });
-      }
-    });
-  }
 }
 

@@ -6,16 +6,20 @@ import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { TascaService } from '../../../services/tasca.service';
 import { IncidenciaService } from '../../../services/incidencia.service';
-import { OfertaService } from '../../../services/oferta.service';
+import { InteresService } from '../../../services/interes.service';
+import { PressupostService } from '../../../services/pressupost.service';
 import { ResenyaService } from '../../../services/resenya.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { ConfirmService } from '../../../core/services/confirm.service';
 import { Tasca } from '../../../models/tasca.model';
+import { Interes } from '../../../models/interes.model';
+import { ContacteTascaComponent } from '../../../shared/components/contacte-tasca/contacte-tasca.component';
+import { CancellarTascaModalComponent } from '../../../shared/components/cancellar-tasca/cancellar-tasca-modal.component';
 
 /**
  * Tipus per al filtre d'estat de les tasques del client.
  */
-type FiltreEstatTasca = 'totes' | 'oberta' | 'en_curs' | 'finalitzada';
+type FiltreEstatTasca = 'totes' | 'sollicitada' | 'oberta' | 'en_curs' | 'finalitzada' | 'cancellada';
 
 /**
  * Component del Panell de Gestió de Tasques del Client (/client/les-meves-tasques).
@@ -31,7 +35,7 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 @Component({
   selector: 'app-les-meves-tasques',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, TranslatePipe],
+  imports: [CommonModule, FormsModule, RouterLink, TranslatePipe, ContacteTascaComponent, CancellarTascaModalComponent],
   template: `
     <div class="panell-container">
       <div class="app-back-nav" *ngIf="isAppPage">
@@ -68,6 +72,14 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
         <button
           type="button"
           class="tab-btn"
+          [class.active]="filtreActiu === 'sollicitada'"
+          (click)="canviarFiltre('sollicitada')"
+        >
+          {{ 'TREBALL.TAB_SOLLICITUDS' | translate }} ({{ countSollicituds() }})
+        </button>
+        <button
+          type="button"
+          class="tab-btn"
           [class.active]="filtreActiu === 'oberta'"
           (click)="canviarFiltre('oberta')"
         >
@@ -89,20 +101,28 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
         >
           {{ 'LES_MEVES_TASQUES.TAB_COMPLETED' | translate }} ({{ countFinalitzades() }})
         </button>
+        <button
+          type="button"
+          class="tab-btn"
+          [class.active]="filtreActiu === 'cancellada'"
+          (click)="canviarFiltre('cancellada')"
+        >
+          {{ 'TREBALL.TAB_CANCELLADES' | translate }} ({{ countCancellades() }})
+        </button>
       </div>
 
       <!-- Missatges d'estat -->
       <div *ngIf="loading" class="state-box">{{ 'COMMON.CARREGANT' | translate }}</div>
-      <div *ngIf="errorMsg" class="alert-error">{{ errorMsg }}</div>
-      <div *ngIf="successMsg" class="alert-success">{{ successMsg }}</div>
+      <div *ngIf="errorMsg" class="alert-error" role="alert">{{ errorMsg | translate }}</div>
+      <div *ngIf="successMsg" class="alert-success" role="status">{{ successMsg | translate }}</div>
 
       <!-- Llista de tasques -->
       <div class="tasques-grid" *ngIf="!loading && tasquesFiltrades.length > 0">
-        <div *ngFor="let t of tasquesFiltrades" class="tasca-card" [class.converged-card]="isTascaConvergida(t)">
+        <div *ngFor="let t of tasquesFiltrades" class="tasca-card" [class.converged-card]="isTascaConvergida(t) || esSollicitud(t)">
           <div class="card-header">
             <div class="header-nature-group">
-              <span class="badge-nature" [ngClass]="isTascaConvergida(t) ? 'is-tasca' : 'is-incidencia'">
-                {{ isTascaConvergida(t) ? ('LES_MEVES_TASQUES.NATURE_TASK' | translate) : ('LES_MEVES_TASQUES.NATURE_INCIDENCIA' | translate) }}
+              <span class="badge-nature" [ngClass]="esIncidencia(t) ? 'is-incidencia' : 'is-tasca'">
+                {{ esSollicitud(t) ? ('TREBALL.NATURE_SOLLICITUD' | translate) : (esIncidencia(t) ? ('LES_MEVES_TASQUES.NATURE_INCIDENCIA' | translate) : ('LES_MEVES_TASQUES.NATURE_TASK' | translate)) }}
               </span>
               <span class="badge-categoria">{{ t.categoria ? (t.categoria | translate) : ('CATEGORIES.Altres Serveis' | translate) }}</span>
             </div>
@@ -114,7 +134,7 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 
           <div class="tasca-meta">
             <!-- Professional assignat si és tasca en curs o finalitzada -->
-            <div class="meta-item pro-assigned-item" *ngIf="isTascaConvergida(t)">
+            <div class="meta-item pro-assigned-item" *ngIf="!esIncidencia(t)">
               <span class="meta-label">{{ 'LES_MEVES_TASQUES.PRO_ASSIGNED' | translate }}</span>
               <span class="meta-value pro-assigned-val">
                 <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;">
@@ -128,17 +148,17 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
             </div>
 
             <!-- Sense professional si és incidència oberta -->
-            <div class="meta-item waiting-item" *ngIf="!isTascaConvergida(t)">
+            <div class="meta-item waiting-item" *ngIf="esIncidencia(t)">
               <span class="meta-label">{{ 'LES_MEVES_TASQUES.PRO_STATUS' | translate }}</span>
               <span class="meta-value waiting-badge">{{ 'LES_MEVES_TASQUES.NO_PRO_ASSIGNED' | translate }}</span>
             </div>
 
             <div class="meta-item">
-              <span class="meta-label">{{ isTascaConvergida(t) ? ('LES_MEVES_TASQUES.AGREED_PRICE' | translate) : ('LES_MEVES_TASQUES.ESTIMATED_BUDGET' | translate) }}</span>
+              <span class="meta-label">{{ esIncidencia(t) ? ('LES_MEVES_TASQUES.ESTIMATED_BUDGET' | translate) : ('LES_MEVES_TASQUES.AGREED_PRICE' | translate) }}</span>
               <span class="meta-value budget">{{ t.budget }}</span>
             </div>
 
-            <div class="meta-item" *ngIf="!isTascaConvergida(t) && ofertesCount[t.id] !== undefined">
+            <div class="meta-item" *ngIf="esIncidencia(t) && ofertesCount[t.id] !== undefined">
               <span class="meta-label">{{ 'LES_MEVES_TASQUES.QUOTES_RECEIVED' | translate }}</span>
               <span class="meta-value ofertes-badge">{{ ofertesCount[t.id] }} {{ 'LES_MEVES_TASQUES.QUOTES_COUNT' | translate }}</span>
             </div>
@@ -156,38 +176,50 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
             </div>
           </div>
 
+          <!-- El contacte de l'altra part només es mostra quan la tasca està acceptada -->
+          <app-contacte-tasca
+            *ngIf="teContacte(t)"
+            [usuariId]="t.professionalId"
+            titol="TREBALL.CONTACTE_PROFESSIONAL"
+          ></app-contacte-tasca>
+
+          <p class="revisio-avis" *ngIf="t.estat === 'En revisió'">{{ 'TREBALL.CANCEL_IN_REVIEW' | translate }}</p>
+          <p class="revisio-avis" *ngIf="esSollicitud(t)">{{ 'TREBALL.SOL_PENDING_HINT' | translate }}</p>
+
           <div class="card-actions">
-            <a [routerLink]="[getNavUrl('/tasca-detall'), t.id]" class="btn-action primary">
-              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 5px;">
+            <a *ngIf="!esSollicitud(t)" [routerLink]="[getNavUrl('/tasca-detall'), t.id]" class="btn-action primary">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 5px;" aria-hidden="true">
                 <circle cx="11" cy="11" r="8"></circle>
                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
               </svg>
-              {{ isTascaConvergida(t) ? ('TASQUES_OFERTES.VEURE_SEGUIMENT' | translate) : ('LES_MEVES_TASQUES.BTN_REVIEW_QUOTES' | translate) + ' (' + (ofertesCount[t.id] || 0) + ')' }}
+              {{ esIncidencia(t) ? ('LES_MEVES_TASQUES.BTN_REVIEW_QUOTES' | translate) + ' (' + (ofertesCount[t.id] || 0) + ')' : ('TASQUES_OFERTES.VEURE_SEGUIMENT' | translate) }}
             </a>
 
+            <!-- Finalitzar: el client ho pot fer sense confirmació del professional -->
+            <button *ngIf="t.estat === 'En curs'" type="button" class="btn-action evaluate-btn" (click)="obrirModalFinalitzar(t)">
+              {{ 'TREBALL.FINISH_BTN' | translate }}
+            </button>
+
             <!-- Si ja està finalitzada però encara no s'ha avaluat -->
-            <button
-              *ngIf="isTascaConvergida(t) && t.estat === 'Finalitzada' && !t.valoracio"
-              type="button"
-              class="btn-action evaluate-btn"
-              (click)="obrirModalFinalitzar(t)"
-              title="Avaluar el servei rebut per a aquesta tasca"
-            >
-              <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor" style="vertical-align: -1px; margin-right: 4px;" aria-hidden="true">
-                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-              </svg>
+            <button *ngIf="t.estat === 'Finalitzada' && !t.valoracio" type="button" class="btn-action evaluate-btn" (click)="obrirModalFinalitzar(t)">
               {{ 'TASCA_DETALL.BTN_EVALUATE' | translate }}
             </button>
 
-            <button
-              type="button"
-              class="btn-action danger"
-              (click)="eliminarTasca(t.id)"
-            >
-              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;">
-                <polyline points="3 6 5 6 21 6"></polyline>
-                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-              </svg>
+            <button *ngIf="t.estat === 'En curs'" type="button" class="btn-action neutral" (click)="tascaPerCancellar = t">
+              {{ 'TREBALL.CANCEL_BTN' | translate }}
+            </button>
+
+            <!-- Una incidència oberta es pot tancar sense triar cap professional -->
+            <button *ngIf="esIncidencia(t) && t.estat === 'Oberta'" type="button" class="btn-action neutral" (click)="tancarIncidencia(t)">
+              {{ 'TREBALL.CLOSE_INCIDENT_BTN' | translate }}
+            </button>
+
+            <button *ngIf="esSollicitud(t)" type="button" class="btn-action danger" (click)="retirarSollicitud(t)">
+              {{ 'TREBALL.SOL_WITHDRAW' | translate }}
+            </button>
+
+            <!-- Només s'esborra una incidència; una tasca acordada forma part de l'historial -->
+            <button *ngIf="esIncidencia(t) && t.estat === 'Oberta'" type="button" class="btn-action danger" (click)="eliminarIncidencia(t)">
               {{ 'COMMON.BORRAR' | translate }}
             </button>
           </div>
@@ -205,6 +237,13 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
         <p>{{ 'LES_MEVES_TASQUES.EMPTY_DESC' | translate }}</p>
         <a [routerLink]="getNavUrl('/client/crear-tasca')" class="btn-crear">{{ 'LES_MEVES_TASQUES.BTN_NEW_INCIDENCIA' | translate }}</a>
       </div>
+
+      <app-cancellar-tasca-modal
+        *ngIf="tascaPerCancellar"
+        [tasca]="tascaPerCancellar"
+        (tancat)="tascaPerCancellar = null"
+        (enviat)="alCancellacioSollicitada($event)"
+      ></app-cancellar-tasca-modal>
 
       <!-- MODAL D'AVALUACIÓ I FINALITZACIÓ DE TASCA -->
       <div class="modal-backdrop" *ngIf="modalFinalitzarObert" (click)="tancarModalFinalitzar()">
@@ -460,6 +499,40 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
       background: rgba(255, 23, 68, 0.08);
       color: #ff1744;
       border: 1px solid rgba(255, 23, 68, 0.25);
+    }
+    .estat-sollicitada {
+      background: rgba(99, 102, 241, 0.1);
+      color: #4338ca;
+      border: 1px solid rgba(99, 102, 241, 0.3);
+    }
+    .estat-revisio {
+      background: rgba(234, 88, 12, 0.1);
+      color: #c2410c;
+      border: 1px solid rgba(234, 88, 12, 0.3);
+    }
+    .estat-cancellada {
+      background: rgba(100, 116, 139, 0.12);
+      color: #475569;
+      border: 1px solid rgba(100, 116, 139, 0.3);
+    }
+    .revisio-avis {
+      margin: 0.5rem 0 0;
+      padding: 0.6rem 0.8rem;
+      border-radius: 10px;
+      background: #fff7ed;
+      border: 1px solid #fed7aa;
+      color: #9a3412;
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+    .btn-action.neutral {
+      background: #ffffff;
+      color: #09090c;
+      border-color: #d6d3d1;
+    }
+    .btn-action.neutral:hover {
+      background: #09090c;
+      color: #ffffff;
     }
     .estat-en-curs {
       background: rgba(245, 158, 11, 0.12);
@@ -937,11 +1010,14 @@ export class LesMevesTasquesComponent implements OnInit {
   puntuacioSeleccionada = 5;
   ressenyaDescripcio = '';
   enviantRessenya = false;
+  /** Tasca per a la qual s'està sol·licitant la cancel·lació */
+  tascaPerCancellar: Tasca | null = null;
 
   constructor(
     private readonly incidenciaService: IncidenciaService,
     private readonly tascaService: TascaService,
-    private readonly ofertaService: OfertaService,
+    private readonly interesService: InteresService,
+    private readonly pressupostService: PressupostService,
     private readonly resenyaService: ResenyaService,
     private readonly authService: AuthService,
     private readonly confirmService: ConfirmService,
@@ -977,40 +1053,58 @@ export class LesMevesTasquesComponent implements OnInit {
     this.carregarTasques();
   }
 
-  /**
-   * Determina si l'element és una Tasca acordada (ja convergeixen client i professional)
-   * o si és una Incidència oberta (sols té client, cercant professional).
-   */
+  /** Una incidència pròpia, encara sense professional assignat */
+  esIncidencia(t: Tasca): boolean {
+    return t.tipus === 'incidencia';
+  }
+
+  /** Una sol·licitud d'oferta pendent que el professional encara ha d'acceptar */
+  esSollicitud(t: Tasca): boolean {
+    return t.tipus === 'sollicitud';
+  }
+
+  /** Treball acordat entre client i professional */
   isTascaConvergida(t: Tasca): boolean {
-    return t.tipus === 'tasca' || !!(t.professional || t.professionalNom);
+    return t.tipus === 'tasca';
+  }
+
+  /** El contacte només és visible quan el professional ja ha acceptat el treball */
+  teContacte(t: Tasca): boolean {
+    return !!t.professionalId && ['En curs', 'En revisió', 'Finalitzada'].includes(t.estat || '');
   }
 
   /**
    * Retorna les tasques o incidències filtrades segons la pestanya seleccionada.
    */
   get tasquesFiltrades(): Tasca[] {
-    if (this.filtreActiu === 'oberta') {
-      return this.tasques.filter(t => !this.isTascaConvergida(t) && t.estat?.toLowerCase().includes('obert'));
+    switch (this.filtreActiu) {
+      case 'sollicitada': return this.tasques.filter(t => this.esSollicitud(t));
+      case 'oberta': return this.tasques.filter(t => this.esIncidencia(t) && t.estat === 'Oberta');
+      case 'en_curs': return this.tasques.filter(t => t.estat === 'En curs' || t.estat === 'En revisió');
+      case 'finalitzada': return this.tasques.filter(t => t.estat === 'Finalitzada');
+      case 'cancellada': return this.tasques.filter(t => t.estat === 'Cancel·lada');
+      default: return this.tasques;
     }
-    if (this.filtreActiu === 'en_curs') {
-      return this.tasques.filter(t => this.isTascaConvergida(t) && t.estat?.toLowerCase().includes('curs'));
-    }
-    if (this.filtreActiu === 'finalitzada') {
-      return this.tasques.filter(t => t.estat?.toLowerCase().includes('finalitzad'));
-    }
-    return this.tasques;
+  }
+
+  countSollicituds(): number {
+    return this.tasques.filter(t => this.esSollicitud(t)).length;
   }
 
   countIncidencies(): number {
-    return this.tasques.filter(t => !this.isTascaConvergida(t) && t.estat?.toLowerCase().includes('obert')).length;
+    return this.tasques.filter(t => this.esIncidencia(t) && t.estat === 'Oberta').length;
   }
 
   countEnCurs(): number {
-    return this.tasques.filter(t => this.isTascaConvergida(t) && t.estat?.toLowerCase().includes('curs')).length;
+    return this.tasques.filter(t => t.estat === 'En curs' || t.estat === 'En revisió').length;
   }
 
   countFinalitzades(): number {
-    return this.tasques.filter(t => t.estat?.toLowerCase().includes('finalitzad')).length;
+    return this.tasques.filter(t => t.estat === 'Finalitzada').length;
+  }
+
+  countCancellades(): number {
+    return this.tasques.filter(t => t.estat === 'Cancel·lada').length;
   }
 
   /**
@@ -1023,7 +1117,8 @@ export class LesMevesTasquesComponent implements OnInit {
   }
 
   /**
-   * Carrega les tasques i incidències associades al client actual des de l'API.
+   * Carrega les tasques, les incidències i les sol·licituds pendents del client actual.
+   * Es consulta per identificador: dos usuaris poden compartir nom.
    */
   carregarTasques(): void {
     this.loading = true;
@@ -1036,10 +1131,11 @@ export class LesMevesTasquesComponent implements OnInit {
     }
 
     forkJoin({
-      tasques: this.tascaService.getByClient(user.nom).pipe(catchError(() => of([]))),
-      incidencies: this.incidenciaService.getByClient(user.nom).pipe(catchError(() => of([])))
+      tasques: this.tascaService.getByClient(user.id).pipe(catchError(() => of([] as Tasca[]))),
+      incidencies: this.incidenciaService.getByClient(user.id).pipe(catchError(() => of([]))),
+      interessos: this.interesService.getByClient(user.id).pipe(catchError(() => of([] as Interes[])))
     }).subscribe({
-      next: ({ tasques, incidencies }) => {
+      next: ({ tasques, incidencies, interessos }) => {
         const incidenciesMapped: Tasca[] = incidencies.map((inc) => ({
           id: inc.id,
           titol: inc.titol,
@@ -1056,12 +1152,27 @@ export class LesMevesTasquesComponent implements OnInit {
           createdAt: inc.createdAt
         }));
 
-        const existingIds = new Set(tasques.map((t) => t.id));
-        const filteredInc = incidenciesMapped.filter((i) => !existingIds.has(i.id));
+        // Només les sol·licituds que el professional encara no ha acceptat: les acceptades ja són tasques
+        const sollicituds: Tasca[] = interessos
+          .filter((i) => !i.tascaId)
+          .map((i) => ({
+            id: i.id,
+            titol: i.publicacioTitol || '',
+            descripcio: '',
+            clientId: i.clientId,
+            client: i.clientNom,
+            clientNom: i.clientNom,
+            professionalId: i.professionalId,
+            professional: i.professionalNom,
+            professionalNom: i.professionalNom,
+            publicacioId: i.publicacioId,
+            estat: 'Sol·licitada',
+            tipus: 'sollicitud',
+            createdAt: i.dataCreacio
+          }));
 
-        this.tasques = [...tasques, ...filteredInc];
+        this.tasques = [...sollicituds, ...tasques, ...incidenciesMapped];
         this.loading = false;
-        // Carrega el recompte d'ofertes per a cadascuna de les tasques / incidències
         this.carregarRecompteOfertes();
       },
       error: () => {
@@ -1072,13 +1183,13 @@ export class LesMevesTasquesComponent implements OnInit {
   }
 
   /**
-   * Consulta per a cada tasca el nombre d'ofertes rebudes.
+   * Consulta el nombre de pressupostos vigents de cada incidència oberta.
    */
   private carregarRecompteOfertes(): void {
-    this.tasques.forEach(t => {
-      this.ofertaService.getByTasca(t.id).subscribe({
-        next: (ofertes) => {
-          this.ofertesCount[t.id] = ofertes.length;
+    this.tasques.filter(t => this.esIncidencia(t)).forEach(t => {
+      this.pressupostService.getByIncidencia(t.id).subscribe({
+        next: (pressupostos) => {
+          this.ofertesCount[t.id] = pressupostos.length;
         },
         error: () => {
           this.ofertesCount[t.id] = 0;
@@ -1101,11 +1212,15 @@ export class LesMevesTasquesComponent implements OnInit {
    * @returns Nom de la classe CSS
    */
   getEstatClass(estat: string): string {
-    const e = estat?.toLowerCase() || '';
-    if (e.includes('obert')) return 'estat-oberta';
-    if (e.includes('curs')) return 'estat-en-curs';
-    if (e.includes('finalitzad')) return 'estat-finalitzada';
-    return '';
+    switch (estat) {
+      case 'Sol·licitada': return 'estat-sollicitada';
+      case 'Oberta': return 'estat-oberta';
+      case 'En curs': return 'estat-en-curs';
+      case 'En revisió': return 'estat-revisio';
+      case 'Finalitzada': return 'estat-finalitzada';
+      case 'Cancel·lada': case 'Tancada': return 'estat-cancellada';
+      default: return '';
+    }
   }
 
   /**
@@ -1117,18 +1232,6 @@ export class LesMevesTasquesComponent implements OnInit {
     this.ressenyaDescripcio = t.comentari || '';
     this.professionalPerFinalitzar = t.professionalNom || t.professional || '';
     this.modalFinalitzarObert = true;
-
-    // Si encara no està definit el professional a la tasca, consulta l'oferta acceptada
-    if (!this.professionalPerFinalitzar) {
-      this.ofertaService.getByTasca(t.id).subscribe({
-        next: (ofertes) => {
-          const acc = ofertes.find(o => o.estat === 'Acceptada') || ofertes[0];
-          if (acc) {
-            this.professionalPerFinalitzar = acc.professional;
-          }
-        }
-      });
-    }
   }
 
   tancarModalFinalitzar(): void {
@@ -1150,53 +1253,27 @@ export class LesMevesTasquesComponent implements OnInit {
   }
 
   /**
-   * Envia la valoració del professional i marca la tasca com a Finalitzada (desat a la taula tasques).
+   * Desa la valoració del client. Si la tasca encara és en curs, la finalitza i la valora d'una vegada.
    */
   confirmarFinalitzacioAmbRessenya(): void {
     if (!this.tascaPerFinalitzar) return;
     const t = this.tascaPerFinalitzar;
     this.enviantRessenya = true;
     const textDesc = this.ressenyaDescripcio.trim() || 'Feina completada amb èxit i total satisfacció.';
+    const dades = { valoracio: this.puntuacioSeleccionada, comentari: textDesc };
+    const peticio$ = t.estat === 'En curs' ? this.tascaService.complete(t.id, dades) : this.tascaService.avaluar(t.id, dades);
 
-    this.tascaService.avaluar(t.id, {
-      valoracio: this.puntuacioSeleccionada,
-      comentari: textDesc
-    }).subscribe({
-      next: (updatedTask) => {
+    peticio$.subscribe({
+      next: () => {
         this.enviantRessenya = false;
         this.tancarModalFinalitzar();
         this.successMsg = 'Valoració enregistrada amb èxit!';
-        const target = this.tasques.find(item => item.id === t.id);
-        if (target) {
-          target.estat = 'Finalitzada';
-          target.valoracio = this.puntuacioSeleccionada;
-          target.comentari = textDesc;
-        }
+        this.carregarTasques();
         setTimeout(() => this.successMsg = '', 4000);
       },
-      error: (err) => {
-        // Fallback per compatibilitat amb complete
-        this.tascaService.complete(t.id, {
-          valoracio: this.puntuacioSeleccionada,
-          comentari: textDesc
-        }).subscribe({
-          next: () => {
-            this.enviantRessenya = false;
-            this.tancarModalFinalitzar();
-            this.successMsg = 'Valoració enregistrada amb èxit!';
-            const target = this.tasques.find(item => item.id === t.id);
-            if (target) {
-              target.estat = 'Finalitzada';
-              target.valoracio = this.puntuacioSeleccionada;
-              target.comentari = textDesc;
-            }
-            setTimeout(() => this.successMsg = '', 4000);
-          },
-          error: (e) => {
-            this.enviantRessenya = false;
-            this.errorMsg = e?.error || 'Error en desar la valoració. Recorda que només es pot avaluar un cop acabada la tasca.';
-          }
-        });
+      error: (e) => {
+        this.enviantRessenya = false;
+        this.errorMsg = e?.error?.error || 'Error en desar la valoració.';
       }
     });
   }
@@ -1214,22 +1291,67 @@ export class LesMevesTasquesComponent implements OnInit {
         this.enviantRessenya = false;
         this.tancarModalFinalitzar();
         this.successMsg = 'Tasca finalitzada correctament!';
-        const target = this.tasques.find(t => t.id === id);
-        if (target) target.estat = 'Finalitzada';
+        this.carregarTasques();
         setTimeout(() => this.successMsg = '', 3000);
       },
-      error: () => {
+      error: (e) => {
         this.enviantRessenya = false;
-        this.errorMsg = 'Error en finalitzar la tasca.';
+        this.errorMsg = e?.error?.error || 'Error en finalitzar la tasca.';
       }
     });
   }
 
-  /**
-   * Elimina una tasca o incidència de la base de dades.
-   * @param id Identificador de l'element a suprimir
-   */
-  async eliminarTasca(id: string): Promise<void> {
+  alCancellacioSollicitada(tasca: Tasca): void {
+    this.tascaPerCancellar = null;
+    this.successMsg = 'TREBALL.CANCEL_SENT_OK';
+    this.carregarTasques();
+    setTimeout(() => this.successMsg = '', 4000);
+  }
+
+  /** Tanca la incidència: els pressupostos pendents es rebutgen i els professionals reben un avís */
+  async tancarIncidencia(t: Tasca): Promise<void> {
+    const confirmacio = await this.confirmService.confirm({
+      title: 'TREBALL.CLOSE_INCIDENT_TITLE',
+      message: 'TREBALL.CLOSE_INCIDENT_MSG',
+      confirmText: 'TREBALL.CLOSE_INCIDENT_BTN',
+      cancelText: 'COMMON.CANCEL_LAR',
+      isDanger: true,
+      icon: 'warning'
+    });
+    if (!confirmacio) return;
+    this.incidenciaService.close(t.id).subscribe({
+      next: () => {
+        this.successMsg = 'TREBALL.CLOSE_INCIDENT_OK';
+        this.carregarTasques();
+        setTimeout(() => this.successMsg = '', 4000);
+      },
+      error: (e) => (this.errorMsg = e?.error?.error || 'Error en tancar la incidència.')
+    });
+  }
+
+  /** El client retira la seua sol·licitud sense passar per l'administrador */
+  async retirarSollicitud(t: Tasca): Promise<void> {
+    const confirmacio = await this.confirmService.confirm({
+      title: 'TREBALL.SOL_WITHDRAW_TITLE',
+      message: 'TREBALL.SOL_WITHDRAW_MSG',
+      confirmText: 'TREBALL.SOL_WITHDRAW',
+      cancelText: 'COMMON.CANCEL_LAR',
+      isDanger: true,
+      icon: 'warning'
+    });
+    if (!confirmacio) return;
+    this.interesService.withdraw(t.id).subscribe({
+      next: () => {
+        this.successMsg = 'TREBALL.SOL_WITHDRAW_OK';
+        this.carregarTasques();
+        setTimeout(() => this.successMsg = '', 4000);
+      },
+      error: (e) => (this.errorMsg = e?.error?.error || 'Error en retirar la sol·licitud.')
+    });
+  }
+
+  /** Només s'esborra una incidència; si ja té pressupostos, el back ho rebutja amb un missatge */
+  async eliminarIncidencia(t: Tasca): Promise<void> {
     const confirmacio = await this.confirmService.confirm({
       title: 'CONFIRM_MODAL.DELETE_TASK_TITLE',
       message: 'CONFIRM_MODAL.DELETE_TASK_MSG',
@@ -1240,18 +1362,14 @@ export class LesMevesTasquesComponent implements OnInit {
     });
     if (!confirmacio) return;
 
-    const delete$ = id.startsWith('I-')
-      ? this.incidenciaService.delete(id)
-      : this.tascaService.delete(id);
-
-    delete$.subscribe({
+    this.incidenciaService.delete(t.id).subscribe({
       next: () => {
-        this.tasques = this.tasques.filter(t => t.id !== id);
+        this.tasques = this.tasques.filter(item => item.id !== t.id);
         this.successMsg = 'Element eliminat amb èxit.';
         setTimeout(() => this.successMsg = '', 3000);
       },
-      error: () => {
-        this.errorMsg = 'Error en eliminar l’element.';
+      error: (e) => {
+        this.errorMsg = e?.error?.error || 'Error en eliminar l’element.';
       }
     });
   }

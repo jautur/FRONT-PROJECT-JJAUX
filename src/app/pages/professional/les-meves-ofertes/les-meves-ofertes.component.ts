@@ -3,11 +3,15 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { OfertaService } from '../../../services/oferta.service';
 import { TascaService } from '../../../services/tasca.service';
+import { InteresService } from '../../../services/interes.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { ConfirmService } from '../../../core/services/confirm.service';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { Oferta } from '../../../models/oferta.model';
 import { Tasca } from '../../../models/tasca.model';
+import { Interes } from '../../../models/interes.model';
+import { ContacteTascaComponent } from '../../../shared/components/contacte-tasca/contacte-tasca.component';
+import { CancellarTascaModalComponent } from '../../../shared/components/cancellar-tasca/cancellar-tasca-modal.component';
 
 /**
  * Component del Panell de Gestió d'Ofertes del Professional (/professional/les-meves-ofertes).
@@ -20,7 +24,7 @@ import { Tasca } from '../../../models/tasca.model';
 @Component({
   selector: 'app-les-meves-ofertes',
   standalone: true,
-  imports: [CommonModule, RouterLink, TranslatePipe],
+  imports: [CommonModule, RouterLink, TranslatePipe, ContacteTascaComponent, CancellarTascaModalComponent],
   template: `
     <div class="panell-container">
       <div class="app-back-nav" *ngIf="isAppPage">
@@ -43,6 +47,39 @@ import { Tasca } from '../../../models/tasca.model';
           </a>
         </div>
       </div>
+
+      <!-- SOL·LICITUDS REBUDES: el client "m'interessa"; el contacte només es mostra quan s'accepten -->
+      <section class="assigned-section" *ngIf="!loading && sollicituds.length > 0">
+        <div class="section-title-bar">
+          <div class="title-with-badge">
+            <span class="pro-assigned-pill">{{ 'TREBALL.SOL_RECEIVED_TAG' | translate }}</span>
+            <h3>{{ 'TREBALL.SOL_RECEIVED_TITLE' | translate }} ({{ sollicituds.length }})</h3>
+          </div>
+          <span class="section-badge-hint">{{ 'TREBALL.SOL_RECEIVED_HINT' | translate }}</span>
+        </div>
+
+        <div class="assigned-tasks-grid">
+          <div *ngFor="let s of sollicituds" class="assigned-task-card">
+            <div class="card-header">
+              <span class="badge-nature">{{ 'TREBALL.NATURE_SOLLICITUD' | translate }}</span>
+              <span class="badge-estat estat-pendent">{{ 'Sol·licitada' | translate }}</span>
+            </div>
+            <h4 class="tasca-titol">{{ s.publicacioTitol }}</h4>
+            <div class="assigned-meta">
+              <div class="assigned-meta-item">
+                <span class="lbl">{{ 'COMMON.CLIENT' | translate }}:</span>
+                <strong><a [routerLink]="[getNavUrl('/perfil'), s.clientId]" class="user-inline-link">{{ s.clientNom }}</a></strong>
+              </div>
+            </div>
+            <div class="card-actions">
+              <button type="button" class="btn-action success" (click)="acceptarSollicitud(s)">{{ 'TREBALL.SOL_ACCEPT' | translate }}</button>
+              <button type="button" class="btn-action danger" (click)="rebutjarSollicitud(s)">{{ 'TREBALL.SOL_REJECT' | translate }}</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="section-divider" *ngIf="!loading && sollicituds.length > 0"></div>
 
       <!-- SECCIÓ DE TASQUES ASSIGNADES EN CURS I FINALITZADES (ON CONVERGEIXEN CLIENT I PROFESSIONAL) -->
       <section class="assigned-section" *ngIf="!loading && tasquesAssignades.length > 0">
@@ -74,9 +111,16 @@ import { Tasca } from '../../../models/tasca.model';
             </div>
             <p class="tasca-desc" *ngIf="t.descripcio">{{ t.descripcio }}</p>
 
+            <app-contacte-tasca
+              *ngIf="t.estat === 'En curs' || t.estat === 'En revisió' || t.estat === 'Finalitzada'"
+              [usuariId]="t.clientId"
+              titol="TREBALL.CONTACTE_CLIENT"
+            ></app-contacte-tasca>
+            <p class="revisio-avis" *ngIf="t.estat === 'En revisió'">{{ 'TREBALL.CANCEL_IN_REVIEW' | translate }}</p>
+
             <div class="card-actions">
               <button
-                *ngIf="t.estat !== 'Finalitzada'"
+                *ngIf="t.estat === 'En curs'"
                 type="button"
                 class="btn-action success"
                 (click)="finalitzarTascaComAProfessional(t)"
@@ -86,6 +130,9 @@ import { Tasca } from '../../../models/tasca.model';
                   <polyline points="20 6 9 17 4 12"></polyline>
                 </svg>
                 {{ 'LES_MEVES_OFERTES.BTN_FINALIZE_TASK' | translate }}
+              </button>
+              <button *ngIf="t.estat === 'En curs'" type="button" class="btn-action neutral" (click)="tascaPerCancellar = t">
+                {{ 'TREBALL.CANCEL_BTN' | translate }}
               </button>
               <a [routerLink]="[getNavUrl('/tasca-detall'), t.id]" class="btn-action primary">
                 {{ 'LES_MEVES_OFERTES.BTN_VIEW_TRACKING' | translate }}
@@ -108,8 +155,8 @@ import { Tasca } from '../../../models/tasca.model';
 
       <!-- Missatges d'estat i confirmació -->
       <div *ngIf="loading" class="state-box">{{ 'MERCAT.LOADING' | translate }}</div>
-      <div *ngIf="successMsg" class="alert-success">{{ successMsg }}</div>
-      <div *ngIf="errorMsg" class="alert-error">{{ errorMsg }}</div>
+      <div *ngIf="successMsg" class="alert-success" role="status">{{ successMsg | translate }}</div>
+      <div *ngIf="errorMsg" class="alert-error" role="alert">{{ errorMsg | translate }}</div>
 
       <!-- Llista d'ofertes en targetes -->
       <div class="ofertes-grid" *ngIf="!loading && ofertes.length > 0">
@@ -177,9 +224,36 @@ import { Tasca } from '../../../models/tasca.model';
         <p>{{ 'LES_MEVES_OFERTES.EMPTY_DESC' | translate }}</p>
         <a [routerLink]="getNavUrl('/inici')" class="btn-crear">{{ 'BLOG.BREADCRUMB_HOME' | translate }}</a>
       </div>
+      <app-cancellar-tasca-modal
+        *ngIf="tascaPerCancellar"
+        [tasca]="tascaPerCancellar"
+        (tancat)="tascaPerCancellar = null"
+        (enviat)="alCancellacioSollicitada()"
+      ></app-cancellar-tasca-modal>
     </div>
   `,
-  styles: [`
+  styles: [
+    `
+      .revisio-avis {
+        margin: 0.5rem 0 0;
+        padding: 0.6rem 0.8rem;
+        border-radius: 10px;
+        background: #fff7ed;
+        border: 1px solid #fed7aa;
+        color: #9a3412;
+        font-size: 0.82rem;
+        font-weight: 700;
+      }
+      .btn-action.neutral {
+        background: #ffffff;
+        color: #09090c;
+        border-color: #d6d3d1;
+      }
+      .btn-action.neutral:hover {
+        background: #09090c;
+        color: #ffffff;
+      }
+    `,`
     .panell-container {
       max-width: 1050px;
       margin: 0 auto;
@@ -618,6 +692,10 @@ import { Tasca } from '../../../models/tasca.model';
   `]
 })
 export class LesMevesOfertesComponent implements OnInit {
+  /** Sol·licituds de clients que encara esperen la resposta del professional */
+  sollicituds: Interes[] = [];
+  /** Tasca per a la qual s'està sol·licitant la cancel·lació */
+  tascaPerCancellar: Tasca | null = null;
   /** Llista d'ofertes enviades pel professional */
   ofertes: Oferta[] = [];
   /** Llista de tasques on el professional ha estat assignat i convergeix amb el client */
@@ -634,6 +712,7 @@ export class LesMevesOfertesComponent implements OnInit {
   constructor(
     private readonly ofertaService: OfertaService,
     private readonly tascaService: TascaService,
+    private readonly interesService: InteresService,
     private readonly authService: AuthService,
     private readonly confirmService: ConfirmService,
     private readonly router: Router
@@ -681,12 +760,24 @@ export class LesMevesOfertesComponent implements OnInit {
       return;
     }
 
-    // Carrega les tasques on aquest professional ha estat assignat
-    this.tascaService.getByProfessional(user.nom).subscribe({
+    // Carrega les tasques on aquest professional ha estat assignat, per identificador
+    this.tascaService.getByProfessional(user.id).subscribe({
       next: (tasks) => {
         this.tasquesAssignades = tasks ?? [];
       },
-      error: () => {}
+      error: () => {
+        this.errorMsg = 'Error en carregar les teves tasques.';
+      }
+    });
+
+    // Sol·licituds pendents: les acceptades ja apareixen com a tasques
+    this.interesService.getByProfessional(user.id).subscribe({
+      next: (interessos) => {
+        this.sollicituds = (interessos ?? []).filter((i) => !i.tascaId);
+      },
+      error: () => {
+        this.errorMsg = 'Error en carregar les sol·licituds rebudes.';
+      }
     });
 
     // Carrega totes les tasques per a poder mostrar títol i dades del client a les ofertes
@@ -736,10 +827,48 @@ export class LesMevesOfertesComponent implements OnInit {
         setTimeout(() => this.successMsg = '', 4500);
       },
       error: (err) => {
-        console.error('Error finalitzant la tasca:', err);
-        this.confirmService.alert('No s\'ha pogut marcar la tasca com a finalitzada.', 'Error');
+        this.confirmService.alert(err?.error?.error || 'No s\'ha pogut marcar la tasca com a finalitzada.', 'Error');
       }
     });
+  }
+
+  /** El professional accepta la sol·licitud: la tasca comença i el client rep un avís */
+  acceptarSollicitud(s: Interes): void {
+    this.interesService.accept(s.id).subscribe({
+      next: () => {
+        this.successMsg = 'TREBALL.SOL_ACCEPTED_OK';
+        this.carregarOfertes();
+        setTimeout(() => this.successMsg = '', 4500);
+      },
+      error: (e) => (this.errorMsg = e?.error?.error || 'TREBALL.SOL_ERROR')
+    });
+  }
+
+  async rebutjarSollicitud(s: Interes): Promise<void> {
+    const confirmacio = await this.confirmService.confirm({
+      title: 'TREBALL.SOL_REJECT_TITLE',
+      message: 'TREBALL.SOL_REJECT_MSG',
+      confirmText: 'TREBALL.SOL_REJECT',
+      cancelText: 'COMMON.CANCEL_LAR',
+      isDanger: true,
+      icon: 'warning'
+    });
+    if (!confirmacio) return;
+    this.interesService.reject(s.id).subscribe({
+      next: () => {
+        this.successMsg = 'TREBALL.SOL_REJECTED_OK';
+        this.carregarOfertes();
+        setTimeout(() => this.successMsg = '', 4500);
+      },
+      error: (e) => (this.errorMsg = e?.error?.error || 'TREBALL.SOL_ERROR')
+    });
+  }
+
+  alCancellacioSollicitada(): void {
+    this.tascaPerCancellar = null;
+    this.successMsg = 'TREBALL.CANCEL_SENT_OK';
+    this.carregarOfertes();
+    setTimeout(() => this.successMsg = '', 4500);
   }
 
   /**
@@ -748,8 +877,8 @@ export class LesMevesOfertesComponent implements OnInit {
    */
   async eliminarOferta(id: string): Promise<void> {
     const confirmacio = await this.confirmService.confirm({
-      title: 'CONFIRM_MODAL.DELETE_OFFER_TITLE',
-      message: 'CONFIRM_MODAL.DELETE_OFFER_MSG',
+      title: 'TREBALL.RETIRE_OFFER_TITLE',
+      message: 'TREBALL.RETIRE_OFFER_MSG',
       confirmText: 'CONFIRM_MODAL.DEFAULT_CONFIRM',
       cancelText: 'CONFIRM_MODAL.DEFAULT_CANCEL',
       isDanger: true,
@@ -764,14 +893,14 @@ export class LesMevesOfertesComponent implements OnInit {
         setTimeout(() => this.successMsg = '', 3500);
       },
       error: (err) => {
-        console.error('Error eliminant l\'oferta:', err);
-        this.confirmService.alert('No s\'ha pogut borrar l\'oferta.', 'Error');
+        this.confirmService.alert(err?.error?.error || 'No s\'ha pogut borrar l\'oferta.', 'Error');
       }
     });
   }
 
   getTaskEstatClass(estat: string): string {
     const e = estat?.toLowerCase() || '';
+    if (e.includes('revisi')) return 'estat-pendent';
     if (e.includes('curs')) return 'estat-en-curs';
     if (e.includes('finalitzad')) return 'estat-finalitzada';
     return 'estat-pendent';

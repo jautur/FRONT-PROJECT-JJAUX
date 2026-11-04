@@ -9,6 +9,8 @@ export interface Interes {
   publicacioTitol?: string;
   clientId: string;
   clientNom: string;
+  professionalId?: string;
+  professionalNom?: string;
   missatge?: string;
   tascaId?: string;
   dataCreacio?: string;

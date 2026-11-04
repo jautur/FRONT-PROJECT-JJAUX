@@ -37,13 +37,19 @@ export interface Tasca {
   /** Àlies per al nom del professional */
   professionalNom?: string;
 
+  /** Publicació (oferta o incidència) de la qual naix la tasca */
+  publicacioId?: string;
+
+  /** Pressupost acceptat, si la tasca ve d'una incidència */
+  pressupostId?: string;
+
   /** Identificador de l'oferta o incidència d'origen */
   origenId?: string;
 
   /** Pressupost estimat pel client o preu acordat de la tasca */
   budget?: string;
 
-  /** Estat ('En curs' o 'Finalitzada' per a tasques; les incidències no tenen estat) */
+  /** Estat: 'Sol·licitada', 'En curs', 'En revisió', 'Finalitzada' o 'Cancel·lada' (una incidència: 'Oberta', 'Assignada' o 'Tancada') */
   estat?: string;
 
   /** Distinció conceptual: 'incidencia' (sols client) o 'tasca' (client + professional) */

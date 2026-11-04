@@ -15,3 +15,4 @@ export * from './resenya.model';
 export * from './incidencia.model';
 export * from './interes.model';
 export * from './pressupost.model';
+export * from './cancellacio.model';

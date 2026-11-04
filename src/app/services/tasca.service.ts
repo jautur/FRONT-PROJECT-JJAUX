@@ -117,4 +117,9 @@ export class TascaService {
   delete(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
+
+  /** El client o el professional sol·liciten cancel·lar una tasca en curs; la resol un administrador */
+  sollicitarCancellacio(id: string, motiu: string): Observable<Tasca> {
+    return this.http.post<Tasca>(`${this.apiUrl}/${id}/cancellar`, { motiu });
+  }
 }
