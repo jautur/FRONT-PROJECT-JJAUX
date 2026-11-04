@@ -278,10 +278,15 @@ import { Pressupost } from '../../../models/pressupost.model';
     </section>
 
     <!-- Estat de càrrega o no trobat -->
+    <div *ngIf="loading" class="task-loading-state card">
+      <div class="task-loading-spinner" aria-hidden="true"></div>
+      <p>{{ 'COMMON.CARREGANT' | translate }}</p>
+    </div>
+
     <div *ngIf="!tasca && !loading" class="not-found card">
       <h2>{{ 'COMMON.NO_RESULTS' | translate }}</h2>
       <p>No s'ha pogut localitzar la tasca sol·licitada.</p>
-      <a [routerLink]="getNavUrl('/inici')" class="btn btn-primary">{{ 'NAV.HOME' | translate }}</a>
+      <a [routerLink]="getNavUrl('/inici')" class="btn btn-primary">{{ 'COMMON.TORNAR' | translate }}</a>
     </div>
   `,
   styles: [
@@ -864,6 +869,40 @@ import { Pressupost } from '../../../models/pressupost.model';
         color: #636058;
         font-weight: 600;
         box-shadow: 0 4px 16px rgba(0, 0, 0, 0.02);
+      }
+
+      .task-loading-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 3.5rem 1.5rem;
+        gap: 1rem;
+        background: var(--bg-card, #ffffff);
+        border: 1px solid var(--border-subtle, #e5e0d7);
+        border-radius: 16px;
+        color: var(--color-text-muted, #636058);
+        font-weight: 700;
+        text-align: center;
+      }
+
+      .task-loading-spinner {
+        width: 38px;
+        height: 38px;
+        border: 3.5px solid rgba(255, 23, 68, 0.15);
+        border-top-color: #ff1744;
+        border-radius: 50%;
+        animation: spinTask 0.75s infinite linear;
+      }
+
+      @keyframes spinTask {
+        to { transform: rotate(360deg); }
+      }
+
+      body.theme-app-dark .task-loading-state {
+        background: var(--bg-card);
+        border-color: var(--border-card);
+        color: var(--color-text-muted);
       }
 
       .not-found {

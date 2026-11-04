@@ -22,11 +22,13 @@ export const es = {
     "ACCIONS": "Acciones",
     "CARREGANT": "Cargando...",
     "SENSE_DADES": "Sin datos disponibles",
+    "NO_RESULTS": "Sin resultados disponibles",
     "TORNAR": "Volver",
     "ACTUALITZAR": "Actualizar"
   },
   "NAV": {
     "MENU": "Menú",
+    "HOME": "Inicio",
     "OBRE_MENU": "Abrir el menú de navegación",
     "OCULTAR_MENU": "Ocultar menú",
     "OCULTAR_MENU_LATERAL": "Ocultar menú lateral",
@@ -817,5 +819,36 @@ export const es = {
     "IOS_STEP_2": "Desplaza hacia abajo y selecciona 'Añadir a pantalla de inicio'",
     "IOS_STEP_3": "Toca 'Añadir' en la esquina superior derecha",
     "IOS_CLOSE": "Entendido"
+  },
+  "ERRORS": {
+    "REQUIRED_FIELDS": "Es necesario rellenar todos los campos obligatorios.",
+    "TASK_SAVE_ERROR": "Se ha producido un error al guardar la incidencia en la base de datos.",
+    "PACK_FIELDS_REQUIRED": "Es necesario rellenar todos los campos del pack de servicio.",
+    "OFFER_PUBLISH_ERROR": "Se ha producido un error al publicar la oferta de servicio.",
+    "BUDGET_FIELDS_REQUIRED": "Es necesario rellenar todos los campos obligatorios del presupuesto.",
+    "BUDGET_REGISTER_ERROR": "Se ha producido un error al registrar el presupuesto en el servidor.",
+    "INCIDENTS_LOAD_ERROR": "No se han podido cargar las incidencias abiertas.",
+    "TERMS_REQUIRED": "Es necesario aceptar los términos y condiciones para registrarse.",
+    "PRIVACY_REQUIRED": "Es necesario aceptar la política de privacidad para registrarse.",
+    "REGISTER_FORM_CHECK": "Por favor, revisa los campos obligatorios del formulario.",
+    "PRO_PHONE_REQUIRED": "Como Profesional, el teléfono de contacto es obligatorio para resolver peticiones.",
+    "SERVER_UNREACHABLE": "El servidor no responde. Comprueba tu conexión o que el backend esté activo.",
+    "REGISTER_ERROR": "No se ha podido completar el registro. Comprueba los datos o inténtalo de nuevo.",
+    "PERCENTILE_RANGE": "El percentil de comisión debe ser un número entero entre 0 y 100.",
+    "PASS_MIN_LENGTH": "La contraseña debe tener al menos 6 caracteres.",
+    "PASS_MISMATCH": "Las contraseñas introducidas no coinciden.",
+    "PASS_UPDATE_ERROR": "No se ha podido actualizar la contraseña. Comprueba la conexión con el servidor.",
+    "PROFILE_SAVE_ERROR": "Se ha producido un error al guardar el perfil. Inténtalo de nuevo.",
+    "VERIFY_PHONE_REQUIRED": "Es necesario registrar un teléfono de contacto antes de solicitar la verificación.",
+    "ACCEPT_BUDGET_ERROR": "No se ha podido aceptar el presupuesto.",
+    "OFFLINE_TITLE": "Sin conexión a Internet",
+    "OFFLINE_DESC": "Estás navegando en modo sin conexión. Los nuevos datos se sincronizarán al recuperar la red."
+  },
+  "MERCAT": {
+    "LOADING": "Cargando datos...",
+    "DETALL": "Ver detalle",
+    "AGREED_NATURE": "Tarea acordada",
+    "MOBILE_CAT_LABEL": "Categoría:",
+    "AVAILABLE": "disponibles"
   }
 };

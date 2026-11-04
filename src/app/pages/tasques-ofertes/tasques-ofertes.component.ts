@@ -83,6 +83,11 @@ interface CategoriaFiltre {
           </button>
         </div>
 
+        <!-- Anunciador accessible per a lectors de pantalla (WCAG 2.2 Status Messages) -->
+        <div class="sr-only" aria-live="polite" aria-atomic="true">
+          {{ totalElements }} elements disponibles segons els filtres aplicats
+        </div>
+
         <div class="type-filter-pills">
           <button
             type="button"
@@ -848,13 +853,13 @@ interface CategoriaFiltre {
 
       .mobile-native-select {
         width: 100%;
-        background-color: #faf8f4;
-        border: 1px solid #dcd7cc;
+        background-color: var(--bg-input, #faf8f4);
+        border: 1px solid var(--border-card, #dcd7cc);
         border-radius: 9px;
         padding: 0.65rem 0.75rem;
         font-size: 0.88rem;
         font-weight: 700;
-        color: #111827;
+        color: var(--color-text, #111827);
         outline: none;
         box-sizing: border-box;
         cursor: pointer;
@@ -1178,20 +1183,20 @@ interface CategoriaFiltre {
         margin: 0;
         font-size: 1.15rem;
         font-weight: 900;
-        color: #09090c;
+        color: var(--color-text, #09090c);
         line-height: 1.35;
       }
 
       .card-item-desc {
         margin: 0;
         font-size: 0.92rem;
-        color: #636159;
+        color: var(--color-text-muted, #636159);
         line-height: 1.55;
       }
 
       .card-meta-line {
         font-size: 0.84rem;
-        color: #7a776e;
+        color: var(--color-text-dim, #7a776e);
         display: flex;
         flex-wrap: wrap;
         align-items: center;
@@ -1199,7 +1204,7 @@ interface CategoriaFiltre {
       }
 
       .card-meta-line .meta-value {
-        color: #09090c;
+        color: var(--color-text, #09090c);
         font-weight: 800;
         margin-left: 0.3rem;
       }
@@ -1215,7 +1220,7 @@ interface CategoriaFiltre {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        border-top: 1px solid #eeeae0;
+        border-top: 1px solid var(--border-subtle, #eeeae0);
         padding-top: 0.85rem;
         margin-top: auto;
       }
@@ -1227,7 +1232,7 @@ interface CategoriaFiltre {
 
       .budget-label {
         font-size: 0.72rem;
-        color: #8c897f;
+        color: var(--color-text-dim, #8c897f);
         font-weight: 700;
         text-transform: uppercase;
       }
@@ -1235,11 +1240,11 @@ interface CategoriaFiltre {
       .budget-value {
         font-size: 1.05rem;
         font-weight: 900;
-        color: #09090c;
+        color: var(--color-text, #09090c);
       }
 
       .offer-price {
-        color: #ff1744;
+        color: var(--neon, #ff1744);
       }
 
       .card-actions {
@@ -1248,9 +1253,9 @@ interface CategoriaFiltre {
       }
 
       .btn-action-detail {
-        background: #faf8f4;
-        border: 1px solid #d5cfc2;
-        color: #09090c;
+        background: var(--bg-surface-elevated, #faf8f4);
+        border: 1px solid var(--border-strong, #d5cfc2);
+        color: var(--color-text, #09090c);
         padding: 0.45rem 0.8rem;
         border-radius: 6px;
         font-size: 0.82rem;
@@ -1260,14 +1265,14 @@ interface CategoriaFiltre {
       }
 
       .btn-action-detail:hover {
-        background: #09090c;
+        background: var(--neon, #09090c);
         color: #ffffff;
-        border-color: #09090c;
+        border-color: var(--neon, #09090c);
       }
 
       .btn-action-primary {
-        background: #ff1744;
-        border: 1px solid #ff1744;
+        background: var(--neon, #ff1744);
+        border: 1px solid var(--neon, #ff1744);
         color: #ffffff;
         padding: 0.45rem 0.85rem;
         border-radius: 6px;
@@ -1278,21 +1283,21 @@ interface CategoriaFiltre {
       }
 
       .btn-action-primary:hover {
-        background: #09090c;
-        border-color: #09090c;
+        background: var(--neon, #09090c);
+        border-color: var(--neon, #09090c);
       }
 
       /* Estat buit */
       .empty-state {
-        background: #ffffff;
-        border: 1px dashed #dcd6cb;
+        background: var(--bg-card, #ffffff);
+        border: 1px dashed var(--border-strong, #dcd6cb);
         border-radius: 16px;
         padding: 3.5rem 2rem;
         text-align: center;
       }
 
       .empty-icon {
-        color: #ff1744;
+        color: var(--neon, #ff1744);
         margin-bottom: 1rem;
       }
 
@@ -1300,13 +1305,13 @@ interface CategoriaFiltre {
         margin: 0 0 0.5rem;
         font-size: 1.3rem;
         font-weight: 900;
-        color: #09090c;
+        color: var(--color-text, #09090c);
       }
 
       .empty-state p {
         margin: 0 0 1.5rem;
         font-size: 0.95rem;
-        color: #706e65;
+        color: var(--color-text-muted, #706e65);
       }
 
       .btn-reset-filters {
@@ -1367,8 +1372,8 @@ interface CategoriaFiltre {
       }
       .btn-view-reviews {
         background: none;
-        border: 1px solid #d1d5db;
-        color: #374151;
+        border: 1px solid var(--border-card, #d1d5db);
+        color: var(--color-text, #374151);
         font-size: 0.76rem;
         font-weight: 600;
         padding: 0.2rem 0.55rem;
@@ -1377,16 +1382,16 @@ interface CategoriaFiltre {
         transition: all 0.15s ease;
       }
       .btn-view-reviews:hover {
-        background: #f3f4f6;
-        border-color: #9ca3af;
-        color: #111827;
+        background: var(--bg-surface-elevated, #f3f4f6);
+        border-color: var(--neon, #9ca3af);
+        color: var(--color-text, #111827);
       }
 
       .user-profile-link {
         display: inline-flex;
         align-items: center;
         gap: 0.4rem;
-        color: #111827;
+        color: var(--color-text, #111827);
         text-decoration: none;
         transition: color 0.15s ease;
       }
@@ -1398,7 +1403,7 @@ interface CategoriaFiltre {
         text-decoration: underline;
       }
       .pro-title-link {
-        color: #111827;
+        color: var(--color-text, #111827);
         font-weight: 800;
         text-decoration: none;
         transition: color 0.15s ease;
@@ -1418,8 +1423,8 @@ interface CategoriaFiltre {
         width: 22px;
         height: 22px;
         border-radius: 50%;
-        background: #f0ece3;
-        color: #09090c;
+        background: var(--bg-surface-elevated, #f0ece3);
+        color: var(--color-text, #09090c);
         font-size: 0.72rem;
         font-weight: 800;
         display: inline-flex;
@@ -1440,7 +1445,7 @@ interface CategoriaFiltre {
         padding: 1rem;
       }
       .modal-dialog {
-        background: #ffffff;
+        background: var(--bg-card, #ffffff);
         border-radius: 16px;
         width: min(580px, 100%);
         max-height: 85vh;
@@ -1456,11 +1461,11 @@ interface CategoriaFiltre {
       }
       .modal-header {
         padding: 1.25rem 1.5rem;
-        border-bottom: 1px solid #e5e7eb;
+        border-bottom: 1px solid var(--border-subtle, #e5e7eb);
         display: flex;
         justify-content: space-between;
         align-items: flex-start;
-        background: #fafafa;
+        background: var(--bg-surface, #fafafa);
       }
       .pro-tag-badge {
         font-size: 0.7rem;
@@ -1473,7 +1478,7 @@ interface CategoriaFiltre {
         margin: 0.25rem 0 0.35rem;
         font-size: 1.4rem;
         font-weight: 800;
-        color: #111827;
+        color: var(--color-text, #111827);
       }
       .modal-rating-summary {
         display: flex;
@@ -1485,15 +1490,15 @@ interface CategoriaFiltre {
         background: none;
         border: none;
         font-size: 1.25rem;
-        color: #59606d;
+        color: var(--color-text-dim, #59606d);
         cursor: pointer;
         padding: 0.3rem;
         line-height: 1;
         border-radius: 6px;
       }
       .btn-close-modal:hover {
-        color: #111827;
-        background: #f3f4f6;
+        color: var(--color-text, #111827);
+        background: var(--bg-surface-elevated, #f3f4f6);
       }
       .modal-body {
         padding: 1.5rem;
@@ -1501,8 +1506,8 @@ interface CategoriaFiltre {
         flex: 1;
       }
       .pro-details-box {
-        background: #f8fafc;
-        border: 1px solid #e2e8f0;
+        background: var(--bg-surface, #f8fafc);
+        border: 1px solid var(--border-card, #e2e8f0);
         border-radius: 10px;
         padding: 1rem;
         margin-bottom: 1.25rem;
@@ -1512,7 +1517,7 @@ interface CategoriaFiltre {
         align-items: center;
         gap: 0.5rem;
         font-size: 0.9rem;
-        color: #1e293b;
+        color: var(--color-text, #1e293b);
         margin-bottom: 0.5rem;
       }
       .pro-contact-line strong {
@@ -1521,14 +1526,14 @@ interface CategoriaFiltre {
       .pro-bio-text {
         margin: 0;
         font-size: 0.88rem;
-        color: #475569;
+        color: var(--color-text-muted, #475569);
         line-height: 1.5;
       }
       .reviews-title {
         margin: 0 0 0.85rem;
         font-size: 1.05rem;
         font-weight: 700;
-        color: #1f2937;
+        color: var(--color-text, #1f2937);
       }
       .reviews-list {
         display: flex;
@@ -1536,8 +1541,8 @@ interface CategoriaFiltre {
         gap: 0.85rem;
       }
       .review-item {
-        border: 1px solid #edf2f7;
-        background: #ffffff;
+        border: 1px solid var(--border-card, #edf2f7);
+        background: var(--bg-card, #ffffff);
         border-radius: 10px;
         padding: 0.9rem 1rem;
         box-shadow: 0 1px 3px rgba(0,0,0,0.02);
@@ -1567,30 +1572,30 @@ interface CategoriaFiltre {
       }
       .reviewer-name {
         font-size: 0.88rem;
-        color: #1f2937;
+        color: var(--color-text, #1f2937);
         display: block;
       }
       .review-date {
         font-size: 0.74rem;
-        color: #59606d;
+        color: var(--color-text-dim, #59606d);
       }
       .rating-digit {
         font-size: 0.78rem;
         font-weight: 700;
-        color: #374151;
+        color: var(--color-text, #374151);
         margin-left: 0.2rem;
       }
       .review-comment {
         margin: 0;
         font-size: 0.86rem;
-        color: #4b5563;
+        color: var(--color-text-muted, #4b5563);
         line-height: 1.45;
         font-style: italic;
       }
       .modal-footer {
         padding: 0.85rem 1.5rem;
-        border-top: 1px solid #e5e7eb;
-        background: #fafafa;
+        border-top: 1px solid var(--border-subtle, #e5e7eb);
+        background: var(--bg-surface, #fafafa);
         display: flex;
         justify-content: flex-end;
       }
@@ -1608,9 +1613,9 @@ interface CategoriaFiltre {
         background: #2563eb;
       }
       .btn-view-full-profile {
-        background: #f0ece3;
-        color: #1f2937;
-        border: 1px solid #d1d5db;
+        background: var(--bg-surface-elevated, #f0ece3);
+        color: var(--color-text, #1f2937);
+        border: 1px solid var(--border-strong, #d1d5db);
         padding: 0.5rem 1rem;
         border-radius: 8px;
         font-size: 0.88rem;
@@ -2777,7 +2782,7 @@ export class TasquesOfertesComponent implements OnInit {
   onNovaIncidencia(): void {
     if (!this.requireLogin('publicar una incidència', '/client/crear-tasca')) return;
     if (this.authService.isClient()) {
-      this.router.navigate([this.getNavUrl('/client/crear-tasca')], { queryParams: { origen: 'tasques-ofertes' } });
+      this.router.navigate([this.getNavUrl('/client/crear-tasca')]);
     } else {
       this.noticeMessage = 'Només els comptes amb rol de "Client" o "Ambdós" poden publicar incidències.';
     }
@@ -2786,7 +2791,7 @@ export class TasquesOfertesComponent implements OnInit {
   onNovaOferta(): void {
     if (!this.requireLogin('publicar una oferta professional', '/professional/crear-oferta')) return;
     if (this.authService.isProfessional()) {
-      this.router.navigate([this.getNavUrl('/professional/crear-oferta')], { queryParams: { origen: 'tasques-ofertes' } });
+      this.router.navigate([this.getNavUrl('/professional/crear-oferta')]);
     } else {
       this.noticeMessage = 'Només els comptes amb rol de "Professional" o "Ambdós" poden publicar ofertes de servei.';
     }

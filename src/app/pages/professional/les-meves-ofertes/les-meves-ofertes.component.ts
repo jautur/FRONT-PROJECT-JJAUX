@@ -23,6 +23,15 @@ import { Tasca } from '../../../models/tasca.model';
   imports: [CommonModule, RouterLink, TranslatePipe],
   template: `
     <div class="panell-container">
+      <div class="app-back-nav" *ngIf="isAppPage">
+        <button type="button" class="btn-app-back" (click)="goBack()" [title]="'COMMON.TORNAR' | translate">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+          <span>{{ 'COMMON.TORNAR' | translate }}</span>
+        </button>
+      </div>
+
       <div class="panell-header">
         <div>
           <h2>{{ 'LES_MEVES_OFERTES.TITLE' | translate }}</h2>
@@ -186,7 +195,7 @@ import { Tasca } from '../../../models/tasca.model';
     }
     .panell-header h2 {
       margin: 0 0 0.35rem 0;
-      color: #09090c;
+      color: var(--color-text, #09090c);
       font-size: 1.85rem;
       font-weight: 900;
       letter-spacing: -0.02em;
@@ -298,7 +307,7 @@ import { Tasca } from '../../../models/tasca.model';
       margin: 0 0 0.5rem 0;
       font-size: 1.2rem;
       font-weight: 800;
-      color: #09090c;
+      color: var(--color-text, #09090c);
     }
     .tasca-desc {
       margin: 0 0 0.85rem 0;
@@ -362,7 +371,7 @@ import { Tasca } from '../../../models/tasca.model';
     .nota-label {
       font-weight: 800;
       font-style: normal;
-      color: #09090c;
+      color: var(--color-text, #09090c);
     }
     .card-actions {
       display: flex;
@@ -447,7 +456,7 @@ import { Tasca } from '../../../models/tasca.model';
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
     }
     .empty-state h3 {
-      color: #09090c;
+      color: var(--color-text, #09090c);
       font-size: 1.25rem;
       font-weight: 800;
       margin-top: 0.75rem;
@@ -501,7 +510,7 @@ import { Tasca } from '../../../models/tasca.model';
       margin: 0;
       font-size: 1.25rem;
       font-weight: 900;
-      color: #09090c;
+      color: var(--color-text, #09090c);
     }
     .pro-assigned-pill {
       background: #ecfdf5;
@@ -633,6 +642,14 @@ export class LesMevesOfertesComponent implements OnInit {
   get isAppPage(): boolean {
     const url = this.router.url || '';
     return url.startsWith('/app');
+  }
+
+  goBack(): void {
+    if (typeof window !== 'undefined' && window.history.length > 1) {
+      window.history.back();
+    } else {
+      this.router.navigate([this.getNavUrl('/inici')]);
+    }
   }
 
   getNavUrl(path: string): string {

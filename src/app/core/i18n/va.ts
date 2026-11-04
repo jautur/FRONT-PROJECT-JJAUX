@@ -22,11 +22,13 @@ export const va = {
     "ACCIONS": "Accions",
     "CARREGANT": "Carregant...",
     "SENSE_DADES": "Sense dades disponibles",
+    "NO_RESULTS": "Sense resultats disponibles",
     "TORNAR": "Tornar",
     "ACTUALITZAR": "Actualitzar"
   },
   "NAV": {
     "MENU": "Menú",
+    "HOME": "Inici",
     "OBRE_MENU": "Obre el menú de navegació",
     "OCULTAR_MENU": "Ocultar menú",
     "OCULTAR_MENU_LATERAL": "Ocultar menú lateral",
@@ -817,5 +819,36 @@ export const va = {
     "IOS_STEP_2": "Desplaça cap avall i selecciona 'Afegir a pantalla d'inici'",
     "IOS_STEP_3": "Toca 'Afegir' a la cantonada superior dreta",
     "IOS_CLOSE": "Entès"
+  },
+  "ERRORS": {
+    "REQUIRED_FIELDS": "Cal emplenar tots els camps obligatoris.",
+    "TASK_SAVE_ERROR": "S’ha produït un error en desar la incidència a la base de dades.",
+    "PACK_FIELDS_REQUIRED": "Cal emplenar tots els camps del pack de servei.",
+    "OFFER_PUBLISH_ERROR": "S’ha produït un error en publicar l’oferta de servei.",
+    "BUDGET_FIELDS_REQUIRED": "Cal emplenar tots els camps obligatoris del pressupost.",
+    "BUDGET_REGISTER_ERROR": "S’ha produït un error en registrar el pressupost al servidor.",
+    "INCIDENTS_LOAD_ERROR": "No s’han pogut carregar les incidències obertes.",
+    "TERMS_REQUIRED": "Cal acceptar els termes i condicions per poder registrar-se.",
+    "PRIVACY_REQUIRED": "Cal acceptar la política de privacitat per poder registrar-se.",
+    "REGISTER_FORM_CHECK": "Si us plau, revisa els camps obligatoris del formulari.",
+    "PRO_PHONE_REQUIRED": "Com a Professional, el telèfon de contacte és obligatori per resoldre peticions.",
+    "SERVER_UNREACHABLE": "El servidor no respon. Comprova la teva connexió o que el backend estigui actiu.",
+    "REGISTER_ERROR": "No s’ha pogut completar el registre. Comprova les dades o torna-ho a provar.",
+    "PERCENTILE_RANGE": "El percentil de comissió ha de ser un número sencer comprès entre 0 i 100.",
+    "PASS_MIN_LENGTH": "La contrasenya ha de tenir com a mínim 6 caràcters.",
+    "PASS_MISMATCH": "Les contrasenyes introduïdes no coincideixen.",
+    "PASS_UPDATE_ERROR": "No s’ha pogut actualitzar la contrasenya. Comprova la connexió amb el servidor.",
+    "PROFILE_SAVE_ERROR": "S’ha produït un error en desar el perfil. Torna-ho a provar.",
+    "VERIFY_PHONE_REQUIRED": "Cal registrar un telèfon de contacte abans de sol·licitar la verificació.",
+    "ACCEPT_BUDGET_ERROR": "No s’ha pogut acceptar el pressupost.",
+    "OFFLINE_TITLE": "Sense connexió a Internet",
+    "OFFLINE_DESC": "Estàs navegant en mode fora de línia. Les noves dades se sincronitzaran en recuperar la xarxa."
+  },
+  "MERCAT": {
+    "LOADING": "Carregant dades...",
+    "DETALL": "Veure detall",
+    "AGREED_NATURE": "Tasca acordada",
+    "MOBILE_CAT_LABEL": "Categoria:",
+    "AVAILABLE": "disponibles"
   }
 };

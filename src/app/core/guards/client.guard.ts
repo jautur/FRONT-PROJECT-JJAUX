@@ -13,8 +13,14 @@ export const clientGuard: CanActivateFn = (
   const authService = inject(AuthService);
   const router = inject(Router);
 
+  const isAppMode = state.url.startsWith('/app') || (
+    typeof sessionStorage !== 'undefined' && sessionStorage.getItem('avisa_app_mode') === 'true'
+  );
+  const loginUrl = isAppMode ? '/app/login' : '/login';
+  const homeUrl = isAppMode ? '/app' : '/';
+
   if (!authService.isLoggedIn()) {
-    router.navigate(['/login'], { queryParams: { returnUrl: state.url, message: 'Cal iniciar sessió per accedir com a client.' } });
+    router.navigate([loginUrl], { queryParams: { returnUrl: state.url, message: 'Cal iniciar sessió per accedir com a client.' } });
     return false;
   }
 
@@ -22,7 +28,7 @@ export const clientGuard: CanActivateFn = (
     return true;
   }
 
-  router.navigate(['/'], { queryParams: { error: 'Aquesta secció requereix un compte de client o professional.' } });
+  router.navigate([homeUrl], { queryParams: { error: 'Aquesta secció requereix un compte de client o professional.' } });
   return false;
 };
 

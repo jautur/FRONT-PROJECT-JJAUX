@@ -34,6 +34,15 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
   imports: [CommonModule, FormsModule, RouterLink, TranslatePipe],
   template: `
     <div class="panell-container">
+      <div class="app-back-nav" *ngIf="isAppPage">
+        <button type="button" class="btn-app-back" (click)="goBack()" [title]="'COMMON.TORNAR' | translate">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+          <span>{{ 'COMMON.TORNAR' | translate }}</span>
+        </button>
+      </div>
+
       <div class="panell-header">
         <div>
           <h2>{{ 'LES_MEVES_TASQUES.TITLE' | translate }}</h2>
@@ -297,7 +306,7 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
     }
     .panell-header h2 {
       margin: 0 0 0.35rem 0;
-      color: #09090c;
+      color: var(--color-text, #09090c);
       font-size: 1.85rem;
       font-weight: 900;
       letter-spacing: -0.02em;
@@ -435,7 +444,7 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
     .badge-categoria {
       background: #f0ece3;
       border: 1px solid #dcd6cb;
-      color: #09090c;
+      color: var(--color-text, #09090c);
       padding: 0.25rem 0.65rem;
       border-radius: 6px;
       font-size: 0.78rem;
@@ -466,7 +475,7 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
       margin: 0 0 0.5rem 0;
       font-size: 1.2rem;
       font-weight: 800;
-      color: #09090c;
+      color: var(--color-text, #09090c);
     }
     .tasca-desc {
       margin: 0 0 1.25rem 0;
@@ -501,7 +510,7 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
     }
     .meta-value.ofertes-badge {
       font-weight: 800;
-      color: #09090c;
+      color: var(--color-text, #09090c);
       font-size: 0.85rem;
     }
     .card-actions {
@@ -601,7 +610,7 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
     }
     .empty-state h3 {
-      color: #09090c;
+      color: var(--color-text, #09090c);
       font-size: 1.25rem;
       font-weight: 800;
       margin-top: 0.75rem;
@@ -697,7 +706,7 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
       margin: 0;
       font-size: 1.35rem;
       font-weight: 900;
-      color: #09090c;
+      color: var(--color-text, #09090c);
     }
 
     .btn-close-modal {
@@ -712,7 +721,7 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
       display: flex;
       align-items: center;
       justify-content: center;
-      color: #09090c;
+      color: var(--color-text, #09090c);
       transition: all 0.2s ease;
     }
 
@@ -739,7 +748,7 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
       margin: 0.4rem 0 0.25rem;
       font-size: 1.1rem;
       font-weight: 800;
-      color: #09090c;
+      color: var(--color-text, #09090c);
     }
 
     .summary-pro {
@@ -757,7 +766,7 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
       display: block;
       font-size: 0.88rem;
       font-weight: 800;
-      color: #09090c;
+      color: var(--color-text, #09090c);
       margin-bottom: 0.5rem;
     }
 
@@ -791,7 +800,7 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
       margin-left: 0.75rem;
       font-size: 0.88rem;
       font-weight: 800;
-      color: #09090c;
+      color: var(--color-text, #09090c);
     }
 
     .comment-input-group textarea {
@@ -803,7 +812,7 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
       padding: 0.85rem 1rem;
       font-family: inherit;
       font-size: 0.92rem;
-      color: #09090c;
+      color: var(--color-text, #09090c);
       font-weight: 600;
       resize: vertical;
     }
@@ -852,7 +861,7 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
     }
 
     .btn-skip-review:hover:not(:disabled) {
-      color: #09090c;
+      color: var(--color-text, #09090c);
     }
 
     @media (max-width: 768px) {
@@ -942,6 +951,14 @@ export class LesMevesTasquesComponent implements OnInit {
   get isAppPage(): boolean {
     const url = this.router.url || '';
     return url.startsWith('/app');
+  }
+
+  goBack(): void {
+    if (typeof window !== 'undefined' && window.history.length > 1) {
+      window.history.back();
+    } else {
+      this.router.navigate([this.getNavUrl('/inici')]);
+    }
   }
 
   getNavUrl(path: string): string {

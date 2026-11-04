@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService, RegisterData } from '../../../core/services/auth.service';
@@ -26,6 +26,15 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterLink, TermesModalComponent, TranslatePipe],
   template: `
+    <div class="app-back-nav" *ngIf="isAppPage">
+      <button type="button" class="btn-app-back" (click)="goBack()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+        <span>{{ 'COMMON.TORNAR' | translate }}</span>
+      </button>
+    </div>
+
     <section class="auth-card">
       <h1>{{ 'AUTH.REGISTER.TITLE' | translate }}</h1>
       <p class="subtitle">{{ 'AUTH.REGISTER.SUBTITLE' | translate }}</p>
@@ -542,8 +551,17 @@ export class RegistreComponent implements OnInit {
   constructor(
     private readonly fb: FormBuilder,
     private readonly authService: AuthService,
-    private readonly router: Router
+    private readonly router: Router,
+    private readonly location: Location
   ) {}
+
+  goBack(): void {
+    if (window.history.length > 1) {
+      this.location.back();
+    } else {
+      this.router.navigate([this.getNavUrl('/inici')]);
+    }
+  }
 
   get isAppPage(): boolean {
     const url = this.router.url || '';
@@ -623,14 +641,14 @@ export class RegistreComponent implements OnInit {
       this.registerForm.markAllAsTouched();
 
       if (this.registerForm.get('acceptedTerms')?.hasError('required')) {
-        this.errorMessage = 'Cal acceptar els termes i condicions per poder registrar-se.';
+        this.errorMessage = 'ERRORS.TERMS_REQUIRED';
         return;
       }
       if (this.registerForm.get('acceptedPrivacy')?.hasError('required')) {
-        this.errorMessage = 'Cal acceptar la política de privacitat per poder registrar-se.';
+        this.errorMessage = 'ERRORS.PRIVACY_REQUIRED';
         return;
       }
-      this.errorMessage = 'Si us plau, revisa els camps obligatoris del formulari.';
+      this.errorMessage = 'ERRORS.REGISTER_FORM_CHECK';
       return;
     }
 
@@ -639,7 +657,7 @@ export class RegistreComponent implements OnInit {
     // Validació específica del fill (Professional): requereix telèfon obligatori
     if (formVal.rol === 'professional') {
       if (!formVal.telefon || !formVal.telefon.trim()) {
-        this.errorMessage = 'Com a Professional, el telèfon de contacte és obligatori per poder resoldre peticions.';
+        this.errorMessage = 'ERRORS.PRO_PHONE_REQUIRED';
         return;
       }
     }
@@ -668,13 +686,13 @@ export class RegistreComponent implements OnInit {
           this.errorMessage = err.error.message;
         } else if (err.status === 400 && err.error?.missatges) {
           const msgs = Object.values(err.error.missatges).join(' ');
-          this.errorMessage = msgs || 'Dades de registre incorrectes.';
+          this.errorMessage = msgs || 'ERRORS.REGISTER_ERROR';
         } else if (err.error?.error && typeof err.error.error === 'string') {
           this.errorMessage = err.error.error;
         } else if (err.status === 0 || err.status === 502 || err.status === 504) {
-          this.errorMessage = 'El servidor no respon. Comprova que el backend estigui actiu al port 8080.';
+          this.errorMessage = 'ERRORS.SERVER_UNREACHABLE';
         } else {
-          this.errorMessage = err?.error?.message || 'No s’ha pogut completar el registre. El correu o telèfon podria estar bloquejat o el servidor no respon.';
+          this.errorMessage = err?.error?.message || 'ERRORS.REGISTER_ERROR';
         }
       }
     });

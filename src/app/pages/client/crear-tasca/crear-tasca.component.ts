@@ -355,19 +355,9 @@ export class CrearTascaComponent implements OnInit {
   }
 
   /**
-   * Inicialització: comprova l'origen des de tasques-ofertes i assigna el client.
+   * Inicialització: assigna les dades de l'usuari client connectat.
    */
   ngOnInit(): void {
-    const origen = this.route.snapshot.queryParams['origen'] || (typeof history !== 'undefined' ? history.state?.origen : null);
-    if (origen !== 'tasques-ofertes') {
-      this.router.navigate([this.getNavUrl('/tasques-ofertes')], {
-        queryParams: {
-          avís: 'Per a publicar una incidència cal fer-ho des de la secció de Tasques i Ofertes.'
-        }
-      });
-      return;
-    }
-
     const user = this.authService.getCurrentUser();
     if (user) {
       this.formData.client = user.nom;
@@ -379,7 +369,7 @@ export class CrearTascaComponent implements OnInit {
    */
   onSubmit(): void {
     if (!this.formData.titol || !this.formData.descripcio || !this.formData.categoria || !this.formData.budget) {
-      this.errorMessage = 'Cal emplenar tots els camps obligatoris.';
+      this.errorMessage = 'ERRORS.REQUIRED_FIELDS';
       return;
     }
 
@@ -408,7 +398,7 @@ export class CrearTascaComponent implements OnInit {
       },
       error: () => {
         this.submitting = false;
-        this.errorMessage = 'S’ha produït un error en desar la incidència a la base de dades.';
+        this.errorMessage = 'ERRORS.TASK_SAVE_ERROR';
       }
     });
   }

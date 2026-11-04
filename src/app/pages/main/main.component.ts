@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, NgZone, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Router, RouterLink, NavigationEnd } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { DashboardResponse, DashboardService } from '../../services/dashboard.service';
@@ -67,7 +67,19 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         <div class="dashboard-header-bar">
           <div>
             <span class="eyebrow-tag">{{ 'HOME.PLATAFORMA_AVISA' | translate }}</span>
-            <h2 class="dashboard-title">{{ 'HOME.DASHBOARD_TITLE' | translate }}</h2>
+            <h2 class="dashboard-title">
+              <a
+                [routerLink]="getNavUrl('/tasques-ofertes')"
+                class="dashboard-title-link"
+                [title]="'NAV.TASQUES_OFERTES' | translate"
+              >
+                {{ 'HOME.DASHBOARD_TITLE' | translate }}
+                <svg class="dashboard-title-icon" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M5 12h14"></path>
+                  <path d="m12 5 7 7-7 7"></path>
+                </svg>
+              </a>
+            </h2>
           </div>
           <div class="dashboard-header-actions">
             <button
@@ -135,6 +147,20 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
 
           <!-- ESCENARI TWITCH: PREV, CENTER (GRAN), NEXT -->
           <div class="twitch-carousel-stage" [class.is-transitioning]="isProCarouselTransitioning" *ngIf="verifiedProfessionals.length > 0">
+            <!-- FLETXA ALS COSTATS DEL CARRUSEL: ESQUERRA (ANTERIOR) -->
+            <button
+              type="button"
+              class="carousel-nav-arrow btn-nav-prev"
+              *ngIf="verifiedProfessionals.length > 1"
+              (click)="goToPrevPro()"
+              aria-label="Passar a la targeta anterior"
+              title="Anterior"
+            >
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="15 18 9 12 15 6"></polyline>
+              </svg>
+            </button>
+
             <!-- TARGETA PREVISUALITZACIÓ ANTERIOR (ESQUERRA) -->
             <div
               class="side-preview-card prev-card"
@@ -289,6 +315,20 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
                 </div>
               </div>
             </div>
+
+            <!-- FLETXA ALS COSTATS DEL CARRUSEL: DRETA (SEGÜENT) -->
+            <button
+              type="button"
+              class="carousel-nav-arrow btn-nav-next"
+              *ngIf="verifiedProfessionals.length > 1"
+              (click)="goToNextPro()"
+              aria-label="Passar a la targeta següent"
+              title="Següent"
+            >
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </button>
           </div>
 
           <!-- INDICADORS DE POSICIÓ / PAGINACIÓ (DOTS TWITCH) -->
@@ -867,11 +907,11 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       }
 
       body.theme-app-dark .welcome-simple-title {
-        color: #f5f4ef;
+        color: var(--color-text);
       }
 
       body.theme-app-dark .welcome-simple-sub {
-        color: #bab8ae;
+        color: var(--color-text-muted);
       }
 
       .dashboard-header-bar {
@@ -908,6 +948,32 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         color: var(--color-text, #09090c);
         font-weight: 900;
         letter-spacing: -0.03em;
+      }
+
+      .dashboard-title-link {
+        color: inherit;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: color 0.2s ease, transform 0.2s ease;
+      }
+
+      .dashboard-title-link:hover,
+      .dashboard-title-link:focus-visible {
+        color: #ff1744;
+        text-decoration: none;
+      }
+
+      .dashboard-title-link:hover .dashboard-title-icon,
+      .dashboard-title-link:focus-visible .dashboard-title-icon {
+        transform: translateX(4px);
+      }
+
+      .dashboard-title-icon {
+        flex-shrink: 0;
+        transition: transform 0.2s ease;
+        opacity: 0.85;
       }
 
       .btn-create-task {
@@ -985,14 +1051,14 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       }
 
       body.theme-app-dark .btn-create-offer-dash {
-        background: #252b3d;
-        border-color: #3d4661;
-        color: #f5f4ef;
+        background: var(--bg-surface);
+        border-color: var(--border-card);
+        color: var(--color-text);
       }
 
       body.theme-app-dark .btn-create-offer-dash:hover {
-        background: #ff1744;
-        border-color: #ff1744;
+        background: var(--neon, #ff1744);
+        border-color: var(--neon, #ff1744);
         color: #ffffff;
       }
 
@@ -1003,8 +1069,8 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       }
 
       .stat-card {
-        background: #ffffff;
-        border: 1px solid #e5e0d7;
+        background: var(--bg-card, #ffffff);
+        border: 1px solid var(--border-subtle, #e5e0d7);
         border-radius: 16px;
         padding: 1.5rem 1.6rem;
         display: flex;
@@ -1020,7 +1086,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       }
 
       .label {
-        color: #716f67;
+        color: var(--color-text-dim, #716f67);
         font-size: 0.85rem;
         font-weight: 800;
         text-transform: uppercase;
@@ -1029,7 +1095,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
 
       .stat-card strong {
         font-size: 2.4rem;
-        color: #09090c;
+        color: var(--color-text, #09090c);
         font-weight: 900;
         line-height: 1;
       }
@@ -1233,14 +1299,15 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       }
 
       .card-footer .btn-secondary {
-        background: #eee9e0 !important;
-        color: #09090c !important;
-        border: 1px solid #ded8cd !important;
+        background: var(--bg-surface-elevated, #eee9e0);
+        color: var(--color-text, #09090c);
+        border: 1px solid var(--border-card, #ded8cd);
       }
 
       .card-footer .btn-secondary:hover {
-        border-color: #09090c !important;
-        background: #e3ded4 !important;
+        border-color: var(--neon, #ff1744);
+        background: var(--bg-surface, #e3ded4);
+        color: var(--neon, #ff1744);
       }
 
       .offer-card button {
@@ -1250,15 +1317,15 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       }
 
       .offer-card button:hover {
-        background: #09090c;
+        background: var(--bg-surface-elevated, #1e2433);
         color: #ff1744;
       }
 
       .notice-banner {
-        background: #ffffff;
+        background: var(--bg-card, #ffffff);
         border: 1px solid rgba(255, 23, 68, 0.4);
         border-left: 4px solid #ff1744;
-        color: #09090c;
+        color: var(--color-text, #09090c);
         padding: 0.9rem 1.25rem;
         border-radius: 10px;
         display: flex;
@@ -1271,14 +1338,14 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       .btn-dismiss {
         background: transparent !important;
         border: none !important;
-        color: #716f67 !important;
+        color: var(--color-text-dim, #716f67) !important;
         cursor: pointer;
         font-size: 1.1rem;
         padding: 0 !important;
       }
 
       .btn-dismiss:hover {
-        color: #09090c !important;
+        color: var(--color-text, #09090c) !important;
       }
 
       @keyframes fadeIn {
@@ -1356,7 +1423,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       .seo-section-title {
         font-size: clamp(1.8rem, 3.5vw, 2.4rem);
         font-weight: 900;
-        color: #09090c;
+        color: var(--color-text, #09090c);
         margin: 0 0 1rem;
         line-height: 1.2;
         letter-spacing: -0.02em;
@@ -1407,7 +1474,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         margin: 0 0 0.6rem;
         font-size: 1.15rem;
         font-weight: 900;
-        color: #09090c;
+        color: var(--color-text, #09090c);
       }
 
       .feature-card p {
@@ -1459,13 +1526,13 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         font-size: clamp(1.6rem, 3.2vw, 2.2rem);
         font-weight: 900;
         margin: 0 0 0.8rem;
-        color: #f7f3ed;
+        color: #ffffff;
       }
 
       .app-sync-content p {
         font-size: 1rem;
         line-height: 1.6;
-        color: #bab8ae;
+        color: #cbd5e1;
         max-width: 780px;
         margin: 0 0 1.8rem;
       }
@@ -1612,7 +1679,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       .role-box-header h3 {
         font-size: 1.35rem;
         font-weight: 900;
-        color: #09090c;
+        color: var(--color-text, #09090c);
         margin: 0 0 0.5rem;
       }
 
@@ -1824,7 +1891,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         margin: 0 0 0.75rem;
         font-size: 1.12rem;
         font-weight: 900;
-        color: #09090c;
+        color: var(--color-text, #09090c);
         line-height: 1.35;
       }
 
@@ -1851,7 +1918,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       }
 
       .btn-read-article:hover {
-        color: #09090c;
+        color: var(--color-text, #09090c);
         transform: translateX(4px);
       }
 
@@ -1919,7 +1986,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
 
       .btn-cta-main:hover {
         background: #ffffff;
-        color: #09090c;
+        color: #ff1744;
         border-color: #ffffff;
         transform: translateY(-2px);
       }
@@ -2104,7 +2171,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         margin: 0 0 0.5rem;
         font-size: 1.45rem;
         font-weight: 900;
-        color: #09090c;
+        color: var(--color-text, #09090c);
         line-height: 1.3;
       }
 
@@ -2125,7 +2192,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         align-items: center;
         justify-content: center;
         cursor: pointer;
-        color: #09090c;
+        color: var(--color-text, #09090c);
         transition: all 0.2s ease;
       }
 
@@ -3367,6 +3434,48 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         width: 100%;
       }
 
+      /* FLETXES ALS COSTATS DEL CARRUSEL */
+      .carousel-nav-arrow {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 25;
+        width: 52px;
+        height: 52px;
+        border-radius: 50%;
+        background: rgba(19, 23, 34, 0.88);
+        border: 2px solid rgba(255, 255, 255, 0.25);
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        backdrop-filter: blur(8px);
+        transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+        user-select: none;
+      }
+
+      .carousel-nav-arrow.btn-nav-prev {
+        left: clamp(0.75rem, 2.5vw, 2.5rem);
+      }
+
+      .carousel-nav-arrow.btn-nav-next {
+        right: clamp(0.75rem, 2.5vw, 1.75rem);
+      }
+
+      .carousel-nav-arrow:hover {
+        background: #ff1744;
+        border-color: #ff1744;
+        color: #ffffff;
+        transform: translateY(-50%) scale(1.14);
+        box-shadow: 0 0 24px rgba(255, 23, 68, 0.65), 0 6px 20px rgba(0, 0, 0, 0.4);
+      }
+
+      .carousel-nav-arrow:active {
+        transform: translateY(-50%) scale(0.96);
+      }
+
       /* RESPONSIVE BREAKPOINTS */
       @media (max-width: 992px) {
         .showcase-banner {
@@ -3379,6 +3488,22 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       }
 
       @media (max-width: 768px) {
+        .carousel-nav-arrow {
+          width: 44px;
+          height: 44px;
+          background: rgba(19, 23, 34, 0.92);
+          border-color: rgba(255, 23, 68, 0.5);
+          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.55);
+        }
+
+        .carousel-nav-arrow.btn-nav-prev {
+          left: 0.35rem;
+        }
+
+        .carousel-nav-arrow.btn-nav-next {
+          right: 0.35rem;
+        }
+
         .side-preview-card {
           display: none;
         }
@@ -3533,14 +3658,21 @@ export class MainComponent implements OnInit, OnDestroy {
     });
   }
 
-  /** Inicia el temporitzador de rotació automàtica cada 5 segons */
+  /** Inicia el temporitzador de rotació automàtica cada 5 segons fora de la zona d'Angular */
   startProCarouselTimer(): void {
     this.stopProCarouselTimer();
-    this.proCarouselInterval = setInterval(() => {
-      if (!this.isProCarouselPaused && this.verifiedProfessionals.length > 1) {
-        this.seleccionarProfessional((this.currentProIndex + 1) % this.verifiedProfessionals.length);
-      }
-    }, 5000);
+    this.ngZone.runOutsideAngular(() => {
+      this.proCarouselInterval = setInterval(() => {
+        if (typeof document !== 'undefined' && document.hidden) {
+          return;
+        }
+        if (!this.isProCarouselPaused && this.verifiedProfessionals.length > 1) {
+          this.ngZone.run(() => {
+            this.seleccionarProfessional((this.currentProIndex + 1) % this.verifiedProfessionals.length);
+          });
+        }
+      }, 5000);
+    });
   }
 
   /** Atura el temporitzador per evitar fugues de memòria */
@@ -3647,7 +3779,8 @@ export class MainComponent implements OnInit, OnDestroy {
     private readonly confirmService: ConfirmService,
     private readonly router: Router,
     public readonly pwaService: PwaService,
-    private readonly translationService: TranslationService
+    private readonly translationService: TranslationService,
+    private readonly ngZone: NgZone
   ) {
     this.routerEventsSub = this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
@@ -3894,11 +4027,13 @@ export class MainComponent implements OnInit, OnDestroy {
   }
 
   onNovaTasca(): void {
-    this.router.navigate([this.getNavUrl('/tasques-ofertes')], { queryParams: { tipus: 'incidencies', accio: 'crear-incidencia' } });
+    if (!this.requireLogin('publicar una incidència', '/client/crear-tasca')) return;
+    this.router.navigate([this.getNavUrl('/client/crear-tasca')]);
   }
 
   onNovaOferta(): void {
-    this.router.navigate([this.getNavUrl('/tasques-ofertes')], { queryParams: { tipus: 'ofertes', accio: 'crear-oferta' } });
+    if (!this.requireLogin('publicar una oferta professional', '/professional/crear-oferta')) return;
+    this.router.navigate([this.getNavUrl('/professional/crear-oferta')]);
   }
 
   onNavegarTasquesOfertes(tipus: 'tots' | 'tasques' | 'ofertes' | 'incidencies' = 'tots'): void {
