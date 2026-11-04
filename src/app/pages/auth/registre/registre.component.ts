@@ -51,8 +51,8 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
             <button
               type="button"
               class="role-btn"
-              [class.active]="registerForm.get('rol')?.value === 'client'"
-              (click)="onSelectRole('client')">
+              [class.active]="registerForm.get('rol')?.value === 'CLIENT'"
+              (click)="onSelectRole('CLIENT')">
               <strong>{{ 'AUTH.REGISTER.ROLE_CLIENT_TITLE' | translate }}</strong>
               <small>{{ 'AUTH.REGISTER.ROLE_CLIENT_SUB' | translate }}</small>
             </button>
@@ -60,8 +60,8 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
             <button
               type="button"
               class="role-btn"
-              [class.active]="registerForm.get('rol')?.value === 'professional'"
-              (click)="onSelectRole('professional')">
+              [class.active]="registerForm.get('rol')?.value === 'PROFESSIONAL'"
+              (click)="onSelectRole('PROFESSIONAL')">
               <strong>{{ 'AUTH.REGISTER.ROLE_PRO_TITLE' | translate }}</strong>
               <small>{{ 'AUTH.REGISTER.ROLE_PRO_SUB' | translate }}</small>
             </button>
@@ -69,11 +69,11 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
         </div>
 
         <!-- Informació pedagògica del rol seleccionat -->
-        <div class="role-info-box" [ngClass]="registerForm.get('rol')?.value">
-          <div *ngIf="registerForm.get('rol')?.value === 'client'">
+        <div class="role-info-box" [ngClass]="registerForm.get('rol')?.value?.toLowerCase()">
+          <div *ngIf="registerForm.get('rol')?.value === 'CLIENT'">
             {{ 'AUTH.REGISTER.CLIENT_INFO' | translate }}
           </div>
-          <div *ngIf="registerForm.get('rol')?.value === 'professional'">
+          <div *ngIf="registerForm.get('rol')?.value === 'PROFESSIONAL'">
             {{ 'AUTH.REGISTER.PRO_INFO' | translate }}
             <div style="margin-top: 0.5rem; color: #166534; font-weight: 600; display: flex; align-items: flex-start; gap: 0.35rem; line-height: 1.45;">
               <span style="flex-shrink: 0; margin-top: 1px;">
@@ -122,7 +122,7 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
         </label>
 
         <!-- Telèfon obligatori per a professionals -->
-        <label *ngIf="registerForm.get('rol')?.value === 'professional'">
+        <label *ngIf="registerForm.get('rol')?.value === 'PROFESSIONAL'">
           {{ 'AUTH.REGISTER.PHONE_LABEL' | translate }}
           <input
             type="tel"
@@ -130,10 +130,10 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
             required
             placeholder="Ex: +34 600 123 456"
             class="input-required"
-            [class.input-error]="submitted && registerForm.get('rol')?.value === 'professional' && !registerForm.get('telefon')?.value"
+            [class.input-error]="submitted && registerForm.get('rol')?.value === 'PROFESSIONAL' && !registerForm.get('telefon')?.value"
           />
           <small class="hint">{{ 'AUTH.REGISTER.PHONE_HINT' | translate }}</small>
-          <small *ngIf="submitted && registerForm.get('rol')?.value === 'professional' && !registerForm.get('telefon')?.value" class="field-error-text">
+          <small *ngIf="submitted && registerForm.get('rol')?.value === 'PROFESSIONAL' && !registerForm.get('telefon')?.value" class="field-error-text">
             {{ 'AUTH.REGISTER.PHONE_REQUIRED' | translate }}
           </small>
         </label>
@@ -209,7 +209,7 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
         </div>
 
         <button type="submit" class="submit-btn" [disabled]="loading">
-          {{ loading ? ('AUTH.REGISTER.SUBMITTING' | translate) : ('AUTH.REGISTER.SUBMIT_PREFIX' | translate) + (registerForm.get('rol')?.value === 'professional' ? ('AUTH.REGISTER.ROLE_PRO_TITLE' | translate) : ('AUTH.REGISTER.ROLE_CLIENT_TITLE' | translate)) }}
+          {{ loading ? ('AUTH.REGISTER.SUBMITTING' | translate) : ('AUTH.REGISTER.SUBMIT_PREFIX' | translate) + (registerForm.get('rol')?.value === 'PROFESSIONAL' ? ('AUTH.REGISTER.ROLE_PRO_TITLE' | translate) : ('AUTH.REGISTER.ROLE_CLIENT_TITLE' | translate)) }}
         </button>
 
         <p class="footer-hint">
@@ -580,7 +580,7 @@ export class RegistreComponent implements OnInit {
   ngOnInit(): void {
     // Inicialització del formulari reactiu amb les dues caselles obligatòries no marcades per defecte
     this.registerForm = this.fb.group({
-      rol: ['client', [Validators.required]],
+      rol: ['CLIENT', [Validators.required]],
       nom: ['', [Validators.required]],
       email: ['', [Validators.required, Validators.email]],
       telefon: [''],
@@ -592,9 +592,9 @@ export class RegistreComponent implements OnInit {
 
   /**
    * Canvia el rol seleccionat al formulari reactiu.
-   * @param rol 'client' o 'professional'
+   * @param rol 'CLIENT' o 'PROFESSIONAL'
    */
-  onSelectRole(rol: 'client' | 'professional'): void {
+  onSelectRole(rol: 'CLIENT' | 'PROFESSIONAL'): void {
     this.registerForm.patchValue({ rol });
     this.errorMessage = '';
   }
@@ -655,7 +655,7 @@ export class RegistreComponent implements OnInit {
     const formVal = this.registerForm.value;
 
     // Validació específica del fill (Professional): requereix telèfon obligatori
-    if (formVal.rol === 'professional') {
+    if (formVal.rol === 'PROFESSIONAL') {
       if (!formVal.telefon || !formVal.telefon.trim()) {
         this.errorMessage = 'ERRORS.PRO_PHONE_REQUIRED';
         return;

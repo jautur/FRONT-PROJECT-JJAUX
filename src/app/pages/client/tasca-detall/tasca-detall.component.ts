@@ -122,7 +122,7 @@ import { Pressupost } from '../../../models/pressupost.model';
               <span class="score-text">{{ tasca.valoracio }}/5</span>
             </div>
           </div>
-          <p class="review-display-opinion" *ngIf="tasca.opinio">"{{ tasca.opinio }}"</p>
+          <p class="review-display-opinion" *ngIf="tasca.comentari">"{{ tasca.comentari }}"</p>
         </div>
 
         <!-- Botó per al professional assignat per donar per acabada la tasca -->
@@ -1365,7 +1365,7 @@ export class TascaDetallComponent implements OnInit {
   get isClientOwner(): boolean {
     const user = this.authService.getCurrentUser();
     if (!user || !this.tasca) return false;
-    return user.rol === 'admin' || (user.rol === 'client' && user.nom === this.tasca.client);
+    return user.rol === 'ADMIN' || (user.rol === 'CLIENT' && user.nom === this.tasca.client);
   }
 
   /**
@@ -1374,7 +1374,7 @@ export class TascaDetallComponent implements OnInit {
   get isAssignedProfessional(): boolean {
     const user = this.authService.getCurrentUser();
     if (!user || !this.tasca) return false;
-    if (user.rol === 'admin') return true;
+    if (user.rol === 'ADMIN') return true;
     const proNom = (this.tasca.professionalNom || this.tasca.professional || '').toLowerCase().trim();
     const proId = (this.tasca.professionalId || '').toLowerCase().trim();
     const curNom = (user.nom || '').toLowerCase().trim();
@@ -1389,7 +1389,7 @@ export class TascaDetallComponent implements OnInit {
   isOfferOwner(offer: Oferta): boolean {
     const user = this.authService.getCurrentUser();
     if (!user) return false;
-    if (user.rol === 'admin') return true;
+    if (user.rol === 'ADMIN') return true;
     const pro = (offer.professional || '').toLowerCase().trim();
     const curNom = (user.nom || '').toLowerCase().trim();
     const curId = (user.id || '').toLowerCase().trim();
@@ -1400,7 +1400,7 @@ export class TascaDetallComponent implements OnInit {
    * Comprova si l'usuari connectat té rol de Professional.
    */
   get isProfessional(): boolean {
-    return this.authService.hasRole('professional') || this.authService.hasRole('admin');
+    return this.authService.hasRole('PROFESSIONAL') || this.authService.hasRole('ADMIN');
   }
 
   /**
@@ -1521,7 +1521,7 @@ export class TascaDetallComponent implements OnInit {
   onCompleteTask(): void {
     if (!this.tasca) return;
     this.puntuacioSeleccionada = this.tasca.valoracio || 5;
-    this.ressenyaDescripcio = this.tasca.opinio || '';
+    this.ressenyaDescripcio = this.tasca.comentari || '';
     this.modalFinalitzarObert = true;
   }
 
@@ -1536,7 +1536,7 @@ export class TascaDetallComponent implements OnInit {
 
     this.tascaService.avaluar(t.id, {
       valoracio: this.puntuacioSeleccionada,
-      opinio: textDesc
+      comentari: textDesc
     }).subscribe({
       next: (updated) => {
         this.tasca = updated;
@@ -1548,7 +1548,7 @@ export class TascaDetallComponent implements OnInit {
         // Fallback per si es completa conjuntament
         this.tascaService.complete(t.id, {
           valoracio: this.puntuacioSeleccionada,
-          opinio: textDesc
+          comentari: textDesc
         }).subscribe({
           next: (updated) => {
             this.tasca = updated;

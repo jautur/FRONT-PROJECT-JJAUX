@@ -162,8 +162,8 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'pressupostos' | 'usuari
             <span class="metric-value">{{ usuaris.length }}</span>
             <span class="metric-label">{{ 'ADMIN.METRIC_USERS' | translate }}</span>
             <small class="metric-sub">
-              <span class="clickable-sub" (click)="filtrarPerRolUsuari('client', $event)">{{ countClients() }} clients</span> ·
-              <span class="clickable-sub" (click)="filtrarPerRolUsuari('professional', $event)">{{ countProfessionals() }} prof.</span>
+              <span class="clickable-sub" (click)="filtrarPerRolUsuari('CLIENT', $event)">{{ countClients() }} clients</span> ·
+              <span class="clickable-sub" (click)="filtrarPerRolUsuari('PROFESSIONAL', $event)">{{ countProfessionals() }} prof.</span>
             </small>
           </div>
         </div>
@@ -529,9 +529,9 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'pressupostos' | 'usuari
           />
           <select [(ngModel)]="filtreRolUsuari" class="select-filter">
             <option value="tots">{{ 'ADMIN.ALL_ROLES' | translate }}</option>
-            <option value="client">Client</option>
-            <option value="professional">Professional</option>
-            <option value="admin">Administrador</option>
+            <option value="CLIENT">Client</option>
+            <option value="PROFESSIONAL">Professional</option>
+            <option value="ADMIN">Administrador</option>
           </select>
         </div>
 
@@ -556,7 +556,7 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'pressupostos' | 'usuari
                     <a [routerLink]="[getNavUrl('/perfil'), u.id]" class="user-inline-link" title="Veure perfil">
                       <strong>{{ u.nom }}</strong>
                     </a>
-                    <span *ngIf="u.rol === 'professional' && u.foto" class="badge-has-photo" [title]="'ADMIN.USER_HAS_PHOTO' | translate">
+                    <span *ngIf="u.rol === 'PROFESSIONAL' && u.foto" class="badge-has-photo" [title]="'ADMIN.USER_HAS_PHOTO' | translate">
                       <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                         <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
                         <circle cx="8.5" cy="8.5" r="1.5"></circle>
@@ -568,7 +568,7 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'pressupostos' | 'usuari
                 </td>
                 <td>{{ u.email }}</td>
                 <td>
-                  <span class="user-badge-tag" [ngClass]="u.rol">
+                  <span class="user-badge-tag" [ngClass]="u.rol?.toLowerCase()">
                     {{ u.rol | uppercase }}
                   </span>
                 </td>
@@ -603,7 +603,7 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'pressupostos' | 'usuari
                       {{ 'ADMIN.BTN_NEW_PASSWORD' | translate }}
                     </button>
                     <button
-                      *ngIf="u.rol === 'professional'"
+                      *ngIf="u.rol === 'PROFESSIONAL'"
                       type="button"
                       class="btn-sm btn-foto"
                       (click)="obrirModalFoto(u)"
@@ -936,7 +936,7 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'pressupostos' | 'usuari
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem;">
               <div class="form-field">
                 <label for="destinatariAvis">Usuari Destinatari:</label>
-                <select id="destinatariAvis" [(ngModel)]="nouAvis.usuariId" name="usuariId" class="search-input" required>
+                <select id="destinatariAvis" [(ngModel)]="nouAvis.destinatariId" name="destinatariId" class="search-input" required>
                   <option value="" disabled>-- Tria un usuari registrat --</option>
                   <option *ngFor="let u of usuaris" [value]="u.id">
                     {{ u.nom }} ({{ u.email }}) — {{ u.rol | uppercase }}
@@ -975,7 +975,7 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'pressupostos' | 'usuari
               <button
                 type="submit"
                 class="btn-primary"
-                [disabled]="enviantAvis || !nouAvis.usuariId || !nouAvis.missatge.trim()"
+                [disabled]="enviantAvis || !nouAvis.destinatariId || !nouAvis.missatge.trim()"
                 style="padding: 0.6rem 1.5rem;"
               >
                 {{ enviantAvis ? 'Enviant...' : 'Emetre Notificació' }}
@@ -1010,7 +1010,7 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'pressupostos' | 'usuari
               <tr *ngFor="let a of avisosFiltrats">
                 <td class="font-mono"><strong>{{ a.id }}</strong></td>
                 <td>
-                  <span class="user-badge-tag">{{ a.usuariId }}</span>
+                  <span class="user-badge-tag">{{ a.destinatariId }}</span>
                 </td>
                 <td>
                   <div class="table-titol">{{ a.missatge }}</div>
@@ -1073,7 +1073,7 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'pressupostos' | 'usuari
               </div>
               <div class="user-subinfo">
                 <span>{{ usuariSeleccionat.email }}</span>
-                <span class="user-badge-tag" [ngClass]="usuariSeleccionat.rol">{{ usuariSeleccionat.rol | uppercase }}</span>
+                <span class="user-badge-tag" [ngClass]="usuariSeleccionat.rol?.toLowerCase()">{{ usuariSeleccionat.rol | uppercase }}</span>
               </div>
             </div>
 
@@ -2717,7 +2717,7 @@ export class AdminPanellComponent implements OnInit {
   searchResenya = '';
 
   searchAvis = '';
-  nouAvis = { usuariId: '', missatge: '', enllac: '' };
+  nouAvis = { destinatariId: '', missatge: '', enllac: '' };
   enviantAvis = false;
 
   searchUsuari = '';
@@ -2939,7 +2939,7 @@ export class AdminPanellComponent implements OnInit {
 
       const matchRol =
         this.filtreRolUsuari === 'tots' ||
-        u.rol?.toLowerCase() === this.filtreRolUsuari;
+        u.rol === this.filtreRolUsuari;
 
       return matchSearch && matchRol;
     });
@@ -3140,7 +3140,7 @@ export class AdminPanellComponent implements OnInit {
     const q = this.searchAvis.toLowerCase();
     return this.avisos.filter(a =>
       a.id?.toLowerCase().includes(q) ||
-      a.usuariId?.toLowerCase().includes(q) ||
+      a.destinatariId?.toLowerCase().includes(q) ||
       a.missatge?.toLowerCase().includes(q) ||
       a.enllac?.toLowerCase().includes(q)
     );
@@ -3152,7 +3152,7 @@ export class AdminPanellComponent implements OnInit {
    */
   prepararAvisUsuari(u: Usuari): void {
     this.tabActiva = 'avisos';
-    this.nouAvis.usuariId = u.id;
+    this.nouAvis.destinatariId = u.id;
     this.nouAvis.missatge = `Notificació de l'Administració per a ${u.nom}: `;
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
@@ -3161,11 +3161,11 @@ export class AdminPanellComponent implements OnInit {
    * Envia una nova notificació del sistema a un usuari des del formulari administratiu.
    */
   enviarNouAvis(): void {
-    if (!this.nouAvis.usuariId || !this.nouAvis.missatge.trim()) return;
+    if (!this.nouAvis.destinatariId || !this.nouAvis.missatge.trim()) return;
 
     this.enviantAvis = true;
     this.avisService.create({
-      usuariId: this.nouAvis.usuariId,
+      destinatariId: this.nouAvis.destinatariId,
       missatge: this.nouAvis.missatge.trim(),
       enllac: this.nouAvis.enllac.trim() || undefined,
       llegit: false,
@@ -3175,7 +3175,7 @@ export class AdminPanellComponent implements OnInit {
         this.enviantAvis = false;
         this.avisos = [creat, ...this.avisos];
         this.totalAvisos = this.avisos.length;
-        this.nouAvis = { usuariId: '', missatge: '', enllac: '' };
+        this.nouAvis = { destinatariId: '', missatge: '', enllac: '' };
         this.successMsg = 'Notificació enviada correctament!';
         setTimeout(() => this.successMsg = '', 4000);
       },
@@ -3233,12 +3233,12 @@ export class AdminPanellComponent implements OnInit {
 
   /** Recompte d'usuaris amb rol client */
   countClients(): number {
-    return this.usuaris.filter(u => u.rol?.toLowerCase() === 'client').length;
+    return this.usuaris.filter(u => u.rol === 'CLIENT').length;
   }
 
   /** Recompte d'usuaris amb rol professional */
   countProfessionals(): number {
-    return this.usuaris.filter(u => u.rol?.toLowerCase() === 'professional').length;
+    return this.usuaris.filter(u => u.rol === 'PROFESSIONAL').length;
   }
 
   /** Recompte de tasques finalitzades */

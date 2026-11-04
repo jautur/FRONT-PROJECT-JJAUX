@@ -1,11 +1,11 @@
 /**
  * Rols d'usuari a la plataforma AVISA amb model d'herència:
- * - 'client': Rol base. Requereix email i contrasenya. Pot publicar peticions i feines.
- * - 'professional': Fill del client. Hereta TOTES les funcions del client (publicar feines)
+ * - 'CLIENT': Rol base. Requereix email i contrasenya. Pot publicar peticions i feines.
+ * - 'PROFESSIONAL': Fill del client. Hereta TOTES les funcions del client (publicar feines)
  *                   i a més requereix telèfon obligatori i pot resoldre peticions (enviar pressupostos).
- * - 'admin': Gestor global amb accés a la totalitat de tasques, ofertes i usuaris del sistema.
+ * - 'ADMIN': Gestor global amb accés a la totalitat de tasques, ofertes i usuaris del sistema.
  */
-export type RolUsuari = 'client' | 'professional' | 'admin';
+export type RolUsuari = 'CLIENT' | 'PROFESSIONAL' | 'ADMIN';
 
 /**
  * Model de dades de l'Usuari a la plataforma AVISA.

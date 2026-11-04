@@ -1318,6 +1318,6 @@ export class ComunitatProfessionalsComponent implements OnInit {
       }
       return;
     }
-    this.router.navigate([this.getNavUrl('/registre')], { queryParams: { rol: 'professional' } });
+    this.router.navigate([this.getNavUrl('/registre')], { queryParams: { rol: 'PROFESSIONAL' } });
   }
 }

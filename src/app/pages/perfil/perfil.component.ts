@@ -62,16 +62,16 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
           </div>
           <p class="email">{{ usuari?.email }}</p>
           <div class="badges-row">
-            <span class="role-badge" [ngClass]="usuari?.rol">
+            <span class="role-badge" [ngClass]="usuari?.rol?.toLowerCase()">
               {{ usuari?.rol | uppercase }}
             </span>
-            <span class="verified-badge" *ngIf="usuari?.rol === 'professional' && usuari?.verificat">
+            <span class="verified-badge" *ngIf="usuari?.rol === 'PROFESSIONAL' && usuari?.verificat">
               {{ 'PERFIL.BADGE_VERIFIED' | translate }}
             </span>
-            <span class="pending-badge" *ngIf="usuari?.rol === 'professional' && !usuari?.verificat && usuari?.sollicitudVerificacio">
+            <span class="pending-badge" *ngIf="usuari?.rol === 'PROFESSIONAL' && !usuari?.verificat && usuari?.sollicitudVerificacio">
               {{ 'PERFIL.BADGE_PENDING' | translate }}
             </span>
-            <span class="unverified-badge" *ngIf="usuari?.rol === 'professional' && !usuari?.verificat && !usuari?.sollicitudVerificacio">
+            <span class="unverified-badge" *ngIf="usuari?.rol === 'PROFESSIONAL' && !usuari?.verificat && !usuari?.sollicitudVerificacio">
               {{ 'PERFIL.BADGE_UNVERIFIED' | translate }}
             </span>
           </div>
@@ -118,7 +118,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
             <line x1="12" y1="1" x2="12" y2="23"></line>
             <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
           </svg>
-          <span>{{ (usuari?.rol === 'professional' ? 'TASQUES_OFERTES.FILTER_OFFERS' : 'PERFIL.TAB_PRESSUPOSTOS') | translate }}</span>
+          <span>{{ (usuari?.rol === 'PROFESSIONAL' ? 'TASQUES_OFERTES.FILTER_OFFERS' : 'PERFIL.TAB_PRESSUPOSTOS') | translate }}</span>
           <span class="tab-count-pill" *ngIf="ofertesUsuari.length > 0">{{ ofertesUsuari.length }}</span>
         </button>
 
@@ -237,7 +237,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
           </article>
 
           <!-- Targeta de Verificació Professional Oficial -->
-          <article class="card verification-card" *ngIf="usuari?.rol === 'professional'">
+          <article class="card verification-card" *ngIf="usuari?.rol === 'PROFESSIONAL'">
             <div class="verif-card-header">
               <span class="verif-icon" [class.verified]="usuari?.verificat">
                 <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -353,13 +353,13 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
           <!-- Targeta informativa de rol -->
           <article class="card info-card">
             <h3>{{ 'PERFIL.ROLE_INFO_TITLE' | translate }}</h3>
-            <div *ngIf="usuari?.rol === 'client'">
+            <div *ngIf="usuari?.rol === 'CLIENT'">
               <p>{{ 'PERFIL.ROLE_CLIENT_INFO' | translate }}</p>
             </div>
-            <div *ngIf="usuari?.rol === 'professional'">
+            <div *ngIf="usuari?.rol === 'PROFESSIONAL'">
               <p>{{ 'PERFIL.ROLE_PRO_INFO' | translate }}</p>
             </div>
-            <div *ngIf="usuari?.rol === 'admin'">
+            <div *ngIf="usuari?.rol === 'ADMIN'">
               <p>{{ 'PERFIL.ROLE_ADMIN_INFO' | translate }}</p>
             </div>
           </article>
@@ -414,7 +414,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
 
         <div class="side-column">
           <!-- Targeta de verificació en perfil públic -->
-          <article class="card verification-card" *ngIf="usuari?.rol === 'professional'">
+          <article class="card verification-card" *ngIf="usuari?.rol === 'PROFESSIONAL'">
             <div class="verif-card-header">
               <span class="verif-icon" [class.verified]="usuari?.verificat">
                 <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -477,7 +477,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         <div class="tab-header-card">
           <div class="tab-header-titles">
             <h2>{{ 'PERFIL.TAB_TASQUES' | translate }} ({{ tasquesUsuari.length }})</h2>
-            <p>{{ (usuari?.rol === 'professional' ? 'LES_MEVES_OFERTES.ASSIGNED_SECTION_HINT' : 'LES_MEVES_TASQUES.SUBTITLE') | translate }}</p>
+            <p>{{ (usuari?.rol === 'PROFESSIONAL' ? 'LES_MEVES_OFERTES.ASSIGNED_SECTION_HINT' : 'LES_MEVES_TASQUES.SUBTITLE') | translate }}</p>
           </div>
 
           <div class="tab-filters-row">
@@ -581,11 +581,11 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       <section class="tab-content-section" *ngIf="!loadingTabData && activeTab === 'pressupostos'">
         <div class="tab-header-card">
           <div class="tab-header-titles">
-            <h2>{{ (usuari?.rol === 'professional' ? 'TASQUES_OFERTES.FILTER_OFFERS' : 'PERFIL.TAB_PRESSUPOSTOS') | translate }} ({{ ofertesUsuari.length }})</h2>
-            <p>{{ (usuari?.rol === 'professional' ? 'TASQUES_OFERTES.OFFERS_BLOCK_TITLE' : 'LES_MEVES_OFERTES.PROPOSALS_SECTION_HINT') | translate }}</p>
+            <h2>{{ (usuari?.rol === 'PROFESSIONAL' ? 'TASQUES_OFERTES.FILTER_OFFERS' : 'PERFIL.TAB_PRESSUPOSTOS') | translate }} ({{ ofertesUsuari.length }})</h2>
+            <p>{{ (usuari?.rol === 'PROFESSIONAL' ? 'TASQUES_OFERTES.OFFERS_BLOCK_TITLE' : 'LES_MEVES_OFERTES.PROPOSALS_SECTION_HINT') | translate }}</p>
           </div>
 
-          <a *ngIf="isOwnProfile && (usuari?.rol === 'professional' || isAdmin)" [routerLink]="getNavUrl('/professional/crear-oferta')" class="btn-tab-create">
+          <a *ngIf="isOwnProfile && (usuari?.rol === 'PROFESSIONAL' || isAdmin)" [routerLink]="getNavUrl('/professional/crear-oferta')" class="btn-tab-create">
             {{ 'PERFIL.BTN_CREAR_OFERTA_PERFIL' | translate }}
           </a>
         </div>
@@ -650,7 +650,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
           </span>
           <h4>{{ 'PERFIL.NO_PRESSUPOSTOS_USER' | translate }}</h4>
           <p class="subtitle">{{ 'PERFIL.NO_PRESSUPOSTOS_USER' | translate }}</p>
-          <a *ngIf="isOwnProfile && (usuari?.rol === 'professional' || isAdmin)" [routerLink]="getNavUrl('/professional/crear-oferta')" class="btn-create-tab">
+          <a *ngIf="isOwnProfile && (usuari?.rol === 'PROFESSIONAL' || isAdmin)" [routerLink]="getNavUrl('/professional/crear-oferta')" class="btn-create-tab">
             {{ 'PERFIL.BTN_CREAR_OFERTA_PERFIL' | translate }}
           </a>
         </div>
@@ -663,9 +663,9 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         <section class="card reviews-profile-card" *ngIf="tasquesFinalitzades.length > 0">
           <div class="reviews-card-header">
             <div>
-              <h2>{{ (usuari?.rol === 'professional' ? 'PERFIL.REVIEWS_TITLE_PRO' : 'PERFIL.REVIEWS_TITLE_CLIENT') | translate }}</h2>
+              <h2>{{ (usuari?.rol === 'PROFESSIONAL' ? 'PERFIL.REVIEWS_TITLE_PRO' : 'PERFIL.REVIEWS_TITLE_CLIENT') | translate }}</h2>
               <p class="subtitle">
-                {{ (usuari?.rol === 'professional' ? 'PERFIL.REVIEWS_SUB_PRO' : 'PERFIL.REVIEWS_SUB_CLIENT') | translate }}
+                {{ (usuari?.rol === 'PROFESSIONAL' ? 'PERFIL.REVIEWS_SUB_PRO' : 'PERFIL.REVIEWS_SUB_CLIENT') | translate }}
               </p>
             </div>
             <div class="score-summary-pill" *ngIf="mitjanaPuntuacio">
@@ -707,10 +707,10 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
 
               <div class="task-work-body">
                 <h4 class="task-work-title">{{ t.titol }}</h4>
-                <p class="task-work-desc" *ngIf="t.descripcio && t.descripcio !== t.opinio">{{ t.descripcio }}</p>
-                <div class="task-opinion-box" *ngIf="t.opinio">
+                <p class="task-work-desc" *ngIf="t.descripcio && t.descripcio !== t.comentari">{{ t.descripcio }}</p>
+                <div class="task-opinion-box" *ngIf="t.comentari">
                   <span class="opinion-quote-label">{{ 'PERFIL.CLIENT_OPINION' | translate }}</span>
-                  <p class="review-item-comment">“{{ t.opinio }}”</p>
+                  <p class="review-item-comment">“{{ t.comentari }}”</p>
                 </div>
               </div>
             </article>
@@ -2381,7 +2381,7 @@ export class PerfilComponent implements OnInit {
    */
   get isAdmin(): boolean {
     const cur = this.authService.getCurrentUser();
-    return cur?.rol === 'admin';
+    return cur?.rol === 'ADMIN';
   }
 
   /**
@@ -2409,7 +2409,7 @@ export class PerfilComponent implements OnInit {
       const tab = qp.get('tab');
       if (tab && ['dades', 'tasques', 'pressupostos', 'ressenyes'].includes(tab)) {
         if (tab === 'tasques' && !this.canViewTasquesTab) {
-          this.activeTab = (this.usuari?.rol === 'professional') ? 'pressupostos' : 'dades';
+          this.activeTab = (this.usuari?.rol === 'PROFESSIONAL') ? 'pressupostos' : 'dades';
         } else {
           this.activeTab = tab as any;
         }
@@ -2468,7 +2468,7 @@ export class PerfilComponent implements OnInit {
             this.formData.percentil = freshUser.percentil ?? 3;
             this.authService.setCurrentUser(freshUser);
           } else {
-            if (freshUser.rol === 'professional') {
+            if (freshUser.rol === 'PROFESSIONAL') {
               if (!this.activeTab || this.activeTab === 'tasques') {
                 this.activeTab = 'pressupostos';
               }
@@ -2578,7 +2578,7 @@ export class PerfilComponent implements OnInit {
    */
   setTab(tab: 'dades' | 'tasques' | 'pressupostos' | 'ressenyes'): void {
     if (tab === 'tasques' && !this.canViewTasquesTab) {
-      tab = (this.usuari?.rol === 'professional') ? 'pressupostos' : 'dades';
+      tab = (this.usuari?.rol === 'PROFESSIONAL') ? 'pressupostos' : 'dades';
     }
     this.activeTab = tab;
     this.router.navigate([], {
@@ -2652,7 +2652,7 @@ export class PerfilComponent implements OnInit {
   onSaveProfile(): void {
     if (!this.usuari) return;
 
-    if (this.usuari.rol === 'professional' && (!this.formData.telefon || !this.formData.telefon.trim())) {
+    if (this.usuari.rol === 'PROFESSIONAL' && (!this.formData.telefon || !this.formData.telefon.trim())) {
       this.errorMessage = 'ERRORS.PRO_PHONE_REQUIRED';
       return;
     }

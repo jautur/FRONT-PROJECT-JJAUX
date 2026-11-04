@@ -2918,7 +2918,7 @@ export class TasquesOfertesComponent implements OnInit {
   isOfferOwner(offer: any): boolean {
     const user = this.authService.getCurrentUser();
     if (!user) return false;
-    if (user.rol === 'admin') return true;
+    if (user.rol === 'ADMIN') return true;
     const pro = (offer.professional || '').toLowerCase().trim();
     const curNom = (user.nom || '').toLowerCase().trim();
     const curId = (user.id || '').toLowerCase().trim();

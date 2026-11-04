@@ -555,7 +555,7 @@ export class AvisosComponent implements OnInit {
     }
     const text = (a.missatge || '').toLowerCase();
     const user = this.authService.getCurrentUser();
-    const isProf = user?.rol === 'professional';
+    const isProf = user?.rol === 'PROFESSIONAL';
 
     if (text.includes('oferta') || text.includes('contractaci') || text.includes('servei')) {
       return isProf ? '/professional/les-meves-ofertes' : '/tasques-ofertes';

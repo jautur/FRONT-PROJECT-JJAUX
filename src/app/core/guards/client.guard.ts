@@ -4,7 +4,7 @@ import { AuthService } from '../services/auth.service';
 
 /**
  * Funció Guard funcional per a rutes exclusives de clients (/client/*).
- * Permet l'accés a usuaris amb rol 'client', 'professional' (fill de client) o 'admin'.
+ * Permet l'accés a usuaris amb rol CLIENT.
  */
 export const clientGuard: CanActivateFn = (
   route: ActivatedRouteSnapshot,

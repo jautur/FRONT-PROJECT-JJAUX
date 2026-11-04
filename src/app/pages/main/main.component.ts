@@ -651,8 +651,8 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
                 <li><a routerLink="/tasques-ofertes" [queryParams]="{ tipus: 'incidencies' }">{{ 'TASQUES_OFERTES.FILTER_INCIDENCIES' | translate }}</a></li>
                 <li><a routerLink="/tasques-ofertes" [queryParams]="{ tipus: 'ofertes' }">{{ 'TASQUES_OFERTES.FILTER_OFFERS' | translate }}</a></li>
                 <li><a routerLink="/sobre-nosaltres">{{ 'NAV.COMUNITAT_PROFESSIONALS' | translate }}</a></li>
-                <li><a routerLink="/registre" [queryParams]="{ rol: 'professional' }">{{ 'COMMON.PROFESSIONAL' | translate }}</a></li>
-                <li><a routerLink="/registre" [queryParams]="{ rol: 'client' }">{{ 'COMMON.CLIENT' | translate }}</a></li>
+                <li><a routerLink="/registre" [queryParams]="{ rol: 'PROFESSIONAL' }">{{ 'COMMON.PROFESSIONAL' | translate }}</a></li>
+                <li><a routerLink="/registre" [queryParams]="{ rol: 'CLIENT' }">{{ 'COMMON.CLIENT' | translate }}</a></li>
                 <li><a routerLink="/blog">{{ 'NAV.BLOG' | translate }}</a></li>
               </ul>
             </div>
@@ -3591,9 +3591,9 @@ export class MainComponent implements OnInit, OnDestroy {
 
   /** Llista de professionals oficialment verificats a la plataforma */
   get verifiedProfessionals(): Usuari[] {
-    const pros = this.allUsuaris.filter(u => u.rol === 'professional' && u.verificat);
+    const pros = this.allUsuaris.filter(u => u.rol === 'PROFESSIONAL' && u.verificat);
     if (pros.length > 0) return pros;
-    return this.allUsuaris.filter(u => u.rol === 'professional');
+    return this.allUsuaris.filter(u => u.rol === 'PROFESSIONAL');
   }
 
   /** Index del professional actiu mostrat en gran al carrusel Twitch */
@@ -4259,11 +4259,11 @@ export class MainComponent implements OnInit, OnDestroy {
   }
 
   onAnarRegistreClient(): void {
-    this.router.navigate(['/registre'], { queryParams: { rol: 'client' } });
+    this.router.navigate(['/registre'], { queryParams: { rol: 'CLIENT' } });
   }
 
   onAnarRegistreProfessional(): void {
-    this.router.navigate(['/registre'], { queryParams: { rol: 'professional' } });
+    this.router.navigate(['/registre'], { queryParams: { rol: 'PROFESSIONAL' } });
   }
 
   /**

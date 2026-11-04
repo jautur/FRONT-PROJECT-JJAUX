@@ -4,7 +4,7 @@ import { AuthService } from '../services/auth.service';
 
 /**
  * Funció Guard funcional per a rutes exclusives de professionals (/professional/*).
- * Permet l'accés a usuaris amb rol 'professional' (o 'admin').
+ * Permet l'accés a usuaris amb rol PROFESSIONAL.
  */
 export const professionalGuard: CanActivateFn = (
   route: ActivatedRouteSnapshot,

@@ -30,7 +30,7 @@ export interface RecuperacioResponse {
 export interface RegisterData {
   nom: string;
   email: string;
-  rol: 'client' | 'professional';
+  rol: 'CLIENT' | 'PROFESSIONAL';
   password?: string;
   telefon?: string;
   acceptedTerms?: boolean;
@@ -74,7 +74,9 @@ export class AuthService {
     const raw = localStorage.getItem(this.USER_KEY);
     if (!raw) return null;
     try {
-      return JSON.parse(raw) as Usuari;
+      const user = JSON.parse(raw) as Usuari;
+      // Les sessions anteriors guardaven el rol en minúscules
+      return user?.rol ? { ...user, rol: user.rol.toUpperCase() as Usuari['rol'] } : user;
     } catch {
       return null;
     }
@@ -99,24 +101,22 @@ export class AuthService {
   /**
    * Comprova si l'usuari connectat té permisos de client (publicar feines, gestionar les seves tasques).
    * Segons el model d'herència ("el professional és el fill del client"):
-   * Tant el 'client' com el 'professional' (i l'admin) tenen permisos de client!
+   * Només el rol CLIENT publica incidències i sol·licita ofertes: el back ho exigeix.
    */
   isClient(): boolean {
     const user = this.getCurrentUser();
     if (!user) return false;
-    const r = user.rol?.toLowerCase();
-    return r === 'client' || r === 'professional' || r === 'admin';
+    return user.rol === 'CLIENT';
   }
 
   /**
    * Comprova si l'usuari connectat té permisos de professional (resoldre peticions, enviar ofertes).
-   * Retorna true per al rol 'professional' i l'administrador global.
+   * Retorna true només per al rol PROFESSIONAL.
    */
   isProfessional(): boolean {
     const user = this.getCurrentUser();
     if (!user) return false;
-    const r = user.rol?.toLowerCase();
-    return r === 'professional' || r === 'admin';
+    return user.rol === 'PROFESSIONAL';
   }
 
   /**
@@ -124,7 +124,7 @@ export class AuthService {
    */
   isAdmin(): boolean {
     const user = this.getCurrentUser();
-    return user?.rol?.toLowerCase() === 'admin';
+    return user?.rol === 'ADMIN';
   }
 
   /**
@@ -170,7 +170,7 @@ export class AuthService {
 
   /**
    * Comprova si l'usuari connectat té un rol específic.
-   * @param rol Rol a verificar ('client' | 'professional' | 'admin')
+   * @param rol Rol a verificar ('CLIENT' | 'PROFESSIONAL' | 'ADMIN')
    * @returns true si coincideix exactament, false en cas contrari
    */
   hasRole(rol: RolUsuari): boolean {

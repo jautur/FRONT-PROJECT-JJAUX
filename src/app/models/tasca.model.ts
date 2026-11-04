@@ -53,7 +53,7 @@ export interface Tasca {
   valoracio?: number | null;
 
   /** Comentari breu o opinió del client en finalitzar la tasca */
-  opinio?: string | null;
+  comentari?: string | null;
 
   /** Data i hora de creació */
   createdAt?: string;

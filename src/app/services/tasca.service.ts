@@ -95,7 +95,7 @@ export class TascaService {
    * @param avaluacio Dades opcionals de valoració (1-5 estrelles) i opinió del client
    * @returns Observable amb la tasca actualitzada
    */
-  complete(id: string, avaluacio?: { valoracio?: number; opinio?: string }): Observable<Tasca> {
+  complete(id: string, avaluacio?: { valoracio?: number; comentari?: string }): Observable<Tasca> {
     return this.http.post<Tasca>(`${this.apiUrl}/${id}/finalitzar`, avaluacio || {});
   }
 
@@ -105,7 +105,7 @@ export class TascaService {
    * @param avaluacio Dades de valoració (1-5 estrelles) i opinió del client
    * @returns Observable amb la tasca actualitzada
    */
-  avaluar(id: string, avaluacio: { valoracio: number; opinio?: string }): Observable<Tasca> {
+  avaluar(id: string, avaluacio: { valoracio: number; comentari?: string }): Observable<Tasca> {
     return this.http.post<Tasca>(`${this.apiUrl}/${id}/avaluar`, avaluacio);
   }
 

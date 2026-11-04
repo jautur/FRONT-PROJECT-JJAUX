@@ -151,7 +151,7 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
                   <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
                 </svg>
                 {{ t.valoracio }}/5
-                <span *ngIf="t.opinio" class="rating-quote">"{{ t.opinio }}"</span>
+                <span *ngIf="t.comentari" class="rating-quote">"{{ t.comentari }}"</span>
               </span>
             </div>
           </div>
@@ -1114,7 +1114,7 @@ export class LesMevesTasquesComponent implements OnInit {
   obrirModalFinalitzar(t: Tasca): void {
     this.tascaPerFinalitzar = t;
     this.puntuacioSeleccionada = t.valoracio || 5;
-    this.ressenyaDescripcio = t.opinio || '';
+    this.ressenyaDescripcio = t.comentari || '';
     this.professionalPerFinalitzar = t.professionalNom || t.professional || '';
     this.modalFinalitzarObert = true;
 
@@ -1160,7 +1160,7 @@ export class LesMevesTasquesComponent implements OnInit {
 
     this.tascaService.avaluar(t.id, {
       valoracio: this.puntuacioSeleccionada,
-      opinio: textDesc
+      comentari: textDesc
     }).subscribe({
       next: (updatedTask) => {
         this.enviantRessenya = false;
@@ -1170,7 +1170,7 @@ export class LesMevesTasquesComponent implements OnInit {
         if (target) {
           target.estat = 'Finalitzada';
           target.valoracio = this.puntuacioSeleccionada;
-          target.opinio = textDesc;
+          target.comentari = textDesc;
         }
         setTimeout(() => this.successMsg = '', 4000);
       },
@@ -1178,7 +1178,7 @@ export class LesMevesTasquesComponent implements OnInit {
         // Fallback per compatibilitat amb complete
         this.tascaService.complete(t.id, {
           valoracio: this.puntuacioSeleccionada,
-          opinio: textDesc
+          comentari: textDesc
         }).subscribe({
           next: () => {
             this.enviantRessenya = false;
@@ -1188,7 +1188,7 @@ export class LesMevesTasquesComponent implements OnInit {
             if (target) {
               target.estat = 'Finalitzada';
               target.valoracio = this.puntuacioSeleccionada;
-              target.opinio = textDesc;
+              target.comentari = textDesc;
             }
             setTimeout(() => this.successMsg = '', 4000);
           },

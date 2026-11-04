@@ -9,7 +9,7 @@ export interface Avis {
   /** Identificador únic de l'avís (ex: 'A-301') */
   id: string;
   /** Identificador de l'usuari receptor de la notificació */
-  usuariId?: string;
+  destinatariId?: string;
   /** Contingut detallat del missatge o avís */
   missatge: string;
   /** Indicador si l'avís ha estat llegit o continua pendent */
