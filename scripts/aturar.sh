@@ -5,7 +5,10 @@
 # ==============================================================================
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-if [ -d "${SCRIPT_DIR}/../BACK-PROJECT-JJAUX" ]; then
+if [ -d "${SCRIPT_DIR}/../../BACK-PROJECT-JJAUX" ]; then
+    FRONT_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
+    BACK_DIR="$(cd "${SCRIPT_DIR}/../../BACK-PROJECT-JJAUX" && pwd)"
+elif [ -d "${SCRIPT_DIR}/../BACK-PROJECT-JJAUX" ]; then
     FRONT_DIR="${SCRIPT_DIR}"
     BACK_DIR="$(cd "${SCRIPT_DIR}/../BACK-PROJECT-JJAUX" && pwd)"
 elif [ -d "${SCRIPT_DIR}/../FRONT-PROJECT-JJAUX" ]; then

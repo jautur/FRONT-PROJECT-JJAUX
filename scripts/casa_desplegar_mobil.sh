@@ -1,21 +1,17 @@
 #!/usr/bin/env bash
 
 # ==============================================================================
-# Script de desplegament ràpid en local per a CASA - JJAUX
-# Inicia:
-#   1. PostgreSQL (Port 5432 / Base de dades jjaux_db)
-#   2. Backend Spring Boot (Port 8080)
-#   3. Frontend Angular (Port 4300)
+# Script de desplegament per a MOBIL / WI-FI LOCAL - JJAUX (Bash)
+# Permet connectar qualsevol smartphone o tauleta a la mateixa xarxa Wi-Fi
 # ==============================================================================
 
 set -e
 
 # Perfil del backend: dev crea els usuaris de prova (admin, cli i pro) si no existeixen.
-# Per a les dades de demostració: SPRING_PROFILES_ACTIVE=demo ./casa_desplegar.sh
+# Per a les dades de demostració: SPRING_PROFILES_ACTIVE=demo ./casa_desplegar_mobil.sh
 export SPRING_PROFILES_ACTIVE="${SPRING_PROFILES_ACTIVE:-dev}"
 
-# Assegurar accés a binaris en entorns Windows/Git Bash/WSL
-export PATH="/c/Program Files/nodejs:/c/Program Files/Eclipse Adoptium/jdk-21.0.12.101-hotspot/bin:/c/Program Files/PostgreSQL/18/bin:$PATH"
+export PATH="/c/Program Files/nodejs:/mnt/c/Program Files/nodejs:/c/Program Files/Eclipse Adoptium/jdk-21.0.12.101-hotspot/bin:/mnt/c/Program Files/Eclipse Adoptium/jdk-21.0.12.101-hotspot/bin:/c/Program Files/PostgreSQL/18/bin:/mnt/c/Program Files/PostgreSQL/18/bin:$PATH"
 
 # Suport per a flags de reconstrucció manual
 FORCE_REBUILD=false
@@ -23,11 +19,28 @@ if [ "$1" = "--rebuild" ] || [ "$1" = "-f" ] || [ "$1" = "--force" ]; then
     FORCE_REBUILD=true
 fi
 
-# Directoris del projecte a CASA
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DIR_NAME="$(basename "${SCRIPT_DIR}")"
 
-if [ "$DIR_NAME" = "BACK-PROJECT-JJAUX" ]; then
+if [ "$DIR_NAME" = "scripts" ]; then
+    PARENT_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
+    PARENT_NAME="$(basename "${PARENT_DIR}")"
+    if [ "$PARENT_NAME" = "BACK-PROJECT-JJAUX" ]; then
+        BACK_DIR="${PARENT_DIR}"
+        if [ -d "${PARENT_DIR}/../FRONT-PROJECT-JJAUX" ]; then
+            FRONT_DIR="$(cd "${PARENT_DIR}/../FRONT-PROJECT-JJAUX" && pwd)"
+        else
+            FRONT_DIR="/c/Users/User/Desktop/FRONT-PROJECT-JJAUX"
+        fi
+    else
+        FRONT_DIR="${PARENT_DIR}"
+        if [ -d "${PARENT_DIR}/../BACK-PROJECT-JJAUX" ]; then
+            BACK_DIR="$(cd "${PARENT_DIR}/../BACK-PROJECT-JJAUX" && pwd)"
+        else
+            BACK_DIR="/c/Users/User/Desktop/BACK-PROJECT-JJAUX"
+        fi
+    fi
+elif [ "$DIR_NAME" = "BACK-PROJECT-JJAUX" ]; then
     BACK_DIR="${SCRIPT_DIR}"
     if [ -d "${SCRIPT_DIR}/../FRONT-PROJECT-JJAUX" ]; then
         FRONT_DIR="$(cd "${SCRIPT_DIR}/../FRONT-PROJECT-JJAUX" && pwd)"
@@ -51,7 +64,6 @@ else
     fi
 fi
 
-# Conversió a ruta Windows
 to_win_path() {
     if command -v cygpath >/dev/null 2>&1; then
         cygpath -w "$1"
@@ -64,10 +76,9 @@ FRONT_WIN=$(to_win_path "${FRONT_DIR}")
 BACK_WIN=$(to_win_path "${BACK_DIR}")
 
 echo "=========================================================="
-echo "          INICIANT DESPLEGAMENT LOCAL JJAUX (CASA)"
+echo "      INICIANT DESPLEGAMENT MOBIL PER WI-FI (CASA)"
 echo "=========================================================="
 
-# Funció per alliberar un port si està bloquejat per processos antics
 free_port() {
     local port="$1"
     if command -v netstat >/dev/null 2>&1; then
@@ -78,54 +89,27 @@ free_port() {
     fi
 }
 
-# ------------------------------------------------------------------------------
-# 1. Base de dades PostgreSQL (Port 5432)
-# ------------------------------------------------------------------------------
-echo -e "\n[1/3] Comprovant PostgreSQL..."
+# 1. Base de dades PostgreSQL
+echo -e "\n[1/4] Comprovant PostgreSQL..."
 if node -e "const net = require('net'); const s = net.connect(5432, '127.0.0.1', () => { s.destroy(); process.exit(0); }); s.on('error', () => process.exit(1));" 2>/dev/null; then
     echo "  -> PostgreSQL ja està en marxa al port 5432."
 else
     echo "  -> Engegant servei PostgreSQL..."
-    net start postgresql-x64-18 2>/dev/null || "/c/Program Files/PostgreSQL/18/bin/pg_ctl.exe" start -D "C:\\Program Files\\PostgreSQL\\18\\data" 2>/dev/null || true
+    net start postgresql-x64-18 2>/dev/null || true
     sleep 2
 fi
 
-# Inicialització i verificació de la base de dades jjaux_db
-echo "  -> Verificant esquema i dades a jjaux_db..."
-node -e "
-let pg;
-try { pg = require('pg'); } catch(e) { try { pg = require('${FRONT_DIR}/node_modules/pg'); } catch(e2){} }
-if (!pg) process.exit(0);
-const { Client } = pg;
-(async () => {
-  const c = new Client({ host: 'localhost', port: 5432, user: 'postgres', password: process.env.PGPASSWORD || 'postgres', database: 'postgres' });
-  try {
-    await c.connect();
-    const res = await c.query(\"SELECT 1 FROM pg_database WHERE datname='jjaux_db'\");
-    if (res.rows.length === 0) {
-      await c.query('CREATE DATABASE jjaux_db');
-      console.log('  -> Base de dades jjaux_db creada amb èxit.');
-    }
-  } catch(e) {
-  } finally {
-    try { await c.end(); } catch(e){}
-    process.exit(0);
-  }
-})();
-" 2>/dev/null || true
-
-# Assegurar usuari administrador (admin@admin.es / adminadmin)
-echo "  -> Verificant usuari administrador (admin@admin.es)..."
-if [ -f "${FRONT_DIR}/assegurar_admin.js" ]; then
+# Assegurar admin
+if [ -f "${FRONT_DIR}/scripts/assegurar_admin.js" ]; then
+    node "${FRONT_DIR}/scripts/assegurar_admin.js" || true
+elif [ -f "${FRONT_DIR}/assegurar_admin.js" ]; then
     node "${FRONT_DIR}/assegurar_admin.js" || true
 elif [ -f "${BACK_DIR}/assegurar_admin.js" ]; then
     node "${BACK_DIR}/assegurar_admin.js" || true
 fi
 
-# ------------------------------------------------------------------------------
-# 2. Backend Spring Boot (Port 8080)
-# ------------------------------------------------------------------------------
-echo -e "\n[2/3] Comprovant Backend Spring Boot..."
+# 2. Backend Spring Boot
+echo -e "\n[2/4] Comprovant Backend Spring Boot..."
 JAR_FILE="${BACK_DIR}/target/jjaux-back-0.0.1-SNAPSHOT.jar"
 WIN_JAR_FILE="${BACK_WIN}\\target\\jjaux-back-0.0.1-SNAPSHOT.jar"
 REBUILD_BACKEND=false
@@ -156,11 +140,7 @@ else
     cd "${BACK_DIR}"
     export SPRING_DATASOURCE_PASSWORD="postgres"
 
-    # Engegar procés desacoblat a Windows via PowerShell Start-Process amb registre de PID
-    powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "\$p = Start-Process -FilePath 'java' -ArgumentList '-jar', '${WIN_JAR_FILE}' -WorkingDirectory '${BACK_WIN}' -RedirectStandardOutput '${BACK_WIN}\\backend.log' -RedirectStandardError '${BACK_WIN}\\backend_err.log' -WindowStyle Minimized -PassThru; Set-Content -Path '${BACK_WIN}\\backend.pid' -Value \$p.Id" 2>/dev/null || {
-        nohup java -jar "${JAR_FILE}" > "${BACK_DIR}/backend.log" 2>&1 &
-        echo $! > "${BACK_DIR}/backend.pid"
-    }
+    powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "\$p = Start-Process -FilePath 'java' -ArgumentList '-jar', '${WIN_JAR_FILE}' -WorkingDirectory '${BACK_WIN}' -RedirectStandardOutput '${BACK_WIN}\\backend.log' -RedirectStandardError '${BACK_WIN}\\backend_err.log' -WindowStyle Minimized -PassThru; Set-Content -Path '${BACK_WIN}\\backend.pid' -Value \$p.Id" 2>/dev/null || true
 
     echo -n "  -> Esperant que el backend estigui llest..."
     for i in {1..35}; do
@@ -173,10 +153,8 @@ else
     done
 fi
 
-# ------------------------------------------------------------------------------
-# 3. Frontend Angular (Port 4300)
-# ------------------------------------------------------------------------------
-echo -e "\n[3/3] Comprovant Frontend Angular..."
+# 3. Frontend Angular
+echo -e "\n[3/4] Comprovant Frontend Angular (Port 4300)..."
 DIST_INDEX="${FRONT_DIR}/dist/front-project-jjaux-1/browser/index.html"
 REBUILD_FRONTEND=false
 
@@ -199,31 +177,31 @@ if [ "$REBUILD_FRONTEND" = "true" ]; then
 fi
 
 if [ "$REBUILD_FRONTEND" = "false" ] && curl -s -o /dev/null http://localhost:4300 2>/dev/null; then
-    echo "  -> Frontend ja està servint a http://localhost:4300"
+    echo "  -> Frontend ja està servint a 0.0.0.0:4300"
 else
-    echo "  -> Engegant servidor web del Frontend (port 4300)..."
+    echo "  -> Engegant servidor web del Frontend (port 4300 per a xarxa local)..."
     free_port 4300
     cd "${FRONT_DIR}"
 
-    powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "\$p = Start-Process -FilePath 'node' -ArgumentList 'serve.js' -WorkingDirectory '${FRONT_WIN}' -RedirectStandardOutput '${FRONT_WIN}\\frontend.log' -RedirectStandardError '${FRONT_WIN}\\frontend_err.log' -WindowStyle Minimized -PassThru; Set-Content -Path '${FRONT_WIN}\\frontend.pid' -Value \$p.Id" 2>/dev/null || {
-        nohup node serve.js > "${FRONT_DIR}/frontend.log" 2>&1 &
-        echo $! > "${FRONT_DIR}/frontend.pid"
-    }
+    powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "\$p = Start-Process -FilePath 'node' -ArgumentList 'serve.js' -WorkingDirectory '${FRONT_WIN}' -RedirectStandardOutput '${FRONT_WIN}\\frontend.log' -RedirectStandardError '${FRONT_WIN}\\frontend_err.log' -WindowStyle Minimized -PassThru; Set-Content -Path '${FRONT_WIN}\\frontend.pid' -Value \$p.Id" 2>/dev/null || true
     sleep 2
 fi
 
-# ------------------------------------------------------------------------------
-# 4. Obrir al navegador
-# ------------------------------------------------------------------------------
-start http://localhost:4300/inici 2>/dev/null || true
+# 4. Assegurar regla Firewall per al port 4300
+netsh.exe advfirewall firewall add rule name="AVISA-Frontend-4300" dir=in action=allow protocol=TCP localport=4300 profile=any >/dev/null 2>&1 || true
 
+# 5. Generar codi QR i obrir guia de connexió
+echo -e "\n[4/4] Generant codi QR per a dispositius mòbils..."
+if [ -f "${FRONT_DIR}/mostrar_qr_mobil.js" ]; then
+    node "${FRONT_DIR}/mostrar_qr_mobil.js"
+elif [ -f "${BACK_DIR}/mostrar_qr_mobil.js" ]; then
+    node "${BACK_DIR}/mostrar_qr_mobil.js"
+fi
+
+echo ""
 echo "=========================================================="
-echo "           DESPLEGAMENT COMPLETAT AMB ÈXIT!"
+echo " 📲 Servidors engegats i actius en segon pla!"
+echo " Escaneja el codi QR amb la càmera del mòbil."
+echo " Per aturar-los en qualsevol moment: ./casa_aturar.sh"
 echo "=========================================================="
-echo " - Base de dades: PostgreSQL a localhost:5432 (BD: jjaux_db)"
-echo " - API Backend:   http://localhost:8080/api"
-echo " - Aplicació Web: http://localhost:4300/inici"
-echo " - Usuari Admin:  admin@admin.es / adminadmin"
-echo "=========================================================="
-echo "Per aturar tots els serveis: ./casa_aturar.sh"
-echo "=========================================================="
+read -rp " Prem [ENTER] quan hagis escanejat el codi QR per alliberar la terminal..."

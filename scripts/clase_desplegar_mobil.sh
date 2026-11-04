@@ -9,11 +9,14 @@
 set -e
 
 # Perfil del backend: dev crea els usuaris de prova (admin, cli i pro) si no existeixen.
-# Per a les dades de demostració: SPRING_PROFILES_ACTIVE=demo ./desplegar_mobil.sh
+# Per a les dades de demostració: SPRING_PROFILES_ACTIVE=demo ./clase_desplegar_mobil.sh
 export SPRING_PROFILES_ACTIVE="${SPRING_PROFILES_ACTIVE:-dev}"
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-if [ -d "${SCRIPT_DIR}/../BACK-PROJECT-JJAUX" ]; then
+if [ -d "${SCRIPT_DIR}/../../BACK-PROJECT-JJAUX" ]; then
+    FRONT_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
+    BACK_DIR="$(cd "${SCRIPT_DIR}/../../BACK-PROJECT-JJAUX" && pwd)"
+elif [ -d "${SCRIPT_DIR}/../BACK-PROJECT-JJAUX" ]; then
     FRONT_DIR="${SCRIPT_DIR}"
     BACK_DIR="$(cd "${SCRIPT_DIR}/../BACK-PROJECT-JJAUX" && pwd)"
 elif [ -d "${SCRIPT_DIR}/FRONT-PROJECT-JJAUX" ]; then
@@ -59,7 +62,9 @@ fi
 
 # Assegurar usuari administrador (admin@admin.es / adminadmin)
 echo "  -> Verificant usuari administrador (admin@admin.es)..."
-if [ -f "${FRONT_DIR}/assegurar_admin.js" ]; then
+if [ -f "${FRONT_DIR}/scripts/assegurar_admin.js" ]; then
+    node "${FRONT_DIR}/scripts/assegurar_admin.js" || true
+elif [ -f "${FRONT_DIR}/assegurar_admin.js" ]; then
     node "${FRONT_DIR}/assegurar_admin.js" || true
 elif [ -f "${BACK_DIR}/assegurar_admin.js" ]; then
     node "${BACK_DIR}/assegurar_admin.js" || true

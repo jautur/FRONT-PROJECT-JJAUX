@@ -11,13 +11,18 @@ try {
 } catch (e) {
   try {
     const path = require('path');
-    pg = require(path.join(__dirname, 'node_modules', 'pg'));
-  } catch (e2) {
+    pg = require(path.join(__dirname, '..', 'node_modules', 'pg'));
+  } catch (e1) {
     try {
-      pg = require('/home/jautursis/Escriptori/FRONT-PROJECT-JJAUX/node_modules/pg');
-    } catch (e3) {
-      console.error('❌ No s\'ha trobat el mòdul "pg".');
-      process.exit(1);
+      const path = require('path');
+      pg = require(path.join(__dirname, 'node_modules', 'pg'));
+    } catch (e2) {
+      try {
+        pg = require('/home/jautursis/Escriptori/FRONT-PROJECT-JJAUX/node_modules/pg');
+      } catch (e3) {
+        console.error('❌ No s\'ha trobat el mòdul "pg".');
+        process.exit(1);
+      }
     }
   }
 }

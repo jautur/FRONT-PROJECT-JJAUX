@@ -8,7 +8,25 @@
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DIR_NAME="$(basename "${SCRIPT_DIR}")"
 
-if [ "$DIR_NAME" = "BACK-PROJECT-JJAUX" ]; then
+if [ "$DIR_NAME" = "scripts" ]; then
+    PARENT_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
+    PARENT_NAME="$(basename "${PARENT_DIR}")"
+    if [ "$PARENT_NAME" = "BACK-PROJECT-JJAUX" ]; then
+        BACK_DIR="${PARENT_DIR}"
+        if [ -d "${PARENT_DIR}/../FRONT-PROJECT-JJAUX" ]; then
+            FRONT_DIR="$(cd "${PARENT_DIR}/../FRONT-PROJECT-JJAUX" && pwd)"
+        else
+            FRONT_DIR="/c/Users/User/Desktop/FRONT-PROJECT-JJAUX"
+        fi
+    else
+        FRONT_DIR="${PARENT_DIR}"
+        if [ -d "${PARENT_DIR}/../BACK-PROJECT-JJAUX" ]; then
+            BACK_DIR="$(cd "${PARENT_DIR}/../BACK-PROJECT-JJAUX" && pwd)"
+        else
+            BACK_DIR="/c/Users/User/Desktop/BACK-PROJECT-JJAUX"
+        fi
+    fi
+elif [ "$DIR_NAME" = "BACK-PROJECT-JJAUX" ]; then
     BACK_DIR="${SCRIPT_DIR}"
     if [ -d "${SCRIPT_DIR}/../FRONT-PROJECT-JJAUX" ]; then
         FRONT_DIR="$(cd "${SCRIPT_DIR}/../FRONT-PROJECT-JJAUX" && pwd)"
