@@ -69,6 +69,34 @@
   box-sizing: border-box;
 }
 
+/* Franja negra darrere de l'hora i la cobertura (notch d'iPhone): amb viewport-fit=cover
+   el contingut passa per sota de la barra d'estat; en pantalles sense notch fa 0 px. */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: env(safe-area-inset-top, 0px);
+  background: #09090c;
+  z-index: 101;
+  pointer-events: none;
+}
+
+/* Gairebé tota la mida de la interfície està en rem: reduint la base en mòbil
+   tot s'encongeix proporcionalment (els camps de formulari conserven 16 px). */
+@media (max-width: 768px) {
+  html {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 400px) {
+  html {
+    font-size: 13.5px;
+  }
+}
+
 body {
   margin: 0;
   padding: 0;
