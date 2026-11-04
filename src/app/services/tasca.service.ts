@@ -81,15 +81,6 @@ export class TascaService {
   }
 
   /**
-   * Crea i publica una nova tasca a la plataforma.
-   * @param data Dades de la tasca a crear
-   * @returns Observable amb la tasca creada a la base de dades
-   */
-  create(data: CreateTascaDto): Observable<Tasca> {
-    return this.http.post<Tasca>(this.apiUrl, data);
-  }
-
-  /**
    * Marca una tasca com a finalitzada un cop acabat el servei, enregistrant opcionalment la valoració i opinió del client.
    * @param id Identificador de la tasca
    * @param avaluacio Dades opcionals de valoració (1-5 estrelles) i opinió del client

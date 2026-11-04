@@ -16,10 +16,3 @@ export interface Interes {
   dataCreacio?: string;
 }
 
-export interface CrearInteresRequest {
-  publicacioId: string;
-  clientId?: string;
-  clientNom: string;
-  missatge?: string;
-}
-

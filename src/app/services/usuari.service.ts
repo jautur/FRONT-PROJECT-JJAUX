@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { RolUsuari, Usuari } from '../models/usuari.model';
+import { Usuari } from '../models/usuari.model';
 import { environment } from '../../environments/environment';
 
 /**
@@ -36,16 +36,6 @@ export class UsuariService {
    */
   getById(id: string): Observable<Usuari> {
     return this.http.get<Usuari>(`${this.apiUrl}/${id}`);
-  }
-
-  /**
-   * Filtra usuaris segons el seu rol ('CLIENT', 'PROFESSIONAL', 'ADMIN').
-   * Útil per mostrar el catàleg de professionals disponibles.
-   * @param rol Rol pel qual es vol filtrar
-   * @returns Observable amb els usuaris del rol seleccionat
-   */
-  getByRol(rol: RolUsuari): Observable<Usuari[]> {
-    return this.http.get<Usuari[]>(`${this.apiUrl}/rol/${rol}`);
   }
 
   /**
