@@ -13,6 +13,9 @@ export interface Pressupost {
   descripcio?: string;
   duracioEstimada?: string;
   dataCreacio?: string;
+
+  /** Estat: Pendent, Acceptat o Rebutjat */
+  estat?: string;
 }
 
 export interface CrearPressupostRequest {

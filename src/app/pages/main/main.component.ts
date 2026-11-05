@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, NgZone, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Router, RouterLink, NavigationEnd } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { DashboardResponse, DashboardService } from '../../services/dashboard.service';
@@ -49,12 +49,63 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
 
       <!-- CONTINGUT PRINCIPAL DE LA PLATAFORMA (VISUALITZAT EN FER SCROLL) -->
       <div class="dashboard-body">
+        <!-- MISSATGE DE BENVINGUDA SENZILL -->
+        <header class="welcome-simple" aria-label="Salutació">
+          <h1 class="welcome-simple-title">
+            <ng-container *ngIf="authService.isLoggedIn(); else guestWelcomeTitle">
+              {{ 'HOME.WELCOME_USER_TITLE' | translate: { nom: getUserName() } }}
+            </ng-container>
+            <ng-template #guestWelcomeTitle>
+              {{ 'HOME.WELCOME_GUEST_TITLE' | translate }}
+            </ng-template>
+          </h1>
+          <p class="welcome-simple-sub">
+            {{ (authService.isLoggedIn() ? 'HOME.WELCOME_USER_SUB' : 'HOME.WELCOME_GUEST_SUB') | translate }}
+          </p>
+        </header>
+
         <div class="dashboard-header-bar">
           <div>
             <span class="eyebrow-tag">{{ 'HOME.PLATAFORMA_AVISA' | translate }}</span>
-            <h2 class="dashboard-title">{{ 'HOME.DASHBOARD_TITLE' | translate }}</h2>
+            <h2 class="dashboard-title">
+              <a
+                [routerLink]="getNavUrl('/tasques-ofertes')"
+                class="dashboard-title-link"
+                [title]="'NAV.TASQUES_OFERTES' | translate"
+              >
+                {{ 'HOME.DASHBOARD_TITLE' | translate }}
+                <svg class="dashboard-title-icon" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M5 12h14"></path>
+                  <path d="m12 5 7 7-7 7"></path>
+                </svg>
+              </a>
+            </h2>
           </div>
-          <a [routerLink]="getNavUrl('/tasques-ofertes')" class="btn-create-task">{{ 'HOME.PUBLICAR_BTN' | translate }}</a>
+          <div class="dashboard-header-actions">
+            <button
+              *ngIf="authService.isLoggedIn() && authService.isClient()"
+              type="button"
+              class="btn-create-task"
+              (click)="onNovaTasca()"
+            >
+              {{ 'TASQUES_OFERTES.BTN_NOVA_INCIDENCIA' | translate }}
+            </button>
+            <button
+              *ngIf="authService.isLoggedIn() && authService.isProfessional()"
+              type="button"
+              class="btn-create-offer-dash"
+              (click)="onNovaOferta()"
+            >
+              {{ 'TASQUES_OFERTES.BTN_NOVA_OFERTA' | translate }}
+            </button>
+            <a
+              *ngIf="!authService.isLoggedIn()"
+              [routerLink]="getNavUrl('/tasques-ofertes')"
+              class="btn-create-task"
+            >
+              {{ 'HOME.PUBLICAR_BTN' | translate }}
+            </a>
+          </div>
         </div>
 
         <div *ngIf="noticeMessage" class="notice-banner">
@@ -67,94 +118,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
           </button>
         </div>
 
-        <div class="columns">
-          <!-- SECCIÓ D'OFERTES RECENTS (PROFESSIONALS PRIMER) -->
-          <section class="panel panel-offers">
-            <div class="panel-header">
-              <h2>{{ 'HOME.OFERTES_TITLE' | translate }}</h2>
-              <a [routerLink]="getNavUrl('/tasques-ofertes')" [queryParams]="{ tipus: 'ofertes' }">
-                {{ 'HOME.VEURE_TOTES' | translate }} ({{ offers.length }})
-              </a>
-            </div>
 
-            <article class="card offer-card" *ngFor="let offer of previewOffers">
-              <div class="card-top">
-                <span class="tag alt">{{ (offer.category || 'Altres Serveis') | translate }}</span>
-                <span class="status status-offer" [ngClass]="getOfferStatusClass(offer.status)">
-                  {{ offer.status | translate }}
-                </span>
-              </div>
-              <h3>{{ getOfertaTitol(offer) }}</h3>
-              <p class="meta">
-                {{ 'HOME.PRO_LABEL' | translate }}<a [routerLink]="[getNavUrl('/perfil'), offer.professional]" class="user-inline-link pro-title-link" title="Veure perfil de {{ offer.professional }}">{{ offer.professional }}</a>
-                <span class="pro-preview-rating" *ngIf="getRatingInfo(offer.professional) as r" style="display: inline-flex; margin-left: 0.5rem; align-items: center;">
-                  <span class="stars-gold">
-                    <svg viewBox="0 0 24 24" width="13" height="13" fill="#f59e0b" style="vertical-align: -1px; margin-right: 2px;" aria-hidden="true">
-                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-                    </svg>
-                    {{ r.mitjana }}
-                  </span>
-                  <span class="reviews-count">({{ r.total }})</span>
-                </span>
-              </p>
-              <p>{{ getOfertaDescripcio(offer) }}</p>
-              <div class="card-footer">
-                <span>{{ 'HOME.PREU_LABEL' | translate }}{{ offer.price }}</span>
-                <div class="actions">
-                  <button type="button" class="btn-contractar" (click)="onInteressatOferta(offer)">{{ 'TASQUES_OFERTES.BTN_INTERESSA' | translate }}</button>
-                </div>
-              </div>
-            </article>
-
-            <div class="preview-toggle-wrap">
-              <button type="button" class="btn-preview-toggle" (click)="onNavegarTasquesOfertes('ofertes')">
-                {{ 'HOME.EXPLORAR_OFERTES' | translate }} ({{ offers.length }})
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 6px; vertical-align: middle;">
-                  <line x1="5" y1="12" x2="19" y2="12"></line>
-                  <polyline points="12 5 19 12 12 19"></polyline>
-                </svg>
-              </button>
-            </div>
-          </section>
-
-          <!-- SECCIÓ DE TASQUES RECENTS (CLIENTS SEGON) -->
-          <section class="panel panel-tasks">
-            <div class="panel-header">
-              <h2>{{ 'HOME.INCIDENCIES_TITLE' | translate }}</h2>
-              <a [routerLink]="getNavUrl('/tasques-ofertes')" [queryParams]="{ tipus: 'incidencies' }">
-                {{ 'HOME.VEURE_TOTES' | translate }} ({{ tasks.length }})
-              </a>
-            </div>
-
-            <article class="card" *ngFor="let task of previewTasks">
-              <div class="card-top">
-                <span class="tag">{{ task.category | translate }}</span>
-                <span class="status status-task" [ngClass]="getTaskStatusClass(task.status)">
-                  {{ task.status | translate }}
-                </span>
-              </div>
-              <h3>{{ task.title }}</h3>
-              <p class="meta">{{ 'HOME.CLIENT_LABEL' | translate }}<a [routerLink]="[getNavUrl('/perfil'), task.client]" class="user-inline-link" title="Veure perfil de {{ task.client }}">{{ task.client }}</a></p>
-              <div class="card-footer">
-                <span>{{ 'HOME.PRESSUPOST_LABEL' | translate }}{{ task.budget }}</span>
-                <div class="actions">
-                  <button type="button" (click)="onDetallTasca(task.id)">{{ 'HOME.DETALL' | translate }}</button>
-                  <button *ngIf="!authService.isLoggedIn() || authService.isProfessional()" type="button" class="btn-secondary" (click)="onFerOferta(task.id)">{{ 'HOME.PROPOSAR_PRESSUPOST' | translate }}</button>
-                </div>
-              </div>
-            </article>
-
-            <div class="preview-toggle-wrap">
-              <button type="button" class="btn-preview-toggle" (click)="onNavegarTasquesOfertes('incidencies')">
-                {{ 'HOME.EXPLORAR_INCIDENCIES' | translate }} ({{ tasks.length }})
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 6px; vertical-align: middle;">
-                  <line x1="5" y1="12" x2="19" y2="12"></line>
-                  <polyline points="12 5 19 12 12 19"></polyline>
-                </svg>
-              </button>
-            </div>
-          </section>
-        </div>
 
         <!-- ============================================================== -->
         <!-- CARRUSEL ESTIL TWITCH DE PROFESSIONALS DE CONFIANÇA RECOMANATS -->
@@ -183,6 +147,20 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
 
           <!-- ESCENARI TWITCH: PREV, CENTER (GRAN), NEXT -->
           <div class="twitch-carousel-stage" [class.is-transitioning]="isProCarouselTransitioning" *ngIf="verifiedProfessionals.length > 0">
+            <!-- FLETXA ALS COSTATS DEL CARRUSEL: ESQUERRA (ANTERIOR) -->
+            <button
+              type="button"
+              class="carousel-nav-arrow btn-nav-prev"
+              *ngIf="verifiedProfessionals.length > 1"
+              (click)="goToPrevPro()"
+              aria-label="Passar a la targeta anterior"
+              title="Anterior"
+            >
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="15 18 9 12 15 6"></polyline>
+              </svg>
+            </button>
+
             <!-- TARGETA PREVISUALITZACIÓ ANTERIOR (ESQUERRA) -->
             <div
               class="side-preview-card prev-card"
@@ -337,6 +315,20 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
                 </div>
               </div>
             </div>
+
+            <!-- FLETXA ALS COSTATS DEL CARRUSEL: DRETA (SEGÜENT) -->
+            <button
+              type="button"
+              class="carousel-nav-arrow btn-nav-next"
+              *ngIf="verifiedProfessionals.length > 1"
+              (click)="goToNextPro()"
+              aria-label="Passar a la targeta següent"
+              title="Següent"
+            >
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </button>
           </div>
 
           <!-- INDICADORS DE POSICIÓ / PAGINACIÓ (DOTS TWITCH) -->
@@ -659,8 +651,8 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
                 <li><a routerLink="/tasques-ofertes" [queryParams]="{ tipus: 'incidencies' }">{{ 'TASQUES_OFERTES.FILTER_INCIDENCIES' | translate }}</a></li>
                 <li><a routerLink="/tasques-ofertes" [queryParams]="{ tipus: 'ofertes' }">{{ 'TASQUES_OFERTES.FILTER_OFFERS' | translate }}</a></li>
                 <li><a routerLink="/sobre-nosaltres">{{ 'NAV.COMUNITAT_PROFESSIONALS' | translate }}</a></li>
-                <li><a routerLink="/registre" [queryParams]="{ rol: 'professional' }">{{ 'COMMON.PROFESSIONAL' | translate }}</a></li>
-                <li><a routerLink="/registre" [queryParams]="{ rol: 'client' }">{{ 'COMMON.CLIENT' | translate }}</a></li>
+                <li><a routerLink="/registre" [queryParams]="{ rol: 'PROFESSIONAL' }">{{ 'COMMON.PROFESSIONAL' | translate }}</a></li>
+                <li><a routerLink="/registre" [queryParams]="{ rol: 'CLIENT' }">{{ 'COMMON.CLIENT' | translate }}</a></li>
                 <li><a routerLink="/blog">{{ 'NAV.BLOG' | translate }}</a></li>
               </ul>
             </div>
@@ -714,52 +706,17 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
               <h3 class="exit-offer-title">{{ peticioExitDades.titol }}</h3>
               <div class="exit-offer-meta">
                 <span class="exit-pro-info">
-                  <strong>{{ 'TASQUES_OFERTES.PRO_ASSIGNED' | translate }}</strong> {{ peticioExitDades.professional }}
+                  <strong>{{ 'TASQUES_OFERTES.PRO_WHO_OFFERS' | translate }}</strong> {{ peticioExitDades.professional }}
                 </span>
                 <span class="exit-price-pill">{{ peticioExitDades.preu }}</span>
               </div>
             </div>
 
-            <!-- Opcions de contacte directe amb el professional -->
+            <!-- La sol·licitud queda pendent: el contacte només es mostra quan el professional l'accepta -->
             <div class="exit-contact-section">
               <p class="exit-contact-intro">
-                {{ 'TASQUES_OFERTES.PETICIO_CONTACT_PROMPT' | translate }}
+                {{ 'TASQUES_OFERTES.PETICIO_PENDENT_PROMPT' | translate }}
               </p>
-
-              <div class="exit-contact-buttons">
-                <!-- WhatsApp -->
-                <button type="button" class="exit-channel-btn exit-channel-wa" (click)="contactarWhatsappPeticio()">
-                  <div class="exit-channel-icon wa-bg">
-                    <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
-                      <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.664-.698c.97.587 1.761.883 2.796.883 3.183 0 5.769-2.587 5.77-5.767 0-3.181-2.586-5.769-5.77-5.769zm3.388 8.163c-.144.405-.837.774-1.17.822-.313.044-.725.074-2.385-.615-1.996-.826-3.268-2.862-3.368-2.996-.099-.133-.807-1.074-.807-2.048 0-.974.51-1.452.691-1.652.181-.199.395-.249.527-.249.132 0 .264.002.378.007.123.006.287-.047.45.344.167.399.57 1.391.62 1.492.051.101.085.22.018.354-.067.133-.101.217-.201.334-.101.118-.212.263-.303.353-.101.1-.207.21-.089.412.118.202.525.867 1.127 1.403.774.688 1.427.901 1.629 1.002.202.1.32.083.438-.051.118-.135.506-.59.641-.792.135-.202.27-.169.455-.101.185.067 1.176.554 1.378.655.202.101.337.151.387.236.05.084.05.489-.094.894z"></path>
-                    </svg>
-                  </div>
-                  <div class="exit-channel-info">
-                    <span class="exit-channel-title">{{ 'TASQUES_OFERTES.CONTACTAR_WHATSAPP_BTN' | translate }}</span>
-                    <span class="exit-channel-sub">{{ peticioExitDades.telefon }}</span>
-                  </div>
-                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="exit-channel-arrow">
-                    <polyline points="9 18 15 12 9 6"></polyline>
-                  </svg>
-                </button>
-
-                <!-- Correu -->
-                <button type="button" class="exit-channel-btn exit-channel-email" (click)="contactarEmailPeticio()">
-                  <div class="exit-channel-icon email-bg">
-                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                      <polyline points="22,6 12,13 2,6"></polyline>
-                    </svg>
-                  </div>
-                  <div class="exit-channel-info">
-                    <span class="exit-channel-title">{{ 'TASQUES_OFERTES.CONTACTAR_EMAIL_BTN' | translate }}</span>
-                    <span class="exit-channel-sub">{{ peticioExitDades.email }}</span>
-                  </div>
-                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="exit-channel-arrow">
-                    <polyline points="9 18 15 12 9 6"></polyline>
-                  </svg>
-                </button>
-              </div>
             </div>
           </div>
 
@@ -887,6 +844,41 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         background-color: var(--bg-page, #f7f3ed);
       }
 
+      /* ============================================================== */
+      /* SALUTACIÓ DE BENVINGUDA SENZILLA DALT DE DASHBOARD-HEADER-BAR   */
+      /* ============================================================== */
+      .welcome-simple {
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+        padding: 0.35rem 0.2rem 0;
+      }
+
+      .welcome-simple-title {
+        margin: 0;
+        font-size: clamp(1.6rem, 2.8vw, 2.2rem);
+        font-weight: 900;
+        letter-spacing: -0.03em;
+        color: var(--color-text, #09090c);
+        line-height: 1.2;
+      }
+
+      .welcome-simple-sub {
+        margin: 0;
+        font-size: clamp(0.95rem, 1.25vw, 1.05rem);
+        color: var(--color-text-muted, #5f5e5b);
+        font-weight: 500;
+        line-height: 1.45;
+      }
+
+      body.theme-app-dark .welcome-simple-title {
+        color: var(--color-text);
+      }
+
+      body.theme-app-dark .welcome-simple-sub {
+        color: var(--color-text-muted);
+      }
+
       .dashboard-header-bar {
         display: flex;
         align-items: center;
@@ -896,6 +888,13 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         padding: 1.6rem 2.2rem;
         border: 1px solid var(--border-subtle, #e5e0d7);
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+      }
+
+      .dashboard-header-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        flex-wrap: wrap;
       }
 
       .eyebrow-tag {
@@ -914,6 +913,32 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         color: var(--color-text, #09090c);
         font-weight: 900;
         letter-spacing: -0.03em;
+      }
+
+      .dashboard-title-link {
+        color: inherit;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: color 0.2s ease, transform 0.2s ease;
+      }
+
+      .dashboard-title-link:hover,
+      .dashboard-title-link:focus-visible {
+        color: #ff1744;
+        text-decoration: none;
+      }
+
+      .dashboard-title-link:hover .dashboard-title-icon,
+      .dashboard-title-link:focus-visible .dashboard-title-icon {
+        transform: translateX(4px);
+      }
+
+      .dashboard-title-icon {
+        flex-shrink: 0;
+        transition: transform 0.2s ease;
+        opacity: 0.85;
       }
 
       .btn-create-task {
@@ -969,6 +994,39 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         transform: translateY(-2px);
       }
 
+      .btn-create-offer-dash {
+        background: #09090c;
+        color: #ffffff;
+        border: 1px solid #23232f;
+        border-radius: 8px;
+        padding: 0.8rem 1.6rem;
+        font-weight: 900;
+        font-size: 0.95rem;
+        cursor: pointer;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        transition: all 0.2s ease;
+      }
+
+      .btn-create-offer-dash:hover {
+        background: #ff1744;
+        border-color: #ff1744;
+        box-shadow: 0 4px 16px rgba(255, 23, 68, 0.4);
+        transform: translateY(-2px);
+      }
+
+      body.theme-app-dark .btn-create-offer-dash {
+        background: var(--bg-surface);
+        border-color: var(--border-card);
+        color: var(--color-text);
+      }
+
+      body.theme-app-dark .btn-create-offer-dash:hover {
+        background: var(--neon, #ff1744);
+        border-color: var(--neon, #ff1744);
+        color: #ffffff;
+      }
+
       .stats {
         display: grid;
         grid-template-columns: repeat(3, minmax(150px, 1fr));
@@ -976,8 +1034,8 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       }
 
       .stat-card {
-        background: #ffffff;
-        border: 1px solid #e5e0d7;
+        background: var(--bg-card, #ffffff);
+        border: 1px solid var(--border-subtle, #e5e0d7);
         border-radius: 16px;
         padding: 1.5rem 1.6rem;
         display: flex;
@@ -993,7 +1051,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       }
 
       .label {
-        color: #716f67;
+        color: var(--color-text-dim, #716f67);
         font-size: 0.85rem;
         font-weight: 800;
         text-transform: uppercase;
@@ -1002,7 +1060,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
 
       .stat-card strong {
         font-size: 2.4rem;
-        color: #09090c;
+        color: var(--color-text, #09090c);
         font-weight: 900;
         line-height: 1;
       }
@@ -1206,14 +1264,15 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       }
 
       .card-footer .btn-secondary {
-        background: #eee9e0 !important;
-        color: #09090c !important;
-        border: 1px solid #ded8cd !important;
+        background: var(--bg-surface-elevated, #eee9e0);
+        color: var(--color-text, #09090c);
+        border: 1px solid var(--border-card, #ded8cd);
       }
 
       .card-footer .btn-secondary:hover {
-        border-color: #09090c !important;
-        background: #e3ded4 !important;
+        border-color: var(--neon, #ff1744);
+        background: var(--bg-surface, #e3ded4);
+        color: var(--neon, #ff1744);
       }
 
       .offer-card button {
@@ -1223,15 +1282,15 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       }
 
       .offer-card button:hover {
-        background: #09090c;
+        background: var(--bg-surface-elevated, #1e2433);
         color: #ff1744;
       }
 
       .notice-banner {
-        background: #ffffff;
+        background: var(--bg-card, #ffffff);
         border: 1px solid rgba(255, 23, 68, 0.4);
         border-left: 4px solid #ff1744;
-        color: #09090c;
+        color: var(--color-text, #09090c);
         padding: 0.9rem 1.25rem;
         border-radius: 10px;
         display: flex;
@@ -1244,14 +1303,14 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       .btn-dismiss {
         background: transparent !important;
         border: none !important;
-        color: #716f67 !important;
+        color: var(--color-text-dim, #716f67) !important;
         cursor: pointer;
         font-size: 1.1rem;
         padding: 0 !important;
       }
 
       .btn-dismiss:hover {
-        color: #09090c !important;
+        color: var(--color-text, #09090c) !important;
       }
 
       @keyframes fadeIn {
@@ -1329,7 +1388,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       .seo-section-title {
         font-size: clamp(1.8rem, 3.5vw, 2.4rem);
         font-weight: 900;
-        color: #09090c;
+        color: var(--color-text, #09090c);
         margin: 0 0 1rem;
         line-height: 1.2;
         letter-spacing: -0.02em;
@@ -1380,7 +1439,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         margin: 0 0 0.6rem;
         font-size: 1.15rem;
         font-weight: 900;
-        color: #09090c;
+        color: var(--color-text, #09090c);
       }
 
       .feature-card p {
@@ -1432,13 +1491,13 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         font-size: clamp(1.6rem, 3.2vw, 2.2rem);
         font-weight: 900;
         margin: 0 0 0.8rem;
-        color: #f7f3ed;
+        color: #ffffff;
       }
 
       .app-sync-content p {
         font-size: 1rem;
         line-height: 1.6;
-        color: #bab8ae;
+        color: #cbd5e1;
         max-width: 780px;
         margin: 0 0 1.8rem;
       }
@@ -1585,7 +1644,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       .role-box-header h3 {
         font-size: 1.35rem;
         font-weight: 900;
-        color: #09090c;
+        color: var(--color-text, #09090c);
         margin: 0 0 0.5rem;
       }
 
@@ -1797,7 +1856,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         margin: 0 0 0.75rem;
         font-size: 1.12rem;
         font-weight: 900;
-        color: #09090c;
+        color: var(--color-text, #09090c);
         line-height: 1.35;
       }
 
@@ -1824,7 +1883,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       }
 
       .btn-read-article:hover {
-        color: #09090c;
+        color: var(--color-text, #09090c);
         transform: translateX(4px);
       }
 
@@ -1892,7 +1951,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
 
       .btn-cta-main:hover {
         background: #ffffff;
-        color: #09090c;
+        color: #ff1744;
         border-color: #ffffff;
         transform: translateY(-2px);
       }
@@ -2077,7 +2136,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         margin: 0 0 0.5rem;
         font-size: 1.45rem;
         font-weight: 900;
-        color: #09090c;
+        color: var(--color-text, #09090c);
         line-height: 1.3;
       }
 
@@ -2098,7 +2157,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         align-items: center;
         justify-content: center;
         cursor: pointer;
-        color: #09090c;
+        color: var(--color-text, #09090c);
         transition: all 0.2s ease;
       }
 
@@ -2206,6 +2265,16 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         .dashboard-body {
           padding: 1rem 0.65rem 3.5rem;
           gap: 1.25rem;
+        }
+        .welcome-simple {
+          padding: 0.1rem 0.15rem 0;
+          gap: 0.2rem;
+        }
+        .welcome-simple-title {
+          font-size: 1.45rem;
+        }
+        .welcome-simple-sub {
+          font-size: 0.9rem;
         }
         .dashboard-header-bar {
           flex-direction: column;
@@ -2812,11 +2881,10 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         overflow: hidden;
       }
 
-      /* Les targetes veïnes mantenen la mateixa escala que la central.
-         Només se'n veu el lateral, que s'esvaeix cap als extrems de l'escenari. */
+      /* Les targetes veïnes (anterior i següent) són un 20% més petites (scale 0.8) que la central per a un efecte visual més estètic. */
       .side-preview-card {
         position: absolute;
-        top: 0.5rem;
+        top: 50%;
         width: clamp(640px, 72vw, 980px);
         height: 380px;
         border-radius: 20px;
@@ -2825,25 +2893,25 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         background: #0f172a;
         box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.35);
         opacity: 0.82;
-        transform: none;
         transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
         user-select: none;
         z-index: 1;
         border: 1px solid rgba(255, 255, 255, 0.12);
+        transform-origin: center center;
       }
 
       .prev-card {
         left: 50%;
-        transform: translateX(-95%);
-        -webkit-mask-image: linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.45) 32%, #000 66%);
-        mask-image: linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.45) 32%, #000 66%);
+        transform: translateY(-50%) translateX(-92%) scale(0.8);
+        -webkit-mask-image: linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.45) 30%, #000 66%);
+        mask-image: linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.45) 30%, #000 66%);
       }
 
       .next-card {
         right: 50%;
-        transform: translateX(95%);
-        -webkit-mask-image: linear-gradient(to left, transparent 0%, rgba(0, 0, 0, 0.45) 32%, #000 66%);
-        mask-image: linear-gradient(to left, transparent 0%, rgba(0, 0, 0, 0.45) 32%, #000 66%);
+        transform: translateY(-50%) translateX(92%) scale(0.8);
+        -webkit-mask-image: linear-gradient(to left, transparent 0%, rgba(0, 0, 0, 0.45) 30%, #000 66%);
+        mask-image: linear-gradient(to left, transparent 0%, rgba(0, 0, 0, 0.45) 30%, #000 66%);
       }
 
       .twitch-carousel-stage.is-transitioning .main-showcase-card {
@@ -2864,19 +2932,27 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       }
 
       @keyframes carouselPrevEnter {
-        from { opacity: 0; transform: translateX(-101%); }
-        to { opacity: 0.82; transform: translateX(-95%); }
+        from { opacity: 0; transform: translateY(-50%) translateX(-98%) scale(0.76); }
+        to { opacity: 0.82; transform: translateY(-50%) translateX(-92%) scale(0.8); }
       }
 
       @keyframes carouselNextEnter {
-        from { opacity: 0; transform: translateX(101%); }
-        to { opacity: 0.82; transform: translateX(95%); }
+        from { opacity: 0; transform: translateY(-50%) translateX(98%) scale(0.76); }
+        to { opacity: 0.82; transform: translateY(-50%) translateX(92%) scale(0.8); }
       }
 
-      .side-preview-card:hover {
+      .prev-card:hover {
         opacity: 1;
         box-shadow: 0 16px 36px -5px rgba(0, 0, 0, 0.45);
         border-color: #ff1744;
+        transform: translateY(-50%) translateX(-90%) scale(0.82);
+      }
+
+      .next-card:hover {
+        opacity: 1;
+        box-shadow: 0 16px 36px -5px rgba(0, 0, 0, 0.45);
+        border-color: #ff1744;
+        transform: translateY(-50%) translateX(90%) scale(0.82);
       }
 
       .side-card-bg {
@@ -2922,20 +2998,29 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
 
       .prev-card .btn-side-arrow {
         position: absolute;
-        left: 37%;
-        top: 1.35rem;
+        left: 28%;
+        top: 1.5rem;
+        transform: translateX(-50%);
+      }
+
+      .prev-card .btn-side-arrow:hover {
+        background: #ff1744;
+        border-color: #ff1744;
+        transform: translateX(-50%) scale(1.14);
+        box-shadow: 0 6px 18px rgba(255, 23, 68, 0.45);
       }
 
       .next-card .btn-side-arrow {
         position: absolute;
-        left: 60%;
-        top: 1.35rem;
+        left: 72%;
+        top: 1.5rem;
+        transform: translateX(-50%);
       }
 
-      .btn-side-arrow:hover {
+      .next-card .btn-side-arrow:hover {
         background: #ff1744;
         border-color: #ff1744;
-        transform: scale(1.14);
+        transform: translateX(-50%) scale(1.14);
         box-shadow: 0 6px 18px rgba(255, 23, 68, 0.45);
       }
 
@@ -2946,6 +3031,24 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         text-align: center;
         gap: 0.5rem;
         width: 100%;
+      }
+
+      .prev-card .side-card-info {
+        position: absolute;
+        left: 28%;
+        bottom: 1.5rem;
+        transform: translateX(-50%);
+        width: auto;
+        max-width: 200px;
+      }
+
+      .next-card .side-card-info {
+        position: absolute;
+        left: 72%;
+        bottom: 1.5rem;
+        transform: translateX(-50%);
+        width: auto;
+        max-width: 200px;
       }
 
       .side-avatar {
@@ -3296,6 +3399,48 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         width: 100%;
       }
 
+      /* FLETXES ALS COSTATS DEL CARRUSEL */
+      .carousel-nav-arrow {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 25;
+        width: 52px;
+        height: 52px;
+        border-radius: 50%;
+        background: rgba(19, 23, 34, 0.88);
+        border: 2px solid rgba(255, 255, 255, 0.25);
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        backdrop-filter: blur(8px);
+        transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+        user-select: none;
+      }
+
+      .carousel-nav-arrow.btn-nav-prev {
+        left: clamp(0.75rem, 2.5vw, 2.5rem);
+      }
+
+      .carousel-nav-arrow.btn-nav-next {
+        right: clamp(0.75rem, 2.5vw, 1.75rem);
+      }
+
+      .carousel-nav-arrow:hover {
+        background: #ff1744;
+        border-color: #ff1744;
+        color: #ffffff;
+        transform: translateY(-50%) scale(1.14);
+        box-shadow: 0 0 24px rgba(255, 23, 68, 0.65), 0 6px 20px rgba(0, 0, 0, 0.4);
+      }
+
+      .carousel-nav-arrow:active {
+        transform: translateY(-50%) scale(0.96);
+      }
+
       /* RESPONSIVE BREAKPOINTS */
       @media (max-width: 992px) {
         .showcase-banner {
@@ -3308,6 +3453,22 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       }
 
       @media (max-width: 768px) {
+        .carousel-nav-arrow {
+          width: 44px;
+          height: 44px;
+          background: rgba(19, 23, 34, 0.92);
+          border-color: rgba(255, 23, 68, 0.5);
+          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.55);
+        }
+
+        .carousel-nav-arrow.btn-nav-prev {
+          left: 0.35rem;
+        }
+
+        .carousel-nav-arrow.btn-nav-next {
+          right: 0.35rem;
+        }
+
         .side-preview-card {
           display: none;
         }
@@ -3362,8 +3523,6 @@ export class MainComponent implements OnInit, OnDestroy {
     titol: string;
     professional: string;
     preu: string;
-    telefon: string;
-    email: string;
   } | null = null;
 
   @ViewChild('proCarouselTrack') proCarouselTrack?: ElementRef<HTMLDivElement>;
@@ -3395,9 +3554,9 @@ export class MainComponent implements OnInit, OnDestroy {
 
   /** Llista de professionals oficialment verificats a la plataforma */
   get verifiedProfessionals(): Usuari[] {
-    const pros = this.allUsuaris.filter(u => u.rol === 'professional' && u.verificat);
+    const pros = this.allUsuaris.filter(u => u.rol === 'PROFESSIONAL' && u.verificat);
     if (pros.length > 0) return pros;
-    return this.allUsuaris.filter(u => u.rol === 'professional');
+    return this.allUsuaris.filter(u => u.rol === 'PROFESSIONAL');
   }
 
   /** Index del professional actiu mostrat en gran al carrusel Twitch */
@@ -3462,14 +3621,21 @@ export class MainComponent implements OnInit, OnDestroy {
     });
   }
 
-  /** Inicia el temporitzador de rotació automàtica cada 5 segons */
+  /** Inicia el temporitzador de rotació automàtica cada 5 segons fora de la zona d'Angular */
   startProCarouselTimer(): void {
     this.stopProCarouselTimer();
-    this.proCarouselInterval = setInterval(() => {
-      if (!this.isProCarouselPaused && this.verifiedProfessionals.length > 1) {
-        this.seleccionarProfessional((this.currentProIndex + 1) % this.verifiedProfessionals.length);
-      }
-    }, 5000);
+    this.ngZone.runOutsideAngular(() => {
+      this.proCarouselInterval = setInterval(() => {
+        if (typeof document !== 'undefined' && document.hidden) {
+          return;
+        }
+        if (!this.isProCarouselPaused && this.verifiedProfessionals.length > 1) {
+          this.ngZone.run(() => {
+            this.seleccionarProfessional((this.currentProIndex + 1) % this.verifiedProfessionals.length);
+          });
+        }
+      }, 5000);
+    });
   }
 
   /** Atura el temporitzador per evitar fugues de memòria */
@@ -3576,7 +3742,8 @@ export class MainComponent implements OnInit, OnDestroy {
     private readonly confirmService: ConfirmService,
     private readonly router: Router,
     public readonly pwaService: PwaService,
-    private readonly translationService: TranslationService
+    private readonly translationService: TranslationService,
+    private readonly ngZone: NgZone
   ) {
     this.routerEventsSub = this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
@@ -3678,7 +3845,10 @@ export class MainComponent implements OnInit, OnDestroy {
 
   get tasks() {
     const rawIncidencies = (this.dashboard?.incidencies ?? [])
-      .filter((inc) => !inc.estat || inc.estat === 'Oberta')
+      .filter((inc) => {
+        const estat = (inc.estat || '').toLowerCase().trim();
+        return !estat || estat === 'oberta' || estat === 'pendent';
+      })
       .map((inc) => ({
         id: inc.id,
         title: inc.titol,
@@ -3689,7 +3859,7 @@ export class MainComponent implements OnInit, OnDestroy {
       }));
 
     const rawTasks = (this.dashboard?.tasks ?? [])
-      .filter((task) => (task.tipus === 'incidencia' || !task.professional) && task.estat === 'Oberta' && task.tipus !== 'oferta' && !rawIncidencies.some(i => i.id === task.id))
+      .filter((task) => (task.tipus === 'incidencia' || !task.professional) && (task.estat || '').toLowerCase() === 'oberta' && task.tipus !== 'oferta' && !rawIncidencies.some(i => i.id === task.id))
       .map((task) => ({
         id: task.id,
         title: task.titol,
@@ -3699,11 +3869,17 @@ export class MainComponent implements OnInit, OnDestroy {
         status: task.estat
       }));
 
-    return [...rawIncidencies, ...rawTasks];
+    const map = new Map<string, any>();
+    for (const t of [...rawIncidencies, ...rawTasks]) {
+      if (t && t.id && !map.has(t.id)) {
+        map.set(t.id, t);
+      }
+    }
+    return Array.from(map.values());
   }
 
   get offers() {
-    return this.dashboard?.offers.map((offer) => {
+    const rawOffers = this.dashboard?.offers.map((offer) => {
       const associatedTask = this.dashboard?.tasks.find((task) => task.id === offer.tascaId);
       const rawCat = (offer as any).categoria || associatedTask?.categoria;
       const category = (rawCat && rawCat.trim()) ? rawCat.trim() : 'Altres Serveis';
@@ -3717,6 +3893,14 @@ export class MainComponent implements OnInit, OnDestroy {
         status: offer.estat
       };
     }) ?? [];
+
+    const map = new Map<string, any>();
+    for (const o of rawOffers) {
+      if (o && o.id && !map.has(o.id)) {
+        map.set(o.id, o);
+      }
+    }
+    return Array.from(map.values());
   }
 
   /** Articles informatius del blog gestionats a través d'ArticleService */
@@ -3724,16 +3908,27 @@ export class MainComponent implements OnInit, OnDestroy {
     return this.articleService.getArticles();
   }
 
-  /** Retorna la vista prèvia aleatòria de 3 tasques per a la pàgina principal */
+  /** Retorna la vista prèvia aleatòria de tasques (desactivada en favor del tauler net) */
   get previewTasks() {
-    const llista = this.randomPreviewTasks.length > 0 ? this.randomPreviewTasks : this.tasks;
-    return llista.slice(0, 1);
+    return [];
   }
 
-  /** Retorna la vista prèvia d'ofertes per a la pàgina principal: 1 tant a la versió /app com a la versió web (/inici) */
+  /** Retorna la vista prèvia d'ofertes (desactivada en favor del tauler net) */
   get previewOffers() {
-    const llista = this.randomPreviewOffers.length > 0 ? this.randomPreviewOffers : this.offers;
-    return llista.slice(0, 1);
+    return [];
+  }
+
+  /** Retorna el nom de l'usuari connectat per a la salutació */
+  getUserName(): string {
+    const user = this.authService.getCurrentUser();
+    if (!user) return 'usuari';
+    if (user.nom && user.nom.trim()) {
+      return user.nom.trim();
+    }
+    if (user.email) {
+      return user.email.split('@')[0];
+    }
+    return 'usuari';
   }
 
   getTaskStatusClass(status: string): string {
@@ -3812,7 +4007,13 @@ export class MainComponent implements OnInit, OnDestroy {
   }
 
   onNovaTasca(): void {
-    this.router.navigate([this.getNavUrl('/tasques-ofertes')], { queryParams: { tipus: 'incidencies', accio: 'crear-incidencia' } });
+    if (!this.requireLogin('publicar una incidència', '/client/crear-tasca')) return;
+    this.router.navigate([this.getNavUrl('/client/crear-tasca')]);
+  }
+
+  onNovaOferta(): void {
+    if (!this.requireLogin('publicar una oferta professional', '/professional/crear-oferta')) return;
+    this.router.navigate([this.getNavUrl('/professional/crear-oferta')]);
   }
 
   onNavegarTasquesOfertes(tipus: 'tots' | 'tasques' | 'ofertes' | 'incidencies' = 'tots'): void {
@@ -3847,7 +4048,7 @@ export class MainComponent implements OnInit, OnDestroy {
     const pro = offer.professional || 'aquest professional';
     if (!this.requireLogin(`sol·licitar el servei de ${pro}`, '/')) return;
     if (!this.authService.isClient()) {
-      this.noticeMessage = 'Només els comptes amb rol de "Client" o "Ambdós" poden sol·licitar ofertes de serveis.';
+      this.noticeMessage = 'Només els comptes amb rol de "Client" poden sol·licitar ofertes de serveis.';
       return;
     }
 
@@ -3857,7 +4058,7 @@ export class MainComponent implements OnInit, OnDestroy {
 
     const confirmacio = await this.confirmService.confirm({
       title: this.translationService.t('TASQUES_OFERTES.CONFIRM_INTERES_TITLE'),
-      message: `Vols enviar la petició per a l'oferta de ${pro} (${titol}) per ${preu}?\n\nEs confirmarà a l'aplicació AVISA i es generarà la tasca en curs.`,
+      message: this.translationService.t('TREBALL.SOL_CONFIRM_MSG', { pro, titol, preu }),
       confirmText: this.translationService.t('TASQUES_OFERTES.CONFIRM_INTERES_BTN'),
       cancelText: this.translationService.t('COMMON.CANCEL_LAR'),
       icon: 'question'
@@ -3870,11 +4071,9 @@ export class MainComponent implements OnInit, OnDestroy {
           tascaId: tasca?.id,
           titol,
           professional: pro,
-          preu,
-          telefon: this.getProfessionalPhone(pro),
-          email: this.getProfessionalEmail(pro)
+          preu
         };
-        this.noticeMessage = `Petició enviada correctament! S'ha generat la tasca en curs amb ${pro}. Ara pots contactar-hi per WhatsApp o correu.`;
+        this.noticeMessage = this.translationService.t('TREBALL.SOL_BANNER', { pro });
         this.loadDashboard();
       },
       error: () => {
@@ -3892,32 +4091,7 @@ export class MainComponent implements OnInit, OnDestroy {
     this.peticioExitDades = null;
   }
 
-  contactarWhatsappPeticio(): void {
-    if (!this.peticioExitDades) return;
-    const { professional, telefon, titol, preu } = this.peticioExitDades;
-    const cleanPhone = telefon.replace(/\D/g, '');
-    const phoneWithCountry = cleanPhone.length === 9 ? '34' + cleanPhone : cleanPhone;
-    const clientUser = this.authService.getCurrentUser();
-    const clientNom = clientUser ? clientUser.nom : 'Client AVISA';
-    const missatge = `Hola ${professional}, acabe de sol·licitar la teva oferta a AVISA: "${titol}" (${preu}). Sóc ${clientNom}. Podem parlar dels detalls del servei?`;
-    const url = `https://wa.me/${phoneWithCountry}?text=${encodeURIComponent(missatge)}`;
-    if (typeof window !== 'undefined') {
-      window.open(url, '_blank', 'noopener,noreferrer');
-    }
-  }
 
-  contactarEmailPeticio(): void {
-    if (!this.peticioExitDades) return;
-    const { professional, email, titol, preu } = this.peticioExitDades;
-    const clientUser = this.authService.getCurrentUser();
-    const clientNom = clientUser ? clientUser.nom : 'Client interessat';
-    const assumpte = `Petició de servei AVISA: ${titol}`;
-    const cos = `Hola ${professional},\n\nAcabe de contractar / sol·licitar la teva oferta a l'aplicació AVISA:\n- Servei: ${titol}\n- Preu indicat: ${preu}\n\nEm poso en contacte amb tu per poder coordinar dates, horaris i detalls de l'actuació.\n\nSalutacions cordials,\n${clientNom}`;
-    const mailtoUrl = `mailto:${email}?subject=${encodeURIComponent(assumpte)}&body=${encodeURIComponent(cos)}`;
-    if (typeof window !== 'undefined') {
-      window.location.href = mailtoUrl;
-    }
-  }
 
   anarTascaPeticio(tascaId: string): void {
     this.tancarModalPeticioExit();
@@ -3939,86 +4113,15 @@ export class MainComponent implements OnInit, OnDestroy {
     return user ? user.id : proNom;
   }
 
-  getProfessionalPhone(proNom: string): string {
-    const user = this.getProfessionalUser(proNom);
-    if (user?.telefon && user.telefon.trim()) {
-      return user.telefon.trim();
-    }
-    return '611223344';
-  }
 
-  getProfessionalEmail(proNom: string): string {
-    const user = this.getProfessionalUser(proNom);
-    if (user?.email && user.email.trim() && user.email.includes('@')) {
-      return user.email.trim();
-    }
-    const clean = (proNom || 'pro').toLowerCase().replace(/[^a-z0-9]/g, '');
-    return `${clean}@prof.es`;
-  }
 
-  contactarWhatsapp(offer: any, event?: Event): void {
-    if (event) {
-      event.stopPropagation();
-    }
-    const proNom = offer.professional || 'Professional';
-    const rawPhone = this.getProfessionalPhone(proNom);
-    const cleanPhone = rawPhone.replace(/\D/g, '');
-    const phoneWithCountry = cleanPhone.length === 9 ? '34' + cleanPhone : cleanPhone;
 
-    const titol = this.getOfertaTitol(offer);
-    const preu = offer.price || '';
-    const clientUser = this.authService.getCurrentUser();
-    const clientNom = clientUser ? clientUser.nom : 'un client interessat';
-
-    const missatge = `Hola ${proNom}, m'interessa la teva oferta a AVISA: "${titol}" (${preu}). Sóc ${clientNom}. Podem parlar dels detalls del servei?`;
-    const url = `https://wa.me/${phoneWithCountry}?text=${encodeURIComponent(missatge)}`;
-
-    if (typeof window !== 'undefined') {
-      window.open(url, '_blank', 'noopener,noreferrer');
-    }
-  }
-
-  contactarEmail(offer: any, event?: Event): void {
-    if (event) {
-      event.stopPropagation();
-    }
-    const proNom = offer.professional || 'Professional';
-    const email = this.getProfessionalEmail(proNom);
-    const titol = this.getOfertaTitol(offer);
-    const preu = offer.price || '';
-    const clientUser = this.authService.getCurrentUser();
-    const clientNom = clientUser ? clientUser.nom : 'Client interessat';
-
-    const assumpte = `Interès en l'oferta AVISA: ${titol}`;
-    const cos = `Hola ${proNom},\n\nM'interessa la teva oferta de servei publicada a AVISA:\n- Servei: ${titol}\n- Preu indicat: ${preu}\n\nEm pots respondre a aquest correu per poder coordinar els detalls i la data del servei.\n\nSalutacions cordials,\n${clientNom}`;
-
-    const mailtoUrl = `mailto:${email}?subject=${encodeURIComponent(assumpte)}&body=${encodeURIComponent(cos)}`;
-
-    if (typeof window !== 'undefined') {
-      window.location.href = mailtoUrl;
-    }
-  }
 
   onPublicarOferta(): void {
     this.router.navigate([this.getNavUrl('/tasques-ofertes')], { queryParams: { tipus: 'ofertes', accio: 'crear-oferta' } });
   }
 
-  onAcceptarOferta(offerId: string): void {
-    if (!this.requireLogin(`acceptar l'oferta ${offerId}`, '/')) return;
-    if (this.authService.isClient()) {
-      this.ofertaService.accept(offerId).subscribe({
-        next: () => {
-          this.noticeMessage = `S'ha acceptat la proposta ${offerId} correctament a la base de dades.`;
-          this.loadDashboard();
-        },
-        error: () => {
-          this.noticeMessage = `No s'ha pogut acceptar l'oferta.`;
-        }
-      });
-    } else {
-      this.noticeMessage = 'Només el client que ha publicat la tasca pot acceptar aquesta oferta.';
-    }
-  }
+ 
 
   /**
    * Fa lliscar la pantalla suaument cap a la secció de contingut
@@ -4038,11 +4141,11 @@ export class MainComponent implements OnInit, OnDestroy {
   }
 
   onAnarRegistreClient(): void {
-    this.router.navigate(['/registre'], { queryParams: { rol: 'client' } });
+    this.router.navigate(['/registre'], { queryParams: { rol: 'CLIENT' } });
   }
 
   onAnarRegistreProfessional(): void {
-    this.router.navigate(['/registre'], { queryParams: { rol: 'professional' } });
+    this.router.navigate(['/registre'], { queryParams: { rol: 'PROFESSIONAL' } });
   }
 
   /**

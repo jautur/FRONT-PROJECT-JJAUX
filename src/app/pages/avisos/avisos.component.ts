@@ -30,8 +30,13 @@ type FiltreAvisos = 'totes' | 'pendents' | 'llegides';
           <h2>{{ 'AVISOS_PAGE.TITLE' | translate }}</h2>
           <p class="subtitle">{{ 'AVISOS_PAGE.SUBTITLE' | translate }}</p>
         </div>
-        <div class="header-actions" *ngIf="avisos.length > 0">
-          <button type="button" class="btn-action-alt" (click)="marcarTotesLlegides()" [disabled]="pendentsCount === 0">
+        <div class="header-actions">
+          <button type="button" class="btn-refresh-avisos" (click)="carregarAvisos()" [class.spinning]="loading" [title]="'COMMON.ACTUALITZAR' | translate" [attr.aria-label]="'COMMON.ACTUALITZAR' | translate">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+            </svg>
+          </button>
+          <button *ngIf="avisos.length > 0" type="button" class="btn-action-alt" (click)="marcarTotesLlegides()" [disabled]="pendentsCount === 0">
             {{ 'AVISOS_PAGE.MARK_ALL_READ' | translate }}
           </button>
         </div>
@@ -176,7 +181,7 @@ type FiltreAvisos = 'totes' | 'pendents' | 'llegides';
     }
     .avisos-header h2 {
       margin: 0 0 0.35rem 0;
-      color: #09090c;
+      color: var(--color-text, #09090c);
       font-size: 1.85rem;
       font-weight: 900;
       letter-spacing: -0.02em;
@@ -304,7 +309,7 @@ type FiltreAvisos = 'totes' | 'pendents' | 'llegides';
     }
     .avis-text {
       margin: 0;
-      color: #09090c;
+      color: var(--color-text, #09090c);
       font-size: 0.95rem;
       font-weight: 600;
       line-height: 1.45;
@@ -321,7 +326,7 @@ type FiltreAvisos = 'totes' | 'pendents' | 'llegides';
       font-size: 0.8rem;
       font-weight: 800;
       cursor: pointer;
-      color: #09090c;
+      color: var(--color-text, #09090c);
       transition: all 0.2s;
     }
     .btn-icon:hover {
@@ -346,6 +351,39 @@ type FiltreAvisos = 'totes' | 'pendents' | 'llegides';
       background: #fee2e2;
       border-color: #dc2626;
     }
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+    }
+    .btn-refresh-avisos {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 38px;
+      height: 38px;
+      background: var(--bg-card, #ffffff);
+      color: var(--color-text-muted, #57554e);
+      border: 1px solid var(--border-subtle, #e5e0d7);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .btn-refresh-avisos:hover {
+      background: var(--bg-surface, #faf8f4);
+      color: var(--color-text, #09090c);
+      border-color: var(--neon, #ff1744);
+    }
+    .btn-refresh-avisos:active {
+      transform: scale(0.92);
+    }
+    .btn-refresh-avisos.spinning svg {
+      animation: spinRefreshAvisos 0.8s linear infinite;
+    }
+    @keyframes spinRefreshAvisos {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
     .btn-action-alt {
       background: #ffffff;
       border: 1px solid #d6d0c4;
@@ -354,7 +392,7 @@ type FiltreAvisos = 'totes' | 'pendents' | 'llegides';
       font-size: 0.85rem;
       cursor: pointer;
       font-weight: 800;
-      color: #09090c;
+      color: var(--color-text, #09090c);
       transition: all 0.2s;
     }
     .btn-action-alt:hover:not(:disabled) {
@@ -392,7 +430,7 @@ type FiltreAvisos = 'totes' | 'pendents' | 'llegides';
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
     }
     .empty-state h3 {
-      color: #09090c;
+      color: var(--color-text, #09090c);
       font-size: 1.25rem;
       font-weight: 800;
       margin-top: 0.75rem;
@@ -437,7 +475,7 @@ type FiltreAvisos = 'totes' | 'pendents' | 'llegides';
         gap: 0.85rem;
       }
       .btn-action-alt {
-        width: 100%;
+        flex: 1;
         text-align: center;
       }
       .filter-tabs {
@@ -508,29 +546,24 @@ export class AvisosComponent implements OnInit {
 
   /**
    * Obté la ruta URL de destinació segons la informació de l'avís.
+   * El botó sempre adreça a l'apartat personal: /professional/les-meves-ofertes o /client/les-meves-tasques.
    * @param a Notificació
    * @returns Ruta de navegació interna
    */
   getDestinacioAvis(a: Avis): string {
-    if (a.enllac && a.enllac.trim() !== '') {
+    const user = this.authService.getCurrentUser();
+    const isProf = user?.rol === 'PROFESSIONAL';
+
+    if (a.enllac && a.enllac.trim() !== '' && !a.enllac.includes('tasques-ofertes')) {
       return a.enllac;
     }
-    const text = (a.missatge || '').toLowerCase();
-    const user = this.authService.getCurrentUser();
-    const isProf = user?.rol === 'professional';
 
-    if (text.includes('oferta') || text.includes('contractaci') || text.includes('servei')) {
-      return isProf ? '/professional/les-meves-ofertes' : '/tasques-ofertes';
-    }
-    if (text.includes('pressupost')) {
-      return isProf ? '/tasques-ofertes' : '/client/les-meves-tasques';
-    }
-    if (text.includes('tasca') || text.includes('treball') || text.includes('finalitzat') || text.includes('contractada') || text.includes('incidència') || text.includes('incidencia')) {
-      return isProf ? '/professional/les-meves-ofertes' : '/client/les-meves-tasques';
-    }
-    if (text.includes('perfil') || text.includes('comissió') || text.includes('percentil') || text.includes('ressenya') || text.includes('resenya')) {
+    const text = (a.missatge || '').toLowerCase();
+    if (text.includes('perfil') || text.includes('comissió') || text.includes('percentil')) {
       return '/perfil';
     }
+
+    // Apartat personal segons rol:
     return isProf ? '/professional/les-meves-ofertes' : '/client/les-meves-tasques';
   }
 
@@ -541,12 +574,10 @@ export class AvisosComponent implements OnInit {
    */
   getNomDestinacio(a: Avis): string {
     const ruta = this.getDestinacioAvis(a);
-    if (ruta.includes('les-meves-tasques')) return 'Veure les meves tasques';
+    if (ruta.includes('les-meves-tasques')) return 'Veure les meves incidències';
     if (ruta.includes('les-meves-ofertes')) return 'Veure les meves ofertes';
-    if (ruta.includes('tasques-ofertes')) return 'Veure mercat d\'ofertes';
-    if (ruta.includes('tasca-detall')) return 'Veure detall de la tasca';
     if (ruta.includes('perfil')) return 'Anar al meu perfil';
-    return 'Veure apartat';
+    return 'Veure apartat personal';
   }
 
   /**

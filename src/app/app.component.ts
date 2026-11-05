@@ -1,4 +1,4 @@
-import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
+import { Component, HostListener, NgZone, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet, NavigationEnd } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -57,6 +57,27 @@ export class AppComponent implements OnInit, OnDestroy {
   /** Estat del desplegable de vista prèvia de perfil */
   perfilDropdownObert = false;
 
+  /** Estat de connexió a la xarxa */
+  isOffline = false;
+  private onlineHandler = () => { this.isOffline = false; };
+  private offlineHandler = () => { this.isOffline = true; };
+  private scrollHandler = () => {
+    const scrollY = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+    const shouldBeScrolled = !this.isHomePage || scrollY > 70;
+    if (shouldBeScrolled !== this.isScrolled) {
+      this.ngZone.run(() => {
+        this.isScrolled = shouldBeScrolled;
+        if (shouldBeScrolled) {
+          this.wasScrolled = true;
+        } else {
+          this.menuObert = false;
+          this.menuOcultatPerUsuari = false;
+          this.wasScrolled = false;
+        }
+      });
+    }
+  };
+
   /** Controla la visibilitat de la barra de navegació inferior de l'aplicació (/app) */
   showBottomNav = false;
 
@@ -78,7 +99,8 @@ export class AppComponent implements OnInit, OnDestroy {
     public readonly confirmService: ConfirmService,
     public readonly pwaService: PwaService,
     private readonly avisService: AvisService,
-    private readonly router: Router
+    private readonly router: Router,
+    private readonly ngZone: NgZone
   ) {
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
@@ -124,17 +146,39 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    if (typeof window !== 'undefined') {
+      this.isOffline = !navigator.onLine;
+      window.addEventListener('online', this.onlineHandler);
+      window.addEventListener('offline', this.offlineHandler);
+      this.ngZone.runOutsideAngular(() => {
+        window.addEventListener('scroll', this.scrollHandler, { passive: true });
+      });
+    }
     this.actualitzarAvisos();
     this.actualitzarTemaApp();
     this.checkScroll();
 
-    // Comprovació periòdica dels avisos cada 15 segons
-    this.avisosInterval = setInterval(() => {
-      this.actualitzarAvisos();
-    }, 15000);
+    // Comprovació periòdica dels avisos fora de la zona d'Angular per no disparar cicles innecessaris
+    this.ngZone.runOutsideAngular(() => {
+      this.avisosInterval = setInterval(() => {
+        if (typeof document !== 'undefined' && document.hidden) {
+          return;
+        }
+        if (this.authService.isLoggedIn()) {
+          this.ngZone.run(() => {
+            this.actualitzarAvisos();
+          });
+        }
+      }, 15000);
+    });
   }
 
   ngOnDestroy(): void {
+    if (typeof window !== 'undefined') {
+      window.removeEventListener('online', this.onlineHandler);
+      window.removeEventListener('offline', this.offlineHandler);
+      window.removeEventListener('scroll', this.scrollHandler);
+    }
     if (this.avisosInterval) {
       clearInterval(this.avisosInterval);
     }
@@ -152,15 +196,9 @@ export class AppComponent implements OnInit, OnDestroy {
    */
   @HostListener('window:focus', [])
   onWindowFocus(): void {
-    this.actualitzarAvisos();
-  }
-
-  /**
-   * Escolta l'esdeveniment de scroll de la finestra.
-   */
-  @HostListener('window:scroll', [])
-  onWindowScroll(): void {
-    this.checkScroll();
+    if (this.authService.isLoggedIn()) {
+      this.actualitzarAvisos();
+    }
   }
 
   /**

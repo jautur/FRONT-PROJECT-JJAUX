@@ -21,11 +21,12 @@ import { Avis } from '../../../models/avis.model';
 import { AuthService } from '../../../core/services/auth.service';
 import { ConfirmService } from '../../../core/services/confirm.service';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
+import { AdminCancellacionsComponent } from '../cancellacions/admin-cancellacions.component';
 
 /**
  * Pestanya activa al panell d'administració.
  */
-type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'pressupostos' | 'usuaris' | 'blacklist' | 'resenyes' | 'avisos';
+type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'pressupostos' | 'usuaris' | 'blacklist' | 'resenyes' | 'avisos' | 'cancellacions';
 
 /**
  * Component del Panell d'Administració Global (/admin/panell).
@@ -40,9 +41,18 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'pressupostos' | 'usuari
 @Component({
   selector: 'app-admin-panell',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, TranslatePipe],
+  imports: [CommonModule, FormsModule, RouterLink, TranslatePipe, AdminCancellacionsComponent],
   template: `
     <div class="admin-container">
+      <div class="app-back-nav" *ngIf="isAppPage">
+        <button type="button" class="btn-app-back" (click)="goBack()" [title]="'COMMON.TORNAR' | translate">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+          <span>{{ 'COMMON.TORNAR' | translate }}</span>
+        </button>
+      </div>
+
       <!-- Capçalera del Panell -->
       <div class="admin-header">
         <div class="title-group">
@@ -153,8 +163,8 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'pressupostos' | 'usuari
             <span class="metric-value">{{ usuaris.length }}</span>
             <span class="metric-label">{{ 'ADMIN.METRIC_USERS' | translate }}</span>
             <small class="metric-sub">
-              <span class="clickable-sub" (click)="filtrarPerRolUsuari('client', $event)">{{ countClients() }} clients</span> ·
-              <span class="clickable-sub" (click)="filtrarPerRolUsuari('professional', $event)">{{ countProfessionals() }} prof.</span>
+              <span class="clickable-sub" (click)="filtrarPerRolUsuari('CLIENT', $event)">{{ countClients() }} clients</span> ·
+              <span class="clickable-sub" (click)="filtrarPerRolUsuari('PROFESSIONAL', $event)">{{ countProfessionals() }} prof.</span>
             </small>
           </div>
         </div>
@@ -247,79 +257,32 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'pressupostos' | 'usuari
             <small class="metric-sub">{{ blacklist.length }} {{ 'ADMIN.USER_PHONE_BLOCKED' | translate }}</small>
           </div>
         </div>
+
+        <div
+          class="metric-card"
+          [class.active-card]="tabActiva === 'cancellacions'"
+          (click)="canviarTab('cancellacions')"
+          (keydown.enter)="canviarTab('cancellacions')"
+          role="button"
+          tabindex="0"
+          [title]="'TREBALL.ADMIN_CANCEL_CARD_HINT' | translate"
+        >
+          <span class="metric-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="#ff1744" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="4.9" y1="4.9" x2="19.1" y2="19.1"></line>
+            </svg>
+          </span>
+          <div class="metric-info">
+            <span class="metric-label">{{ 'TREBALL.ADMIN_CANCEL_CARD' | translate }}</span>
+            <small class="metric-sub">{{ 'TREBALL.ADMIN_CANCEL_CARD_HINT' | translate }}</small>
+          </div>
+        </div>
       </div>
 
       <!-- Missatges de feedback -->
       <div *ngIf="successMsg" class="alert-success">{{ successMsg }}</div>
       <div *ngIf="errorMsg" class="alert-error">{{ errorMsg }}</div>
-
-      <!-- Pestanyes de navegació interna -->
-      <div class="nav-tabs">
-        <button
-          type="button"
-          class="tab-btn"
-          [class.active]="tabActiva === 'tasques'"
-          (click)="canviarTab('tasques')"
-        >
-          {{ 'ADMIN.TAB_TASKS' | translate }} ({{ tasques.length }})
-        </button>
-        <button
-          type="button"
-          class="tab-btn"
-          [class.active]="tabActiva === 'ofertes'"
-          (click)="canviarTab('ofertes')"
-        >
-          {{ 'ADMIN.TAB_OFFERS' | translate }} ({{ ofertes.length }})
-        </button>
-        <button
-          type="button"
-          class="tab-btn"
-          [class.active]="tabActiva === 'incidencies'"
-          (click)="canviarTab('incidencies')"
-        >
-          {{ 'ADMIN.TAB_INCIDENCIES' | translate }} ({{ incidencies.length }})
-        </button>
-        <button
-          type="button"
-          class="tab-btn"
-          [class.active]="tabActiva === 'pressupostos'"
-          (click)="canviarTab('pressupostos')"
-        >
-          {{ 'ADMIN.TAB_PRESSUPOSTOS' | translate }} ({{ pressupostos.length }})
-        </button>
-        <button
-          type="button"
-          class="tab-btn"
-          [class.active]="tabActiva === 'usuaris'"
-          (click)="canviarTab('usuaris')"
-        >
-          {{ 'ADMIN.TAB_USERS' | translate }} ({{ usuaris.length }})
-        </button>
-        <button
-          type="button"
-          class="tab-btn"
-          [class.active]="tabActiva === 'blacklist'"
-          (click)="canviarTab('blacklist')"
-        >
-          {{ 'ADMIN.TAB_BLACKLIST' | translate }} ({{ blacklist.length }})
-        </button>
-        <button
-          type="button"
-          class="tab-btn"
-          [class.active]="tabActiva === 'resenyes'"
-          (click)="canviarTab('resenyes')"
-        >
-          {{ 'ADMIN.TAB_RESENYES' | translate }} ({{ resenyes.length }})
-        </button>
-        <button
-          type="button"
-          class="tab-btn"
-          [class.active]="tabActiva === 'avisos'"
-          (click)="canviarTab('avisos')"
-        >
-          {{ 'ADMIN.TAB_AVISOS' | translate }} ({{ avisos.length }})
-        </button>
-      </div>
 
       <!-- ============================================================== -->
       <!-- PESTANYA 1: TOTES LES TASQUES -->
@@ -382,7 +345,7 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'pressupostos' | 'usuari
                       {{ 'MERCAT.DETALL' | translate }}
                     </a>
                     <button
-                      *ngIf="t.estat !== 'Finalitzada'"
+                      *ngIf="t.estat === 'En curs'"
                       type="button"
                       class="btn-sm btn-success"
                       (click)="finalitzarTasca(t.id)"
@@ -392,19 +355,6 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'pressupostos' | 'usuari
                         <polyline points="20 6 9 17 4 12"></polyline>
                       </svg>
                       {{ 'ADMIN.BTN_FINALIZE' | translate }}
-                    </button>
-                    <button
-                      type="button"
-                      class="btn-sm btn-danger"
-                      (click)="eliminarTasca(t.id)"
-                      title="Eliminar tasca de la base de dades"
-                      aria-label="Eliminar"
-                    >
-                      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;">
-                        <polyline points="3 6 5 6 21 6"></polyline>
-                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                      </svg>
-                      {{ 'ADMIN.BTN_DELETE' | translate }}
                     </button>
                   </div>
                 </td>
@@ -461,17 +411,6 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'pressupostos' | 'usuari
                 <td class="note-cell">{{ o.note || '-' }}</td>
                 <td>
                   <div class="action-buttons">
-                    <button
-                      type="button"
-                      class="btn-sm btn-success"
-                      (click)="acceptarOferta(o.id)"
-                      title="Acceptar oferta"
-                    >
-                      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;">
-                        <polyline points="20 6 9 17 4 12"></polyline>
-                      </svg>
-                      {{ 'ADMIN.BTN_ACCEPT' | translate }}
-                    </button>
                     <button
                       type="button"
                       class="btn-sm btn-danger"
@@ -588,9 +527,9 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'pressupostos' | 'usuari
           />
           <select [(ngModel)]="filtreRolUsuari" class="select-filter">
             <option value="tots">{{ 'ADMIN.ALL_ROLES' | translate }}</option>
-            <option value="client">Client</option>
-            <option value="professional">Professional</option>
-            <option value="admin">Administrador</option>
+            <option value="CLIENT">Client</option>
+            <option value="PROFESSIONAL">Professional</option>
+            <option value="ADMIN">Administrador</option>
           </select>
         </div>
 
@@ -615,7 +554,7 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'pressupostos' | 'usuari
                     <a [routerLink]="[getNavUrl('/perfil'), u.id]" class="user-inline-link" title="Veure perfil">
                       <strong>{{ u.nom }}</strong>
                     </a>
-                    <span *ngIf="u.rol === 'professional' && u.foto" class="badge-has-photo" [title]="'ADMIN.USER_HAS_PHOTO' | translate">
+                    <span *ngIf="u.rol === 'PROFESSIONAL' && u.foto" class="badge-has-photo" [title]="'ADMIN.USER_HAS_PHOTO' | translate">
                       <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                         <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
                         <circle cx="8.5" cy="8.5" r="1.5"></circle>
@@ -627,7 +566,7 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'pressupostos' | 'usuari
                 </td>
                 <td>{{ u.email }}</td>
                 <td>
-                  <span class="user-badge-tag" [ngClass]="u.rol">
+                  <span class="user-badge-tag" [ngClass]="u.rol?.toLowerCase()">
                     {{ u.rol | uppercase }}
                   </span>
                 </td>
@@ -662,7 +601,7 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'pressupostos' | 'usuari
                       {{ 'ADMIN.BTN_NEW_PASSWORD' | translate }}
                     </button>
                     <button
-                      *ngIf="u.rol === 'professional'"
+                      *ngIf="u.rol === 'PROFESSIONAL'"
                       type="button"
                       class="btn-sm btn-foto"
                       (click)="obrirModalFoto(u)"
@@ -713,7 +652,7 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'pressupostos' | 'usuari
                       {{ 'ADMIN.BTN_SEND_NOTICE' | translate }}
                     </button>
                     <button
-                      *ngIf="u.id !== 'u-admin' && u.email !== 'admin@admin' && u.email !== 'admin@admin.es'"
+                      *ngIf="u.rol !== 'ADMIN'"
                       type="button"
                       class="btn-sm btn-danger"
                       (click)="eliminarUsuari(u)"
@@ -740,6 +679,10 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'pressupostos' | 'usuari
       <!-- ============================================================== -->
       <!-- PESTANYA 5: LLISTA NEGRA DE TELÈFONS -->
       <!-- ============================================================== -->
+      <section class="tab-content" *ngIf="tabActiva === 'cancellacions'">
+        <app-admin-cancellacions></app-admin-cancellacions>
+      </section>
+
       <section class="tab-content" *ngIf="tabActiva === 'blacklist'">
         <!-- Formulari d'afegir telèfon a la llista negra -->
         <div class="blacklist-add-card">
@@ -995,7 +938,7 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'pressupostos' | 'usuari
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem;">
               <div class="form-field">
                 <label for="destinatariAvis">Usuari Destinatari:</label>
-                <select id="destinatariAvis" [(ngModel)]="nouAvis.usuariId" name="usuariId" class="search-input" required>
+                <select id="destinatariAvis" [(ngModel)]="nouAvis.destinatariId" name="destinatariId" class="search-input" required>
                   <option value="" disabled>-- Tria un usuari registrat --</option>
                   <option *ngFor="let u of usuaris" [value]="u.id">
                     {{ u.nom }} ({{ u.email }}) — {{ u.rol | uppercase }}
@@ -1034,7 +977,7 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'pressupostos' | 'usuari
               <button
                 type="submit"
                 class="btn-primary"
-                [disabled]="enviantAvis || !nouAvis.usuariId || !nouAvis.missatge.trim()"
+                [disabled]="enviantAvis || !nouAvis.destinatariId || !nouAvis.missatge.trim()"
                 style="padding: 0.6rem 1.5rem;"
               >
                 {{ enviantAvis ? 'Enviant...' : 'Emetre Notificació' }}
@@ -1069,7 +1012,7 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'pressupostos' | 'usuari
               <tr *ngFor="let a of avisosFiltrats">
                 <td class="font-mono"><strong>{{ a.id }}</strong></td>
                 <td>
-                  <span class="user-badge-tag">{{ a.usuariId }}</span>
+                  <span class="user-badge-tag">{{ a.destinatariId }}</span>
                 </td>
                 <td>
                   <div class="table-titol">{{ a.missatge }}</div>
@@ -1132,7 +1075,7 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'pressupostos' | 'usuari
               </div>
               <div class="user-subinfo">
                 <span>{{ usuariSeleccionat.email }}</span>
-                <span class="user-badge-tag" [ngClass]="usuariSeleccionat.rol">{{ usuariSeleccionat.rol | uppercase }}</span>
+                <span class="user-badge-tag" [ngClass]="usuariSeleccionat.rol?.toLowerCase()">{{ usuariSeleccionat.rol | uppercase }}</span>
               </div>
             </div>
 
@@ -1319,12 +1262,22 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'pressupostos' | 'usuari
     </div>
   `,
   styles: [`
+    :host {
+      display: block;
+      width: 100%;
+      box-sizing: border-box;
+    }
     .admin-container {
-      max-width: 1200px;
+      width: 100%;
+      max-width: 1440px;
       margin: 0 auto;
-      padding: 1.5rem 1rem;
+      box-sizing: border-box;
+      padding: 1.25rem clamp(1rem, 2.5vw, 2.25rem);
+      min-width: 0;
     }
     .admin-header {
+      width: 100%;
+      box-sizing: border-box;
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
@@ -1454,36 +1407,6 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'pressupostos' | 'usuari
       margin-top: 0.2rem;
       font-weight: 600;
     }
-    .nav-tabs {
-      display: flex;
-      gap: 0.65rem;
-      margin-bottom: 1.5rem;
-      border-bottom: 1px solid #e5e0d7;
-      padding-bottom: 0.75rem;
-      flex-wrap: wrap;
-    }
-    .tab-btn {
-      background: #ffffff;
-      border: 1px solid #d6d0c4;
-      padding: 0.65rem 1.25rem;
-      border-radius: 8px;
-      font-size: 0.92rem;
-      font-weight: 800;
-      color: #636058;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-    .tab-btn:hover {
-      border-color: #ff1744;
-      color: #09090c;
-    }
-    .tab-btn.active {
-      background: #ff1744;
-      border-color: #ff1744;
-      color: #ffffff;
-      font-weight: 900;
-      box-shadow: 0 4px 15px rgba(255, 23, 68, 0.35);
-    }
     .filter-bar {
       display: flex;
       gap: 1rem;
@@ -1521,34 +1444,42 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'pressupostos' | 'usuari
       border-color: #ff1744;
     }
     .table-wrapper {
+      width: 100%;
+      box-sizing: border-box;
       background: var(--bg-card, #ffffff);
       border: 1px solid var(--border-subtle, #e5e0d7);
       border-radius: var(--radius-md, 12px);
       overflow-x: auto;
       box-shadow: var(--shadow-sm, 0 4px 20px rgba(0, 0, 0, 0.04));
+      min-width: 0;
     }
-    .data-table {
+    .data-table,
+    .admin-table {
       width: 100%;
+      min-width: 100%;
       border-collapse: collapse;
       text-align: left;
       font-size: 0.9rem;
     }
-    .data-table th {
+    .data-table th,
+    .admin-table th {
       background: var(--bg-surface, #faf8f4);
       color: var(--color-text, #09090c);
       padding: 0.9rem 1rem;
       font-weight: 800;
-      border-bottom: 1px solid #e5e0d7;
+      border-bottom: 1px solid var(--border-subtle, #e5e0d7);
       white-space: nowrap;
       letter-spacing: 0.03em;
     }
-    .data-table td {
+    .data-table td,
+    .admin-table td {
       padding: 0.9rem 1rem;
-      border-bottom: 1px solid #f0ece3;
+      border-bottom: 1px solid var(--border-subtle, #f0ece3);
       vertical-align: middle;
-      color: #09090c;
+      color: var(--color-text, #09090c);
     }
-    .data-table tr:hover {
+    .data-table tr:hover,
+    .admin-table tr:hover {
       background: #faf8f4;
     }
     .font-mono {
@@ -1705,7 +1636,7 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'pressupostos' | 'usuari
     }
     .user-badge-tag.client {
       background: #eff6ff;
-      color: #1d4ed8;
+      color: #1e40af;
       border: 1px solid #bfdbfe;
     }
     .user-badge-tag.professional {
@@ -2302,8 +2233,17 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'pressupostos' | 'usuari
     }
 
     /* Refinament visual i millor ús en pantalles estretes */
-    .admin-container { max-width: 1480px; padding: 1.25rem clamp(1rem, 2.5vw, 2.25rem); }
+    .admin-container {
+      width: 100%;
+      max-width: 1440px;
+      margin: 0 auto;
+      box-sizing: border-box;
+      padding: 1.25rem clamp(1rem, 2.5vw, 2.25rem);
+      min-width: 0;
+    }
     .admin-header {
+      width: 100%;
+      box-sizing: border-box;
       padding: 1.5rem 1.65rem;
       border: 1px solid #e5e0d7;
       border-radius: 18px;
@@ -2316,7 +2256,12 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'pressupostos' | 'usuari
       border-color: #ff1744; background: #ff1744; color: #fff;
       box-shadow: 0 6px 16px rgba(255, 23, 68, 0.22);
     }
-    .metrics-grid { gap: 0.85rem; margin-bottom: 1.5rem; }
+    .metrics-grid {
+      width: 100%;
+      box-sizing: border-box;
+      gap: 0.85rem;
+      margin-bottom: 1.5rem;
+    }
     .metric-card { border-radius: 14px; padding: 1.1rem 1.2rem; box-shadow: 0 3px 12px rgba(28, 23, 16, 0.035); }
     .metric-card:focus-visible { outline: 3px solid rgba(255, 23, 68, 0.38); outline-offset: 3px; }
     .metric-icon {
@@ -2324,20 +2269,360 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'pressupostos' | 'usuari
       border-radius: 12px; background: #f7f3ed;
     }
     .metric-icon svg { width: 25px; height: 25px; }
-    .nav-tabs {
-      gap: 0.45rem; margin-bottom: 0; padding: 0.7rem 0.8rem; flex-wrap: nowrap;
-      overflow-x: auto; scrollbar-width: thin; border: 1px solid #e5e0d7;
-      border-radius: 14px 14px 0 0; background: #f2eee7;
-    }
-    .tab-btn { flex: 0 0 auto; padding: 0.62rem 0.95rem; border-radius: 9px; font-size: 0.84rem; white-space: nowrap; }
     .tab-content {
-      padding: 1.25rem; border: 1px solid #e5e0d7; border-top: 0;
-      border-radius: 0 0 14px 14px; background: #fff;
+      width: 100%;
+      box-sizing: border-box;
+      padding: 1.25rem;
+      border: 1px solid #e5e0d7;
+      border-radius: 14px;
+      background: #fff;
       box-shadow: 0 8px 24px rgba(28, 23, 16, 0.04);
+      min-width: 0;
     }
-    .table-wrapper { border: 1px solid #eee9e1; border-radius: 12px; background: #fff; }
+    .table-wrapper {
+      width: 100%;
+      box-sizing: border-box;
+      border: 1px solid #eee9e1;
+      border-radius: 12px;
+      background: #fff;
+      overflow-x: auto;
+      min-width: 0;
+    }
     .data-table tbody tr, .admin-table tbody tr { transition: background 0.15s ease; }
     .data-table tbody tr:hover, .admin-table tbody tr:hover { background: #fff8f8; }
+
+    /* ============================================================== */
+    /* MODE FOSC EXCLUSIU PER A L'ENTORN APP (/app/admin/panell)      */
+    /* ============================================================== */
+    :host-context(body.theme-app-dark) .admin-container,
+    :host-context(.theme-app-dark) .admin-container {
+      color: var(--color-text);
+    }
+
+    :host-context(body.theme-app-dark) .admin-header,
+    :host-context(.theme-app-dark) .admin-header {
+      background: var(--bg-card) !important;
+      border-color: var(--border-card) !important;
+      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35) !important;
+    }
+
+    :host-context(body.theme-app-dark) .title-group h2,
+    :host-context(.theme-app-dark) .title-group h2 {
+      color: var(--color-text) !important;
+    }
+
+    :host-context(body.theme-app-dark) .subtitle,
+    :host-context(.theme-app-dark) .subtitle {
+      color: var(--color-text-muted) !important;
+    }
+
+    :host-context(body.theme-app-dark) .btn-refresh,
+    :host-context(.theme-app-dark) .btn-refresh {
+      background: var(--bg-surface) !important;
+      border-color: var(--border-card) !important;
+      color: var(--color-text) !important;
+    }
+
+    :host-context(body.theme-app-dark) .btn-refresh:hover:not(:disabled),
+    :host-context(.theme-app-dark) .btn-refresh:hover:not(:disabled) {
+      background: var(--neon, #ff1744) !important;
+      border-color: var(--neon, #ff1744) !important;
+      color: #ffffff !important;
+    }
+
+    :host-context(body.theme-app-dark) .metric-card,
+    :host-context(.theme-app-dark) .metric-card {
+      background: var(--bg-card) !important;
+      border-color: var(--border-card) !important;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25) !important;
+    }
+
+    :host-context(body.theme-app-dark) .metric-card:hover,
+    :host-context(.theme-app-dark) .metric-card:hover {
+      border-color: var(--neon, #ff1744) !important;
+      box-shadow: 0 6px 18px rgba(255, 23, 68, 0.2) !important;
+    }
+
+    :host-context(body.theme-app-dark) .metric-card.active-card,
+    :host-context(.theme-app-dark) .metric-card.active-card {
+      background: var(--bg-surface) !important;
+      border-color: var(--neon, #ff1744) !important;
+      box-shadow: 0 6px 20px rgba(255, 23, 68, 0.25) !important;
+    }
+
+    :host-context(body.theme-app-dark) .metric-icon,
+    :host-context(.theme-app-dark) .metric-icon {
+      background: var(--bg-surface) !important;
+    }
+
+    :host-context(body.theme-app-dark) .metric-value,
+    :host-context(.theme-app-dark) .metric-value {
+      color: var(--color-text) !important;
+    }
+
+    :host-context(body.theme-app-dark) .metric-label,
+    :host-context(.theme-app-dark) .metric-label {
+      color: var(--color-text-muted) !important;
+    }
+
+    :host-context(body.theme-app-dark) .metric-sub,
+    :host-context(.theme-app-dark) .metric-sub {
+      color: var(--color-text-dim) !important;
+    }
+
+    :host-context(body.theme-app-dark) .clickable-sub:hover,
+    :host-context(.theme-app-dark) .clickable-sub:hover {
+      color: #ff6b81 !important;
+    }
+
+    :host-context(body.theme-app-dark) .tab-content,
+    :host-context(.theme-app-dark) .tab-content {
+      background: var(--bg-card) !important;
+      border: 1px solid var(--border-card) !important;
+      border-radius: 14px !important;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28) !important;
+    }
+
+    :host-context(body.theme-app-dark) .filter-bar .search-input,
+    :host-context(body.theme-app-dark) .filter-bar .select-filter,
+    :host-context(.theme-app-dark) .filter-bar .search-input,
+    :host-context(.theme-app-dark) .filter-bar .select-filter {
+      background: var(--bg-input) !important;
+      border-color: var(--border-card) !important;
+      color: var(--color-text) !important;
+    }
+
+    :host-context(body.theme-app-dark) .table-wrapper,
+    :host-context(.theme-app-dark) .table-wrapper {
+      background: var(--bg-card) !important;
+      border-color: var(--border-card) !important;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2) !important;
+    }
+
+    :host-context(body.theme-app-dark) .data-table th,
+    :host-context(body.theme-app-dark) .admin-table th,
+    :host-context(.theme-app-dark) .data-table th,
+    :host-context(.theme-app-dark) .admin-table th {
+      background: var(--bg-input) !important;
+      color: var(--color-text) !important;
+      border-bottom-color: var(--border-card) !important;
+    }
+
+    :host-context(body.theme-app-dark) .data-table td,
+    :host-context(body.theme-app-dark) .admin-table td,
+    :host-context(.theme-app-dark) .data-table td,
+    :host-context(.theme-app-dark) .admin-table td {
+      color: var(--color-text) !important;
+      border-bottom-color: var(--border-subtle) !important;
+    }
+
+    :host-context(body.theme-app-dark) .data-table tbody tr:hover,
+    :host-context(body.theme-app-dark) .admin-table tbody tr:hover,
+    :host-context(.theme-app-dark) .data-table tbody tr:hover,
+    :host-context(.theme-app-dark) .admin-table tbody tr:hover {
+      background: var(--bg-surface) !important;
+    }
+
+    :host-context(body.theme-app-dark) .table-titol,
+    :host-context(.theme-app-dark) .table-titol {
+      color: var(--color-text) !important;
+    }
+
+    :host-context(body.theme-app-dark) .table-desc,
+    :host-context(body.theme-app-dark) .note-cell,
+    :host-context(body.theme-app-dark) .bio-cell,
+    :host-context(.theme-app-dark) .table-desc,
+    :host-context(.theme-app-dark) .note-cell,
+    :host-context(.theme-app-dark) .bio-cell {
+      color: var(--color-text-muted) !important;
+    }
+
+    :host-context(body.theme-app-dark) .tag-cat,
+    :host-context(.theme-app-dark) .tag-cat {
+      background: var(--bg-surface) !important;
+      border-color: var(--border-card) !important;
+      color: var(--color-text-muted) !important;
+    }
+
+    :host-context(body.theme-app-dark) .user-badge-tag.client,
+    :host-context(.theme-app-dark) .user-badge-tag.client {
+      background: rgba(59, 130, 246, 0.16) !important;
+      color: #93c5fd !important;
+      border: 1px solid rgba(59, 130, 246, 0.4) !important;
+    }
+
+    :host-context(body.theme-app-dark) .user-badge-tag.ambdos,
+    :host-context(.theme-app-dark) .user-badge-tag.ambdos {
+      background: rgba(168, 85, 247, 0.16) !important;
+      color: #d8b4fe !important;
+      border: 1px solid rgba(168, 85, 247, 0.4) !important;
+    }
+
+    :host-context(body.theme-app-dark) .user-badge-tag.professional,
+    :host-context(.theme-app-dark) .user-badge-tag.professional {
+      background: rgba(255, 23, 68, 0.12) !important;
+      color: #ff6b81 !important;
+      border: 1px solid rgba(255, 23, 68, 0.35) !important;
+    }
+
+    :host-context(body.theme-app-dark) .badge-en-curs,
+    :host-context(body.theme-app-dark) .badge-pendent,
+    :host-context(.theme-app-dark) .badge-en-curs,
+    :host-context(.theme-app-dark) .badge-pendent {
+      background: rgba(245, 158, 11, 0.15) !important;
+      color: #fbbf24 !important;
+      border-color: rgba(245, 158, 11, 0.4) !important;
+    }
+
+    :host-context(body.theme-app-dark) .badge-finalitzada,
+    :host-context(.theme-app-dark) .badge-finalitzada {
+      background: rgba(148, 163, 184, 0.15) !important;
+      color: var(--color-text-muted) !important;
+      border-color: rgba(148, 163, 184, 0.35) !important;
+    }
+
+    :host-context(body.theme-app-dark) .badge-acceptada,
+    :host-context(.theme-app-dark) .badge-acceptada {
+      background: rgba(16, 185, 129, 0.15) !important;
+      color: #34d399 !important;
+      border-color: rgba(16, 185, 129, 0.4) !important;
+    }
+
+    :host-context(body.theme-app-dark) .badge-rebutjada,
+    :host-context(.theme-app-dark) .badge-rebutjada {
+      background: rgba(239, 68, 68, 0.15) !important;
+      color: #f87171 !important;
+      border-color: rgba(239, 68, 68, 0.4) !important;
+    }
+
+    :host-context(body.theme-app-dark) .badge-has-photo,
+    :host-context(.theme-app-dark) .badge-has-photo {
+      background: rgba(16, 185, 129, 0.16) !important;
+      color: #6ee7b7 !important;
+      border-color: rgba(16, 185, 129, 0.4) !important;
+    }
+
+    :host-context(body.theme-app-dark) .preview-star-pill,
+    :host-context(body.theme-app-dark) .stars-badge,
+    :host-context(body.theme-app-dark) .rating-summary-badge,
+    :host-context(.theme-app-dark) .preview-star-pill,
+    :host-context(.theme-app-dark) .stars-badge,
+    :host-context(.theme-app-dark) .rating-summary-badge {
+      background: rgba(245, 158, 11, 0.15) !important;
+      color: #fbbf24 !important;
+      border-color: rgba(245, 158, 11, 0.35) !important;
+    }
+
+    :host-context(body.theme-app-dark) .btn-info,
+    :host-context(body.theme-app-dark) .btn-secondary,
+    :host-context(.theme-app-dark) .btn-info,
+    :host-context(.theme-app-dark) .btn-secondary {
+      background: var(--bg-surface) !important;
+      border-color: var(--border-card) !important;
+      color: var(--color-text) !important;
+    }
+
+    :host-context(body.theme-app-dark) .btn-info:hover,
+    :host-context(body.theme-app-dark) .btn-secondary:hover,
+    :host-context(.theme-app-dark) .btn-info:hover,
+    :host-context(.theme-app-dark) .btn-secondary:hover {
+      border-color: var(--neon, #ff1744) !important;
+      color: var(--neon, #ff1744) !important;
+      background: var(--bg-surface-elevated) !important;
+    }
+
+    :host-context(body.theme-app-dark) .btn-foto,
+    :host-context(body.theme-app-dark) .btn-avis-action,
+    :host-context(.theme-app-dark) .btn-foto,
+    :host-context(.theme-app-dark) .btn-avis-action {
+      background: rgba(59, 130, 246, 0.15) !important;
+      color: #93c5fd !important;
+      border-color: rgba(59, 130, 246, 0.4) !important;
+    }
+
+    :host-context(body.theme-app-dark) .btn-foto:hover,
+    :host-context(body.theme-app-dark) .btn-avis-action:hover,
+    :host-context(.theme-app-dark) .btn-foto:hover,
+    :host-context(.theme-app-dark) .btn-avis-action:hover {
+      background: #2563eb !important;
+      color: #ffffff !important;
+    }
+
+    :host-context(body.theme-app-dark) .modal-card,
+    :host-context(body.theme-app-dark) .blacklist-add-card,
+    :host-context(body.theme-app-dark) .empty-box,
+    :host-context(.theme-app-dark) .modal-card,
+    :host-context(.theme-app-dark) .blacklist-add-card,
+    :host-context(.theme-app-dark) .empty-box {
+      background: var(--bg-card) !important;
+      border-color: var(--border-card) !important;
+      color: var(--color-text) !important;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5) !important;
+    }
+
+    :host-context(body.theme-app-dark) .modal-header,
+    :host-context(body.theme-app-dark) .modal-footer,
+    :host-context(.theme-app-dark) .modal-header,
+    :host-context(.theme-app-dark) .modal-footer {
+      background: var(--bg-input) !important;
+      border-color: var(--border-card) !important;
+    }
+
+    :host-context(body.theme-app-dark) .modal-header h3,
+    :host-context(.theme-app-dark) .modal-header h3 {
+      color: var(--color-text) !important;
+    }
+
+    :host-context(body.theme-app-dark) .btn-close,
+    :host-context(.theme-app-dark) .btn-close {
+      color: var(--color-text-muted) !important;
+    }
+
+    :host-context(body.theme-app-dark) .btn-close:hover,
+    :host-context(.theme-app-dark) .btn-close:hover {
+      color: var(--neon, #ff1744) !important;
+    }
+
+    :host-context(body.theme-app-dark) .user-highlight,
+    :host-context(.theme-app-dark) .user-highlight {
+      background: var(--bg-surface) !important;
+      border-color: var(--border-card) !important;
+      color: var(--color-text) !important;
+    }
+
+    :host-context(body.theme-app-dark) .alert-info-box,
+    :host-context(.theme-app-dark) .alert-info-box {
+      background: rgba(255, 23, 68, 0.08) !important;
+      border-left-color: var(--neon, #ff1744) !important;
+      color: var(--color-text-muted) !important;
+    }
+
+    :host-context(body.theme-app-dark) .form-group label,
+    :host-context(body.theme-app-dark) .blacklist-add-form .form-field,
+    :host-context(.theme-app-dark) .form-group label,
+    :host-context(.theme-app-dark) .blacklist-add-form .form-field {
+      color: var(--color-text) !important;
+    }
+
+    :host-context(body.theme-app-dark) .form-control,
+    :host-context(body.theme-app-dark) .blacklist-add-form .form-field input,
+    :host-context(.theme-app-dark) .form-control,
+    :host-context(.theme-app-dark) .blacklist-add-form .form-field input {
+      background: var(--bg-input) !important;
+      border-color: var(--border-card) !important;
+      color: var(--color-text) !important;
+    }
+
+    :host-context(body.theme-app-dark) .preset-card-btn,
+    :host-context(.theme-app-dark) .preset-card-btn {
+      background: var(--bg-surface) !important;
+      border-color: var(--border-card) !important;
+    }
+
+    :host-context(body.theme-app-dark) .preset-label,
+    :host-context(.theme-app-dark) .preset-label {
+      color: var(--color-text) !important;
+    }
 
     @media (max-width: 768px) {
       .admin-container {
@@ -2373,16 +2658,6 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'pressupostos' | 'usuari
       }
       .metric-label {
         font-size: 0.75rem;
-      }
-      .nav-tabs {
-        display: flex;
-        gap: 0.4rem;
-      }
-      .tab-btn {
-        width: auto;
-        text-align: center;
-        padding: 0.55rem 0.65rem;
-        font-size: 0.8rem;
       }
       .filter-bar {
         flex-direction: column;
@@ -2444,7 +2719,7 @@ export class AdminPanellComponent implements OnInit {
   searchResenya = '';
 
   searchAvis = '';
-  nouAvis = { usuariId: '', missatge: '', enllac: '' };
+  nouAvis = { destinatariId: '', missatge: '', enllac: '' };
   enviantAvis = false;
 
   searchUsuari = '';
@@ -2506,6 +2781,14 @@ export class AdminPanellComponent implements OnInit {
   get isAppPage(): boolean {
     const url = this.router.url || '';
     return url.startsWith('/app');
+  }
+
+  goBack(): void {
+    if (typeof window !== 'undefined' && window.history.length > 1) {
+      window.history.back();
+    } else {
+      this.router.navigate([this.getNavUrl('/inici')]);
+    }
   }
 
   getNavUrl(path: string): string {
@@ -2658,7 +2941,7 @@ export class AdminPanellComponent implements OnInit {
 
       const matchRol =
         this.filtreRolUsuari === 'tots' ||
-        u.rol?.toLowerCase() === this.filtreRolUsuari;
+        u.rol === this.filtreRolUsuari;
 
       return matchSearch && matchRol;
     });
@@ -2689,46 +2972,7 @@ export class AdminPanellComponent implements OnInit {
     });
   }
 
-  /**
-   * Acció d'administrador: elimina una tasca del sistema.
-   * @param id Identificador de la tasca a suprimir
-   */
-  async eliminarTasca(id: string): Promise<void> {
-    const confirmacio = await this.confirmService.confirm({
-      title: 'CONFIRM_MODAL.DELETE_TASK_TITLE',
-      message: 'CONFIRM_MODAL.DELETE_TASK_MSG',
-      confirmText: 'CONFIRM_MODAL.DEFAULT_CONFIRM',
-      cancelText: 'CONFIRM_MODAL.DEFAULT_CANCEL',
-      isDanger: true,
-      icon: 'danger'
-    });
-    if (!confirmacio) return;
 
-    this.tascaService.delete(id).subscribe({
-      next: () => {
-        this.tasques = this.tasques.filter(t => t.id !== id);
-        this.ofertes = this.ofertes.filter(o => o.tascaId !== id);
-        this.successMsg = `Tasca ${id} eliminada correctament.`;
-        setTimeout(() => this.successMsg = '', 3500);
-      },
-      error: () => this.errorMsg = 'Error en eliminar la tasca.'
-    });
-  }
-
-  /**
-   * Acció d'administrador: accepta una oferta i adjudica la tasca.
-   * @param offerId Identificador de l'oferta
-   */
-  acceptarOferta(offerId: string): void {
-    this.ofertaService.accept(offerId).subscribe({
-      next: () => {
-        this.successMsg = `Oferta ${offerId} acceptada com a Administrador!`;
-        this.carregarDades();
-        setTimeout(() => this.successMsg = '', 3500);
-      },
-      error: () => this.errorMsg = 'Error en acceptar l’oferta.'
-    });
-  }
 
   /**
    * Acció d'administrador: elimina/borra una oferta concreta.
@@ -2859,7 +3103,7 @@ export class AdminPanellComponent implements OnInit {
     const q = this.searchAvis.toLowerCase();
     return this.avisos.filter(a =>
       a.id?.toLowerCase().includes(q) ||
-      a.usuariId?.toLowerCase().includes(q) ||
+      a.destinatariId?.toLowerCase().includes(q) ||
       a.missatge?.toLowerCase().includes(q) ||
       a.enllac?.toLowerCase().includes(q)
     );
@@ -2871,7 +3115,7 @@ export class AdminPanellComponent implements OnInit {
    */
   prepararAvisUsuari(u: Usuari): void {
     this.tabActiva = 'avisos';
-    this.nouAvis.usuariId = u.id;
+    this.nouAvis.destinatariId = u.id;
     this.nouAvis.missatge = `Notificació de l'Administració per a ${u.nom}: `;
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
@@ -2880,11 +3124,11 @@ export class AdminPanellComponent implements OnInit {
    * Envia una nova notificació del sistema a un usuari des del formulari administratiu.
    */
   enviarNouAvis(): void {
-    if (!this.nouAvis.usuariId || !this.nouAvis.missatge.trim()) return;
+    if (!this.nouAvis.destinatariId || !this.nouAvis.missatge.trim()) return;
 
     this.enviantAvis = true;
     this.avisService.create({
-      usuariId: this.nouAvis.usuariId,
+      destinatariId: this.nouAvis.destinatariId,
       missatge: this.nouAvis.missatge.trim(),
       enllac: this.nouAvis.enllac.trim() || undefined,
       llegit: false,
@@ -2894,7 +3138,7 @@ export class AdminPanellComponent implements OnInit {
         this.enviantAvis = false;
         this.avisos = [creat, ...this.avisos];
         this.totalAvisos = this.avisos.length;
-        this.nouAvis = { usuariId: '', missatge: '', enllac: '' };
+        this.nouAvis = { destinatariId: '', missatge: '', enllac: '' };
         this.successMsg = 'Notificació enviada correctament!';
         setTimeout(() => this.successMsg = '', 4000);
       },
@@ -2952,12 +3196,12 @@ export class AdminPanellComponent implements OnInit {
 
   /** Recompte d'usuaris amb rol client */
   countClients(): number {
-    return this.usuaris.filter(u => u.rol?.toLowerCase() === 'client').length;
+    return this.usuaris.filter(u => u.rol === 'CLIENT').length;
   }
 
   /** Recompte d'usuaris amb rol professional */
   countProfessionals(): number {
-    return this.usuaris.filter(u => u.rol?.toLowerCase() === 'professional').length;
+    return this.usuaris.filter(u => u.rol === 'PROFESSIONAL').length;
   }
 
   /** Recompte de tasques finalitzades */
@@ -3159,7 +3403,7 @@ export class AdminPanellComponent implements OnInit {
    * @param u Usuari seleccionat per a ser donat de baixa
    */
   async eliminarUsuari(u: Usuari): Promise<void> {
-    if (u.id === 'u-admin' || u.email?.toLowerCase() === 'admin@admin' || u.email?.toLowerCase() === 'admin@admin.es') {
+    if (u.rol === 'ADMIN') {
       this.confirmService.alert("No es pot eliminar el compte d'administrador principal del sistema.", "Acció no permesa");
       return;
     }

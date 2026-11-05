@@ -42,16 +42,6 @@ export class BlacklistService {
   }
 
   /**
-   * Comprova si un número està bloquejat.
-   */
-  check(telefon: string): Observable<{ telefon: string; blacklisted: boolean }> {
-    return this.http.get<{ telefon: string; blacklisted: boolean }>(`${this.apiUrl}/check`, {
-      params: { telefon },
-      headers: this.getHeaders()
-    });
-  }
-
-  /**
    * Afegeix un número de telèfon a la llista negra.
    */
   add(telefon: string, motiu?: string): Observable<BlacklistTelefon> {

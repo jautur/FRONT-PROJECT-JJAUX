@@ -46,6 +46,11 @@ interface CategoriaFiltre {
           </p>
         </div>
         <div class="market-header-actions">
+          <button type="button" class="btn-refresh-market" (click)="carregarDades()" [class.spinning]="loading" [title]="'COMMON.ACTUALITZAR' | translate" [attr.aria-label]="'COMMON.ACTUALITZAR' | translate">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+            </svg>
+          </button>
           <button *ngIf="!authService.isLoggedIn() || isClient()" type="button" class="btn-create-task" (click)="onNovaIncidencia()">
             {{ 'TASQUES_OFERTES.BTN_NOVA_INCIDENCIA' | translate }}
           </button>
@@ -76,6 +81,11 @@ interface CategoriaFiltre {
               <line x1="6" y1="6" x2="18" y2="18"></line>
             </svg>
           </button>
+        </div>
+
+        <!-- Anunciador accessible per a lectors de pantalla (WCAG 2.2 Status Messages) -->
+        <div class="sr-only" aria-live="polite" aria-atomic="true">
+          {{ totalElements }} elements disponibles segons els filtres aplicats
         </div>
 
         <div class="type-filter-pills">
@@ -457,21 +467,7 @@ interface CategoriaFiltre {
 
           <div class="modal-body">
             <!-- Dades de contacte i descripció del professional -->
-            <div class="pro-details-box" *ngIf="modalProfessionalBio || modalProfessionalTelefon">
-              <div class="pro-contact-line" *ngIf="modalProfessionalTelefon">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
-                </svg>
-                <span>{{ 'TASQUES_OFERTES.MODAL_PHONE_LABEL' | translate }} <strong>{{ modalProfessionalTelefon }}</strong></span>
-                <div class="pro-modal-quick-actions" style="margin-left: auto; display: inline-flex; gap: 0.35rem;">
-                  <button type="button" class="btn-quick-contact btn-quick-wa" (click)="contactarWhatsappDirecte(modalProfessionalNom, modalProfessionalTelefon)" [attr.title]="'TASQUES_OFERTES.CONTACTAR_WHATSAPP' | translate">
-                    <span>WhatsApp</span>
-                  </button>
-                  <button type="button" class="btn-quick-contact btn-quick-email" (click)="contactarEmailDirecte(modalProfessionalNom)" [attr.title]="'TASQUES_OFERTES.CONTACTAR_EMAIL' | translate">
-                    <span>Correu</span>
-                  </button>
-                </div>
-              </div>
+            <div class="pro-details-box" *ngIf="modalProfessionalBio">
               <p class="pro-bio-text" *ngIf="modalProfessionalBio">{{ modalProfessionalBio }}</p>
             </div>
 
@@ -548,52 +544,17 @@ interface CategoriaFiltre {
               <h3 class="exit-offer-title">{{ peticioExitDades.titol }}</h3>
               <div class="exit-offer-meta">
                 <span class="exit-pro-info">
-                  <strong>{{ 'TASQUES_OFERTES.PRO_ASSIGNED' | translate }}</strong> {{ peticioExitDades.professional }}
+                  <strong>{{ 'TASQUES_OFERTES.PRO_WHO_OFFERS' | translate }}</strong> {{ peticioExitDades.professional }}
                 </span>
                 <span class="exit-price-pill">{{ peticioExitDades.preu }}</span>
               </div>
             </div>
 
-            <!-- Opcions de contacte directe amb el professional -->
+            <!-- La sol·licitud queda pendent: el contacte només es mostra quan el professional l'accepta -->
             <div class="exit-contact-section">
               <p class="exit-contact-intro">
-                {{ 'TASQUES_OFERTES.PETICIO_CONTACT_PROMPT' | translate }}
+                {{ 'TASQUES_OFERTES.PETICIO_PENDENT_PROMPT' | translate }}
               </p>
-
-              <div class="exit-contact-buttons">
-                <!-- WhatsApp -->
-                <button type="button" class="exit-channel-btn exit-channel-wa" (click)="contactarWhatsappPeticio()">
-                  <div class="exit-channel-icon wa-bg">
-                    <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
-                      <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.664-.698c.97.587 1.761.883 2.796.883 3.183 0 5.769-2.587 5.77-5.767 0-3.181-2.586-5.769-5.77-5.769zm3.388 8.163c-.144.405-.837.774-1.17.822-.313.044-.725.074-2.385-.615-1.996-.826-3.268-2.862-3.368-2.996-.099-.133-.807-1.074-.807-2.048 0-.974.51-1.452.691-1.652.181-.199.395-.249.527-.249.132 0 .264.002.378.007.123.006.287-.047.45.344.167.399.57 1.391.62 1.492.051.101.085.22.018.354-.067.133-.101.217-.201.334-.101.118-.212.263-.303.353-.101.1-.207.21-.089.412.118.202.525.867 1.127 1.403.774.688 1.427.901 1.629 1.002.202.1.32.083.438-.051.118-.135.506-.59.641-.792.135-.202.27-.169.455-.101.185.067 1.176.554 1.378.655.202.101.337.151.387.236.05.084.05.489-.094.894z"></path>
-                    </svg>
-                  </div>
-                  <div class="exit-channel-info">
-                    <span class="exit-channel-title">{{ 'TASQUES_OFERTES.CONTACTAR_WHATSAPP_BTN' | translate }}</span>
-                    <span class="exit-channel-sub">{{ peticioExitDades.telefon }}</span>
-                  </div>
-                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="exit-channel-arrow">
-                    <polyline points="9 18 15 12 9 6"></polyline>
-                  </svg>
-                </button>
-
-                <!-- Correu -->
-                <button type="button" class="exit-channel-btn exit-channel-email" (click)="contactarEmailPeticio()">
-                  <div class="exit-channel-icon email-bg">
-                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                      <polyline points="22,6 12,13 2,6"></polyline>
-                    </svg>
-                  </div>
-                  <div class="exit-channel-info">
-                    <span class="exit-channel-title">{{ 'TASQUES_OFERTES.CONTACTAR_EMAIL_BTN' | translate }}</span>
-                    <span class="exit-channel-sub">{{ peticioExitDades.email }}</span>
-                  </div>
-                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="exit-channel-arrow">
-                    <polyline points="9 18 15 12 9 6"></polyline>
-                  </svg>
-                </button>
-              </div>
             </div>
           </div>
 
@@ -659,6 +620,39 @@ interface CategoriaFiltre {
         gap: 0.75rem;
         flex-wrap: wrap;
         align-items: center;
+      }
+
+      .btn-refresh-market {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 42px;
+        height: 42px;
+        background: var(--bg-card, #ffffff);
+        color: var(--color-text-muted, #57554e);
+        border: 1px solid var(--border-subtle, #e5e0d7);
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .btn-refresh-market:hover {
+        background: var(--bg-surface, #faf8f4);
+        color: var(--color-text, #09090c);
+        border-color: var(--neon, #ff1744);
+      }
+
+      .btn-refresh-market:active {
+        transform: scale(0.92);
+      }
+
+      .btn-refresh-market.spinning svg {
+        animation: spinRefresh 0.8s linear infinite;
+      }
+
+      @keyframes spinRefresh {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
       }
 
       .btn-create-task {
@@ -810,13 +804,13 @@ interface CategoriaFiltre {
 
       .mobile-native-select {
         width: 100%;
-        background-color: #faf8f4;
-        border: 1px solid #dcd7cc;
+        background-color: var(--bg-input, #faf8f4);
+        border: 1px solid var(--border-card, #dcd7cc);
         border-radius: 9px;
         padding: 0.65rem 0.75rem;
         font-size: 0.88rem;
         font-weight: 700;
-        color: #111827;
+        color: var(--color-text, #111827);
         outline: none;
         box-sizing: border-box;
         cursor: pointer;
@@ -1085,10 +1079,10 @@ interface CategoriaFiltre {
         display: flex;
         flex-direction: column;
         gap: 0.35rem;
-        background: #faf8f4;
+        background: var(--bg-surface, #faf8f4);
         padding: 0.65rem 0.85rem;
         border-radius: 8px;
-        border: 1px solid #eeeae0;
+        border: 1px solid var(--border-subtle, #eeeae0);
       }
 
       .pro-profile-link {
@@ -1100,6 +1094,38 @@ interface CategoriaFiltre {
       }
       .pro-name-val {
         color: #059669 !important;
+      }
+
+      :host-context(.theme-app-dark) .card-meta-dual,
+      .theme-app-dark .card-meta-dual {
+        background: var(--bg-surface, #272f42);
+        border-color: var(--border-card, #43506e);
+      }
+      :host-context(.theme-app-dark) .card-meta-dual .meta-label,
+      .theme-app-dark .card-meta-dual .meta-label {
+        color: var(--color-text-dim, #cbd5e1);
+      }
+      :host-context(.theme-app-dark) .card-meta-dual .meta-value,
+      .theme-app-dark .card-meta-dual .meta-value {
+        color: var(--color-text, #ffffff);
+      }
+      :host-context(.theme-app-dark) .pro-avatar-mini,
+      .theme-app-dark .pro-avatar-mini {
+        background: rgba(16, 185, 129, 0.2) !important;
+        color: #34d399 !important;
+      }
+      :host-context(.theme-app-dark) .pro-name-val,
+      .theme-app-dark .pro-name-val {
+        color: #34d399 !important;
+      }
+      :host-context(.theme-app-dark) .pro-profile-link,
+      .theme-app-dark .pro-profile-link {
+        color: #34d399 !important;
+      }
+      :host-context(.theme-app-dark) .user-avatar-mini:not(.pro-avatar-mini),
+      .theme-app-dark .user-avatar-mini:not(.pro-avatar-mini) {
+        background: rgba(59, 130, 246, 0.2);
+        color: #93c5fd;
       }
 
       .status-pill {
@@ -1140,20 +1166,20 @@ interface CategoriaFiltre {
         margin: 0;
         font-size: 1.15rem;
         font-weight: 900;
-        color: #09090c;
+        color: var(--color-text, #09090c);
         line-height: 1.35;
       }
 
       .card-item-desc {
         margin: 0;
         font-size: 0.92rem;
-        color: #636159;
+        color: var(--color-text-muted, #636159);
         line-height: 1.55;
       }
 
       .card-meta-line {
         font-size: 0.84rem;
-        color: #7a776e;
+        color: var(--color-text-dim, #7a776e);
         display: flex;
         flex-wrap: wrap;
         align-items: center;
@@ -1161,7 +1187,7 @@ interface CategoriaFiltre {
       }
 
       .card-meta-line .meta-value {
-        color: #09090c;
+        color: var(--color-text, #09090c);
         font-weight: 800;
         margin-left: 0.3rem;
       }
@@ -1177,7 +1203,7 @@ interface CategoriaFiltre {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        border-top: 1px solid #eeeae0;
+        border-top: 1px solid var(--border-subtle, #eeeae0);
         padding-top: 0.85rem;
         margin-top: auto;
       }
@@ -1189,7 +1215,7 @@ interface CategoriaFiltre {
 
       .budget-label {
         font-size: 0.72rem;
-        color: #8c897f;
+        color: var(--color-text-dim, #8c897f);
         font-weight: 700;
         text-transform: uppercase;
       }
@@ -1197,11 +1223,11 @@ interface CategoriaFiltre {
       .budget-value {
         font-size: 1.05rem;
         font-weight: 900;
-        color: #09090c;
+        color: var(--color-text, #09090c);
       }
 
       .offer-price {
-        color: #ff1744;
+        color: var(--neon, #ff1744);
       }
 
       .card-actions {
@@ -1210,9 +1236,9 @@ interface CategoriaFiltre {
       }
 
       .btn-action-detail {
-        background: #faf8f4;
-        border: 1px solid #d5cfc2;
-        color: #09090c;
+        background: var(--bg-surface-elevated, #faf8f4);
+        border: 1px solid var(--border-strong, #d5cfc2);
+        color: var(--color-text, #09090c);
         padding: 0.45rem 0.8rem;
         border-radius: 6px;
         font-size: 0.82rem;
@@ -1222,14 +1248,14 @@ interface CategoriaFiltre {
       }
 
       .btn-action-detail:hover {
-        background: #09090c;
+        background: var(--neon, #09090c);
         color: #ffffff;
-        border-color: #09090c;
+        border-color: var(--neon, #09090c);
       }
 
       .btn-action-primary {
-        background: #ff1744;
-        border: 1px solid #ff1744;
+        background: var(--neon, #ff1744);
+        border: 1px solid var(--neon, #ff1744);
         color: #ffffff;
         padding: 0.45rem 0.85rem;
         border-radius: 6px;
@@ -1240,21 +1266,21 @@ interface CategoriaFiltre {
       }
 
       .btn-action-primary:hover {
-        background: #09090c;
-        border-color: #09090c;
+        background: var(--neon, #09090c);
+        border-color: var(--neon, #09090c);
       }
 
       /* Estat buit */
       .empty-state {
-        background: #ffffff;
-        border: 1px dashed #dcd6cb;
+        background: var(--bg-card, #ffffff);
+        border: 1px dashed var(--border-strong, #dcd6cb);
         border-radius: 16px;
         padding: 3.5rem 2rem;
         text-align: center;
       }
 
       .empty-icon {
-        color: #ff1744;
+        color: var(--neon, #ff1744);
         margin-bottom: 1rem;
       }
 
@@ -1262,13 +1288,13 @@ interface CategoriaFiltre {
         margin: 0 0 0.5rem;
         font-size: 1.3rem;
         font-weight: 900;
-        color: #09090c;
+        color: var(--color-text, #09090c);
       }
 
       .empty-state p {
         margin: 0 0 1.5rem;
         font-size: 0.95rem;
-        color: #706e65;
+        color: var(--color-text-muted, #706e65);
       }
 
       .btn-reset-filters {
@@ -1329,8 +1355,8 @@ interface CategoriaFiltre {
       }
       .btn-view-reviews {
         background: none;
-        border: 1px solid #d1d5db;
-        color: #374151;
+        border: 1px solid var(--border-card, #d1d5db);
+        color: var(--color-text, #374151);
         font-size: 0.76rem;
         font-weight: 600;
         padding: 0.2rem 0.55rem;
@@ -1339,16 +1365,16 @@ interface CategoriaFiltre {
         transition: all 0.15s ease;
       }
       .btn-view-reviews:hover {
-        background: #f3f4f6;
-        border-color: #9ca3af;
-        color: #111827;
+        background: var(--bg-surface-elevated, #f3f4f6);
+        border-color: var(--neon, #9ca3af);
+        color: var(--color-text, #111827);
       }
 
       .user-profile-link {
         display: inline-flex;
         align-items: center;
         gap: 0.4rem;
-        color: #111827;
+        color: var(--color-text, #111827);
         text-decoration: none;
         transition: color 0.15s ease;
       }
@@ -1360,7 +1386,7 @@ interface CategoriaFiltre {
         text-decoration: underline;
       }
       .pro-title-link {
-        color: #111827;
+        color: var(--color-text, #111827);
         font-weight: 800;
         text-decoration: none;
         transition: color 0.15s ease;
@@ -1380,8 +1406,8 @@ interface CategoriaFiltre {
         width: 22px;
         height: 22px;
         border-radius: 50%;
-        background: #f0ece3;
-        color: #09090c;
+        background: var(--bg-surface-elevated, #f0ece3);
+        color: var(--color-text, #09090c);
         font-size: 0.72rem;
         font-weight: 800;
         display: inline-flex;
@@ -1402,7 +1428,7 @@ interface CategoriaFiltre {
         padding: 1rem;
       }
       .modal-dialog {
-        background: #ffffff;
+        background: var(--bg-card, #ffffff);
         border-radius: 16px;
         width: min(580px, 100%);
         max-height: 85vh;
@@ -1418,11 +1444,11 @@ interface CategoriaFiltre {
       }
       .modal-header {
         padding: 1.25rem 1.5rem;
-        border-bottom: 1px solid #e5e7eb;
+        border-bottom: 1px solid var(--border-subtle, #e5e7eb);
         display: flex;
         justify-content: space-between;
         align-items: flex-start;
-        background: #fafafa;
+        background: var(--bg-surface, #fafafa);
       }
       .pro-tag-badge {
         font-size: 0.7rem;
@@ -1435,7 +1461,7 @@ interface CategoriaFiltre {
         margin: 0.25rem 0 0.35rem;
         font-size: 1.4rem;
         font-weight: 800;
-        color: #111827;
+        color: var(--color-text, #111827);
       }
       .modal-rating-summary {
         display: flex;
@@ -1447,15 +1473,15 @@ interface CategoriaFiltre {
         background: none;
         border: none;
         font-size: 1.25rem;
-        color: #59606d;
+        color: var(--color-text-dim, #59606d);
         cursor: pointer;
         padding: 0.3rem;
         line-height: 1;
         border-radius: 6px;
       }
       .btn-close-modal:hover {
-        color: #111827;
-        background: #f3f4f6;
+        color: var(--color-text, #111827);
+        background: var(--bg-surface-elevated, #f3f4f6);
       }
       .modal-body {
         padding: 1.5rem;
@@ -1463,8 +1489,8 @@ interface CategoriaFiltre {
         flex: 1;
       }
       .pro-details-box {
-        background: #f8fafc;
-        border: 1px solid #e2e8f0;
+        background: var(--bg-surface, #f8fafc);
+        border: 1px solid var(--border-card, #e2e8f0);
         border-radius: 10px;
         padding: 1rem;
         margin-bottom: 1.25rem;
@@ -1474,7 +1500,7 @@ interface CategoriaFiltre {
         align-items: center;
         gap: 0.5rem;
         font-size: 0.9rem;
-        color: #1e293b;
+        color: var(--color-text, #1e293b);
         margin-bottom: 0.5rem;
       }
       .pro-contact-line strong {
@@ -1483,14 +1509,14 @@ interface CategoriaFiltre {
       .pro-bio-text {
         margin: 0;
         font-size: 0.88rem;
-        color: #475569;
+        color: var(--color-text-muted, #475569);
         line-height: 1.5;
       }
       .reviews-title {
         margin: 0 0 0.85rem;
         font-size: 1.05rem;
         font-weight: 700;
-        color: #1f2937;
+        color: var(--color-text, #1f2937);
       }
       .reviews-list {
         display: flex;
@@ -1498,8 +1524,8 @@ interface CategoriaFiltre {
         gap: 0.85rem;
       }
       .review-item {
-        border: 1px solid #edf2f7;
-        background: #ffffff;
+        border: 1px solid var(--border-card, #edf2f7);
+        background: var(--bg-card, #ffffff);
         border-radius: 10px;
         padding: 0.9rem 1rem;
         box-shadow: 0 1px 3px rgba(0,0,0,0.02);
@@ -1529,30 +1555,30 @@ interface CategoriaFiltre {
       }
       .reviewer-name {
         font-size: 0.88rem;
-        color: #1f2937;
+        color: var(--color-text, #1f2937);
         display: block;
       }
       .review-date {
         font-size: 0.74rem;
-        color: #59606d;
+        color: var(--color-text-dim, #59606d);
       }
       .rating-digit {
         font-size: 0.78rem;
         font-weight: 700;
-        color: #374151;
+        color: var(--color-text, #374151);
         margin-left: 0.2rem;
       }
       .review-comment {
         margin: 0;
         font-size: 0.86rem;
-        color: #4b5563;
+        color: var(--color-text-muted, #4b5563);
         line-height: 1.45;
         font-style: italic;
       }
       .modal-footer {
         padding: 0.85rem 1.5rem;
-        border-top: 1px solid #e5e7eb;
-        background: #fafafa;
+        border-top: 1px solid var(--border-subtle, #e5e7eb);
+        background: var(--bg-surface, #fafafa);
         display: flex;
         justify-content: flex-end;
       }
@@ -1570,9 +1596,9 @@ interface CategoriaFiltre {
         background: #2563eb;
       }
       .btn-view-full-profile {
-        background: #f0ece3;
-        color: #1f2937;
-        border: 1px solid #d1d5db;
+        background: var(--bg-surface-elevated, #f0ece3);
+        color: var(--color-text, #1f2937);
+        border: 1px solid var(--border-strong, #d1d5db);
         padding: 0.5rem 1rem;
         border-radius: 8px;
         font-size: 0.88rem;
@@ -1748,10 +1774,10 @@ interface CategoriaFiltre {
           flex-direction: row;
           justify-content: space-between;
           align-items: center;
-          background: #faf8f4;
+          background: var(--bg-surface, #faf8f4);
           padding: 0.5rem 0.75rem;
           border-radius: 8px;
-          border: 1px solid #eeeae0;
+          border: 1px solid var(--border-card, #eeeae0);
         }
 
         .budget-label {
@@ -2162,7 +2188,6 @@ export class TasquesOfertesComponent implements OnInit {
 
   modalProfessionalNom: string | null = null;
   modalProfessionalBio: string | null = null;
-  modalProfessionalTelefon: string | null = null;
   modalProfessionalRating: { mitjana: string; total: number } | null = null;
   modalReviews: Resenya[] = [];
   modalContacteOferta: any | null = null;
@@ -2171,8 +2196,6 @@ export class TasquesOfertesComponent implements OnInit {
     titol: string;
     professional: string;
     preu: string;
-    telefon: string;
-    email: string;
   } | null = null;
 
   constructor(
@@ -2297,22 +2320,7 @@ export class TasquesOfertesComponent implements OnInit {
     return user ? user.id : proNom;
   }
 
-  getProfessionalPhone(proNom: string): string {
-    const user = this.getProfessionalUser(proNom);
-    if (user?.telefon && user.telefon.trim()) {
-      return user.telefon.trim();
-    }
-    return '611223344';
-  }
 
-  getProfessionalEmail(proNom: string): string {
-    const user = this.getProfessionalUser(proNom);
-    if (user?.email && user.email.trim() && user.email.includes('@')) {
-      return user.email.trim();
-    }
-    const clean = (proNom || 'pro').toLowerCase().replace(/[^a-z0-9]/g, '');
-    return `${clean}@prof.es`;
-  }
 
   obrirModalContacte(offer: any): void {
     this.modalContacteOferta = offer;
@@ -2322,79 +2330,14 @@ export class TasquesOfertesComponent implements OnInit {
     this.modalContacteOferta = null;
   }
 
-  contactarWhatsapp(offer: any, event?: Event): void {
-    if (event) {
-      event.stopPropagation();
-    }
-    const proNom = offer.professional || 'Professional';
-    const rawPhone = this.getProfessionalPhone(proNom);
-    const cleanPhone = rawPhone.replace(/\D/g, '');
-    const phoneWithCountry = cleanPhone.length === 9 ? '34' + cleanPhone : cleanPhone;
 
-    const titol = this.getOfertaTitol(offer);
-    const preu = offer.price || '';
-    const clientUser = this.authService.getCurrentUser();
-    const clientNom = clientUser ? clientUser.nom : 'un client interessat';
 
-    const missatge = `Hola ${proNom}, m'interessa la teva oferta a AVISA: "${titol}" (${preu}). Sóc ${clientNom}. Podem parlar dels detalls del servei?`;
-    const url = `https://wa.me/${phoneWithCountry}?text=${encodeURIComponent(missatge)}`;
 
-    if (typeof window !== 'undefined') {
-      window.open(url, '_blank', 'noopener,noreferrer');
-    }
-  }
-
-  contactarEmail(offer: any, event?: Event): void {
-    if (event) {
-      event.stopPropagation();
-    }
-    const proNom = offer.professional || 'Professional';
-    const email = this.getProfessionalEmail(proNom);
-    const titol = this.getOfertaTitol(offer);
-    const preu = offer.price || '';
-    const clientUser = this.authService.getCurrentUser();
-    const clientNom = clientUser ? clientUser.nom : 'Client interessat';
-
-    const assumpte = `Interès en l'oferta AVISA: ${titol}`;
-    const cos = `Hola ${proNom},\n\nM'interessa la teva oferta de servei publicada a AVISA:\n- Servei: ${titol}\n- Preu indicat: ${preu}\n\nEm pots respondre a aquest correu per poder coordinar els detalls i la data del servei.\n\nSalutacions cordials,\n${clientNom}`;
-
-    const mailtoUrl = `mailto:${email}?subject=${encodeURIComponent(assumpte)}&body=${encodeURIComponent(cos)}`;
-
-    if (typeof window !== 'undefined') {
-      window.location.href = mailtoUrl;
-    }
-  }
-
-  contactarWhatsappDirecte(proNom: string | null, telefon: string | null): void {
-    const rawPhone = telefon || this.getProfessionalPhone(proNom || '');
-    const cleanPhone = rawPhone.replace(/\D/g, '');
-    const phoneWithCountry = cleanPhone.length === 9 ? '34' + cleanPhone : cleanPhone;
-    const clientUser = this.authService.getCurrentUser();
-    const clientNom = clientUser ? clientUser.nom : 'un client interessat';
-    const missatge = `Hola ${proNom || 'Professional'}, t'he vist a AVISA. Sóc ${clientNom}. M'agradaria consultar-te sobre els teus serveis professionals.`;
-    const url = `https://wa.me/${phoneWithCountry}?text=${encodeURIComponent(missatge)}`;
-    if (typeof window !== 'undefined') {
-      window.open(url, '_blank', 'noopener,noreferrer');
-    }
-  }
-
-  contactarEmailDirecte(proNom: string | null): void {
-    const email = this.getProfessionalEmail(proNom || '');
-    const clientUser = this.authService.getCurrentUser();
-    const clientNom = clientUser ? clientUser.nom : 'Client interessat';
-    const assumpte = `Consulta de serveis a través d'AVISA`;
-    const cos = `Hola ${proNom || 'Professional'},\n\nT'he trobat a la comunitat AVISA i m'agradaria demanar-te informació i disponibilitat per a una feina.\n\nSalutacions cordials,\n${clientNom}`;
-    const mailtoUrl = `mailto:${email}?subject=${encodeURIComponent(assumpte)}&body=${encodeURIComponent(cos)}`;
-    if (typeof window !== 'undefined') {
-      window.location.href = mailtoUrl;
-    }
-  }
 
   obrirModalRessenyes(proNom: string): void {
     this.modalProfessionalNom = proNom;
     const user = this.getProfessionalUser(proNom);
     this.modalProfessionalBio = user?.bio ?? 'Professional verificat i certificat per la comunitat AVISA.';
-    this.modalProfessionalTelefon = user?.telefon ?? null;
     const q = proNom.toLowerCase().trim();
     this.modalReviews = this.allResenyes.filter(
       (r) =>
@@ -2519,7 +2462,7 @@ export class TasquesOfertesComponent implements OnInit {
 
   comptarElementsPerCategoria(nomCat: string): number {
     const q = nomCat.toLowerCase();
-    const countIncidencies = (this.dashboard?.incidencies ?? []).filter((i) => {
+    const countIncidencies = this.incidenciesFiltrades.filter((i) => {
       const cat = (i.categoria?.trim() || 'Altres Serveis').toLowerCase();
       return cat.includes(q) || q.includes(cat);
     }).length;
@@ -2529,7 +2472,7 @@ export class TasquesOfertesComponent implements OnInit {
       return cat.includes(q) || q.includes(cat);
     }).length;
 
-    const countOffers = (this.dashboard?.offers ?? []).filter((o) => {
+    const countOffers = this.ofertesFiltrades.filter((o) => {
       const cat = this.getOfertaCategoria(o).toLowerCase();
       return cat.includes(q) || q.includes(cat);
     }).length;
@@ -2539,7 +2482,8 @@ export class TasquesOfertesComponent implements OnInit {
 
   /**
    * Incidències obertes creades per clients:
-   * Provenen de la taula incidencies (sols tenen client, no tenen professional assignat encara).
+   * Provenen de la taula publicacions (tipus 'INCIDENCIA') i només han de mostrar-se
+   * aquelles estrictament obertes que no han estat assignades, tancades o retirades.
    */
   get incidenciesFiltrades() {
     const rawIncidencies = (this.dashboard?.incidencies ?? []).map((inc) => ({
@@ -2559,8 +2503,6 @@ export class TasquesOfertesComponent implements OnInit {
       .filter(
         (t) =>
           (t.tipus === 'incidencia' || !t.professional) &&
-          t.estat !== 'Finalitzada' &&
-          t.estat !== 'En curs' &&
           t.tipus !== 'oferta' &&
           !rawIncidencies.some((i) => i.id === t.id)
       )
@@ -2577,9 +2519,23 @@ export class TasquesOfertesComponent implements OnInit {
         tipus: 'incidencia'
       }));
 
-    let llista = [...rawIncidencies, ...rawTasks].filter(
-      (t) => t.estat !== 'Finalitzada' && t.estat !== 'En curs'
-    );
+    // Retirada estricta: descartar qualsevol incidència assignada, tancada, retirada, finalitzada o en curs
+    let llista = [...rawIncidencies, ...rawTasks].filter((t) => {
+      const estat = (t.estat || '').toLowerCase().trim();
+      if (!estat || estat === 'oberta' || estat === 'pendent') {
+        return true;
+      }
+      return false;
+    });
+
+    // Deduplicació per ID
+    const incMap = new Map<string, any>();
+    for (const item of llista) {
+      if (item && item.id && !incMap.has(item.id)) {
+        incMap.set(item.id, item);
+      }
+    }
+    llista = Array.from(incMap.values());
 
     if (this.searchQuery.trim()) {
       const q = this.searchQuery.toLowerCase().trim();
@@ -2610,13 +2566,15 @@ export class TasquesOfertesComponent implements OnInit {
    * Sols tenen professional, no tenen client assignat encara.
    */
   get ofertesFiltrades() {
-    let llista = (this.dashboard?.offers ?? []).filter((o) => {
-      // Un pressupost NO és una oferta de servei pública: pertany a la seua pròpia taula i és estrictament privat
-      if ((o as any).categoria === 'Pressupost') return false;
-      if ((o as any).incidenciaId) return false;
-      if (o.tascaId && o.tascaId !== 'standalone' && (o.tascaId.startsWith('I-') || o.tascaId.startsWith('T-'))) return false;
-      return true;
-    });
+    // /api/offers només retorna ofertes de servei: els pressupostos són privats i van per /api/pressupostos
+    // Deduplicació estricta per evitar ofertes duplicades al tauler
+    const offerMap = new Map<string, any>();
+    for (const o of (this.dashboard?.offers ?? [])) {
+      if (o && o.id && !offerMap.has(o.id)) {
+        offerMap.set(o.id, o);
+      }
+    }
+    let llista = Array.from(offerMap.values());
 
     if (this.searchQuery.trim()) {
       const q = this.searchQuery.toLowerCase().trim();
@@ -2739,18 +2697,18 @@ export class TasquesOfertesComponent implements OnInit {
   onNovaIncidencia(): void {
     if (!this.requireLogin('publicar una incidència', '/client/crear-tasca')) return;
     if (this.authService.isClient()) {
-      this.router.navigate([this.getNavUrl('/client/crear-tasca')], { queryParams: { origen: 'tasques-ofertes' } });
+      this.router.navigate([this.getNavUrl('/client/crear-tasca')]);
     } else {
-      this.noticeMessage = 'Només els comptes amb rol de "Client" o "Ambdós" poden publicar incidències.';
+      this.noticeMessage = 'Només els comptes amb rol de "Client" poden publicar incidències.';
     }
   }
 
   onNovaOferta(): void {
     if (!this.requireLogin('publicar una oferta professional', '/professional/crear-oferta')) return;
     if (this.authService.isProfessional()) {
-      this.router.navigate([this.getNavUrl('/professional/crear-oferta')], { queryParams: { origen: 'tasques-ofertes' } });
+      this.router.navigate([this.getNavUrl('/professional/crear-oferta')]);
     } else {
-      this.noticeMessage = 'Només els comptes amb rol de "Professional" o "Ambdós" poden publicar ofertes de servei.';
+      this.noticeMessage = 'Només els comptes amb rol de "Professional" poden publicar ofertes de servei.';
     }
   }
 
@@ -2768,26 +2726,11 @@ export class TasquesOfertesComponent implements OnInit {
     if (this.authService.isProfessional()) {
       this.router.navigate([this.getNavUrl('/professional/crear-oferta')], { queryParams: { taskId, origen: 'tasques-ofertes' } });
     } else {
-      this.noticeMessage = 'Només els comptes amb rol de "Professional" o "Ambdós" poden fer ofertes econòmiques.';
+      this.noticeMessage = 'Només els comptes amb rol de "Professional" poden fer ofertes econòmiques.';
     }
   }
 
-  onAcceptarOferta(offerId: string): void {
-    if (!this.requireLogin(`acceptar l'oferta ${offerId}`, '/tasques-ofertes')) return;
-    if (this.authService.isClient()) {
-      this.ofertaService.accept(offerId).subscribe({
-        next: () => {
-          this.noticeMessage = `S'ha acceptat la proposta ${offerId} correctament.`;
-          this.carregarDades();
-        },
-        error: () => {
-          this.noticeMessage = 'No s’ha pogut acceptar l’oferta.';
-        }
-      });
-    } else {
-      this.noticeMessage = 'Només el client autor de la tasca pot acceptar aquesta oferta.';
-    }
-  }
+ 
 
   /**
    * Envia la petició d'interès per una oferta i, un cop confirmada a l'app, mostra l'opció de contactar.
@@ -2797,7 +2740,7 @@ export class TasquesOfertesComponent implements OnInit {
     if (!this.requireLogin(`sol·licitar l'oferta de ${pro}`, '/tasques-ofertes')) return;
     const user = this.authService.getCurrentUser();
     if (!this.authService.isClient()) {
-      this.noticeMessage = 'Només els comptes amb rol de "Client" o "Ambdós" poden sol·licitar ofertes de professionals.';
+      this.noticeMessage = 'Només els comptes amb rol de "Client" poden sol·licitar ofertes de professionals.';
       return;
     }
 
@@ -2805,7 +2748,7 @@ export class TasquesOfertesComponent implements OnInit {
     const titol = this.getOfertaTitol(offer);
     const confirmacio = await this.confirmService.confirm({
       title: this.translationService.t('TASQUES_OFERTES.CONFIRM_INTERES_TITLE'),
-      message: `Vols enviar la petició per a l'oferta de ${pro} (${titol}) per ${preu}?\n\nEs confirmarà a l'aplicació AVISA i es generarà la tasca en curs al teu panell.`,
+      message: this.translationService.t('TREBALL.SOL_CONFIRM_MSG', { pro, titol, preu }),
       confirmText: this.translationService.t('TASQUES_OFERTES.CONFIRM_INTERES_BTN'),
       cancelText: this.translationService.t('COMMON.CANCEL_LAR'),
       icon: 'question'
@@ -2818,11 +2761,9 @@ export class TasquesOfertesComponent implements OnInit {
           tascaId: tascaCreada?.id,
           titol,
           professional: pro,
-          preu,
-          telefon: this.getProfessionalPhone(pro),
-          email: this.getProfessionalEmail(pro)
+          preu
         };
-        this.noticeMessage = `Petició enviada correctament! S'ha generat la tasca en curs amb ${pro}. Ara pots contactar-hi per WhatsApp o correu.`;
+        this.noticeMessage = this.translationService.t('TREBALL.SOL_BANNER', { pro });
         this.carregarDades();
       },
       error: () => {
@@ -2840,32 +2781,7 @@ export class TasquesOfertesComponent implements OnInit {
     this.peticioExitDades = null;
   }
 
-  contactarWhatsappPeticio(): void {
-    if (!this.peticioExitDades) return;
-    const { professional, telefon, titol, preu } = this.peticioExitDades;
-    const cleanPhone = telefon.replace(/\D/g, '');
-    const phoneWithCountry = cleanPhone.length === 9 ? '34' + cleanPhone : cleanPhone;
-    const clientUser = this.authService.getCurrentUser();
-    const clientNom = clientUser ? clientUser.nom : 'Client AVISA';
-    const missatge = `Hola ${professional}, acabe de sol·licitar la teva oferta a AVISA: "${titol}" (${preu}). Sóc ${clientNom}. Podem parlar dels detalls del servei?`;
-    const url = `https://wa.me/${phoneWithCountry}?text=${encodeURIComponent(missatge)}`;
-    if (typeof window !== 'undefined') {
-      window.open(url, '_blank', 'noopener,noreferrer');
-    }
-  }
 
-  contactarEmailPeticio(): void {
-    if (!this.peticioExitDades) return;
-    const { professional, email, titol, preu } = this.peticioExitDades;
-    const clientUser = this.authService.getCurrentUser();
-    const clientNom = clientUser ? clientUser.nom : 'Client interessat';
-    const assumpte = `Petició de servei AVISA: ${titol}`;
-    const cos = `Hola ${professional},\n\nAcabe de contractar / sol·licitar la teva oferta a l'aplicació AVISA:\n- Servei: ${titol}\n- Preu indicat: ${preu}\n\nEm poso en contacte amb tu per poder coordinar dates, horaris i detalls de l'actuació.\n\nSalutacions cordials,\n${clientNom}`;
-    const mailtoUrl = `mailto:${email}?subject=${encodeURIComponent(assumpte)}&body=${encodeURIComponent(cos)}`;
-    if (typeof window !== 'undefined') {
-      window.location.href = mailtoUrl;
-    }
-  }
 
   anarTascaPeticio(tascaId: string): void {
     this.tancarModalPeticioExit();
@@ -2875,18 +2791,14 @@ export class TasquesOfertesComponent implements OnInit {
   isOfferOwner(offer: any): boolean {
     const user = this.authService.getCurrentUser();
     if (!user) return false;
-    if (user.rol === 'admin') return true;
-    const pro = (offer.professional || '').toLowerCase().trim();
-    const curNom = (user.nom || '').toLowerCase().trim();
-    const curId = (user.id || '').toLowerCase().trim();
-    return pro === curNom || pro === curId;
+    return user.rol === 'ADMIN' || (!!offer.professionalId && offer.professionalId === user.id);
   }
 
   async onDeleteOferta(offerId: string): Promise<void> {
     const confirmacio = await this.confirmService.confirm({
-      title: 'Eliminar Oferta',
-      message: 'Vols borrar aquesta oferta? Aquesta acció no es pot desfer.',
-      confirmText: 'Borrar Oferta',
+      title: 'TREBALL.RETIRE_OFFER_TITLE',
+      message: 'TREBALL.RETIRE_OFFER_MSG',
+      confirmText: 'CONFIRM_MODAL.DEFAULT_CONFIRM',
       cancelText: 'Cancel·lar',
       isDanger: true,
       icon: 'danger'
@@ -2897,8 +2809,8 @@ export class TasquesOfertesComponent implements OnInit {
         this.noticeMessage = 'Oferta esborrada correctament.';
         this.carregarDades();
       },
-      error: () => {
-        this.noticeMessage = 'No s’ha pogut borrar l’oferta.';
+      error: (e) => {
+        this.noticeMessage = e?.error?.error || 'No s’ha pogut borrar l’oferta.';
       }
     });
   }

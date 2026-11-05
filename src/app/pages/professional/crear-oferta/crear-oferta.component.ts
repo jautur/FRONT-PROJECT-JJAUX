@@ -27,6 +27,15 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
   imports: [CommonModule, FormsModule, RouterLink, TranslatePipe],
   template: `
     <section class="offer-form-container">
+      <div class="app-back-nav">
+        <button type="button" class="btn-app-back" (click)="goBack()" [title]="'COMMON.TORNAR' | translate">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+          <span>{{ 'COMMON.TORNAR' | translate }}</span>
+        </button>
+      </div>
+
       <header class="form-header">
         <div class="role-badge-tag">{{ 'CREAR_OFERTA.BADGE' | translate }}</div>
         <h1>{{ mode === 'oferta' ? ('CREAR_OFERTA.TITLE_OFFER' | translate) : ('CREAR_OFERTA.TITLE_BUDGET' | translate) }}</h1>
@@ -218,6 +227,38 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
         display: flex;
         flex-direction: column;
         gap: 1.5rem;
+      }
+
+      .app-back-nav {
+        display: flex;
+        align-items: center;
+        margin-bottom: -0.5rem;
+      }
+
+      .btn-app-back {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        background: var(--bg-card, #ffffff);
+        color: var(--color-text-muted, #57554e);
+        border: 1px solid var(--border-subtle, #e5e0d7);
+        padding: 0.45rem 0.95rem;
+        border-radius: var(--radius-sm, 8px);
+        font-family: inherit;
+        font-weight: 700;
+        font-size: 0.88rem;
+        cursor: pointer;
+        transition: all 0.18s ease;
+      }
+
+      .btn-app-back:hover {
+        background: var(--bg-surface, #faf8f4);
+        color: var(--color-text, #09090c);
+        border-color: var(--neon, #ff1744);
+      }
+
+      .btn-app-back:active {
+        transform: scale(0.96);
       }
 
       .role-badge-tag {
@@ -667,20 +708,18 @@ export class CrearOfertaComponent implements OnInit {
     return path;
   }
 
+  goBack(): void {
+    if (typeof window !== 'undefined' && window.history.length > 1) {
+      window.history.back();
+    } else {
+      this.router.navigate([this.getNavUrl('/tasques-ofertes')]);
+    }
+  }
+
   /**
-   * Càrrega d'incidències i tasques obertes i comprovació de paràmetres d'URL.
+   * Càrrega d'incidències i tasques obertes per a l'usuari professional.
    */
   ngOnInit(): void {
-    const origen = this.route.snapshot.queryParams['origen'] || (typeof history !== 'undefined' ? history.state?.origen : null);
-    if (origen !== 'tasques-ofertes') {
-      this.router.navigate([this.getNavUrl('/tasques-ofertes')], {
-        queryParams: {
-          avís: 'Per a publicar una oferta o pressupost cal accedir des de la secció de Tasques i Ofertes.'
-        }
-      });
-      return;
-    }
-
     const user = this.authService.getCurrentUser();
     if (user) {
       this.formData.professional = user.nom;
@@ -767,7 +806,7 @@ export class CrearOfertaComponent implements OnInit {
         });
       },
       error: () => {
-        this.errorMessage = 'No s’han pogut carregar les incidències obertes.';
+        this.errorMessage = 'ERRORS.INCIDENTS_LOAD_ERROR';
       }
     });
   }
@@ -784,7 +823,7 @@ export class CrearOfertaComponent implements OnInit {
   onSubmitOfertaServei(): void {
     const user = this.authService.getCurrentUser();
     if (!this.ofertaServei.titol || !this.ofertaServei.categoria || !this.ofertaServei.price || !this.ofertaServei.note) {
-      this.errorMessage = 'Cal emplenar tots els camps del pack de servei.';
+      this.errorMessage = 'ERRORS.PACK_FIELDS_REQUIRED';
       return;
     }
 
@@ -811,7 +850,7 @@ export class CrearOfertaComponent implements OnInit {
       },
       error: () => {
         this.submitting = false;
-        this.errorMessage = 'S’ha produït un error en publicar l’oferta de servei.';
+        this.errorMessage = 'ERRORS.OFFER_PUBLISH_ERROR';
       }
     });
   }
@@ -821,7 +860,7 @@ export class CrearOfertaComponent implements OnInit {
    */
   onSubmitPressupost(): void {
     if (!this.formData.tascaId || !this.formData.price || !this.formData.note) {
-      this.errorMessage = 'Cal emplenar tots els camps obligatoris del pressupost.';
+      this.errorMessage = 'ERRORS.BUDGET_FIELDS_REQUIRED';
       return;
     }
 
@@ -848,7 +887,7 @@ export class CrearOfertaComponent implements OnInit {
       },
       error: () => {
         this.submitting = false;
-        this.errorMessage = 'S’ha produït un error en registrar el pressupost al servidor.';
+        this.errorMessage = 'ERRORS.BUDGET_REGISTER_ERROR';
       }
     });
   }

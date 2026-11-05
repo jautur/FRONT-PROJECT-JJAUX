@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService, RegisterData } from '../../../core/services/auth.service';
@@ -26,6 +26,15 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterLink, TermesModalComponent, TranslatePipe],
   template: `
+    <div class="app-back-nav" *ngIf="isAppPage">
+      <button type="button" class="btn-app-back" (click)="goBack()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+        <span>{{ 'COMMON.TORNAR' | translate }}</span>
+      </button>
+    </div>
+
     <section class="auth-card">
       <h1>{{ 'AUTH.REGISTER.TITLE' | translate }}</h1>
       <p class="subtitle">{{ 'AUTH.REGISTER.SUBTITLE' | translate }}</p>
@@ -42,8 +51,8 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
             <button
               type="button"
               class="role-btn"
-              [class.active]="registerForm.get('rol')?.value === 'client'"
-              (click)="onSelectRole('client')">
+              [class.active]="registerForm.get('rol')?.value === 'CLIENT'"
+              (click)="onSelectRole('CLIENT')">
               <strong>{{ 'AUTH.REGISTER.ROLE_CLIENT_TITLE' | translate }}</strong>
               <small>{{ 'AUTH.REGISTER.ROLE_CLIENT_SUB' | translate }}</small>
             </button>
@@ -51,8 +60,8 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
             <button
               type="button"
               class="role-btn"
-              [class.active]="registerForm.get('rol')?.value === 'professional'"
-              (click)="onSelectRole('professional')">
+              [class.active]="registerForm.get('rol')?.value === 'PROFESSIONAL'"
+              (click)="onSelectRole('PROFESSIONAL')">
               <strong>{{ 'AUTH.REGISTER.ROLE_PRO_TITLE' | translate }}</strong>
               <small>{{ 'AUTH.REGISTER.ROLE_PRO_SUB' | translate }}</small>
             </button>
@@ -60,11 +69,11 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
         </div>
 
         <!-- Informació pedagògica del rol seleccionat -->
-        <div class="role-info-box" [ngClass]="registerForm.get('rol')?.value">
-          <div *ngIf="registerForm.get('rol')?.value === 'client'">
+        <div class="role-info-box" [ngClass]="registerForm.get('rol')?.value?.toLowerCase()">
+          <div *ngIf="registerForm.get('rol')?.value === 'CLIENT'">
             {{ 'AUTH.REGISTER.CLIENT_INFO' | translate }}
           </div>
-          <div *ngIf="registerForm.get('rol')?.value === 'professional'">
+          <div *ngIf="registerForm.get('rol')?.value === 'PROFESSIONAL'">
             {{ 'AUTH.REGISTER.PRO_INFO' | translate }}
             <div style="margin-top: 0.5rem; color: #166534; font-weight: 600; display: flex; align-items: flex-start; gap: 0.35rem; line-height: 1.45;">
               <span style="flex-shrink: 0; margin-top: 1px;">
@@ -113,7 +122,7 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
         </label>
 
         <!-- Telèfon obligatori per a professionals -->
-        <label *ngIf="registerForm.get('rol')?.value === 'professional'">
+        <label *ngIf="registerForm.get('rol')?.value === 'PROFESSIONAL'">
           {{ 'AUTH.REGISTER.PHONE_LABEL' | translate }}
           <input
             type="tel"
@@ -121,10 +130,10 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
             required
             placeholder="Ex: +34 600 123 456"
             class="input-required"
-            [class.input-error]="submitted && registerForm.get('rol')?.value === 'professional' && !registerForm.get('telefon')?.value"
+            [class.input-error]="submitted && registerForm.get('rol')?.value === 'PROFESSIONAL' && !registerForm.get('telefon')?.value"
           />
           <small class="hint">{{ 'AUTH.REGISTER.PHONE_HINT' | translate }}</small>
-          <small *ngIf="submitted && registerForm.get('rol')?.value === 'professional' && !registerForm.get('telefon')?.value" class="field-error-text">
+          <small *ngIf="submitted && registerForm.get('rol')?.value === 'PROFESSIONAL' && !registerForm.get('telefon')?.value" class="field-error-text">
             {{ 'AUTH.REGISTER.PHONE_REQUIRED' | translate }}
           </small>
         </label>
@@ -200,7 +209,7 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
         </div>
 
         <button type="submit" class="submit-btn" [disabled]="loading">
-          {{ loading ? ('AUTH.REGISTER.SUBMITTING' | translate) : ('AUTH.REGISTER.SUBMIT_PREFIX' | translate) + (registerForm.get('rol')?.value === 'professional' ? ('AUTH.REGISTER.ROLE_PRO_TITLE' | translate) : ('AUTH.REGISTER.ROLE_CLIENT_TITLE' | translate)) }}
+          {{ loading ? ('AUTH.REGISTER.SUBMITTING' | translate) : ('AUTH.REGISTER.SUBMIT_PREFIX' | translate) + (registerForm.get('rol')?.value === 'PROFESSIONAL' ? ('AUTH.REGISTER.ROLE_PRO_TITLE' | translate) : ('AUTH.REGISTER.ROLE_CLIENT_TITLE' | translate)) }}
         </button>
 
         <p class="footer-hint">
@@ -542,8 +551,17 @@ export class RegistreComponent implements OnInit {
   constructor(
     private readonly fb: FormBuilder,
     private readonly authService: AuthService,
-    private readonly router: Router
+    private readonly router: Router,
+    private readonly location: Location
   ) {}
+
+  goBack(): void {
+    if (window.history.length > 1) {
+      this.location.back();
+    } else {
+      this.router.navigate([this.getNavUrl('/inici')]);
+    }
+  }
 
   get isAppPage(): boolean {
     const url = this.router.url || '';
@@ -562,7 +580,7 @@ export class RegistreComponent implements OnInit {
   ngOnInit(): void {
     // Inicialització del formulari reactiu amb les dues caselles obligatòries no marcades per defecte
     this.registerForm = this.fb.group({
-      rol: ['client', [Validators.required]],
+      rol: ['CLIENT', [Validators.required]],
       nom: ['', [Validators.required]],
       email: ['', [Validators.required, Validators.email]],
       telefon: [''],
@@ -574,9 +592,9 @@ export class RegistreComponent implements OnInit {
 
   /**
    * Canvia el rol seleccionat al formulari reactiu.
-   * @param rol 'client' o 'professional'
+   * @param rol 'CLIENT' o 'PROFESSIONAL'
    */
-  onSelectRole(rol: 'client' | 'professional'): void {
+  onSelectRole(rol: 'CLIENT' | 'PROFESSIONAL'): void {
     this.registerForm.patchValue({ rol });
     this.errorMessage = '';
   }
@@ -623,23 +641,23 @@ export class RegistreComponent implements OnInit {
       this.registerForm.markAllAsTouched();
 
       if (this.registerForm.get('acceptedTerms')?.hasError('required')) {
-        this.errorMessage = 'Cal acceptar els termes i condicions per poder registrar-se.';
+        this.errorMessage = 'ERRORS.TERMS_REQUIRED';
         return;
       }
       if (this.registerForm.get('acceptedPrivacy')?.hasError('required')) {
-        this.errorMessage = 'Cal acceptar la política de privacitat per poder registrar-se.';
+        this.errorMessage = 'ERRORS.PRIVACY_REQUIRED';
         return;
       }
-      this.errorMessage = 'Si us plau, revisa els camps obligatoris del formulari.';
+      this.errorMessage = 'ERRORS.REGISTER_FORM_CHECK';
       return;
     }
 
     const formVal = this.registerForm.value;
 
     // Validació específica del fill (Professional): requereix telèfon obligatori
-    if (formVal.rol === 'professional') {
+    if (formVal.rol === 'PROFESSIONAL') {
       if (!formVal.telefon || !formVal.telefon.trim()) {
-        this.errorMessage = 'Com a Professional, el telèfon de contacte és obligatori per poder resoldre peticions.';
+        this.errorMessage = 'ERRORS.PRO_PHONE_REQUIRED';
         return;
       }
     }
@@ -668,13 +686,13 @@ export class RegistreComponent implements OnInit {
           this.errorMessage = err.error.message;
         } else if (err.status === 400 && err.error?.missatges) {
           const msgs = Object.values(err.error.missatges).join(' ');
-          this.errorMessage = msgs || 'Dades de registre incorrectes.';
+          this.errorMessage = msgs || 'ERRORS.REGISTER_ERROR';
         } else if (err.error?.error && typeof err.error.error === 'string') {
           this.errorMessage = err.error.error;
         } else if (err.status === 0 || err.status === 502 || err.status === 504) {
-          this.errorMessage = 'El servidor no respon. Comprova que el backend estigui actiu al port 8080.';
+          this.errorMessage = 'ERRORS.SERVER_UNREACHABLE';
         } else {
-          this.errorMessage = err?.error?.message || 'No s’ha pogut completar el registre. El correu o telèfon podria estar bloquejat o el servidor no respon.';
+          this.errorMessage = err?.error?.message || 'ERRORS.REGISTER_ERROR';
         }
       }
     });

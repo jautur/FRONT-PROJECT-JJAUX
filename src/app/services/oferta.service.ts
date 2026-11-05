@@ -48,16 +48,6 @@ export class OfertaService {
   }
 
   /**
-   * Obté les ofertes rebudes per a una tasca concreta.
-   * Permet al client comparar els pressupostos dels professionals.
-   * @param tascaId Identificador de la tasca
-   * @returns Observable amb les ofertes vinculades
-   */
-  getByTasca(tascaId: string): Observable<Oferta[]> {
-    return this.http.get<Oferta[]>(`${this.apiUrl}/tasca/${tascaId}`);
-  }
-
-  /**
    * Obté les ofertes enviades per un professional concret.
    * @param professionalNom Nom del professional
    * @returns Observable amb les candidatures del professional
@@ -76,30 +66,12 @@ export class OfertaService {
   }
 
   /**
-   * Accepta una oferta seleccionada pel client.
-   * L'oferta passa a estat 'Acceptada', les altres es rebutgen i la tasca passa a 'En curs'.
-   * @param id Identificador de l'oferta
-   * @returns Observable amb l'oferta acceptada
-   */
-  accept(id: string): Observable<Oferta> {
-    return this.http.post<Oferta>(`${this.apiUrl}/${id}/acceptar`, {});
-  }
-
-  /**
    * Elimina / borra una oferta de la plataforma.
    * Les ofertes no es rebutgen: es borren o s'accepten.
    * @param id Identificador de l'oferta
    */
   delete(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
-  }
-
-  /**
-   * Rebutja/descarta una oferta: les ofertes sols s'accepten o es borren.
-   * @param id Identificador de l'oferta
-   */
-  reject(id: string): Observable<any> {
-    return this.delete(id);
   }
 
   /**

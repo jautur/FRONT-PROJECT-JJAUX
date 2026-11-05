@@ -25,15 +25,6 @@ export class ResenyaService {
   }
 
   /**
-   * Obté les ressenyes dirigides a un professional concret pel seu ID o nom.
-   * @param treballadorId Identificador o nom del treballador
-   * @returns Observable amb la llista de ressenyes del professional
-   */
-  getByTreballador(treballadorId: string): Observable<Resenya[]> {
-    return this.http.get<Resenya[]>(`${this.apiUrl}/treballador/${encodeURIComponent(treballadorId)}`);
-  }
-
-  /**
    * Obté les ressenyes escrites per un client concret.
    * @param clientId Identificador del client
    * @returns Observable amb les ressenyes del client

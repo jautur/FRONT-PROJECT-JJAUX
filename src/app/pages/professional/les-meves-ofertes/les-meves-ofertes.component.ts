@@ -3,11 +3,15 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { OfertaService } from '../../../services/oferta.service';
 import { TascaService } from '../../../services/tasca.service';
+import { InteresService } from '../../../services/interes.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { ConfirmService } from '../../../core/services/confirm.service';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { Oferta } from '../../../models/oferta.model';
 import { Tasca } from '../../../models/tasca.model';
+import { Interes } from '../../../models/interes.model';
+import { ContacteTascaComponent } from '../../../shared/components/contacte-tasca/contacte-tasca.component';
+import { CancellarTascaModalComponent } from '../../../shared/components/cancellar-tasca/cancellar-tasca-modal.component';
 
 /**
  * Component del Panell de Gestió d'Ofertes del Professional (/professional/les-meves-ofertes).
@@ -20,9 +24,18 @@ import { Tasca } from '../../../models/tasca.model';
 @Component({
   selector: 'app-les-meves-ofertes',
   standalone: true,
-  imports: [CommonModule, RouterLink, TranslatePipe],
+  imports: [CommonModule, RouterLink, TranslatePipe, ContacteTascaComponent, CancellarTascaModalComponent],
   template: `
     <div class="panell-container">
+      <div class="app-back-nav" *ngIf="isAppPage">
+        <button type="button" class="btn-app-back" (click)="goBack()" [title]="'COMMON.TORNAR' | translate">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+          <span>{{ 'COMMON.TORNAR' | translate }}</span>
+        </button>
+      </div>
+
       <div class="panell-header">
         <div>
           <h2>{{ 'LES_MEVES_OFERTES.TITLE' | translate }}</h2>
@@ -34,6 +47,39 @@ import { Tasca } from '../../../models/tasca.model';
           </a>
         </div>
       </div>
+
+      <!-- SOL·LICITUDS REBUDES: el client "m'interessa"; el contacte només es mostra quan s'accepten -->
+      <section class="assigned-section" *ngIf="!loading && sollicituds.length > 0">
+        <div class="section-title-bar">
+          <div class="title-with-badge">
+            <span class="pro-assigned-pill">{{ 'TREBALL.SOL_RECEIVED_TAG' | translate }}</span>
+            <h3>{{ 'TREBALL.SOL_RECEIVED_TITLE' | translate }} ({{ sollicituds.length }})</h3>
+          </div>
+          <span class="section-badge-hint">{{ 'TREBALL.SOL_RECEIVED_HINT' | translate }}</span>
+        </div>
+
+        <div class="assigned-tasks-grid">
+          <div *ngFor="let s of sollicituds" class="assigned-task-card">
+            <div class="card-header">
+              <span class="badge-nature">{{ 'TREBALL.NATURE_SOLLICITUD' | translate }}</span>
+              <span class="badge-estat estat-pendent">{{ 'Sol·licitada' | translate }}</span>
+            </div>
+            <h4 class="tasca-titol">{{ s.publicacioTitol }}</h4>
+            <div class="assigned-meta">
+              <div class="assigned-meta-item">
+                <span class="lbl">{{ 'COMMON.CLIENT' | translate }}:</span>
+                <strong><a [routerLink]="[getNavUrl('/perfil'), s.clientId]" class="user-inline-link">{{ s.clientNom }}</a></strong>
+              </div>
+            </div>
+            <div class="card-actions">
+              <button type="button" class="btn-action success" (click)="acceptarSollicitud(s)">{{ 'TREBALL.SOL_ACCEPT' | translate }}</button>
+              <button type="button" class="btn-action danger" (click)="rebutjarSollicitud(s)">{{ 'TREBALL.SOL_REJECT' | translate }}</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="section-divider" *ngIf="!loading && sollicituds.length > 0"></div>
 
       <!-- SECCIÓ DE TASQUES ASSIGNADES EN CURS I FINALITZADES (ON CONVERGEIXEN CLIENT I PROFESSIONAL) -->
       <section class="assigned-section" *ngIf="!loading && tasquesAssignades.length > 0">
@@ -65,9 +111,16 @@ import { Tasca } from '../../../models/tasca.model';
             </div>
             <p class="tasca-desc" *ngIf="t.descripcio">{{ t.descripcio }}</p>
 
+            <app-contacte-tasca
+              *ngIf="t.estat === 'En curs' || t.estat === 'En revisió' || t.estat === 'Finalitzada'"
+              [usuariId]="t.clientId"
+              titol="TREBALL.CONTACTE_CLIENT"
+            ></app-contacte-tasca>
+            <p class="revisio-avis" *ngIf="t.estat === 'En revisió'">{{ 'TREBALL.CANCEL_IN_REVIEW' | translate }}</p>
+
             <div class="card-actions">
               <button
-                *ngIf="t.estat !== 'Finalitzada'"
+                *ngIf="t.estat === 'En curs'"
                 type="button"
                 class="btn-action success"
                 (click)="finalitzarTascaComAProfessional(t)"
@@ -77,6 +130,9 @@ import { Tasca } from '../../../models/tasca.model';
                   <polyline points="20 6 9 17 4 12"></polyline>
                 </svg>
                 {{ 'LES_MEVES_OFERTES.BTN_FINALIZE_TASK' | translate }}
+              </button>
+              <button *ngIf="t.estat === 'En curs'" type="button" class="btn-action neutral" (click)="tascaPerCancellar = t">
+                {{ 'TREBALL.CANCEL_BTN' | translate }}
               </button>
               <a [routerLink]="[getNavUrl('/tasca-detall'), t.id]" class="btn-action primary">
                 {{ 'LES_MEVES_OFERTES.BTN_VIEW_TRACKING' | translate }}
@@ -99,8 +155,8 @@ import { Tasca } from '../../../models/tasca.model';
 
       <!-- Missatges d'estat i confirmació -->
       <div *ngIf="loading" class="state-box">{{ 'MERCAT.LOADING' | translate }}</div>
-      <div *ngIf="successMsg" class="alert-success">{{ successMsg }}</div>
-      <div *ngIf="errorMsg" class="alert-error">{{ errorMsg }}</div>
+      <div *ngIf="successMsg" class="alert-success" role="status">{{ successMsg | translate }}</div>
+      <div *ngIf="errorMsg" class="alert-error" role="alert">{{ errorMsg | translate }}</div>
 
       <!-- Llista d'ofertes en targetes -->
       <div class="ofertes-grid" *ngIf="!loading && ofertes.length > 0">
@@ -168,9 +224,36 @@ import { Tasca } from '../../../models/tasca.model';
         <p>{{ 'LES_MEVES_OFERTES.EMPTY_DESC' | translate }}</p>
         <a [routerLink]="getNavUrl('/inici')" class="btn-crear">{{ 'BLOG.BREADCRUMB_HOME' | translate }}</a>
       </div>
+      <app-cancellar-tasca-modal
+        *ngIf="tascaPerCancellar"
+        [tasca]="tascaPerCancellar"
+        (tancat)="tascaPerCancellar = null"
+        (enviat)="alCancellacioSollicitada()"
+      ></app-cancellar-tasca-modal>
     </div>
   `,
-  styles: [`
+  styles: [
+    `
+      .revisio-avis {
+        margin: 0.5rem 0 0;
+        padding: 0.6rem 0.8rem;
+        border-radius: 10px;
+        background: #fff7ed;
+        border: 1px solid #fed7aa;
+        color: #9a3412;
+        font-size: 0.82rem;
+        font-weight: 700;
+      }
+      .btn-action.neutral {
+        background: #ffffff;
+        color: #09090c;
+        border-color: #d6d3d1;
+      }
+      .btn-action.neutral:hover {
+        background: #09090c;
+        color: #ffffff;
+      }
+    `,`
     .panell-container {
       max-width: 1050px;
       margin: 0 auto;
@@ -186,7 +269,7 @@ import { Tasca } from '../../../models/tasca.model';
     }
     .panell-header h2 {
       margin: 0 0 0.35rem 0;
-      color: #09090c;
+      color: var(--color-text, #09090c);
       font-size: 1.85rem;
       font-weight: 900;
       letter-spacing: -0.02em;
@@ -298,7 +381,7 @@ import { Tasca } from '../../../models/tasca.model';
       margin: 0 0 0.5rem 0;
       font-size: 1.2rem;
       font-weight: 800;
-      color: #09090c;
+      color: var(--color-text, #09090c);
     }
     .tasca-desc {
       margin: 0 0 0.85rem 0;
@@ -362,7 +445,7 @@ import { Tasca } from '../../../models/tasca.model';
     .nota-label {
       font-weight: 800;
       font-style: normal;
-      color: #09090c;
+      color: var(--color-text, #09090c);
     }
     .card-actions {
       display: flex;
@@ -447,7 +530,7 @@ import { Tasca } from '../../../models/tasca.model';
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
     }
     .empty-state h3 {
-      color: #09090c;
+      color: var(--color-text, #09090c);
       font-size: 1.25rem;
       font-weight: 800;
       margin-top: 0.75rem;
@@ -477,8 +560,8 @@ import { Tasca } from '../../../models/tasca.model';
       font-weight: 700;
     }
     .assigned-section {
-      background: #fdfbf7;
-      border: 1px solid #e7e2d6;
+      background: var(--bg-surface, #fdfbf7);
+      border: 1px solid var(--border-subtle, #e7e2d6);
       border-radius: 16px;
       padding: 1.5rem 1.6rem;
       margin-bottom: 2rem;
@@ -501,7 +584,7 @@ import { Tasca } from '../../../models/tasca.model';
       margin: 0;
       font-size: 1.25rem;
       font-weight: 900;
-      color: #09090c;
+      color: var(--color-text, #09090c);
     }
     .pro-assigned-pill {
       background: #ecfdf5;
@@ -528,8 +611,8 @@ import { Tasca } from '../../../models/tasca.model';
       gap: 1.25rem;
     }
     .assigned-task-card {
-      background: #ffffff;
-      border: 1px solid #e2ddd3;
+      background: var(--bg-card, #ffffff);
+      border: 1px solid var(--border-subtle, #e2ddd3);
       border-left: 4px solid #10b981;
       border-radius: 12px;
       padding: 1.25rem;
@@ -579,6 +662,122 @@ import { Tasca } from '../../../models/tasca.model';
       color: #ff1744;
     }
 
+    /* Suport per a mode fosc (/app) */
+    :host-context(.theme-app-dark) .assigned-section,
+    .theme-app-dark .assigned-section {
+      background: rgba(255, 255, 255, 0.03);
+      border-color: var(--border-card, #43506e);
+    }
+
+    :host-context(.theme-app-dark) .assigned-task-card,
+    .theme-app-dark .assigned-task-card {
+      background: var(--bg-card, #1e2433);
+      border-color: var(--border-card, #43506e);
+      border-left: 4px solid #10b981;
+    }
+
+    :host-context(.theme-app-dark) .pro-assigned-pill,
+    .theme-app-dark .pro-assigned-pill {
+      background: rgba(16, 185, 129, 0.2);
+      color: #34d399;
+      border-color: rgba(52, 211, 153, 0.35);
+    }
+
+    :host-context(.theme-app-dark) .section-badge-hint,
+    .theme-app-dark .section-badge-hint {
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--color-text-dim, #cbd5e1);
+      border-color: var(--border-card, #43506e);
+    }
+
+    :host-context(.theme-app-dark) .assigned-task-card .badge-nature,
+    .theme-app-dark .assigned-task-card .badge-nature {
+      background: rgba(16, 185, 129, 0.2);
+      color: #34d399;
+      border-color: rgba(52, 211, 153, 0.35);
+    }
+
+    :host-context(.theme-app-dark) .assigned-task-card .tasca-desc,
+    .theme-app-dark .assigned-task-card .tasca-desc {
+      color: var(--color-text-muted, #cbd5e1);
+    }
+
+    :host-context(.theme-app-dark) .subtitle,
+    .theme-app-dark .subtitle {
+      color: var(--color-text-muted, #cbd5e1);
+    }
+
+    :host-context(.theme-app-dark) .section-divider,
+    .theme-app-dark .section-divider {
+      background: var(--border-card, #43506e);
+    }
+
+    :host-context(.theme-app-dark) .btn-action.neutral,
+    .theme-app-dark .btn-action.neutral {
+      background: var(--bg-surface, #272f42);
+      color: var(--color-text, #ffffff);
+      border-color: var(--border-card, #43506e);
+    }
+
+    :host-context(.theme-app-dark) .btn-action.neutral:hover,
+    .theme-app-dark .btn-action.neutral:hover {
+      background: #ff1744;
+      border-color: #ff1744;
+      color: #ffffff;
+    }
+
+    :host-context(.theme-app-dark) .btn-action.danger,
+    .theme-app-dark .btn-action.danger {
+      background: rgba(239, 68, 68, 0.15);
+      color: #f87171;
+      border-color: rgba(239, 68, 68, 0.4);
+    }
+
+    :host-context(.theme-app-dark) .btn-action.danger:hover,
+    .theme-app-dark .btn-action.danger:hover {
+      background: #dc2626;
+      border-color: #dc2626;
+      color: #ffffff;
+    }
+
+    :host-context(.theme-app-dark) .revisio-avis,
+    .theme-app-dark .revisio-avis {
+      background: rgba(234, 88, 12, 0.15);
+      border-color: rgba(234, 88, 12, 0.35);
+      color: #fb923c;
+    }
+
+    :host-context(.theme-app-dark) .preu-box,
+    .theme-app-dark .preu-box {
+      background: var(--bg-surface, #272f42);
+      border-color: var(--border-card, #43506e);
+    }
+
+    :host-context(.theme-app-dark) .preu-label,
+    .theme-app-dark .preu-label {
+      color: var(--color-text-dim, #cbd5e1);
+    }
+
+    :host-context(.theme-app-dark) .preu-value.muted,
+    .theme-app-dark .preu-value.muted {
+      color: var(--color-text, #ffffff);
+    }
+
+    :host-context(.theme-app-dark) .oferta-nota,
+    .theme-app-dark .oferta-nota {
+      background: var(--bg-surface, #272f42);
+      border-color: var(--border-card, #43506e);
+      border-left: 3px solid #ff1744;
+      color: var(--color-text-muted, #cbd5e1);
+    }
+
+    :host-context(.theme-app-dark) .tab-btn:not(.active),
+    .theme-app-dark .tab-btn:not(.active) {
+      background: var(--bg-surface, #272f42);
+      border-color: var(--border-card, #43506e);
+      color: var(--color-text-muted, #cbd5e1);
+    }
+
     @media (max-width: 768px) {
       .panell-container {
         padding: 1rem 0.5rem;
@@ -609,6 +808,10 @@ import { Tasca } from '../../../models/tasca.model';
   `]
 })
 export class LesMevesOfertesComponent implements OnInit {
+  /** Sol·licituds de clients que encara esperen la resposta del professional */
+  sollicituds: Interes[] = [];
+  /** Tasca per a la qual s'està sol·licitant la cancel·lació */
+  tascaPerCancellar: Tasca | null = null;
   /** Llista d'ofertes enviades pel professional */
   ofertes: Oferta[] = [];
   /** Llista de tasques on el professional ha estat assignat i convergeix amb el client */
@@ -625,6 +828,7 @@ export class LesMevesOfertesComponent implements OnInit {
   constructor(
     private readonly ofertaService: OfertaService,
     private readonly tascaService: TascaService,
+    private readonly interesService: InteresService,
     private readonly authService: AuthService,
     private readonly confirmService: ConfirmService,
     private readonly router: Router
@@ -633,6 +837,14 @@ export class LesMevesOfertesComponent implements OnInit {
   get isAppPage(): boolean {
     const url = this.router.url || '';
     return url.startsWith('/app');
+  }
+
+  goBack(): void {
+    if (typeof window !== 'undefined' && window.history.length > 1) {
+      window.history.back();
+    } else {
+      this.router.navigate([this.getNavUrl('/inici')]);
+    }
   }
 
   getNavUrl(path: string): string {
@@ -664,12 +876,24 @@ export class LesMevesOfertesComponent implements OnInit {
       return;
     }
 
-    // Carrega les tasques on aquest professional ha estat assignat
-    this.tascaService.getByProfessional(user.nom).subscribe({
+    // Carrega les tasques on aquest professional ha estat assignat, per identificador
+    this.tascaService.getByProfessional(user.id).subscribe({
       next: (tasks) => {
         this.tasquesAssignades = tasks ?? [];
       },
-      error: () => {}
+      error: () => {
+        this.errorMsg = 'Error en carregar les teves tasques.';
+      }
+    });
+
+    // Sol·licituds pendents: les acceptades ja apareixen com a tasques
+    this.interesService.getByProfessional(user.id).subscribe({
+      next: (interessos) => {
+        this.sollicituds = (interessos ?? []).filter((i) => !i.tascaId);
+      },
+      error: () => {
+        this.errorMsg = 'Error en carregar les sol·licituds rebudes.';
+      }
     });
 
     // Carrega totes les tasques per a poder mostrar títol i dades del client a les ofertes
@@ -719,10 +943,48 @@ export class LesMevesOfertesComponent implements OnInit {
         setTimeout(() => this.successMsg = '', 4500);
       },
       error: (err) => {
-        console.error('Error finalitzant la tasca:', err);
-        this.confirmService.alert('No s\'ha pogut marcar la tasca com a finalitzada.', 'Error');
+        this.confirmService.alert(err?.error?.error || 'No s\'ha pogut marcar la tasca com a finalitzada.', 'Error');
       }
     });
+  }
+
+  /** El professional accepta la sol·licitud: la tasca comença i el client rep un avís */
+  acceptarSollicitud(s: Interes): void {
+    this.interesService.accept(s.id).subscribe({
+      next: () => {
+        this.successMsg = 'TREBALL.SOL_ACCEPTED_OK';
+        this.carregarOfertes();
+        setTimeout(() => this.successMsg = '', 4500);
+      },
+      error: (e) => (this.errorMsg = e?.error?.error || 'TREBALL.SOL_ERROR')
+    });
+  }
+
+  async rebutjarSollicitud(s: Interes): Promise<void> {
+    const confirmacio = await this.confirmService.confirm({
+      title: 'TREBALL.SOL_REJECT_TITLE',
+      message: 'TREBALL.SOL_REJECT_MSG',
+      confirmText: 'TREBALL.SOL_REJECT',
+      cancelText: 'COMMON.CANCEL_LAR',
+      isDanger: true,
+      icon: 'warning'
+    });
+    if (!confirmacio) return;
+    this.interesService.reject(s.id).subscribe({
+      next: () => {
+        this.successMsg = 'TREBALL.SOL_REJECTED_OK';
+        this.carregarOfertes();
+        setTimeout(() => this.successMsg = '', 4500);
+      },
+      error: (e) => (this.errorMsg = e?.error?.error || 'TREBALL.SOL_ERROR')
+    });
+  }
+
+  alCancellacioSollicitada(): void {
+    this.tascaPerCancellar = null;
+    this.successMsg = 'TREBALL.CANCEL_SENT_OK';
+    this.carregarOfertes();
+    setTimeout(() => this.successMsg = '', 4500);
   }
 
   /**
@@ -731,8 +993,8 @@ export class LesMevesOfertesComponent implements OnInit {
    */
   async eliminarOferta(id: string): Promise<void> {
     const confirmacio = await this.confirmService.confirm({
-      title: 'CONFIRM_MODAL.DELETE_OFFER_TITLE',
-      message: 'CONFIRM_MODAL.DELETE_OFFER_MSG',
+      title: 'TREBALL.RETIRE_OFFER_TITLE',
+      message: 'TREBALL.RETIRE_OFFER_MSG',
       confirmText: 'CONFIRM_MODAL.DEFAULT_CONFIRM',
       cancelText: 'CONFIRM_MODAL.DEFAULT_CANCEL',
       isDanger: true,
@@ -747,14 +1009,14 @@ export class LesMevesOfertesComponent implements OnInit {
         setTimeout(() => this.successMsg = '', 3500);
       },
       error: (err) => {
-        console.error('Error eliminant l\'oferta:', err);
-        this.confirmService.alert('No s\'ha pogut borrar l\'oferta.', 'Error');
+        this.confirmService.alert(err?.error?.error || 'No s\'ha pogut borrar l\'oferta.', 'Error');
       }
     });
   }
 
   getTaskEstatClass(estat: string): string {
     const e = estat?.toLowerCase() || '';
+    if (e.includes('revisi')) return 'estat-pendent';
     if (e.includes('curs')) return 'estat-en-curs';
     if (e.includes('finalitzad')) return 'estat-finalitzada';
     return 'estat-pendent';

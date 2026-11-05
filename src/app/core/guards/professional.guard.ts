@@ -4,7 +4,7 @@ import { AuthService } from '../services/auth.service';
 
 /**
  * Funció Guard funcional per a rutes exclusives de professionals (/professional/*).
- * Permet l'accés a usuaris amb rol 'professional' (o 'admin').
+ * Permet l'accés a usuaris amb rol PROFESSIONAL.
  */
 export const professionalGuard: CanActivateFn = (
   route: ActivatedRouteSnapshot,
@@ -13,8 +13,14 @@ export const professionalGuard: CanActivateFn = (
   const authService = inject(AuthService);
   const router = inject(Router);
 
+  const isAppMode = state.url.startsWith('/app') || (
+    typeof sessionStorage !== 'undefined' && sessionStorage.getItem('avisa_app_mode') === 'true'
+  );
+  const loginUrl = isAppMode ? '/app/login' : '/login';
+  const homeUrl = isAppMode ? '/app' : '/';
+
   if (!authService.isLoggedIn()) {
-    router.navigate(['/login'], { queryParams: { returnUrl: state.url, message: 'Cal iniciar sessió per accedir com a professional.' } });
+    router.navigate([loginUrl], { queryParams: { returnUrl: state.url, message: 'Cal iniciar sessió per accedir com a professional.' } });
     return false;
   }
 
@@ -22,7 +28,7 @@ export const professionalGuard: CanActivateFn = (
     return true;
   }
 
-  router.navigate(['/'], { queryParams: { error: 'Aquesta secció requereix un compte de professional.' } });
+  router.navigate([homeUrl], { queryParams: { error: 'Aquesta secció requereix un compte de professional.' } });
   return false;
 };
 

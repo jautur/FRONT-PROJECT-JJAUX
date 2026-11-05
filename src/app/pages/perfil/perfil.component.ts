@@ -32,6 +32,15 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
   imports: [CommonModule, FormsModule, RouterLink, TranslatePipe],
   template: `
     <section class="perfil-container">
+      <div class="app-back-nav" *ngIf="!isOwnProfile">
+        <button type="button" class="btn-app-back" (click)="goBack()" [title]="'COMMON.TORNAR' | translate">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+          <span>{{ 'COMMON.TORNAR' | translate }}</span>
+        </button>
+      </div>
+
       <!-- Capçalera del Perfil -->
       <header class="perfil-header">
         <div class="avatar-badge" [class.has-img]="usuariFotoPerfil">
@@ -51,18 +60,18 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
               <span class="count-head">({{ totalValoracions }} {{ totalValoracions === 1 ? ('PERFIL.RATING_COUNT_SINGULAR' | translate) : ('PERFIL.RATING_COUNT_PLURAL' | translate) }})</span>
             </div>
           </div>
-          <p class="email">{{ usuari?.email }}</p>
+          <p class="email" *ngIf="isOwnProfile || isAdmin">{{ usuari?.email }}</p>
           <div class="badges-row">
-            <span class="role-badge" [ngClass]="usuari?.rol">
+            <span class="role-badge" [ngClass]="usuari?.rol?.toLowerCase()">
               {{ usuari?.rol | uppercase }}
             </span>
-            <span class="verified-badge" *ngIf="usuari?.rol === 'professional' && usuari?.verificat">
+            <span class="verified-badge" *ngIf="usuari?.rol === 'PROFESSIONAL' && usuari?.verificat">
               {{ 'PERFIL.BADGE_VERIFIED' | translate }}
             </span>
-            <span class="pending-badge" *ngIf="usuari?.rol === 'professional' && !usuari?.verificat && usuari?.sollicitudVerificacio">
+            <span class="pending-badge" *ngIf="usuari?.rol === 'PROFESSIONAL' && !usuari?.verificat && usuari?.sollicitudVerificacio">
               {{ 'PERFIL.BADGE_PENDING' | translate }}
             </span>
-            <span class="unverified-badge" *ngIf="usuari?.rol === 'professional' && !usuari?.verificat && !usuari?.sollicitudVerificacio">
+            <span class="unverified-badge" *ngIf="usuari?.rol === 'PROFESSIONAL' && !usuari?.verificat && !usuari?.sollicitudVerificacio">
               {{ 'PERFIL.BADGE_UNVERIFIED' | translate }}
             </span>
           </div>
@@ -85,6 +94,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         </button>
 
         <button
+          *ngIf="canViewTasquesTab"
           type="button"
           class="perfil-tab-btn"
           [class.active]="activeTab === 'tasques'"
@@ -108,7 +118,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
             <line x1="12" y1="1" x2="12" y2="23"></line>
             <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
           </svg>
-          <span>{{ 'PERFIL.TAB_PRESSUPOSTOS' | translate }}</span>
+          <span>{{ (usuari?.rol === 'PROFESSIONAL' ? 'TASQUES_OFERTES.FILTER_OFFERS' : 'PERFIL.TAB_PRESSUPOSTOS') | translate }}</span>
           <span class="tab-count-pill" *ngIf="ofertesUsuari.length > 0">{{ ofertesUsuari.length }}</span>
         </button>
 
@@ -131,7 +141,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         {{ successMessage }}
       </div>
       <div *ngIf="errorMessage" class="alert alert-danger">
-        {{ errorMessage }}
+        {{ errorMessage | translate }}
       </div>
 
       <!-- Estat de càrrega de dades del perfil -->
@@ -171,7 +181,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
             <!-- Percentil de comissió reservat per a la plataforma (0-100%, defecte 3%) -->
             <label class="percentil-form-group">
               {{ 'PERFIL.COMMISSION_PERCENTILE' | translate }}
-              <div class="percentil-input-row" style="display: flex; align-items: center; gap: 0.75rem; margin-top: 0.35rem;">
+              <div class="percentil-input-row">
                 <input
                   type="number"
                   [(ngModel)]="formData.percentil"
@@ -180,19 +190,19 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
                   max="100"
                   step="1"
                   required
-                  style="max-width: 130px; font-weight: 700;"
+                  class="percentil-input"
                 />
-                <span class="percentil-badge-pill" style="background: #eff6ff; color: #1d4ed8; font-weight: 800; padding: 0.35rem 0.75rem; border-radius: 6px; font-size: 0.85rem; border: 1px solid #bfdbfe;">
+                <span class="percentil-badge-pill">
                   {{ formData.percentil ?? (usuari?.percentil ?? 3) }}% {{ 'PERFIL.COMMISSION_RESERVED' | translate }}
                 </span>
               </div>
-              <small class="hint" *ngIf="isAdmin" style="color: #059669; font-weight: 600; margin-top: 0.3rem; display: block;">
+              <small class="hint percentil-admin-hint" *ngIf="isAdmin">
                 {{ 'PERFIL.ADMIN_PERCENTILE_HINT' | translate }}
               </small>
-              <small class="hint" *ngIf="!isAdmin" style="margin-top: 0.3rem; display: block;">
+              <small class="hint percentil-user-hint" *ngIf="!isAdmin">
                 {{ 'PERFIL.USER_PERCENTILE_HINT' | translate }}
               </small>
-              <div class="commission-simulation-box" style="margin-top: 0.5rem; padding: 0.6rem 0.85rem; background: #fdfbf7; border: 1px dashed #dcd6cb; border-radius: 6px; font-size: 0.82rem; color: #4b4841;">
+              <div class="commission-simulation-box">
                 <strong>{{ 'PERFIL.COMMISSION_SIMULATION_TITLE' | translate }}</strong> {{ 'PERFIL.COMMISSION_SIMULATION_TEXT' | translate }} <strong>{{ getCommissionSimulation() }}€</strong> {{ 'PERFIL.COMMISSION_SIMULATION_END' | translate }}
               </div>
             </label>
@@ -227,7 +237,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
           </article>
 
           <!-- Targeta de Verificació Professional Oficial -->
-          <article class="card verification-card" *ngIf="usuari?.rol === 'professional'">
+          <article class="card verification-card" *ngIf="usuari?.rol === 'PROFESSIONAL'">
             <div class="verif-card-header">
               <span class="verif-icon" [class.verified]="usuari?.verificat">
                 <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -315,11 +325,11 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
             </div>
 
             <!-- Accions de l'Administrador -->
-            <div *ngIf="isAdmin" class="admin-verif-actions" style="margin-top: 1.15rem; padding-top: 0.85rem; border-top: 1px dashed #cbd5e1;">
-              <p style="font-size: 0.8rem; font-weight: 700; color: #475569; margin-bottom: 0.5rem;">
+            <div *ngIf="isAdmin" class="admin-verif-actions">
+              <p class="admin-verif-title">
                 {{ 'PERFIL.ADMIN_VERIF_TITLE' | translate }}
               </p>
-              <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+              <div class="admin-verif-buttons">
                 <button
                   type="button"
                   class="btn btn-success-sm"
@@ -343,13 +353,13 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
           <!-- Targeta informativa de rol -->
           <article class="card info-card">
             <h3>{{ 'PERFIL.ROLE_INFO_TITLE' | translate }}</h3>
-            <div *ngIf="usuari?.rol === 'client'">
+            <div *ngIf="usuari?.rol === 'CLIENT'">
               <p>{{ 'PERFIL.ROLE_CLIENT_INFO' | translate }}</p>
             </div>
-            <div *ngIf="usuari?.rol === 'professional'">
+            <div *ngIf="usuari?.rol === 'PROFESSIONAL'">
               <p>{{ 'PERFIL.ROLE_PRO_INFO' | translate }}</p>
             </div>
-            <div *ngIf="usuari?.rol === 'admin'">
+            <div *ngIf="usuari?.rol === 'ADMIN'">
               <p>{{ 'PERFIL.ROLE_ADMIN_INFO' | translate }}</p>
             </div>
           </article>
@@ -363,7 +373,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
           <p class="subtitle">{{ 'PERFIL.PUBLIC_CONTACT_SUB' | translate }}</p>
 
           <div class="public-info-list">
-            <div class="public-info-row" *ngIf="usuari?.telefon">
+            <div class="public-info-row" *ngIf="usuari?.telefon && isAdmin">
               <span class="info-label">{{ 'PERFIL.DIRECT_PHONE' | translate }}</span>
               <div style="display: flex; align-items: center; gap: 0.65rem; flex-wrap: wrap;">
                 <strong class="info-value tel-value">{{ usuari?.telefon }}</strong>
@@ -376,7 +386,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
               </div>
             </div>
 
-            <div class="public-info-row" *ngIf="usuari?.email">
+            <div class="public-info-row" *ngIf="usuari?.email && isAdmin">
               <span class="info-label">{{ 'PERFIL.EMAIL' | translate }}:</span>
               <div style="display: flex; align-items: center; gap: 0.65rem; flex-wrap: wrap;">
                 <span class="info-value">{{ usuari?.email }}</span>
@@ -404,7 +414,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
 
         <div class="side-column">
           <!-- Targeta de verificació en perfil públic -->
-          <article class="card verification-card" *ngIf="usuari?.rol === 'professional'">
+          <article class="card verification-card" *ngIf="usuari?.rol === 'PROFESSIONAL'">
             <div class="verif-card-header">
               <span class="verif-icon" [class.verified]="usuari?.verificat">
                 <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -426,11 +436,11 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
               {{ getPublicVerifDescription() }}
             </p>
 
-            <div *ngIf="isAdmin" class="admin-verif-actions" style="margin-top: 1rem; padding-top: 0.75rem; border-top: 1px dashed #cbd5e1;">
-              <p style="font-size: 0.8rem; font-weight: 700; color: #475569; margin-bottom: 0.5rem;">
+            <div *ngIf="isAdmin" class="admin-verif-actions">
+              <p class="admin-verif-title">
                 {{ 'PERFIL.ADMIN_VERIF_TITLE' | translate }}
               </p>
-              <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+              <div class="admin-verif-buttons">
                 <button
                   type="button"
                   class="btn btn-success-sm"
@@ -463,11 +473,11 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       <!-- =========================================================================
            PESTANYA 2: TASQUES DE L'USUARI (CREADES O ASSIGNADES)
            ========================================================================= -->
-      <section class="tab-content-section" *ngIf="!loadingTabData && activeTab === 'tasques'">
+      <section class="tab-content-section" *ngIf="!loadingTabData && activeTab === 'tasques' && canViewTasquesTab">
         <div class="tab-header-card">
           <div class="tab-header-titles">
             <h2>{{ 'PERFIL.TAB_TASQUES' | translate }} ({{ tasquesUsuari.length }})</h2>
-            <p>{{ (usuari?.rol === 'professional' ? 'LES_MEVES_OFERTES.ASSIGNED_SECTION_HINT' : 'LES_MEVES_TASQUES.SUBTITLE') | translate }}</p>
+            <p>{{ (usuari?.rol === 'PROFESSIONAL' ? 'LES_MEVES_OFERTES.ASSIGNED_SECTION_HINT' : 'LES_MEVES_TASQUES.SUBTITLE') | translate }}</p>
           </div>
 
           <div class="tab-filters-row">
@@ -571,11 +581,11 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       <section class="tab-content-section" *ngIf="!loadingTabData && activeTab === 'pressupostos'">
         <div class="tab-header-card">
           <div class="tab-header-titles">
-            <h2>{{ 'PERFIL.TAB_PRESSUPOSTOS' | translate }} ({{ ofertesUsuari.length }})</h2>
-            <p>{{ 'LES_MEVES_OFERTES.PROPOSALS_SECTION_HINT' | translate }}</p>
+            <h2>{{ (usuari?.rol === 'PROFESSIONAL' ? 'TASQUES_OFERTES.FILTER_OFFERS' : 'PERFIL.TAB_PRESSUPOSTOS') | translate }} ({{ ofertesUsuari.length }})</h2>
+            <p>{{ (usuari?.rol === 'PROFESSIONAL' ? 'TASQUES_OFERTES.OFFERS_BLOCK_TITLE' : 'LES_MEVES_OFERTES.PROPOSALS_SECTION_HINT') | translate }}</p>
           </div>
 
-          <a *ngIf="isOwnProfile && (usuari?.rol === 'professional' || isAdmin)" [routerLink]="getNavUrl('/professional/crear-oferta')" class="btn-tab-create">
+          <a *ngIf="isOwnProfile && (usuari?.rol === 'PROFESSIONAL' || isAdmin)" [routerLink]="getNavUrl('/professional/crear-oferta')" class="btn-tab-create">
             {{ 'PERFIL.BTN_CREAR_OFERTA_PERFIL' | translate }}
           </a>
         </div>
@@ -607,18 +617,6 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
             </div>
 
             <div class="offer-card-actions">
-              <button
-                *ngIf="isOwnProfile && isClient() && canAcceptOffer(o)"
-                type="button"
-                class="btn-accept-budget"
-                (click)="onAcceptarPressupost(o)"
-              >
-                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                  <polyline points="20 6 9 17 4 12"></polyline>
-                </svg>
-                <span>{{ 'TASCA_DETALL.BTN_ACCEPT_QUOTE' | translate }}</span>
-              </button>
-
               <a *ngIf="o.tascaId" [routerLink]="[getNavUrl('/tasca-detall'), o.tascaId]" class="btn-task-detail">
                 <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                   <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
@@ -640,7 +638,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
           </span>
           <h4>{{ 'PERFIL.NO_PRESSUPOSTOS_USER' | translate }}</h4>
           <p class="subtitle">{{ 'PERFIL.NO_PRESSUPOSTOS_USER' | translate }}</p>
-          <a *ngIf="isOwnProfile && (usuari?.rol === 'professional' || isAdmin)" [routerLink]="getNavUrl('/professional/crear-oferta')" class="btn-create-tab">
+          <a *ngIf="isOwnProfile && (usuari?.rol === 'PROFESSIONAL' || isAdmin)" [routerLink]="getNavUrl('/professional/crear-oferta')" class="btn-create-tab">
             {{ 'PERFIL.BTN_CREAR_OFERTA_PERFIL' | translate }}
           </a>
         </div>
@@ -653,9 +651,9 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         <section class="card reviews-profile-card" *ngIf="tasquesFinalitzades.length > 0">
           <div class="reviews-card-header">
             <div>
-              <h2>{{ (usuari?.rol === 'professional' ? 'PERFIL.REVIEWS_TITLE_PRO' : 'PERFIL.REVIEWS_TITLE_CLIENT') | translate }}</h2>
+              <h2>{{ (usuari?.rol === 'PROFESSIONAL' ? 'PERFIL.REVIEWS_TITLE_PRO' : 'PERFIL.REVIEWS_TITLE_CLIENT') | translate }}</h2>
               <p class="subtitle">
-                {{ (usuari?.rol === 'professional' ? 'PERFIL.REVIEWS_SUB_PRO' : 'PERFIL.REVIEWS_SUB_CLIENT') | translate }}
+                {{ (usuari?.rol === 'PROFESSIONAL' ? 'PERFIL.REVIEWS_SUB_PRO' : 'PERFIL.REVIEWS_SUB_CLIENT') | translate }}
               </p>
             </div>
             <div class="score-summary-pill" *ngIf="mitjanaPuntuacio">
@@ -697,10 +695,10 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
 
               <div class="task-work-body">
                 <h4 class="task-work-title">{{ t.titol }}</h4>
-                <p class="task-work-desc" *ngIf="t.descripcio && t.descripcio !== t.opinio">{{ t.descripcio }}</p>
-                <div class="task-opinion-box" *ngIf="t.opinio">
+                <p class="task-work-desc" *ngIf="t.descripcio && t.descripcio !== t.comentari">{{ t.descripcio }}</p>
+                <div class="task-opinion-box" *ngIf="t.comentari">
                   <span class="opinion-quote-label">{{ 'PERFIL.CLIENT_OPINION' | translate }}</span>
-                  <p class="review-item-comment">“{{ t.opinio }}”</p>
+                  <p class="review-item-comment">“{{ t.comentari }}”</p>
                 </div>
               </div>
             </article>
@@ -874,13 +872,13 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       .tab-header-titles h2 {
         font-size: 1.3rem;
         font-weight: 900;
-        color: #09090c;
+        color: var(--color-text, #09090c);
         margin: 0;
       }
 
       .tab-header-titles p {
         font-size: 0.85rem;
-        color: #78756e;
+        color: var(--color-text-muted, #78756e);
         margin: 0.25rem 0 0;
       }
 
@@ -892,9 +890,9 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       }
 
       .tab-filter-btn {
-        background: #f6f4ee;
-        border: 1px solid #e2ddd4;
-        color: #55524b;
+        background: var(--bg-surface, #f6f4ee);
+        border: 1px solid var(--border-subtle, #e2ddd4);
+        color: var(--color-text-muted, #55524b);
         font-size: 0.82rem;
         font-weight: 800;
         padding: 0.45rem 0.9rem;
@@ -904,8 +902,8 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       }
 
       .tab-filter-btn:hover {
-        background: #ebe6dc;
-        color: #09090c;
+        background: var(--bg-surface-elevated, #ebe6dc);
+        color: var(--color-text, #09090c);
       }
 
       .tab-filter-btn.active {
@@ -981,7 +979,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
 
       .estat-oberta {
         background: #eff6ff;
-        color: #1d4ed8;
+        color: #1e40af;
         border: 1px solid #bfdbfe;
       }
 
@@ -1037,7 +1035,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       .task-card-title {
         font-size: 1.15rem;
         font-weight: 900;
-        color: #09090c;
+        color: var(--color-text, #09090c);
         margin: 0;
         line-height: 1.35;
       }
@@ -1045,15 +1043,15 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       .task-card-desc,
       .offer-card-note {
         font-size: 0.86rem;
-        color: #5a5750;
+        color: var(--color-text-muted, #5a5750);
         line-height: 1.5;
         margin: 0;
       }
 
       .task-card-meta,
       .offer-card-meta {
-        background: #faf8f4;
-        border: 1px solid #ebe5da;
+        background: var(--bg-surface, #faf8f4);
+        border: 1px solid var(--border-subtle, #ebe5da);
         border-radius: 10px;
         padding: 0.75rem 0.9rem;
         display: flex;
@@ -1070,8 +1068,8 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       .meta-ref {
         font-weight: 800;
         font-family: monospace;
-        color: #09090c;
-        background: #ede8dd;
+        color: var(--color-text, #09090c);
+        background: var(--bg-surface-elevated, #ede8dd);
         padding: 0.15rem 0.4rem;
         border-radius: 4px;
         font-size: 0.78rem;
@@ -1149,7 +1147,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       .empty-tab-box h4 {
         font-size: 1.2rem;
         font-weight: 900;
-        color: #09090c;
+        color: var(--color-text, #09090c);
         margin: 0;
       }
 
@@ -1167,7 +1165,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       }
 
       .btn-create-tab:hover {
-        background: #09090c;
+        background: var(--bg-surface-elevated, #09090c);
       }
 
       .avatar-badge {
@@ -1198,13 +1196,13 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         margin: 0;
         font-size: 2rem;
         font-weight: 900;
-        color: #09090c;
+        color: var(--color-text, #09090c);
         letter-spacing: -0.03em;
       }
 
       .header-info .email {
         margin: 0.35rem 0 0.65rem;
-        color: #636058;
+        color: var(--color-text-muted, #636058);
         font-size: 0.95rem;
         font-weight: 600;
       }
@@ -1221,9 +1219,9 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       }
 
       .role-badge.client {
-        background: #f0ece3;
-        color: #09090c;
-        border-color: #dcd6cb;
+        background: var(--bg-surface-elevated, #f0ece3);
+        color: var(--color-text, #09090c);
+        border-color: var(--border-card, #dcd6cb);
       }
 
       .role-badge.professional {
@@ -1340,7 +1338,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         margin: 0;
         font-size: 1.15rem;
         font-weight: 800;
-        color: #09090c;
+        color: var(--color-text, #09090c);
       }
 
       .verif-status-pill {
@@ -1542,7 +1540,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
 
       .info-value {
         font-size: 0.95rem;
-        color: #111827;
+        color: var(--color-text, #111827);
       }
 
       .tel-value {
@@ -1551,8 +1549,8 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       }
 
       .public-bio-box {
-        background: #fafaf9;
-        border: 1px solid #e7e5e4;
+        background: var(--bg-surface, #fafaf9);
+        border: 1px solid var(--border-card, #e7e5e4);
         border-radius: 10px;
         padding: 1rem;
         margin-top: 0.5rem;
@@ -1562,7 +1560,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         margin: 0.4rem 0 0;
         font-size: 0.92rem;
         line-height: 1.5;
-        color: #374151;
+        color: var(--color-text-muted, #374151);
       }
 
       /* Ressenyes Section */
@@ -1645,12 +1643,12 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       .reviewer-name {
         display: block;
         font-size: 0.92rem;
-        color: #111827;
+        color: var(--color-text, #111827);
       }
 
       .review-date {
         font-size: 0.76rem;
-        color: #59606d;
+        color: var(--color-text-dim, #59606d);
       }
 
       .review-stars-badge {
@@ -1667,7 +1665,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       .star-number {
         font-size: 0.8rem;
         font-weight: 700;
-        color: #4b5563;
+        color: var(--color-text-muted, #4b5563);
         margin-left: 0.25rem;
       }
 
@@ -1675,7 +1673,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         margin: 0;
         font-size: 0.9rem;
         line-height: 1.5;
-        color: #374151;
+        color: var(--color-text-muted, #374151);
         font-style: italic;
       }
 
@@ -1687,8 +1685,9 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       }
 
       .badge-cat {
-        background: #e0f2fe;
-        color: #0369a1;
+        background: #eff6ff;
+        color: #1e40af;
+        border: 1px solid #bfdbfe;
         font-size: 0.72rem;
         font-weight: 700;
         padding: 0.15rem 0.5rem;
@@ -1723,13 +1722,13 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         margin: 0 0 0.35rem;
         font-size: 1rem;
         font-weight: 800;
-        color: #09090c;
+        color: var(--color-text, #09090c);
       }
 
       .task-work-desc {
         margin: 0 0 0.6rem;
         font-size: 0.88rem;
-        color: #57554e;
+        color: var(--color-text-muted, #57554e);
         line-height: 1.5;
       }
 
@@ -1786,12 +1785,12 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         margin: 0 0 0.35rem;
         font-size: 1.35rem;
         font-weight: 900;
-        color: #09090c;
+        color: var(--color-text, #09090c);
       }
 
       .subtitle {
         margin: 0 0 1.4rem;
-        color: #636058;
+        color: var(--color-text-muted, #636058);
         font-size: 0.9rem;
         font-weight: 600;
       }
@@ -1808,15 +1807,15 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         gap: 0.45rem;
         font-weight: 800;
         font-size: 0.85rem;
-        color: #09090c;
+        color: var(--color-text, #09090c);
         text-transform: uppercase;
         letter-spacing: 0.05em;
       }
 
       input, textarea {
-        background: #ffffff;
-        color: #09090c;
-        border: 1.5px solid #d6d0c4;
+        background: var(--bg-input, #ffffff);
+        color: var(--color-text, #09090c);
+        border: 1.5px solid var(--border-card, #d6d0c4);
         border-radius: 10px;
         padding: 0.85rem 1rem;
         font-size: 0.95rem;
@@ -1832,15 +1831,15 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       }
 
       .input-disabled {
-        background: #f5f2eb;
-        color: #8c887e;
-        border-color: #e5e0d7;
+        background: var(--bg-surface, #f5f2eb);
+        color: var(--color-text-dim, #8c887e);
+        border-color: var(--border-subtle, #e5e0d7);
         cursor: not-allowed;
       }
 
       .hint {
         font-size: 0.78rem;
-        color: #7d796f;
+        color: var(--color-text-dim, #7d796f);
         font-weight: 600;
       }
 
@@ -1869,22 +1868,22 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
       }
 
       .btn-primary:hover:not(:disabled) {
-        background: #09090c;
+        background: var(--bg-surface-elevated, #09090c);
         color: #ffffff;
         box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
         transform: translateY(-2px);
       }
 
       .btn-secondary {
-        background: #f0ece3;
-        color: #09090c;
-        border: 1px solid #dcd6cb;
+        background: var(--bg-surface-elevated, #f0ece3);
+        color: var(--color-text, #09090c);
+        border: 1px solid var(--border-card, #dcd6cb);
         margin-top: 0.6rem;
       }
 
       .btn-secondary:hover:not(:disabled) {
-        border-color: #09090c;
-        background: #09090c;
+        border-color: var(--neon, #09090c);
+        background: var(--neon, #09090c);
         color: #ffffff;
       }
 
@@ -1892,12 +1891,12 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         margin: 0 0 0.5rem;
         font-size: 1.15rem;
         font-weight: 900;
-        color: #09090c;
+        color: var(--color-text, #09090c);
       }
 
       .info-card p {
         margin: 0;
-        color: #57554e;
+        color: var(--color-text-muted, #57554e);
         line-height: 1.55;
         font-size: 0.92rem;
         font-weight: 600;
@@ -1920,6 +1919,258 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         background: #fef2f2;
         border: 1px solid #fecaca;
         color: #991b1b;
+      }
+
+      .alert-info {
+        background: rgba(59, 130, 246, 0.12);
+        color: #1e40af;
+        border: 1px solid rgba(59, 130, 246, 0.28);
+      }
+
+      .percentil-input-row {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-top: 0.35rem;
+      }
+
+      .percentil-input {
+        max-width: 130px;
+        font-weight: 700;
+      }
+
+      .percentil-badge-pill {
+        background: #eff6ff;
+        color: #1e40af;
+        font-weight: 800;
+        padding: 0.35rem 0.75rem;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        border: 1px solid #bfdbfe;
+        display: inline-block;
+        transition: all 0.2s ease;
+      }
+
+      .percentil-admin-hint {
+        color: #059669;
+        font-weight: 600;
+        margin-top: 0.3rem;
+        display: block;
+      }
+
+      .percentil-user-hint {
+        margin-top: 0.3rem;
+        display: block;
+      }
+
+      .commission-simulation-box {
+        margin-top: 0.5rem;
+        padding: 0.6rem 0.85rem;
+        background: #fdfbf7;
+        border: 1px dashed #dcd6cb;
+        border-radius: 6px;
+        font-size: 0.82rem;
+        color: #4b4841;
+      }
+
+      .admin-verif-actions {
+        margin-top: 1.15rem;
+        padding-top: 0.85rem;
+        border-top: 1px dashed #cbd5e1;
+      }
+
+      .admin-verif-title {
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: #475569;
+        margin-bottom: 0.5rem;
+      }
+
+      .admin-verif-buttons {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+      }
+
+      /* ============================================================== */
+      /* Adaptacions d'alta accessibilitat i contrast en mode fosc      */
+      /* ============================================================== */
+      :host-context(body.theme-app-dark) .percentil-badge-pill,
+      :host-context(.theme-app-dark) .percentil-badge-pill {
+        background: rgba(59, 130, 246, 0.16);
+        color: #93c5fd;
+        border-color: rgba(59, 130, 246, 0.4);
+      }
+
+      :host-context(body.theme-app-dark) .commission-simulation-box,
+      :host-context(.theme-app-dark) .commission-simulation-box {
+        background: var(--bg-surface);
+        border-color: var(--border-card);
+        color: var(--color-text-muted);
+      }
+
+      :host-context(body.theme-app-dark) .commission-simulation-box strong,
+      :host-context(.theme-app-dark) .commission-simulation-box strong {
+        color: var(--color-text);
+      }
+
+      :host-context(body.theme-app-dark) .percentil-admin-hint,
+      :host-context(.theme-app-dark) .percentil-admin-hint {
+        color: #34d399;
+      }
+
+      :host-context(body.theme-app-dark) .admin-verif-actions,
+      :host-context(.theme-app-dark) .admin-verif-actions {
+        border-top-color: var(--border-card);
+      }
+
+      :host-context(body.theme-app-dark) .admin-verif-title,
+      :host-context(.theme-app-dark) .admin-verif-title {
+        color: var(--color-text-muted);
+      }
+
+      :host-context(body.theme-app-dark) .badge-cat,
+      :host-context(.theme-app-dark) .badge-cat {
+        background: rgba(56, 189, 248, 0.16);
+        color: #7dd3fc;
+        border-color: rgba(56, 189, 248, 0.38);
+      }
+
+      :host-context(body.theme-app-dark) .estat-oberta,
+      :host-context(.theme-app-dark) .estat-oberta {
+        background: rgba(59, 130, 246, 0.18);
+        color: #93c5fd;
+        border-color: rgba(59, 130, 246, 0.45);
+      }
+
+      :host-context(body.theme-app-dark) .estat-en-curs,
+      :host-context(.theme-app-dark) .estat-en-curs {
+        background: rgba(6, 182, 212, 0.18);
+        color: #67e8f9;
+        border-color: rgba(6, 182, 212, 0.45);
+      }
+
+      :host-context(body.theme-app-dark) .estat-finalitzada,
+      :host-context(.theme-app-dark) .estat-finalitzada {
+        background: rgba(16, 185, 129, 0.16);
+        color: #6ee7b7;
+        border-color: rgba(16, 185, 129, 0.4);
+      }
+
+      :host-context(body.theme-app-dark) .estat-default,
+      :host-context(.theme-app-dark) .estat-default {
+        background: rgba(148, 163, 184, 0.15);
+        color: #cbd5e1;
+        border-color: rgba(148, 163, 184, 0.35);
+      }
+
+      :host-context(body.theme-app-dark) .reviewer-avatar,
+      :host-context(.theme-app-dark) .reviewer-avatar {
+        background: rgba(99, 102, 241, 0.22);
+        color: #c7d2fe;
+        border: 1px solid rgba(99, 102, 241, 0.4);
+      }
+
+      :host-context(body.theme-app-dark) .badge-price,
+      :host-context(.theme-app-dark) .badge-price {
+        background: rgba(16, 185, 129, 0.16);
+        color: #6ee7b7;
+        border: 1px solid rgba(16, 185, 129, 0.35);
+      }
+
+      :host-context(body.theme-app-dark) .badge-origen,
+      :host-context(.theme-app-dark) .badge-origen {
+        background: rgba(148, 163, 184, 0.15);
+        color: #cbd5e1;
+        border: 1px solid rgba(148, 163, 184, 0.3);
+      }
+
+      :host-context(body.theme-app-dark) .verif-checklist,
+      :host-context(.theme-app-dark) .verif-checklist {
+        background: #22283a;
+        border-color: #3d4661;
+      }
+
+      :host-context(body.theme-app-dark) .check-item,
+      :host-context(.theme-app-dark) .check-item {
+        color: #94a3b8;
+      }
+
+      :host-context(body.theme-app-dark) .check-item.valid,
+      :host-context(.theme-app-dark) .check-item.valid {
+        color: #f5f4ef;
+      }
+
+      :host-context(body.theme-app-dark) .unverified-badge,
+      :host-context(body.theme-app-dark) .verif-status-pill.status-unverified,
+      :host-context(.theme-app-dark) .unverified-badge,
+      :host-context(.theme-app-dark) .verif-status-pill.status-unverified {
+        background: rgba(148, 163, 184, 0.15);
+        color: #cbd5e1;
+        border-color: rgba(148, 163, 184, 0.35);
+      }
+
+      :host-context(body.theme-app-dark) .verif-icon,
+      :host-context(.theme-app-dark) .verif-icon {
+        background: #22283a;
+        border-color: #3d4661;
+        color: #94a3b8;
+      }
+
+      :host-context(body.theme-app-dark) .verif-icon.verified,
+      :host-context(.theme-app-dark) .verif-icon.verified {
+        background: rgba(16, 185, 129, 0.16);
+        border-color: rgba(16, 185, 129, 0.4);
+        color: #34d399;
+      }
+
+      :host-context(body.theme-app-dark) .pending-notice-box,
+      :host-context(.theme-app-dark) .pending-notice-box {
+        background: rgba(245, 158, 11, 0.12);
+        border-color: rgba(245, 158, 11, 0.35);
+        color: #fcd34d;
+      }
+
+      :host-context(body.theme-app-dark) .verified-notice-box,
+      :host-context(.theme-app-dark) .verified-notice-box {
+        background: rgba(16, 185, 129, 0.12);
+        border-color: rgba(16, 185, 129, 0.35);
+        color: #6ee7b7;
+      }
+
+      :host-context(body.theme-app-dark) .public-bio-box,
+      :host-context(body.theme-app-dark) .review-profile-item,
+      :host-context(.theme-app-dark) .public-bio-box,
+      :host-context(.theme-app-dark) .review-profile-item {
+        background: var(--bg-surface);
+        border-color: var(--border-card);
+      }
+
+      :host-context(body.theme-app-dark) .bio-text,
+      :host-context(body.theme-app-dark) .review-item-comment,
+      :host-context(.theme-app-dark) .bio-text,
+      :host-context(.theme-app-dark) .review-item-comment {
+        color: var(--color-text-muted);
+      }
+
+      :host-context(body.theme-app-dark) .task-work-desc,
+      :host-context(.theme-app-dark) .task-work-desc {
+        color: var(--color-text-muted);
+      }
+
+      :host-context(body.theme-app-dark) .task-work-title,
+      :host-context(body.theme-app-dark) .reviewer-name,
+      :host-context(body.theme-app-dark) .info-value,
+      :host-context(.theme-app-dark) .task-work-title,
+      :host-context(.theme-app-dark) .reviewer-name,
+      :host-context(.theme-app-dark) .info-value {
+        color: var(--color-text);
+      }
+
+      :host-context(body.theme-app-dark) .task-opinion-box,
+      :host-context(.theme-app-dark) .task-opinion-box {
+        background: var(--bg-input);
+        border-left-color: var(--neon, #ff1744);
       }
 
       @media (max-width: 800px) {
@@ -2088,6 +2339,14 @@ export class PerfilComponent implements OnInit {
     return url.startsWith('/app');
   }
 
+  goBack(): void {
+    if (typeof window !== 'undefined' && window.history.length > 1) {
+      window.history.back();
+    } else {
+      this.router.navigate([this.getNavUrl('/tasques-ofertes')]);
+    }
+  }
+
   getNavUrl(path: string): string {
     if (this.isAppPage) {
       if (path === '/' || path === '/inici' || path === '/app') return '/app';
@@ -2110,7 +2369,7 @@ export class PerfilComponent implements OnInit {
    */
   get isAdmin(): boolean {
     const cur = this.authService.getCurrentUser();
-    return cur?.rol === 'admin';
+    return cur?.rol === 'ADMIN';
   }
 
   /**
@@ -2123,6 +2382,12 @@ export class PerfilComponent implements OnInit {
     return Math.round(p * 10) / 10;
   }
 
+  get canViewTasquesTab(): boolean {
+    // Si s'accedeix al perfil d'un altre usuari, NO es mostra MAI l'apartat tasques.
+    // Només el propi usuari connectat té accés a la pestanya de les seues tasques personals.
+    return this.isOwnProfile;
+  }
+
   /**
    * Cicle de vida OnInit:
    * Comprova l'autenticació, sincronitza pestanya activa de la URL i carrega les dades actuals des de PostgreSQL.
@@ -2131,7 +2396,11 @@ export class PerfilComponent implements OnInit {
     this.route.queryParamMap.subscribe((qp) => {
       const tab = qp.get('tab');
       if (tab && ['dades', 'tasques', 'pressupostos', 'ressenyes'].includes(tab)) {
-        this.activeTab = tab as any;
+        if (tab === 'tasques' && !this.canViewTasquesTab) {
+          this.activeTab = (this.usuari?.rol === 'PROFESSIONAL') ? 'pressupostos' : 'dades';
+        } else {
+          this.activeTab = tab as any;
+        }
       }
     });
 
@@ -2139,8 +2408,25 @@ export class PerfilComponent implements OnInit {
       const targetId = params.get('id');
       const currentUser = this.authService.getCurrentUser();
 
-      if (targetId && (!currentUser || currentUser.id !== targetId)) {
-        this.isOwnProfile = false;
+      if (targetId) {
+        const isSelf = !!currentUser && (
+          currentUser.id === targetId ||
+          (!!currentUser.nom && currentUser.nom.toLowerCase() === targetId.toLowerCase())
+        );
+        this.isOwnProfile = isSelf;
+
+        if (!this.isOwnProfile && (!this.activeTab || this.activeTab === 'tasques')) {
+          this.activeTab = 'dades';
+        }
+
+        if (this.isOwnProfile && currentUser) {
+          this.usuari = currentUser;
+          this.formData.nom = currentUser.nom || '';
+          this.formData.telefon = currentUser.telefon || '';
+          this.formData.bio = currentUser.bio || '';
+          this.formData.percentil = currentUser.percentil ?? 3;
+        }
+
         this.carregarPerfilUsuari(targetId);
       } else {
         if (!currentUser) {
@@ -2169,6 +2455,16 @@ export class PerfilComponent implements OnInit {
             this.formData.bio = freshUser.bio || '';
             this.formData.percentil = freshUser.percentil ?? 3;
             this.authService.setCurrentUser(freshUser);
+          } else {
+            if (freshUser.rol === 'PROFESSIONAL') {
+              if (!this.activeTab || this.activeTab === 'tasques') {
+                this.activeTab = 'pressupostos';
+              }
+            } else {
+              if (this.activeTab === 'tasques') {
+                this.activeTab = 'dades';
+              }
+            }
           }
           this.carregarDadesCompletasPerfil(freshUser);
         }
@@ -2188,26 +2484,17 @@ export class PerfilComponent implements OnInit {
     this.loadingTabData = true;
     const userNom = user.nom || '';
     const userId = user.id || '';
-    const nomLower = userNom.toLowerCase();
-    const idLower = userId.toLowerCase();
 
     forkJoin({
       allTasks: this.tascaService.getAll().pipe(catchError(() => of([]))),
-      clientIncidencies: (userNom ? this.incidenciaService.getByClient(userNom) : of([])).pipe(catchError(() => of([]))),
+      clientIncidencies: (userId ? this.incidenciaService.getByClient(userId) : of([])).pipe(catchError(() => of([]))),
       allOffers: this.ofertaService.getAll().pipe(catchError(() => of([])))
     }).subscribe({
       next: ({ allTasks, clientIncidencies, allOffers }) => {
         this.loadingTabData = false;
 
         // 1. Tasques de l'usuari (on és client o professional assignat)
-        const userTasks = (allTasks ?? []).filter(t => {
-          const cNom = (t.clientNom || t.client || '').toLowerCase();
-          const cId = (t.clientId || '').toLowerCase();
-          const pNom = (t.professionalNom || t.professional || '').toLowerCase();
-          const pId = (t.professionalId || '').toLowerCase();
-          return (cNom && cNom === nomLower) || (cId && cId === idLower) ||
-                 (pNom && pNom === nomLower) || (pId && pId === idLower);
-        });
+        const userTasks = (allTasks ?? []).filter(t => t.clientId === userId || t.professionalId === userId);
 
         // Mapejar incidències obertes que no tinguin encara tasca acordada
         const existingTaskIds = new Set(userTasks.map(t => t.id));
@@ -2227,10 +2514,11 @@ export class PerfilComponent implements OnInit {
             createdAt: inc.createdAt
           }));
 
-        this.tasquesUsuari = [...userTasks, ...mappedIncidencies];
+        const combinedTasks = [...userTasks, ...mappedIncidencies];
+        this.tasquesUsuari = this.isOwnProfile ? combinedTasks : [];
 
-        // 2. Tasques finalitzades amb valoració (per a la pestanya de ressenyes)
-        this.tasquesFinalitzades = this.tasquesUsuari.filter(
+        // 2. Tasques finalitzades amb valoració (per a la pestanya de ressenyes públiques)
+        this.tasquesFinalitzades = combinedTasks.filter(
           t => t.estat === 'Finalitzada' || (t.valoracio != null && t.valoracio > 0)
         );
         const rated = this.tasquesFinalitzades.filter(t => t.valoracio != null && t.valoracio > 0);
@@ -2243,15 +2531,7 @@ export class PerfilComponent implements OnInit {
         }
 
         // 3. Ofertes públiques associades a l'usuari (els pressupostos privats no es barregen amb ofertes)
-        const allUserTaskIds = new Set(this.tasquesUsuari.map(t => t.id));
-        this.ofertesUsuari = (allOffers ?? []).filter(o => {
-          if (o.categoria === 'Pressupost') return false;
-          if ((o as any).incidenciaId) return false;
-          const oPro = (o.professionalNom || o.professional || '').toLowerCase();
-          const isAuthor = oPro && (oPro === nomLower || oPro === idLower);
-          const isRecipient = !!(o.tascaId && allUserTaskIds.has(o.tascaId));
-          return isAuthor || isRecipient;
-        });
+        this.ofertesUsuari = (allOffers ?? []).filter(o => o.professionalId === userId);
       },
       error: () => {
         this.loadingTabData = false;
@@ -2268,6 +2548,9 @@ export class PerfilComponent implements OnInit {
    * Canvia la pestanya activa del perfil i actualitza el paràmetre de consulta de la URL.
    */
   setTab(tab: 'dades' | 'tasques' | 'pressupostos' | 'ressenyes'): void {
+    if (tab === 'tasques' && !this.canViewTasquesTab) {
+      tab = (this.usuari?.rol === 'PROFESSIONAL') ? 'pressupostos' : 'dades';
+    }
     this.activeTab = tab;
     this.router.navigate([], {
       relativeTo: this.route,
@@ -2291,7 +2574,7 @@ export class PerfilComponent implements OnInit {
       return this.tasquesUsuari.filter(t => (t.estat || '').toLowerCase().includes('obert') || t.tipus === 'incidencia');
     }
     if (this.filtreTasques === 'en_curs') {
-      return this.tasquesUsuari.filter(t => (t.estat || '').toLowerCase().includes('curs'));
+      return this.tasquesUsuari.filter(t => t.estat === 'En curs' || t.estat === 'En revisió');
     }
     if (this.filtreTasques === 'finalitzada') {
       return this.tasquesUsuari.filter(t => (t.estat || '').toLowerCase().includes('finalitzad'));
@@ -2304,7 +2587,7 @@ export class PerfilComponent implements OnInit {
   }
 
   countTasquesEnCurs(): number {
-    return this.tasquesUsuari.filter(t => (t.estat || '').toLowerCase().includes('curs')).length;
+    return this.tasquesUsuari.filter(t => t.estat === 'En curs' || t.estat === 'En revisió').length;
   }
 
   countTasquesFinalitzades(): number {
@@ -2340,14 +2623,14 @@ export class PerfilComponent implements OnInit {
   onSaveProfile(): void {
     if (!this.usuari) return;
 
-    if (this.usuari.rol === 'professional' && (!this.formData.telefon || !this.formData.telefon.trim())) {
-      this.errorMessage = 'Com a Professional, el telèfon de contacte és obligatori per resoldre peticions.';
+    if (this.usuari.rol === 'PROFESSIONAL' && (!this.formData.telefon || !this.formData.telefon.trim())) {
+      this.errorMessage = 'ERRORS.PRO_PHONE_REQUIRED';
       return;
     }
 
     const p = Number(this.formData.percentil);
     if (isNaN(p) || p < 0 || p > 100) {
-      this.errorMessage = 'El percentil de comissió ha de ser un número sencer comprès entre 0 i 100.';
+      this.errorMessage = 'ERRORS.PERCENTILE_RANGE';
       return;
     }
 
@@ -2378,7 +2661,7 @@ export class PerfilComponent implements OnInit {
       error: (err) => {
         this.saving = false;
         const msg = err?.error?.message || err?.error?.error;
-        this.errorMessage = msg || 'S’ha produït un error en desar el perfil. Torna-ho a provar.';
+        this.errorMessage = msg || 'ERRORS.PROFILE_SAVE_ERROR';
       }
     });
   }
@@ -2392,12 +2675,12 @@ export class PerfilComponent implements OnInit {
     this.clearAlerts();
 
     if (this.passwordData.newPassword.length < 6) {
-      this.errorMessage = 'La contrasenya ha de tenir com a mínim 6 caràcters.';
+      this.errorMessage = 'ERRORS.PASS_MIN_LENGTH';
       return;
     }
 
     if (this.passwordData.newPassword !== this.passwordData.confirmPassword) {
-      this.errorMessage = 'Les contrasenyes introduïdes no coincideixen.';
+      this.errorMessage = 'ERRORS.PASS_MISMATCH';
       return;
     }
 
@@ -2412,7 +2695,7 @@ export class PerfilComponent implements OnInit {
       },
       error: () => {
         this.changingPassword = false;
-        this.errorMessage = 'No s’ha pogut actualitzar la contrasenya. Comprova la connexió amb el servidor.';
+        this.errorMessage = 'ERRORS.PASS_UPDATE_ERROR';
       }
     });
   }
@@ -2453,7 +2736,7 @@ export class PerfilComponent implements OnInit {
   onSollicitarVerificacio(): void {
     if (!this.usuari) return;
     if (!this.usuari.telefon || !this.usuari.telefon.trim()) {
-      this.errorMessage = 'Cal registrar un telèfon de contacte abans de sol·licitar la verificació.';
+      this.errorMessage = 'ERRORS.VERIFY_PHONE_REQUIRED';
       return;
     }
     this.sollicitantVerificacio = true;
@@ -2532,66 +2815,7 @@ export class PerfilComponent implements OnInit {
     window.location.href = `mailto:${this.usuari.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   }
 
-  /**
-   * Determina si l'usuari connectat és un client.
-   */
-  isClient(): boolean {
-    return this.authService.isClient();
-  }
 
-  /**
-   * Comprova si el pressupost correspon a una tasca oberta del client i pot ser acceptat.
-   */
-  canAcceptOffer(o: Oferta): boolean {
-    if (!o.tascaId) return false;
-    return this.tasquesUsuari.some(t => t.id === o.tascaId && (t.estat === 'Oberta' || t.tipus === 'incidencia'));
-  }
 
-  /**
-   * Accepta un pressupost des del perfil: passa a ser una Tasca en curs i el pressupost s'elimina.
-   */
-  async onAcceptarPressupost(oferta: Oferta): Promise<void> {
-    const proNom = oferta.professionalNom || oferta.professional || 'aquest professional';
-    const confirmacio = await this.confirmService.confirm({
-      title: 'CONFIRM_MODAL.ACCEPT_BUDGET_TITLE',
-      message: this.translationService.t('CONFIRM_MODAL.ACCEPT_BUDGET_MSG', { pro: proNom, preu: oferta.price || '' }),
-      confirmText: 'CONFIRM_MODAL.DEFAULT_CONFIRM',
-      cancelText: 'CONFIRM_MODAL.DEFAULT_CANCEL',
-      icon: 'success'
-    });
-    if (!confirmacio) return;
-
-    this.pressupostService.accept(oferta.id).subscribe({
-      next: () => {
-        this.successMessage = 'Pressupost acceptat correctament! Ha passat a ser una Tasca en curs i el pressupost s’ha eliminat.';
-        if (this.usuari) {
-          this.carregarDadesCompletasPerfil(this.usuari);
-        }
-        setTimeout(() => {
-          this.setTab('tasques');
-          this.successMessage = '';
-        }, 1200);
-      },
-      error: () => {
-        // Fallback per ofertes
-        this.ofertaService.accept(oferta.id).subscribe({
-          next: () => {
-            this.successMessage = 'Pressupost acceptat correctament! Ha passat a ser una Tasca en curs i el pressupost s’ha eliminat.';
-            if (this.usuari) {
-              this.carregarDadesCompletasPerfil(this.usuari);
-            }
-            setTimeout(() => {
-              this.setTab('tasques');
-              this.successMessage = '';
-            }, 1200);
-          },
-          error: () => {
-            this.errorMessage = 'No s’ha pogut acceptar el pressupost.';
-            setTimeout(() => this.errorMessage = '', 3500);
-          }
-        });
-      }
-    });
-  }
 }
 

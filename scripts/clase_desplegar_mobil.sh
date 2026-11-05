@@ -1,18 +1,22 @@
 #!/usr/bin/env bash
 
 # ==============================================================================
-# Script de desplegament ràpid en local per al projecte JJAUX (Versió Web)
-# Inicia:
-#   1. PostgreSQL (Port 5432 / Base de dades jjaux_db)
-#   2. Backend Spring Boot (Port 8080)
-#   3. Frontend Angular (Port 4300)
-#   4. Obertura automàtica al navegador web
+# Script de desplegament per a MOBIL / WI-FI LOCAL - ENTORNO CLASSE (Linux / Bash)
+# Projecte: AVISA (JJAUX)
+# Permet connectar qualsevol telèfon intel·ligent o tauleta a la xarxa local
 # ==============================================================================
 
 set -e
 
+# Perfil del backend: dev crea els usuaris de prova (admin, cli i pro) si no existeixen.
+# Per a les dades de demostració: SPRING_PROFILES_ACTIVE=demo ./clase_desplegar_mobil.sh
+export SPRING_PROFILES_ACTIVE="${SPRING_PROFILES_ACTIVE:-dev}"
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-if [ -d "${SCRIPT_DIR}/../BACK-PROJECT-JJAUX" ]; then
+if [ -d "${SCRIPT_DIR}/../../BACK-PROJECT-JJAUX" ]; then
+    FRONT_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
+    BACK_DIR="$(cd "${SCRIPT_DIR}/../../BACK-PROJECT-JJAUX" && pwd)"
+elif [ -d "${SCRIPT_DIR}/../BACK-PROJECT-JJAUX" ]; then
     FRONT_DIR="${SCRIPT_DIR}"
     BACK_DIR="$(cd "${SCRIPT_DIR}/../BACK-PROJECT-JJAUX" && pwd)"
 elif [ -d "${SCRIPT_DIR}/FRONT-PROJECT-JJAUX" ]; then
@@ -32,13 +36,13 @@ PG_LIB="${PG_DIR}/node_modules/@embedded-postgres/linux-x64/native/lib"
 PG_DATA="${PG_DIR}/data"
 
 echo "=========================================================="
-echo "          INICIANT DESPLEGAMENT WEB JJAUX"
+echo "    INICIANT DESPLEGAMENT MOBIL PER WI-FI (CLASSE)"
 echo "=========================================================="
 
 # ------------------------------------------------------------------------------
 # 1. Base de dades PostgreSQL (Port 5432)
 # ------------------------------------------------------------------------------
-echo -e "\n[1/3] Comprovant PostgreSQL..."
+echo -e "\n[1/4] Comprovant PostgreSQL..."
 if nc -z 127.0.0.1 5432 2>/dev/null || node -e "const net = require('net'); const s = net.connect(5432, '127.0.0.1', () => { s.destroy(); process.exit(0); }); s.on('error', () => process.exit(1));" 2>/dev/null; then
     echo "  -> PostgreSQL ja està en marxa al port 5432."
 else
@@ -58,7 +62,9 @@ fi
 
 # Assegurar usuari administrador (admin@admin.es / adminadmin)
 echo "  -> Verificant usuari administrador (admin@admin.es)..."
-if [ -f "${FRONT_DIR}/assegurar_admin.js" ]; then
+if [ -f "${FRONT_DIR}/scripts/assegurar_admin.js" ]; then
+    node "${FRONT_DIR}/scripts/assegurar_admin.js" || true
+elif [ -f "${FRONT_DIR}/assegurar_admin.js" ]; then
     node "${FRONT_DIR}/assegurar_admin.js" || true
 elif [ -f "${BACK_DIR}/assegurar_admin.js" ]; then
     node "${BACK_DIR}/assegurar_admin.js" || true
@@ -67,7 +73,7 @@ fi
 # ------------------------------------------------------------------------------
 # 2. Backend Spring Boot (Port 8080)
 # ------------------------------------------------------------------------------
-echo -e "\n[2/3] Comprovant Backend Spring Boot..."
+echo -e "\n[2/4] Comprovant Backend Spring Boot..."
 if nc -z 127.0.0.1 8080 2>/dev/null || curl -s -o /dev/null http://localhost:8080/api/dashboard 2>/dev/null; then
     echo "  -> Backend ja està responent a http://localhost:8080"
 else
@@ -104,18 +110,18 @@ else
 fi
 
 # ------------------------------------------------------------------------------
-# 3. Frontend Angular (Port 4300)
+# 3. Frontend Angular (Port 4300 exposat a 0.0.0.0 per a la xarxa local)
 # ------------------------------------------------------------------------------
-echo -e "\n[3/3] Comprovant Frontend Angular (Port 4300)..."
+echo -e "\n[3/4] Comprovant Frontend Angular (Port 4300)..."
 if nc -z 127.0.0.1 4300 2>/dev/null || curl -s -o /dev/null http://localhost:4300 2>/dev/null; then
-    echo "  -> Frontend ja està servint a http://localhost:4300"
+    echo "  -> Frontend ja està servint a http://0.0.0.0:4300"
 else
     if [ ! -d "${FRONT_DIR}/dist/front-project-jjaux-1/browser" ]; then
         echo "  -> Compilant aplicació Angular per a producció..."
         cd "${FRONT_DIR}" && npm run build
     fi
 
-    echo "  -> Engegant servidor web del Frontend..."
+    echo "  -> Engegant servidor web del Frontend (port 4300 per a xarxa local)..."
     fuser -k 4300/tcp 2>/dev/null || true
     cd "${FRONT_DIR}"
     setsid nohup node serve.js > "${FRONT_DIR}/frontend.log" 2>&1 < /dev/null &
@@ -126,25 +132,28 @@ else
 fi
 
 # ------------------------------------------------------------------------------
-# 4. Obrir al navegador web
+# 4. Generar codi QR i mostrar adreces de connexió mòbil
 # ------------------------------------------------------------------------------
-echo -e "\n  -> Obrint aplicació web al navegador..."
-WEB_URL="http://localhost:4300/inici"
-if command -v xdg-open >/dev/null 2>&1; then
-    xdg-open "${WEB_URL}" >/dev/null 2>&1 || true
-elif command -v sensible-browser >/dev/null 2>&1; then
-    sensible-browser "${WEB_URL}" >/dev/null 2>&1 || true
-elif command -v cmd.exe >/dev/null 2>&1; then
-    cmd.exe /c start "${WEB_URL}" 2>/dev/null || true
+echo -e "\n[4/4] Generant codi QR per a dispositius mòbils..."
+if [ -f "${FRONT_DIR}/mostrar_qr_mobil.js" ]; then
+    node "${FRONT_DIR}/mostrar_qr_mobil.js"
+elif [ -f "${BACK_DIR}/mostrar_qr_mobil.js" ]; then
+    node "${BACK_DIR}/mostrar_qr_mobil.js"
 fi
 
+# Obrir guia visual al navegador local si hi ha entorn gràfic
+if command -v xdg-open >/dev/null 2>&1; then
+    xdg-open http://localhost:4300/mobil >/dev/null 2>&1 || true
+elif command -v sensible-browser >/dev/null 2>&1; then
+    sensible-browser http://localhost:4300/mobil >/dev/null 2>&1 || true
+fi
+
+echo ""
 echo "=========================================================="
-echo "           DESPLEGAMENT WEB COMPLETAT AMB ÈXIT!"
+echo " 📲 SERVEIS ACTIUS EN SEGON PLA PER A LA XARXA LOCAL"
 echo "=========================================================="
-echo " - Base de dades: PostgreSQL a localhost:5432 (BD: jjaux_db)"
-echo " - API Backend:   http://localhost:8080/api"
-echo " - Aplicació Web: http://localhost:4300/inici"
-echo " - Usuari Admin:  admin@admin.es / adminadmin"
+echo " Escaneja el codi QR amb la càmera del mòbil per connectar-te."
+echo " O accedeix a la guia web: http://localhost:4300/mobil"
+echo " Per aturar tots els serveis: ./aturar.sh"
 echo "=========================================================="
-echo "Per aturar tots els serveis: ./aturar.sh"
-echo "=========================================================="
+

@@ -15,8 +15,13 @@ export const authGuard: CanActivateFn = (route, state) => {
     return true;
   }
 
-  // Si no ha iniciat sessió, redirigim a /login amb la ruta de retorn
-  return router.createUrlTree(['/login'], {
+  const isAppMode = state.url.startsWith('/app') || (
+    typeof sessionStorage !== 'undefined' && sessionStorage.getItem('avisa_app_mode') === 'true'
+  );
+  const loginUrl = isAppMode ? '/app/login' : '/login';
+
+  // Si no ha iniciat sessió, redirigim a la vista de login corresponent amb la ruta de retorn
+  return router.createUrlTree([loginUrl], {
     queryParams: {
       message: 'Cal iniciar sessió abans de poder accedir a aquesta secció.',
       returnUrl: state.url

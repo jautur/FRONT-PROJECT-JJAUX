@@ -81,21 +81,12 @@ export class TascaService {
   }
 
   /**
-   * Crea i publica una nova tasca a la plataforma.
-   * @param data Dades de la tasca a crear
-   * @returns Observable amb la tasca creada a la base de dades
-   */
-  create(data: CreateTascaDto): Observable<Tasca> {
-    return this.http.post<Tasca>(this.apiUrl, data);
-  }
-
-  /**
    * Marca una tasca com a finalitzada un cop acabat el servei, enregistrant opcionalment la valoració i opinió del client.
    * @param id Identificador de la tasca
    * @param avaluacio Dades opcionals de valoració (1-5 estrelles) i opinió del client
    * @returns Observable amb la tasca actualitzada
    */
-  complete(id: string, avaluacio?: { valoracio?: number; opinio?: string }): Observable<Tasca> {
+  complete(id: string, avaluacio?: { valoracio?: number; comentari?: string }): Observable<Tasca> {
     return this.http.post<Tasca>(`${this.apiUrl}/${id}/finalitzar`, avaluacio || {});
   }
 
@@ -105,7 +96,7 @@ export class TascaService {
    * @param avaluacio Dades de valoració (1-5 estrelles) i opinió del client
    * @returns Observable amb la tasca actualitzada
    */
-  avaluar(id: string, avaluacio: { valoracio: number; opinio?: string }): Observable<Tasca> {
+  avaluar(id: string, avaluacio: { valoracio: number; comentari?: string }): Observable<Tasca> {
     return this.http.post<Tasca>(`${this.apiUrl}/${id}/avaluar`, avaluacio);
   }
 
@@ -116,5 +107,10 @@ export class TascaService {
    */
   delete(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+
+  /** El client o el professional sol·liciten cancel·lar una tasca en curs; la resol un administrador */
+  sollicitarCancellacio(id: string, motiu: string): Observable<Tasca> {
+    return this.http.post<Tasca>(`${this.apiUrl}/${id}/cancellar`, { motiu });
   }
 }

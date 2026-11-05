@@ -39,16 +39,6 @@ export class UsuariService {
   }
 
   /**
-   * Filtra usuaris segons el seu rol ('client', 'professional', 'admin').
-   * Útil per mostrar el catàleg de professionals disponibles.
-   * @param rol Rol pel qual es vol filtrar
-   * @returns Observable amb els usuaris del rol seleccionat
-   */
-  getByRol(rol: 'client' | 'professional' | 'admin'): Observable<Usuari[]> {
-    return this.http.get<Usuari[]>(`${this.apiUrl}/rol/${rol}`);
-  }
-
-  /**
    * Actualitza les dades del perfil d'un usuari a la base de dades (nom, telèfon, bio).
    * @param id Identificador de l'usuari
    * @param data Dades modificades de l'usuari
