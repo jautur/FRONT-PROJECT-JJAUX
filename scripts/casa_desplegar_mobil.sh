@@ -31,7 +31,9 @@ if [ -z "${AVISA_ADMIN_PASSWORD:-}" ] && [ "$SPRING_PROFILES_ACTIVE" != "dev" ];
     echo "ERROR: amb el perfil '$SPRING_PROFILES_ACTIVE' cal AVISA_ADMIN_PASSWORD. Crea-la amb: mkdir -p ~/.avisa && openssl rand -base64 24 > ~/.avisa/admin_password"
     exit 1
 fi
-[ -n "${AVISA_ADMIN_PASSWORD:-}" ] && export AVISA_ADMIN_PASSWORD
+if [ -n "${AVISA_ADMIN_PASSWORD:-}" ]; then
+    export AVISA_ADMIN_PASSWORD
+fi
 
 export PATH="/c/Program Files/nodejs:/mnt/c/Program Files/nodejs:/c/Program Files/Eclipse Adoptium/jdk-21.0.12.101-hotspot/bin:/mnt/c/Program Files/Eclipse Adoptium/jdk-21.0.12.101-hotspot/bin:/c/Program Files/PostgreSQL/18/bin:/mnt/c/Program Files/PostgreSQL/18/bin:$PATH"
 

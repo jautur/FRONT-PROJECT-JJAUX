@@ -32,7 +32,9 @@ if [ -z "${AVISA_ADMIN_PASSWORD:-}" ] && [ "$SPRING_PROFILES_ACTIVE" != "dev" ];
     echo "ERROR: amb el perfil '$SPRING_PROFILES_ACTIVE' cal AVISA_ADMIN_PASSWORD. Crea-la amb: mkdir -p ~/.avisa && openssl rand -base64 24 > ~/.avisa/admin_password"
     exit 1
 fi
-[ -n "${AVISA_ADMIN_PASSWORD:-}" ] && export AVISA_ADMIN_PASSWORD
+if [ -n "${AVISA_ADMIN_PASSWORD:-}" ]; then
+    export AVISA_ADMIN_PASSWORD
+fi
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 if [ -d "${SCRIPT_DIR}/../../BACK-PROJECT-JJAUX" ]; then
