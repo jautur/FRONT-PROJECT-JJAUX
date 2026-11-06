@@ -6,5 +6,7 @@
  */
 export const environment = {
   production: true,
-  apiUrl: '/api'
+  apiUrl: '/api',
+  /** A producció no hi ha cap compte de prova: el build no ha de contenir cap contrasenya. */
+  accesRapid: [] as { etiqueta: string; usuari: string; contrasenya: string }[]
 };

@@ -8,8 +8,34 @@
 set -e
 
 # Perfil del backend: dev crea els usuaris de prova (admin, cli i pro) si no existeixen.
-# Per a les dades de demostració: SPRING_PROFILES_ACTIVE=demo ./casa_desplegar_mobil.sh
+# Per a les dades de demostració (només en desenvolupament): SPRING_PROFILES_ACTIVE=dev,demo ./casa_desplegar_mobil.sh
+# El perfil demo tot sol compta com a producció: no crea usuaris de prova.
 export SPRING_PROFILES_ACTIVE="${SPRING_PROFILES_ACTIVE:-dev}"
+
+# Secret de signatura dels tokens JWT: mai al repositori. Ve de l'entorn o del fitxer local ~/.avisa/jwt_secret
+# (fora dels repositoris). Sense secret el backend no arrenca. Per crear-lo: vegeu docs/configuracio.md del back.
+if [ -z "${AVISA_JWT_SECRET:-}" ] && [ -f "$HOME/.avisa/jwt_secret" ]; then
+    AVISA_JWT_SECRET="$(tr -d '\r\n' < "$HOME/.avisa/jwt_secret")"
+fi
+if [ -z "${AVISA_JWT_SECRET:-}" ]; then
+    echo "ERROR: falta AVISA_JWT_SECRET. Crea'l amb: mkdir -p ~/.avisa && openssl rand -base64 48 > ~/.avisa/jwt_secret"
+    exit 1
+fi
+export AVISA_JWT_SECRET
+
+# Contrasenya de l'administrador: de l'entorn o del fitxer local ~/.avisa/admin_password (fora dels repositoris).
+# Fora del perfil dev és obligatòria: sense ella el backend no arrenca. En dev, si falta, es fa servir la de proves.
+if [ -z "${AVISA_ADMIN_PASSWORD:-}" ] && [ -f "$HOME/.avisa/admin_password" ]; then
+    AVISA_ADMIN_PASSWORD="$(tr -d '\r\n' < "$HOME/.avisa/admin_password")"
+fi
+case ",${SPRING_PROFILES_ACTIVE// /}," in *,dev,*) PERFIL_DEV=true ;; *) PERFIL_DEV=false ;; esac
+if [ -z "${AVISA_ADMIN_PASSWORD:-}" ] && [ "$PERFIL_DEV" != true ]; then
+    echo "ERROR: amb el perfil '$SPRING_PROFILES_ACTIVE' cal AVISA_ADMIN_PASSWORD. Crea-la amb: mkdir -p ~/.avisa && openssl rand -base64 24 > ~/.avisa/admin_password"
+    exit 1
+fi
+if [ -n "${AVISA_ADMIN_PASSWORD:-}" ]; then
+    export AVISA_ADMIN_PASSWORD
+fi
 
 export PATH="/c/Program Files/nodejs:/mnt/c/Program Files/nodejs:/c/Program Files/Eclipse Adoptium/jdk-21.0.12.101-hotspot/bin:/mnt/c/Program Files/Eclipse Adoptium/jdk-21.0.12.101-hotspot/bin:/c/Program Files/PostgreSQL/18/bin:/mnt/c/Program Files/PostgreSQL/18/bin:$PATH"
 
@@ -79,10 +105,13 @@ echo "=========================================================="
 echo "      INICIANT DESPLEGAMENT MOBIL PER WI-FI (CASA)"
 echo "=========================================================="
 
+# Només mata el procés que ESCOLTA al port: l'adreça local acaba en :port i la remota és 0.0.0.0:0 o [::]:0.
+# No mira el text "LISTENING", que canvia segons l'idioma de Windows, i no toca els clients connectats al port.
 free_port() {
     local port="$1"
     if command -v netstat >/dev/null 2>&1; then
-        local pids=$(netstat -ano 2>/dev/null | grep ":${port} " | awk '{print $5}' | tr -d '\r' | sort -u | grep -v '^0$' || true)
+        local pids=$(netstat -ano -p TCP 2>/dev/null; netstat -ano -p TCPv6 2>/dev/null) || true
+        pids=$(echo "$pids" | tr -d '\r' | awk -v sufix=":${port}" '$1 == "TCP" && substr($2, length($2) - length(sufix) + 1) == sufix && ($3 == "0.0.0.0:0" || $3 == "[::]:0") { print $NF }' | sort -u | grep -v '^0$' || true)
         for p in $pids; do
             taskkill //F //PID "$p" >/dev/null 2>&1 || true
         done

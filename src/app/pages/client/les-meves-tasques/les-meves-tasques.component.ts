@@ -153,12 +153,12 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
               <span class="meta-value waiting-badge">{{ 'LES_MEVES_TASQUES.NO_PRO_ASSIGNED' | translate }}</span>
             </div>
 
-            <div class="meta-item">
+            <div class="meta-item budget-item">
               <span class="meta-label">{{ esIncidencia(t) ? ('LES_MEVES_TASQUES.ESTIMATED_BUDGET' | translate) : ('LES_MEVES_TASQUES.AGREED_PRICE' | translate) }}</span>
               <span class="meta-value budget">{{ t.budget }}</span>
             </div>
 
-            <div class="meta-item" *ngIf="esIncidencia(t) && ofertesCount[t.id] !== undefined">
+            <div class="meta-item ofertes-item" *ngIf="esIncidencia(t) && ofertesCount[t.id] !== undefined">
               <span class="meta-label">{{ 'LES_MEVES_TASQUES.QUOTES_RECEIVED' | translate }}</span>
               <span class="meta-value ofertes-badge">{{ ofertesCount[t.id] }} {{ 'LES_MEVES_TASQUES.QUOTES_COUNT' | translate }}</span>
             </div>
@@ -167,7 +167,7 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
             <div class="meta-item rating-item" *ngIf="t.valoracio">
               <span class="meta-label">{{ 'LES_MEVES_TASQUES.YOUR_RATING' | translate }}</span>
               <span class="meta-value rating-stars">
-                <svg viewBox="0 0 24 24" width="13" height="13" fill="#f59e0b" style="vertical-align: -1px; margin-right: 2px;" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor" style="vertical-align: -1px; margin-right: 2px;" aria-hidden="true">
                   <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
                 </svg>
                 {{ t.valoracio }}/5
@@ -454,40 +454,67 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
       border-left: 4px solid #10b981 !important;
     }
     .pro-assigned-item {
-      grid-column: 1 / -1;
-      background: #ecfdf5;
-      padding: 0.4rem 0.65rem;
-      border-radius: 6px;
-      border: 1px solid #d1fae5;
+      background: var(--pro-card-bg, #ecfdf5);
+      border: 1px solid var(--pro-card-border, #a7f3d0);
+      padding: 0.45rem 0.75rem;
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.5rem;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .pro-assigned-item .meta-label {
+      color: var(--pro-card-label, #065f46);
+      font-weight: 800;
+      font-size: 0.75rem;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+    }
+    .pro-assigned-val {
+      display: inline-flex;
+      align-items: center;
+      color: var(--pro-card-val, #047857);
     }
     .pro-assigned-val strong {
-      color: #059669;
+      color: var(--pro-card-val, #047857);
+      font-weight: 900;
     }
     .user-inline-link {
       color: inherit;
       text-decoration: underline;
-      text-decoration-color: rgba(5, 150, 105, 0.45);
+      text-decoration-color: currentColor;
       text-underline-offset: 3px;
-      transition: color 0.15s ease, text-decoration-color 0.15s ease;
+      transition: opacity 0.15s ease;
       cursor: pointer;
     }
     .user-inline-link:hover {
-      color: #059669 !important;
-      text-decoration-color: #059669;
+      opacity: 0.8;
+    }
+    .waiting-item {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.5rem;
+      width: 100%;
+      padding: 0.15rem 0;
     }
     .waiting-badge {
-      font-size: 0.8rem;
-      color: #78716c;
+      font-size: 0.82rem;
+      color: var(--meta-label-color, #524f48);
       font-style: italic;
+      font-weight: 600;
     }
     .badge-categoria {
-      background: #f0ece3;
-      border: 1px solid #dcd6cb;
-      color: var(--color-text, #09090c);
+      background: var(--category-badge-bg, #f0ece3);
+      border: 1px solid var(--category-badge-border, #dcd6cb);
+      color: var(--category-badge-text, #09090c);
       padding: 0.25rem 0.65rem;
       border-radius: 6px;
       font-size: 0.78rem;
-      font-weight: 700;
+      font-weight: 800;
     }
     .badge-estat {
       padding: 0.25rem 0.65rem;
@@ -558,44 +585,61 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
       flex: 1;
     }
     .tasca-meta {
-      background: #faf8f4;
-      border: 1px solid #e5e0d7;
+      background: var(--meta-box-bg, #faf8f4);
+      border: 1px solid var(--meta-box-border, #e5e0d7);
       padding: 0.85rem 1rem;
       border-radius: 10px;
-      margin-bottom: 1.2rem;
+      margin-bottom: 1.15rem;
       display: flex;
-      justify-content: space-between;
-      align-items: center;
+      flex-direction: column;
+      gap: 0.6rem;
     }
     .meta-item {
       display: flex;
       flex-direction: column;
     }
+    .meta-item.budget-item,
+    .meta-item.ofertes-item {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.15rem 0;
+      width: 100%;
+      box-sizing: border-box;
+    }
     .meta-label {
-      font-size: 0.75rem;
-      color: #8c887e;
-      font-weight: 600;
+      font-size: 0.78rem;
+      color: var(--meta-label-color, #524f48);
+      font-weight: 700;
     }
     .meta-value.budget {
       font-weight: 900;
-      color: #ff1744;
+      color: var(--meta-budget-color, #b91c1c);
       font-size: 1.05rem;
     }
     .meta-value.ofertes-badge {
       font-weight: 800;
       color: var(--color-text, #09090c);
-      font-size: 0.85rem;
+      font-size: 0.88rem;
+    }
+    app-contacte-tasca {
+      display: block;
+      margin-bottom: 1.15rem;
     }
     .card-actions {
       display: flex;
       gap: 0.5rem;
       flex-wrap: wrap;
+      margin-top: auto;
+      padding-top: 0.25rem;
     }
     .btn-action {
       flex: 1;
       padding: 0.6rem 0.85rem;
       border-radius: 8px;
-      font-size: 0.82rem;
+      font-size: 0.84rem;
       font-weight: 800;
       cursor: pointer;
       text-align: center;
@@ -607,7 +651,7 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
       transition: all 0.2s;
     }
     .btn-action.primary {
-      background: #ff1744;
+      background: var(--btn-primary-bg, #d5002e);
       color: #ffffff;
       font-weight: 900;
     }
@@ -647,23 +691,41 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
       border-color: #09090c;
     }
     .rating-item {
-      background: #fffbeb;
-      border: 1px solid #fef3c7;
-      border-radius: 6px;
-      padding: 0.35rem 0.6rem;
-      grid-column: 1 / -1;
+      background: var(--rating-card-bg, #fffbeb);
+      border: 1px solid var(--rating-card-border, #fde68a);
+      border-radius: 8px;
+      padding: 0.5rem 0.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .rating-item .meta-label {
+      color: var(--rating-card-label, #78350f);
+      font-weight: 800;
+      font-size: 0.75rem;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
     }
     .rating-stars {
-      color: #f59e0b;
+      color: var(--rating-card-star, #92400e);
       font-weight: 900;
       font-size: 0.92rem;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+    }
+    .rating-stars svg {
+      color: var(--rating-card-star-icon, #b45309);
+      fill: currentColor;
     }
     .rating-quote {
-      color: #78350f;
+      color: var(--rating-card-text, #78350f);
       font-style: italic;
-      font-weight: 500;
-      font-size: 0.82rem;
-      margin-left: 0.5rem;
+      font-weight: 600;
+      font-size: 0.84rem;
     }
     .btn-action.danger {
       background: rgba(239, 68, 68, 0.1);
@@ -987,6 +1049,103 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
         padding: 1.25rem;
         gap: 1.1rem;
       }
+    }
+
+    /* Mode Fosc (/app) WCAG AA */
+    :host-context(.theme-app-dark) .tasca-card {
+      background: var(--bg-card, #1e2433);
+      border-color: var(--border-card, #43506e);
+    }
+    :host-context(.theme-app-dark) .tasca-card:hover {
+      border-color: var(--border-strong, #5f7098);
+    }
+    :host-context(.theme-app-dark) .tasca-titol {
+      color: var(--color-text, #ffffff);
+    }
+    :host-context(.theme-app-dark) .tasca-desc {
+      color: var(--color-text-muted, #e2e8f0);
+    }
+    :host-context(.theme-app-dark) .tasca-meta {
+      background: var(--meta-box-bg, #181d29);
+      border-color: var(--meta-box-border, #333d54);
+    }
+    :host-context(.theme-app-dark) .meta-label {
+      color: var(--meta-label-color, #cbd5e1);
+    }
+    :host-context(.theme-app-dark) .waiting-badge {
+      color: var(--meta-label-color, #cbd5e1);
+    }
+    :host-context(.theme-app-dark) .meta-value.ofertes-badge {
+      color: var(--color-text, #ffffff);
+    }
+    :host-context(.theme-app-dark) .pro-assigned-item {
+      background: var(--pro-card-bg, rgba(16, 185, 129, 0.15));
+      border-color: var(--pro-card-border, rgba(52, 211, 153, 0.38));
+    }
+    :host-context(.theme-app-dark) .pro-assigned-item .meta-label {
+      color: var(--pro-card-label, #6ee7b7);
+    }
+    :host-context(.theme-app-dark) .pro-assigned-val,
+    :host-context(.theme-app-dark) .pro-assigned-val strong {
+      color: var(--pro-card-val, #a7f3d0);
+    }
+    :host-context(.theme-app-dark) .rating-item {
+      background: var(--rating-card-bg, rgba(245, 158, 11, 0.15));
+      border-color: var(--rating-card-border, rgba(245, 158, 11, 0.38));
+    }
+    :host-context(.theme-app-dark) .rating-item .meta-label {
+      color: var(--rating-card-label, #fde68a);
+    }
+    :host-context(.theme-app-dark) .rating-stars {
+      color: var(--rating-card-star, #fbbf24);
+    }
+    :host-context(.theme-app-dark) .rating-stars svg {
+      color: var(--rating-card-star-icon, #fbbf24);
+    }
+    :host-context(.theme-app-dark) .rating-quote {
+      color: var(--rating-card-text, #fef3c7);
+    }
+    :host-context(.theme-app-dark) .badge-categoria {
+      background: var(--category-badge-bg, #272f42);
+      border-color: var(--category-badge-border, #43506e);
+      color: var(--category-badge-text, #ffffff);
+    }
+    :host-context(.theme-app-dark) .meta-value.budget {
+      color: var(--meta-budget-color, #ff6b8b);
+    }
+    :host-context(.theme-app-dark) .btn-action.neutral {
+      background: var(--bg-surface, #272f42);
+      color: var(--color-text, #ffffff);
+      border-color: var(--border-card, #43506e);
+    }
+    :host-context(.theme-app-dark) .btn-action.neutral:hover {
+      background: #09090c;
+      color: #ffffff;
+    }
+    :host-context(.theme-app-dark) .modal-dialog {
+      background: var(--bg-card, #1e2433);
+      border-color: var(--border-card, #43506e);
+      color: var(--color-text, #ffffff);
+    }
+    :host-context(.theme-app-dark) .modal-header {
+      background: var(--bg-surface, #272f42);
+      border-color: var(--border-card, #43506e);
+    }
+    :host-context(.theme-app-dark) .modal-task-summary {
+      background: var(--bg-surface, #272f42);
+      border-color: var(--border-card, #43506e);
+    }
+    :host-context(.theme-app-dark) .summary-pro {
+      color: var(--color-text-muted, #e2e8f0);
+    }
+    :host-context(.theme-app-dark) .comment-input-group textarea {
+      background: var(--bg-input, #181d29);
+      border-color: var(--border-card, #43506e);
+      color: var(--color-text, #ffffff);
+    }
+    :host-context(.theme-app-dark) .btn-close-modal {
+      background: var(--bg-surface-elevated, #323b52);
+      color: var(--color-text, #ffffff);
     }
   `]
 })

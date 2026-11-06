@@ -16,7 +16,9 @@
             "outputPath": "dist/front-project-jjaux-1",
             "index": "src/index.html",
             "browser": "src/main.ts",
-            "polyfills": ["zone.js"],
+            "polyfills": [
+              "zone.js"
+            ],
             "tsConfig": "tsconfig.app.json",
             "assets": [
               "src/favicon.ico",
@@ -37,14 +39,38 @@
             "optimization": {
               "fonts": false
             }
-          }
+          },
+          "configurations": {
+            "production": {},
+            "development": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.development.ts"
+                }
+              ],
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
+            }
+          },
+          "defaultConfiguration": "production"
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
             "buildTarget": "front-project-jjaux-1:build",
             "proxyConfig": "proxy.conf.json"
-          }
+          },
+          "configurations": {
+            "production": {
+              "buildTarget": "front-project-jjaux-1:build:production"
+            },
+            "development": {
+              "buildTarget": "front-project-jjaux-1:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
         }
       }
     }

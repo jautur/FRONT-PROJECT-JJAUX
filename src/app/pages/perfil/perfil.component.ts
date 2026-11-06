@@ -1,10 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { Usuari } from '../../models/usuari.model';
+import { FORMATS_IMATGE, MAX_BYTES_IMATGE, TipusImatge, Usuari } from '../../models/usuari.model';
 import { UsuariService } from '../../services/usuari.service';
 import { AuthService } from '../../core/services/auth.service';
 import { Tasca } from '../../models/tasca.model';
@@ -16,6 +16,8 @@ import { TranslationService } from '../../core/services/translation.service';
 import { ConfirmService } from '../../core/services/confirm.service';
 import { PressupostService } from '../../services/pressupost.service';
 import { TranslatePipe } from '../../core/pipes/translate.pipe';
+import { ResenyaService } from '../../services/resenya.service';
+import { Resenya } from '../../models/resenya.model';
 
 /**
  * Component de Perfil d'Usuari (/perfil).
@@ -43,9 +45,41 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
 
       <!-- Capçalera del Perfil -->
       <header class="perfil-header">
-        <div class="avatar-badge" [class.has-img]="usuariFotoPerfil">
-          <img *ngIf="usuariFotoPerfil" [src]="usuariFotoPerfil" [alt]="usuari?.nom" class="avatar-img" />
-          <span *ngIf="!usuariFotoPerfil">{{ userInitial }}</span>
+        <div class="avatar-col">
+          <div class="avatar-badge" [class.has-img]="usuariFotoPerfil">
+            <img *ngIf="usuariFotoPerfil" [src]="usuariFotoPerfil" [alt]="usuari?.nom" class="avatar-img" />
+            <span *ngIf="!usuariFotoPerfil">{{ userInitial }}</span>
+          </div>
+          <div class="imatge-editar" *ngIf="isOwnProfile || (isAdmin && (usuari?.fotoUrl || usuari?.logoUrl))" (click)="$event.stopPropagation()">
+            <button type="button" class="btn-llapis" [disabled]="!!pujantImatge"
+                    [attr.aria-label]="'PERFIL.IMG_EDIT' | translate: { imatge: ('PERFIL.IMG_FOTO' | translate) }"
+                    [attr.aria-expanded]="menuImatge === 'foto'" aria-haspopup="menu"
+                    (click)="toggleMenuImatge('foto')">
+              <svg *ngIf="!pujantImatge" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M12 20h9"></path>
+                <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"></path>
+              </svg>
+              <span *ngIf="pujantImatge" class="spinner" aria-hidden="true"></span>
+            </button>
+            <div class="menu-imatge" role="menu" *ngIf="menuImatge === 'foto'" (keydown.escape)="tancarMenuImatge()">
+              <label class="menu-imatge-item" role="menuitem" *ngIf="isOwnProfile" [title]="'PERFIL.IMG_HINT' | translate">
+                <input type="file" class="sr-only" accept="image/jpeg,image/png,image/webp" (change)="onTriarImatge($event, 'foto')" />
+                {{ 'PERFIL.IMG_CHANGE_FOTO' | translate }}
+              </label>
+              <button type="button" class="menu-imatge-item menu-imatge-treure" role="menuitem" *ngIf="usuari?.fotoUrl" (click)="onTreureImatge('foto')">
+                {{ 'PERFIL.IMG_REMOVE_FOTO' | translate }}
+              </button>
+              <ng-container *ngIf="usuari?.rol === 'PROFESSIONAL'">
+                <label class="menu-imatge-item menu-imatge-separador" role="menuitem" *ngIf="isOwnProfile" [title]="'PERFIL.IMG_HINT' | translate">
+                  <input type="file" class="sr-only" accept="image/jpeg,image/png,image/webp" (change)="onTriarImatge($event, 'logo')" />
+                  {{ 'PERFIL.IMG_CHANGE_LOGO' | translate }}
+                </label>
+                <button type="button" class="menu-imatge-item menu-imatge-treure" role="menuitem" *ngIf="usuari?.logoUrl" (click)="onTreureImatge('logo')">
+                  {{ 'PERFIL.IMG_REMOVE_LOGO' | translate }}
+                </button>
+              </ng-container>
+            </div>
+          </div>
         </div>
         <div class="header-info">
           <div class="header-name-row">
@@ -694,7 +728,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
               </div>
 
               <div class="task-work-body">
-                <h4 class="task-work-title">{{ t.titol }}</h4>
+                <h4 class="task-work-title" *ngIf="t.titol">{{ t.titol }}</h4>
                 <p class="task-work-desc" *ngIf="t.descripcio && t.descripcio !== t.comentari">{{ t.descripcio }}</p>
                 <div class="task-opinion-box" *ngIf="t.comentari">
                   <span class="opinion-quote-label">{{ 'PERFIL.CLIENT_OPINION' | translate }}</span>
@@ -1182,6 +1216,115 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
         font-weight: 900;
         box-shadow: 0 0 16px rgba(255, 23, 68, 0.35);
         overflow: hidden;
+      }
+
+      .avatar-col {
+        position: relative;
+        flex-shrink: 0;
+      }
+
+      /* Llapis sobre la cantonada de la imatge; obri el menú Canviar / Treure */
+      .imatge-editar {
+        position: absolute;
+        right: -6px;
+        bottom: -6px;
+        z-index: 5;
+      }
+
+      .btn-llapis {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        border: 2px solid var(--bg-surface-elevated, #09090c);
+        background: var(--neon, #ff1744);
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+        cursor: pointer;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+      }
+
+      .btn-llapis:focus-visible {
+        outline: 2px solid #ffffff;
+        outline-offset: 2px;
+      }
+
+      .btn-llapis:disabled {
+        cursor: wait;
+      }
+
+      .spinner {
+        width: 13px;
+        height: 13px;
+        border: 2px solid rgba(255, 255, 255, 0.4);
+        border-top-color: #ffffff;
+        border-radius: 50%;
+        animation: gir-imatge 0.8s linear infinite;
+      }
+
+      @keyframes gir-imatge {
+        to { transform: rotate(360deg); }
+      }
+
+      .menu-imatge {
+        position: absolute;
+        top: calc(100% + 6px);
+        left: 50%;
+        transform: translateX(-50%);
+        min-width: 180px;
+        background: var(--bg-surface-elevated, #16161c);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 10px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+        padding: 0.3rem;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .menu-imatge-item {
+        display: block;
+        width: 100%;
+        text-align: left;
+        padding: 0.5rem 0.7rem;
+        border: 0;
+        border-radius: 7px;
+        background: transparent;
+        color: #ffffff;
+        font: inherit;
+        font-size: 0.88rem;
+        font-weight: 600;
+        cursor: pointer;
+      }
+
+      .menu-imatge-item:hover,
+      .menu-imatge-item:focus-within,
+      .menu-imatge-item:focus-visible {
+        background: rgba(255, 255, 255, 0.1);
+        outline: none;
+      }
+
+      .menu-imatge-treure {
+        color: #ff8a9b;
+      }
+
+      .menu-imatge-separador {
+        border-top: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 0 0 7px 7px;
+        margin-top: 0.2rem;
+      }
+
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
       }
 
       .avatar-badge img.avatar-img {
@@ -2328,6 +2471,7 @@ export class PerfilComponent implements OnInit {
     private readonly ofertaService: OfertaService,
     private readonly pressupostService: PressupostService,
     private readonly incidenciaService: IncidenciaService,
+    private readonly resenyaService: ResenyaService,
     private readonly confirmService: ConfirmService,
     private readonly router: Router,
     private readonly route: ActivatedRoute,
@@ -2445,7 +2589,9 @@ export class PerfilComponent implements OnInit {
   }
 
   private carregarPerfilUsuari(userId: string): void {
-    this.usuariService.getById(userId).subscribe({
+    // Sense sessió només es pot veure el perfil públic d'un professional
+    const perfil$ = this.authService.isLoggedIn() ? this.usuariService.getById(userId) : this.usuariService.getProfessional(userId);
+    perfil$.subscribe({
       next: (freshUser) => {
         if (freshUser) {
           this.usuari = freshUser;
@@ -2486,11 +2632,15 @@ export class PerfilComponent implements OnInit {
     const userId = user.id || '';
 
     forkJoin({
-      allTasks: this.tascaService.getAll().pipe(catchError(() => of([]))),
+      // GET /api/tasks només dona les tasques pròpies, i demana sessió
+      allTasks: (this.isOwnProfile ? this.tascaService.getAll() : of([] as Tasca[])).pipe(catchError(() => of([] as Tasca[]))),
+      ressenyes: (this.isOwnProfile ? of([] as Resenya[])
+        : user.rol === 'PROFESSIONAL' ? this.resenyaService.getByTreballador(userId) : this.resenyaService.getByClient(userId)
+      ).pipe(catchError(() => of([] as Resenya[]))),
       clientIncidencies: (userId ? this.incidenciaService.getByClient(userId) : of([])).pipe(catchError(() => of([]))),
       allOffers: this.ofertaService.getAll().pipe(catchError(() => of([])))
     }).subscribe({
-      next: ({ allTasks, clientIncidencies, allOffers }) => {
+      next: ({ allTasks, clientIncidencies, allOffers, ressenyes }) => {
         this.loadingTabData = false;
 
         // 1. Tasques de l'usuari (on és client o professional assignat)
@@ -2517,10 +2667,19 @@ export class PerfilComponent implements OnInit {
         const combinedTasks = [...userTasks, ...mappedIncidencies];
         this.tasquesUsuari = this.isOwnProfile ? combinedTasks : [];
 
-        // 2. Tasques finalitzades amb valoració (per a la pestanya de ressenyes públiques)
-        this.tasquesFinalitzades = combinedTasks.filter(
-          t => t.estat === 'Finalitzada' || (t.valoracio != null && t.valoracio > 0)
-        );
+        // 2. Tasques finalitzades amb valoració. D'un altre usuari, les seues ressenyes públiques
+        this.tasquesFinalitzades = this.isOwnProfile
+          ? combinedTasks.filter(t => t.estat === 'Finalitzada' || (t.valoracio != null && t.valoracio > 0))
+          : ressenyes.map(r => ({
+              id: r.tascaId || r.id,
+              titol: '',
+              clientId: r.clientId,
+              client: r.clientNom,
+              clientNom: r.clientNom,
+              estat: 'Finalitzada',
+              valoracio: r.puntuacio,
+              comentari: r.descripcio
+            } as Tasca));
         const rated = this.tasquesFinalitzades.filter(t => t.valoracio != null && t.valoracio > 0);
         this.totalValoracions = rated.length;
         if (rated.length > 0) {
@@ -2614,7 +2773,99 @@ export class PerfilComponent implements OnInit {
 
   get usuariFotoPerfil(): string | null {
     if (!this.usuari) return null;
-    return (this.usuari as any).fotoPerfil || (this.usuari as any).foto_perfil || null;
+    return this.usuari?.fotoUrl || null;
+  }
+
+  /** Imatge que s'està pujant ara mateix (desactiva els botons fins que acabe) */
+  pujantImatge: TipusImatge | null = null;
+
+  /** Menú Canviar / Treure obert (el del llapis de la foto o el del logotip) */
+  menuImatge: TipusImatge | null = null;
+
+  toggleMenuImatge(tipus: TipusImatge): void {
+    this.menuImatge = this.menuImatge === tipus ? null : tipus;
+  }
+
+  tancarMenuImatge(): void {
+    this.menuImatge = null;
+  }
+
+  /** Un clic fora del menú o Escape el tanquen */
+  @HostListener('document:click')
+  @HostListener('document:keydown.escape')
+  onFora(): void {
+    this.menuImatge = null;
+  }
+
+  /**
+   * Puja la foto o el logotip triat. Es comproven format i mida per avisar de seguida,
+   * però qui decideix és el servidor (reconeix el format pel contingut).
+   */
+  onTriarImatge(event: Event, tipus: TipusImatge): void {
+    const input = event.target as HTMLInputElement;
+    const fitxer = input.files?.[0];
+    input.value = '';
+    this.menuImatge = null;
+    if (!fitxer || !this.usuari || this.pujantImatge) return;
+
+    this.clearAlerts();
+    if (fitxer.type && !FORMATS_IMATGE.includes(fitxer.type)) {
+      this.errorMessage = 'ERRORS.IMG_FORMAT';
+      return;
+    }
+    if (fitxer.size > MAX_BYTES_IMATGE) {
+      this.errorMessage = 'ERRORS.IMG_TOO_BIG';
+      return;
+    }
+
+    this.pujantImatge = tipus;
+    this.usuariService.pujarImatge(this.usuari.id, tipus, fitxer).subscribe({
+      next: (resposta) => {
+        this.pujantImatge = null;
+        this.actualitzarImatge(tipus, resposta.url);
+        this.successMessage = this.translationService.t('PERFIL.IMG_SAVED');
+      },
+      error: (err) => {
+        this.pujantImatge = null;
+        this.errorMessage = this.missatgeErrorImatge(err);
+      }
+    });
+  }
+
+  /** Lleva la foto o el logotip (el mateix usuari, o un administrador per moderar). */
+  async onTreureImatge(tipus: TipusImatge): Promise<void> {
+    this.menuImatge = null;
+    if (!this.usuari || this.pujantImatge) return;
+    if (!(await this.confirmService.confirm('PERFIL.IMG_REMOVE_CONFIRM'))) return;
+
+    this.clearAlerts();
+    this.pujantImatge = tipus;
+    this.usuariService.esborrarImatge(this.usuari.id, tipus).subscribe({
+      next: () => {
+        this.pujantImatge = null;
+        this.actualitzarImatge(tipus, null);
+        this.successMessage = this.translationService.t('PERFIL.IMG_REMOVED');
+      },
+      error: (err) => {
+        this.pujantImatge = null;
+        this.errorMessage = this.missatgeErrorImatge(err);
+      }
+    });
+  }
+
+  private actualitzarImatge(tipus: TipusImatge, url: string | null): void {
+    if (!this.usuari) return;
+    const camp = tipus === 'foto' ? 'fotoUrl' : 'logoUrl';
+    this.usuari = { ...this.usuari, [camp]: url ?? undefined };
+    if (this.isOwnProfile) {
+      this.authService.setCurrentUser(this.usuari);
+    }
+  }
+
+  private missatgeErrorImatge(err: any): string {
+    if (err?.status === 413) return 'ERRORS.IMG_TOO_BIG';
+    if (err?.status === 400) return 'ERRORS.IMG_FORMAT';
+    return err?.error?.error || err?.error?.message || 'ERRORS.IMG_UPLOAD_ERROR';
   }
 
   /**

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Usuari } from '../models/usuari.model';
+import { ImatgePujada, TipusImatge, Usuari } from '../models/usuari.model';
 import { environment } from '../../environments/environment';
 
 /**
@@ -15,14 +15,30 @@ export class UsuariService {
   /** URL base de l'API per a usuaris */
   private readonly apiUrl = `${environment.apiUrl}/users`;
 
+  /** Directori públic de professionals: el que pot veure qualsevol visitant */
+  private readonly professionalsUrl = `${environment.apiUrl}/professionals`;
+
   /** URL base de l'API per a autenticació i seguretat */
   private readonly authUrl = `${environment.apiUrl}/auth`;
 
   constructor(private readonly http: HttpClient) {}
 
   /**
-   * Obté la llista completa de tots els usuaris registrats.
-   * Útil per a panells d'administració o directoris.
+   * Perfils públics de tots els professionals, sense dades de contacte. No demana sessió.
+   */
+  getProfessionals(): Observable<Usuari[]> {
+    return this.http.get<Usuari[]>(this.professionalsUrl);
+  }
+
+  /**
+   * Perfil públic d'un professional pel seu ID o nom. No demana sessió.
+   */
+  getProfessional(id: string): Observable<Usuari> {
+    return this.http.get<Usuari>(`${this.professionalsUrl}/${encodeURIComponent(id)}`);
+  }
+
+  /**
+   * Obté la llista completa de tots els usuaris registrats (només administrador).
    * @returns Observable amb la llista d'usuaris
    */
   getAll(): Observable<Usuari[]> {
@@ -45,16 +61,28 @@ export class UsuariService {
    * @returns Observable amb l'usuari actualitzat
    */
   updateProfile(id: string, data: Partial<Usuari>): Observable<Usuari> {
-    const raw = localStorage.getItem('jjaux_user');
-    const headers: Record<string, string> = {};
-    if (raw) {
-      try {
-        const u = JSON.parse(raw);
-        if (u.rol) headers['X-User-Rol'] = u.rol;
-        if (u.id) headers['X-User-Id'] = u.id;
-      } catch {}
-    }
-    return this.http.put<Usuari>(`${this.apiUrl}/${id}`, data, { headers });
+    return this.http.put<Usuari>(`${this.apiUrl}/${id}`, data);
+  }
+
+  /**
+   * Puja la foto de perfil o el logotip (JPEG, PNG o WebP). El backend la reprocessa, n'esborra les metadades
+   * i elimina l'anterior. Només el mateix usuari; el logotip, només professionals.
+   * @param id Identificador de l'usuari (el de la sessió)
+   * @param tipus 'foto' o 'logo'
+   * @param fitxer Fitxer triat per l'usuari
+   * @returns Observable amb les URLs de la imatge gran (512 px) i la petita (128 px)
+   */
+  pujarImatge(id: string, tipus: TipusImatge, fitxer: File): Observable<ImatgePujada> {
+    const dades = new FormData();
+    dades.append('fitxer', fitxer);
+    return this.http.post<ImatgePujada>(`${this.apiUrl}/${encodeURIComponent(id)}/${tipus}`, dades);
+  }
+
+  /**
+   * Lleva la foto de perfil o el logotip i n'esborra els fitxers. El mateix usuari o un administrador.
+   */
+  esborrarImatge(id: string, tipus: TipusImatge): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${encodeURIComponent(id)}/${tipus}`);
   }
 
   /**
@@ -85,34 +113,7 @@ export class UsuariService {
    * @returns Observable amb l'usuari actualitzat
    */
   verificarProfessional(id: string, estat: boolean = true): Observable<Usuari> {
-    const raw = localStorage.getItem('jjaux_user');
-    const headers: Record<string, string> = {};
-    if (raw) {
-      try {
-        const u = JSON.parse(raw);
-        if (u.rol) headers['X-User-Rol'] = u.rol;
-      } catch {}
-    }
-    return this.http.put<Usuari>(`${this.apiUrl}/${id}/verificar?estat=${estat}`, {}, { headers });
-  }
-
-  /**
-   * Permet a un administrador assignar o canviar la fotografia de fons d'un professional.
-   * Aquesta fotografia es farà servir com a fons a la secció de professionals recomanats.
-   * @param id Identificador de l'usuari
-   * @param foto URL de la fotografia de fons (o null/buit per eliminar-la)
-   * @returns Observable amb l'usuari actualitzat
-   */
-  assignarFoto(id: string, foto: string): Observable<Usuari> {
-    const raw = localStorage.getItem('jjaux_user');
-    const headers: Record<string, string> = {};
-    if (raw) {
-      try {
-        const u = JSON.parse(raw);
-        if (u.rol) headers['X-User-Rol'] = u.rol;
-      } catch {}
-    }
-    return this.http.put<Usuari>(`${this.apiUrl}/${id}/foto`, { foto }, { headers });
+    return this.http.put<Usuari>(`${this.apiUrl}/${id}/verificar?estat=${estat}`, {});
   }
 
   /**

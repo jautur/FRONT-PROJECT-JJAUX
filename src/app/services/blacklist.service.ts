@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { BlacklistTelefon } from '../models/blacklist.model';
-import { AuthService } from '../core/services/auth.service';
 import { environment } from '../../environments/environment';
 
 /**
@@ -15,30 +14,14 @@ import { environment } from '../../environments/environment';
 export class BlacklistService {
   private readonly apiUrl = `${environment.apiUrl}/blacklist`;
 
-  constructor(
-    private readonly http: HttpClient,
-    private readonly authService: AuthService
-  ) {}
+  constructor(private readonly http: HttpClient) {}
 
-  private getHeaders(): HttpHeaders {
-    let headers = new HttpHeaders();
-    const user = this.authService.getCurrentUser();
-    if (user) {
-      if (user.rol) {
-        headers = headers.set('X-User-Rol', user.rol);
-      }
-      if (user.nom) {
-        headers = headers.set('X-User-Nom', user.nom);
-      }
-    }
-    return headers;
-  }
 
   /**
    * Obté la llista completa de telèfons a la llista negra.
    */
   getAll(): Observable<BlacklistTelefon[]> {
-    return this.http.get<BlacklistTelefon[]>(this.apiUrl, { headers: this.getHeaders() });
+    return this.http.get<BlacklistTelefon[]>(this.apiUrl);
   }
 
   /**
@@ -47,8 +30,7 @@ export class BlacklistService {
   add(telefon: string, motiu?: string): Observable<BlacklistTelefon> {
     return this.http.post<BlacklistTelefon>(
       this.apiUrl,
-      { telefon, motiu },
-      { headers: this.getHeaders() }
+      { telefon, motiu }
     );
   }
 
@@ -56,9 +38,7 @@ export class BlacklistService {
    * Desbloqueja un telèfon de la llista negra pel seu ID o número.
    */
   remove(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${encodeURIComponent(id)}`, {
-      headers: this.getHeaders()
-    });
+    return this.http.delete<void>(`${this.apiUrl}/${encodeURIComponent(id)}`);
   }
 }
 
