@@ -12,7 +12,7 @@ import { Article } from '../../models/article.model';
 import { ConfirmService } from '../../core/services/confirm.service';
 import { PwaService } from '../../core/services/pwa.service';
 import { UsuariService } from '../../services/usuari.service';
-import { Usuari } from '../../models/usuari.model';
+import { Usuari, urlImatgePetita } from '../../models/usuari.model';
 import { TranslationService } from '../../core/services/translation.service';
 
 import { TranslatePipe } from '../../core/pipes/translate.pipe';
@@ -3661,10 +3661,10 @@ export class MainComponent implements OnInit, OnDestroy {
     this.isProCarouselPaused = false;
   }
 
-  /** Obté la foto de perfil o isotip d'empresa si està disponible */
+  /** Obté el logotip o la foto de perfil, en la versió petita (128 px): els avatars de la portada són xicotets */
   getProFotoPerfil(pro: any): string | null {
     if (!pro) return null;
-    return pro.logoUrl || pro.fotoUrl || null;
+    return urlImatgePetita(pro.logoUrl || pro.fotoUrl);
   }
 
   /** Imatge de fons del banner principal del professional destacat */

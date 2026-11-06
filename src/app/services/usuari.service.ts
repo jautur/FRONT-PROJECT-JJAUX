@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Usuari } from '../models/usuari.model';
+import { ImatgePujada, TipusImatge, Usuari } from '../models/usuari.model';
 import { environment } from '../../environments/environment';
 
 /**
@@ -62,6 +62,27 @@ export class UsuariService {
    */
   updateProfile(id: string, data: Partial<Usuari>): Observable<Usuari> {
     return this.http.put<Usuari>(`${this.apiUrl}/${id}`, data);
+  }
+
+  /**
+   * Puja la foto de perfil o el logotip (JPEG, PNG o WebP). El backend la reprocessa, n'esborra les metadades
+   * i elimina l'anterior. Només el mateix usuari; el logotip, només professionals.
+   * @param id Identificador de l'usuari (el de la sessió)
+   * @param tipus 'foto' o 'logo'
+   * @param fitxer Fitxer triat per l'usuari
+   * @returns Observable amb les URLs de la imatge gran (512 px) i la petita (128 px)
+   */
+  pujarImatge(id: string, tipus: TipusImatge, fitxer: File): Observable<ImatgePujada> {
+    const dades = new FormData();
+    dades.append('fitxer', fitxer);
+    return this.http.post<ImatgePujada>(`${this.apiUrl}/${encodeURIComponent(id)}/${tipus}`, dades);
+  }
+
+  /**
+   * Lleva la foto de perfil o el logotip i n'esborra els fitxers. El mateix usuari o un administrador.
+   */
+  esborrarImatge(id: string, tipus: TipusImatge): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${encodeURIComponent(id)}/${tipus}`);
   }
 
   /**

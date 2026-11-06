@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { Usuari } from '../../models/usuari.model';
+import { FORMATS_IMATGE, MAX_BYTES_IMATGE, TipusImatge, Usuari, urlImatgePetita } from '../../models/usuari.model';
 import { UsuariService } from '../../services/usuari.service';
 import { AuthService } from '../../core/services/auth.service';
 import { Tasca } from '../../models/tasca.model';
@@ -45,9 +45,24 @@ import { Resenya } from '../../models/resenya.model';
 
       <!-- Capçalera del Perfil -->
       <header class="perfil-header">
-        <div class="avatar-badge" [class.has-img]="usuariFotoPerfil">
-          <img *ngIf="usuariFotoPerfil" [src]="usuariFotoPerfil" [alt]="usuari?.nom" class="avatar-img" />
-          <span *ngIf="!usuariFotoPerfil">{{ userInitial }}</span>
+        <div class="avatar-col">
+          <div class="avatar-badge" [class.has-img]="usuariFotoPerfil">
+            <img *ngIf="usuariFotoPerfil" [src]="usuariFotoPerfil" [alt]="usuari?.nom" class="avatar-img" />
+            <span *ngIf="!usuariFotoPerfil">{{ userInitial }}</span>
+          </div>
+          <div class="imatge-accions" *ngIf="isOwnProfile || (isAdmin && usuari?.fotoUrl)">
+            <label class="btn-imatge" *ngIf="isOwnProfile" [class.disabled]="pujantImatge" [title]="'PERFIL.IMG_HINT' | translate">
+              <input type="file" class="sr-only" accept="image/jpeg,image/png,image/webp"
+                     [attr.aria-label]="('PERFIL.IMG_CHANGE' | translate) + ': ' + ('PERFIL.IMG_FOTO' | translate)"
+                     [disabled]="!!pujantImatge" (change)="onTriarImatge($event, 'foto')" />
+              {{ (pujantImatge === 'foto' ? 'PERFIL.IMG_UPLOADING' : 'PERFIL.IMG_CHANGE') | translate }}
+            </label>
+            <button type="button" class="btn-imatge btn-imatge-treure" *ngIf="usuari?.fotoUrl" [disabled]="!!pujantImatge"
+                    [attr.aria-label]="('PERFIL.IMG_REMOVE' | translate) + ': ' + ('PERFIL.IMG_FOTO' | translate)"
+                    (click)="onTreureImatge('foto')">
+              {{ 'PERFIL.IMG_REMOVE' | translate }}
+            </button>
+          </div>
         </div>
         <div class="header-info">
           <div class="header-name-row">
@@ -63,6 +78,21 @@ import { Resenya } from '../../models/resenya.model';
             </div>
           </div>
           <p class="email" *ngIf="isOwnProfile || isAdmin">{{ usuari?.email }}</p>
+          <div class="logo-row" *ngIf="usuari?.rol === 'PROFESSIONAL' && (usuari?.logoUrl || isOwnProfile)">
+            <img *ngIf="usuari?.logoUrl as logo" [src]="logoPetit" [alt]="('PERFIL.IMG_LOGO_ALT' | translate) + ' ' + (usuari?.nom || '')" class="logo-img" />
+            <span class="logo-label">{{ 'PERFIL.IMG_LOGO' | translate }}</span>
+            <label class="btn-imatge" *ngIf="isOwnProfile" [class.disabled]="pujantImatge" [title]="'PERFIL.IMG_HINT' | translate">
+              <input type="file" class="sr-only" accept="image/jpeg,image/png,image/webp"
+                     [attr.aria-label]="('PERFIL.IMG_CHANGE' | translate) + ': ' + ('PERFIL.IMG_LOGO' | translate)"
+                     [disabled]="!!pujantImatge" (change)="onTriarImatge($event, 'logo')" />
+              {{ (pujantImatge === 'logo' ? 'PERFIL.IMG_UPLOADING' : 'PERFIL.IMG_CHANGE') | translate }}
+            </label>
+            <button type="button" class="btn-imatge btn-imatge-treure" *ngIf="usuari?.logoUrl && (isOwnProfile || isAdmin)" [disabled]="!!pujantImatge"
+                    [attr.aria-label]="('PERFIL.IMG_REMOVE' | translate) + ': ' + ('PERFIL.IMG_LOGO' | translate)"
+                    (click)="onTreureImatge('logo')">
+              {{ 'PERFIL.IMG_REMOVE' | translate }}
+            </button>
+          </div>
           <div class="badges-row">
             <span class="role-badge" [ngClass]="usuari?.rol?.toLowerCase()">
               {{ usuari?.rol | uppercase }}
@@ -1184,6 +1214,80 @@ import { Resenya } from '../../models/resenya.model';
         font-weight: 900;
         box-shadow: 0 0 16px rgba(255, 23, 68, 0.35);
         overflow: hidden;
+      }
+
+      .avatar-col {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .imatge-accions,
+      .logo-row {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.4rem;
+      }
+
+      .logo-row {
+        margin: 0.4rem 0;
+      }
+
+      .logo-img {
+        width: 40px;
+        height: 40px;
+        object-fit: contain;
+        border-radius: 8px;
+        background: #ffffff;
+      }
+
+      .logo-label {
+        font-size: 0.85rem;
+        font-weight: 700;
+      }
+
+      .btn-imatge {
+        display: inline-flex;
+        align-items: center;
+        min-height: 32px;
+        padding: 0.25rem 0.7rem;
+        border: 1px solid var(--neon, #ff1744);
+        border-radius: 999px;
+        background: transparent;
+        color: inherit;
+        font-size: 0.8rem;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      .btn-imatge:focus-within,
+      .btn-imatge:focus-visible {
+        outline: 2px solid var(--neon, #ff1744);
+        outline-offset: 2px;
+      }
+
+      .btn-imatge.disabled,
+      .btn-imatge:disabled {
+        opacity: 0.6;
+        cursor: wait;
+      }
+
+      .btn-imatge-treure {
+        border-color: currentColor;
+      }
+
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
       }
 
       .avatar-badge img.avatar-img {
@@ -2633,6 +2737,83 @@ export class PerfilComponent implements OnInit {
   get usuariFotoPerfil(): string | null {
     if (!this.usuari) return null;
     return this.usuari?.fotoUrl || null;
+  }
+
+  /** El logotip es mostra a 40 px: n'hi ha prou amb la versió petita */
+  get logoPetit(): string | null {
+    return urlImatgePetita(this.usuari?.logoUrl);
+  }
+
+  /** Imatge que s'està pujant ara mateix (desactiva els botons fins que acabe) */
+  pujantImatge: TipusImatge | null = null;
+
+  /**
+   * Puja la foto o el logotip triat. Es comproven format i mida per avisar de seguida,
+   * però qui decideix és el servidor (reconeix el format pel contingut).
+   */
+  onTriarImatge(event: Event, tipus: TipusImatge): void {
+    const input = event.target as HTMLInputElement;
+    const fitxer = input.files?.[0];
+    input.value = '';
+    if (!fitxer || !this.usuari || this.pujantImatge) return;
+
+    this.clearAlerts();
+    if (fitxer.type && !FORMATS_IMATGE.includes(fitxer.type)) {
+      this.errorMessage = 'ERRORS.IMG_FORMAT';
+      return;
+    }
+    if (fitxer.size > MAX_BYTES_IMATGE) {
+      this.errorMessage = 'ERRORS.IMG_TOO_BIG';
+      return;
+    }
+
+    this.pujantImatge = tipus;
+    this.usuariService.pujarImatge(this.usuari.id, tipus, fitxer).subscribe({
+      next: (resposta) => {
+        this.pujantImatge = null;
+        this.actualitzarImatge(tipus, resposta.url);
+        this.successMessage = this.translationService.t('PERFIL.IMG_SAVED');
+      },
+      error: (err) => {
+        this.pujantImatge = null;
+        this.errorMessage = this.missatgeErrorImatge(err);
+      }
+    });
+  }
+
+  /** Lleva la foto o el logotip (el mateix usuari, o un administrador per moderar). */
+  async onTreureImatge(tipus: TipusImatge): Promise<void> {
+    if (!this.usuari || this.pujantImatge) return;
+    if (!(await this.confirmService.confirm('PERFIL.IMG_REMOVE_CONFIRM'))) return;
+
+    this.clearAlerts();
+    this.pujantImatge = tipus;
+    this.usuariService.esborrarImatge(this.usuari.id, tipus).subscribe({
+      next: () => {
+        this.pujantImatge = null;
+        this.actualitzarImatge(tipus, null);
+        this.successMessage = this.translationService.t('PERFIL.IMG_REMOVED');
+      },
+      error: (err) => {
+        this.pujantImatge = null;
+        this.errorMessage = this.missatgeErrorImatge(err);
+      }
+    });
+  }
+
+  private actualitzarImatge(tipus: TipusImatge, url: string | null): void {
+    if (!this.usuari) return;
+    const camp = tipus === 'foto' ? 'fotoUrl' : 'logoUrl';
+    this.usuari = { ...this.usuari, [camp]: url ?? undefined };
+    if (this.isOwnProfile) {
+      this.authService.setCurrentUser(this.usuari);
+    }
+  }
+
+  private missatgeErrorImatge(err: any): string {
+    if (err?.status === 413) return 'ERRORS.IMG_TOO_BIG';
+    if (err?.status === 400) return 'ERRORS.IMG_FORMAT';
+    return err?.error?.error || err?.error?.message || 'ERRORS.IMG_UPLOAD_ERROR';
   }
 
   /**

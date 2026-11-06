@@ -49,3 +49,30 @@ export interface Usuari {
   /** Token JWT d'autenticació i sessió de l'usuari */
   token?: string;
 }
+
+/** Imatges pròpies d'un usuari: la ruta de POST/DELETE /api/users/{id}/{tipus}. */
+export type TipusImatge = 'foto' | 'logo';
+
+/** Resposta de la pujada d'una imatge. */
+export interface ImatgePujada {
+  /** Versió de 512 px pel costat llarg (detall) */
+  url: string;
+  /** Versió de 128 px pel costat llarg (llistats i avatars xicotets) */
+  urlPetita: string;
+}
+
+/** Formats que accepta el backend (els reconeix pel contingut, no pel tipus que diu el navegador). */
+export const FORMATS_IMATGE = ['image/jpeg', 'image/png', 'image/webp'];
+
+/** Mida màxima per defecte al backend (AVISA_IMATGES_MAX_BYTES); el servidor és qui mana. */
+export const MAX_BYTES_IMATGE = 5 * 1024 * 1024;
+
+/**
+ * URL de la versió petita: la mateixa amb "-petita" abans de l'extensió.
+ * /api/imatges/<uuid>.jpg → /api/imatges/<uuid>-petita.jpg
+ */
+export function urlImatgePetita(url?: string | null): string | null {
+  if (!url) return null;
+  if (url.includes('-petita.')) return url;
+  return url.replace(/\.(jpg|png)$/, '-petita.$1');
+}
