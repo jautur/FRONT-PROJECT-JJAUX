@@ -85,11 +85,14 @@ echo "=========================================================="
 echo "          INICIANT DESPLEGAMENT LOCAL JJAUX (CASA)"
 echo "=========================================================="
 
-# Funció per alliberar un port si està bloquejat per processos antics
+# Funció per alliberar un port si està bloquejat per processos antics.
+# Només mata el procés que ESCOLTA al port: l'adreça local acaba en :port i la remota és 0.0.0.0:0 o [::]:0.
+# No mira el text "LISTENING", que canvia segons l'idioma de Windows, i no toca els clients connectats al port.
 free_port() {
     local port="$1"
     if command -v netstat >/dev/null 2>&1; then
-        local pids=$(netstat -ano 2>/dev/null | grep ":${port} " | awk '{print $5}' | tr -d '\r' | sort -u | grep -v '^0$' || true)
+        local pids=$(netstat -ano -p TCP 2>/dev/null; netstat -ano -p TCPv6 2>/dev/null) || true
+        pids=$(echo "$pids" | tr -d '\r' | awk -v sufix=":${port}" '$1 == "TCP" && substr($2, length($2) - length(sufix) + 1) == sufix && ($3 == "0.0.0.0:0" || $3 == "[::]:0") { print $NF }' | sort -u | grep -v '^0$' || true)
         for p in $pids; do
             taskkill //F //PID "$p" >/dev/null 2>&1 || true
         done
