@@ -94,8 +94,11 @@ export class AuthService {
    * @param user Dades de l'usuari a persistir
    */
   setCurrentUser(user: Usuari): void {
-    localStorage.setItem(this.USER_KEY, JSON.stringify(user));
-    this.currentUserSubject.next(user);
+    // Les respostes de perfil no porten token: si no se'n rep un de nou, es conserva el de la sessió
+    const token = user.token || this.getToken();
+    const sessio = token ? { ...user, token } : user;
+    localStorage.setItem(this.USER_KEY, JSON.stringify(sessio));
+    this.currentUserSubject.next(sessio);
   }
 
   /**
