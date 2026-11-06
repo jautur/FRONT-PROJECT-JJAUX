@@ -616,6 +616,7 @@ export const en = {
     "IMG_SAVED": "The image has been saved.",
     "IMG_REMOVED": "The image has been removed.",
     "IMG_LOGO_ALT": "Logo of",
+    "IMG_EDIT": "Edit {{imatge}}",
     "IMG_REMOVE_CONFIRM": "Are you sure you want to remove this image? It will be deleted from the server.",
     "PERSONAL_DATA_TITLE": "Personal details",
     "PERSONAL_DATA_SUB": "Update your contact and business details.",

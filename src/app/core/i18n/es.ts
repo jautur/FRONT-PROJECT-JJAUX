@@ -616,6 +616,7 @@ export const es = {
     "IMG_SAVED": "La imagen se ha guardado.",
     "IMG_REMOVED": "La imagen se ha quitado.",
     "IMG_LOGO_ALT": "Logotipo de",
+    "IMG_EDIT": "Editar {{imatge}}",
     "IMG_REMOVE_CONFIRM": "¿Seguro que quieres quitar esta imagen? Se borrará del servidor.",
     "PERSONAL_DATA_TITLE": "Datos personales",
     "PERSONAL_DATA_SUB": "Actualiza tu información de contacto y presentación.",

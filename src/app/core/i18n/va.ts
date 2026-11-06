@@ -616,6 +616,7 @@ export const va = {
     "IMG_SAVED": "La imatge s’ha desat.",
     "IMG_REMOVED": "La imatge s’ha tret.",
     "IMG_LOGO_ALT": "Logotip de",
+    "IMG_EDIT": "Editar {{imatge}}",
     "IMG_REMOVE_CONFIRM": "Segur que vols treure aquesta imatge? S’esborrarà del servidor.",
     "PERSONAL_DATA_TITLE": "Dades personals",
     "PERSONAL_DATA_SUB": "Actualitza la teva informació de contacte i presentació.",

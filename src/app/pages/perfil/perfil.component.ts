@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -50,19 +50,29 @@ import { Resenya } from '../../models/resenya.model';
             <img *ngIf="usuariFotoPerfil" [src]="usuariFotoPerfil" [alt]="usuari?.nom" class="avatar-img" />
             <span *ngIf="!usuariFotoPerfil">{{ userInitial }}</span>
           </div>
-          <div class="imatge-accions" *ngIf="isOwnProfile || (isAdmin && usuari?.fotoUrl)">
-            <label class="btn-imatge" *ngIf="isOwnProfile" [class.disabled]="pujantImatge" [title]="'PERFIL.IMG_HINT' | translate">
-              <input type="file" class="sr-only" accept="image/jpeg,image/png,image/webp"
-                     [attr.aria-label]="('PERFIL.IMG_CHANGE' | translate) + ': ' + ('PERFIL.IMG_FOTO' | translate)"
-                     [disabled]="!!pujantImatge" (change)="onTriarImatge($event, 'foto')" />
-              {{ (pujantImatge === 'foto' ? 'PERFIL.IMG_UPLOADING' : 'PERFIL.IMG_CHANGE') | translate }}
-            </label>
-            <button type="button" class="btn-imatge btn-imatge-treure" *ngIf="usuari?.fotoUrl" [disabled]="!!pujantImatge"
-                    [attr.aria-label]="('PERFIL.IMG_REMOVE' | translate) + ': ' + ('PERFIL.IMG_FOTO' | translate)"
-                    (click)="onTreureImatge('foto')">
-              {{ 'PERFIL.IMG_REMOVE' | translate }}
-            </button>
-          </div>
+            <div class="imatge-editar" *ngIf="isOwnProfile || (isAdmin && usuari?.fotoUrl)" (click)="$event.stopPropagation()">
+              <button type="button" class="btn-llapis" [disabled]="!!pujantImatge"
+                      [attr.aria-label]="'PERFIL.IMG_EDIT' | translate: { imatge: ('PERFIL.IMG_FOTO' | translate) }"
+                      [attr.aria-expanded]="menuImatge === 'foto'" aria-haspopup="menu"
+                      (click)="toggleMenuImatge('foto')">
+                <svg *ngIf="pujantImatge !== 'foto'" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M12 20h9"></path>
+                  <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"></path>
+                </svg>
+                <span *ngIf="pujantImatge === 'foto'" class="spinner" aria-hidden="true"></span>
+              </button>
+              <div class="menu-imatge" role="menu" *ngIf="menuImatge === 'foto'" (keydown.escape)="tancarMenuImatge()">
+                <label class="menu-imatge-item" role="menuitem" *ngIf="isOwnProfile" [title]="'PERFIL.IMG_HINT' | translate">
+                  <input type="file" class="sr-only" accept="image/jpeg,image/png,image/webp"
+                         (change)="onTriarImatge($event, 'foto')" />
+                  {{ 'PERFIL.IMG_CHANGE' | translate }}
+                </label>
+                <button type="button" class="menu-imatge-item menu-imatge-treure" role="menuitem" *ngIf="usuari?.fotoUrl"
+                        (click)="onTreureImatge('foto')">
+                  {{ 'PERFIL.IMG_REMOVE' | translate }}
+                </button>
+              </div>
+            </div>
         </div>
         <div class="header-info">
           <div class="header-name-row">
@@ -79,19 +89,34 @@ import { Resenya } from '../../models/resenya.model';
           </div>
           <p class="email" *ngIf="isOwnProfile || isAdmin">{{ usuari?.email }}</p>
           <div class="logo-row" *ngIf="usuari?.rol === 'PROFESSIONAL' && (usuari?.logoUrl || isOwnProfile)">
-            <img *ngIf="usuari?.logoUrl as logo" [src]="logoPetit" [alt]="('PERFIL.IMG_LOGO_ALT' | translate) + ' ' + (usuari?.nom || '')" class="logo-img" />
+            <div class="logo-marc">
+              <img *ngIf="logoPetit" [src]="logoPetit" [alt]="('PERFIL.IMG_LOGO_ALT' | translate) + ' ' + (usuari?.nom || '')" class="logo-img" />
+              <span *ngIf="!logoPetit" class="logo-buit" aria-hidden="true">+</span>
+              <div class="imatge-editar" *ngIf="isOwnProfile || (isAdmin && usuari?.logoUrl)" (click)="$event.stopPropagation()">
+              <button type="button" class="btn-llapis" [disabled]="!!pujantImatge"
+                      [attr.aria-label]="'PERFIL.IMG_EDIT' | translate: { imatge: ('PERFIL.IMG_LOGO' | translate) }"
+                      [attr.aria-expanded]="menuImatge === 'logo'" aria-haspopup="menu"
+                      (click)="toggleMenuImatge('logo')">
+                <svg *ngIf="pujantImatge !== 'logo'" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M12 20h9"></path>
+                  <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"></path>
+                </svg>
+                <span *ngIf="pujantImatge === 'logo'" class="spinner" aria-hidden="true"></span>
+              </button>
+              <div class="menu-imatge" role="menu" *ngIf="menuImatge === 'logo'" (keydown.escape)="tancarMenuImatge()">
+                <label class="menu-imatge-item" role="menuitem" *ngIf="isOwnProfile" [title]="'PERFIL.IMG_HINT' | translate">
+                  <input type="file" class="sr-only" accept="image/jpeg,image/png,image/webp"
+                         (change)="onTriarImatge($event, 'logo')" />
+                  {{ 'PERFIL.IMG_CHANGE' | translate }}
+                </label>
+                <button type="button" class="menu-imatge-item menu-imatge-treure" role="menuitem" *ngIf="usuari?.logoUrl"
+                        (click)="onTreureImatge('logo')">
+                  {{ 'PERFIL.IMG_REMOVE' | translate }}
+                </button>
+              </div>
+            </div>
+            </div>
             <span class="logo-label">{{ 'PERFIL.IMG_LOGO' | translate }}</span>
-            <label class="btn-imatge" *ngIf="isOwnProfile" [class.disabled]="pujantImatge" [title]="'PERFIL.IMG_HINT' | translate">
-              <input type="file" class="sr-only" accept="image/jpeg,image/png,image/webp"
-                     [attr.aria-label]="('PERFIL.IMG_CHANGE' | translate) + ': ' + ('PERFIL.IMG_LOGO' | translate)"
-                     [disabled]="!!pujantImatge" (change)="onTriarImatge($event, 'logo')" />
-              {{ (pujantImatge === 'logo' ? 'PERFIL.IMG_UPLOADING' : 'PERFIL.IMG_CHANGE') | translate }}
-            </label>
-            <button type="button" class="btn-imatge btn-imatge-treure" *ngIf="usuari?.logoUrl && (isOwnProfile || isAdmin)" [disabled]="!!pujantImatge"
-                    [attr.aria-label]="('PERFIL.IMG_REMOVE' | translate) + ': ' + ('PERFIL.IMG_LOGO' | translate)"
-                    (click)="onTreureImatge('logo')">
-              {{ 'PERFIL.IMG_REMOVE' | translate }}
-            </button>
           </div>
           <div class="badges-row">
             <span class="role-badge" [ngClass]="usuari?.rol?.toLowerCase()">
@@ -1217,30 +1242,39 @@ import { Resenya } from '../../models/resenya.model';
       }
 
       .avatar-col {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 0.5rem;
-      }
-
-      .imatge-accions,
-      .logo-row {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        gap: 0.4rem;
+        position: relative;
+        flex-shrink: 0;
       }
 
       .logo-row {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
         margin: 0.4rem 0;
       }
 
-      .logo-img {
-        width: 40px;
-        height: 40px;
-        object-fit: contain;
-        border-radius: 8px;
+      .logo-marc {
+        position: relative;
+        width: 44px;
+        height: 44px;
+        border-radius: 10px;
         background: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .logo-img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        border-radius: 10px;
+      }
+
+      .logo-buit {
+        color: #6b7280;
+        font-size: 1.3rem;
+        font-weight: 700;
       }
 
       .logo-label {
@@ -1248,34 +1282,99 @@ import { Resenya } from '../../models/resenya.model';
         font-weight: 700;
       }
 
-      .btn-imatge {
-        display: inline-flex;
-        align-items: center;
-        min-height: 32px;
-        padding: 0.25rem 0.7rem;
-        border: 1px solid var(--neon, #ff1744);
-        border-radius: 999px;
-        background: transparent;
-        color: inherit;
-        font-size: 0.8rem;
-        font-weight: 700;
-        cursor: pointer;
+      /* Llapis sobre la cantonada de la imatge; obri el menú Canviar / Treure */
+      .imatge-editar {
+        position: absolute;
+        right: -6px;
+        bottom: -6px;
+        z-index: 5;
       }
 
-      .btn-imatge:focus-within,
-      .btn-imatge:focus-visible {
-        outline: 2px solid var(--neon, #ff1744);
+      .logo-marc .imatge-editar {
+        right: -10px;
+        bottom: -10px;
+      }
+
+      .btn-llapis {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        border: 2px solid var(--bg-surface-elevated, #09090c);
+        background: var(--neon, #ff1744);
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+        cursor: pointer;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+      }
+
+      .logo-marc .btn-llapis {
+        width: 26px;
+        height: 26px;
+      }
+
+      .btn-llapis:focus-visible {
+        outline: 2px solid #ffffff;
         outline-offset: 2px;
       }
 
-      .btn-imatge.disabled,
-      .btn-imatge:disabled {
-        opacity: 0.6;
+      .btn-llapis:disabled {
         cursor: wait;
       }
 
-      .btn-imatge-treure {
-        border-color: currentColor;
+      .spinner {
+        width: 13px;
+        height: 13px;
+        border: 2px solid rgba(255, 255, 255, 0.4);
+        border-top-color: #ffffff;
+        border-radius: 50%;
+        animation: gir-imatge 0.8s linear infinite;
+      }
+
+      @keyframes gir-imatge {
+        to { transform: rotate(360deg); }
+      }
+
+      .menu-imatge {
+        position: absolute;
+        top: calc(100% + 6px);
+        left: 0;
+        min-width: 140px;
+        background: var(--bg-surface-elevated, #16161c);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 10px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+        padding: 0.3rem;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .menu-imatge-item {
+        display: block;
+        width: 100%;
+        text-align: left;
+        padding: 0.5rem 0.7rem;
+        border: 0;
+        border-radius: 7px;
+        background: transparent;
+        color: #ffffff;
+        font: inherit;
+        font-size: 0.88rem;
+        font-weight: 600;
+        cursor: pointer;
+      }
+
+      .menu-imatge-item:hover,
+      .menu-imatge-item:focus-within,
+      .menu-imatge-item:focus-visible {
+        background: rgba(255, 255, 255, 0.1);
+        outline: none;
+      }
+
+      .menu-imatge-treure {
+        color: #ff8a9b;
       }
 
       .sr-only {
@@ -2747,6 +2846,24 @@ export class PerfilComponent implements OnInit {
   /** Imatge que s'està pujant ara mateix (desactiva els botons fins que acabe) */
   pujantImatge: TipusImatge | null = null;
 
+  /** Menú Canviar / Treure obert (el del llapis de la foto o el del logotip) */
+  menuImatge: TipusImatge | null = null;
+
+  toggleMenuImatge(tipus: TipusImatge): void {
+    this.menuImatge = this.menuImatge === tipus ? null : tipus;
+  }
+
+  tancarMenuImatge(): void {
+    this.menuImatge = null;
+  }
+
+  /** Un clic fora del menú o Escape el tanquen */
+  @HostListener('document:click')
+  @HostListener('document:keydown.escape')
+  onFora(): void {
+    this.menuImatge = null;
+  }
+
   /**
    * Puja la foto o el logotip triat. Es comproven format i mida per avisar de seguida,
    * però qui decideix és el servidor (reconeix el format pel contingut).
@@ -2755,6 +2872,7 @@ export class PerfilComponent implements OnInit {
     const input = event.target as HTMLInputElement;
     const fitxer = input.files?.[0];
     input.value = '';
+    this.menuImatge = null;
     if (!fitxer || !this.usuari || this.pujantImatge) return;
 
     this.clearAlerts();
@@ -2783,6 +2901,7 @@ export class PerfilComponent implements OnInit {
 
   /** Lleva la foto o el logotip (el mateix usuari, o un administrador per moderar). */
   async onTreureImatge(tipus: TipusImatge): Promise<void> {
+    this.menuImatge = null;
     if (!this.usuari || this.pujantImatge) return;
     if (!(await this.confirmService.confirm('PERFIL.IMG_REMOVE_CONFIRM'))) return;
 
