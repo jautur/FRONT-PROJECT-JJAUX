@@ -77,8 +77,8 @@ async function assegurarAdmin() {
 
     await client.query(`
       INSERT INTO usuaris (nom, email, password, rol, telefon, bio, verificat)
-      VALUES ('Administrador General', 'admin@admin.es', 'adminadmin', 'ADMIN', '960000000', 'Administrador de la plataforma AVISA', TRUE)
-      ON CONFLICT (LOWER(email)) DO UPDATE SET password = 'adminadmin', rol = 'ADMIN'
+      VALUES ('Administrador General', 'admin@admin.es', '$2a$10$HGNe3I7XGe.Dzw99EByMFeRwMwGUPy7uzHfjnt8qw5zw.MAzzqd3K', 'ADMIN', '960000000', 'Administrador de la plataforma AVISA', TRUE)
+      ON CONFLICT (LOWER(email)) DO UPDATE SET password = '$2a$10$HGNe3I7XGe.Dzw99EByMFeRwMwGUPy7uzHfjnt8qw5zw.MAzzqd3K', rol = 'ADMIN'
     `);
     console.log('✅ Usuari administrador admin@admin.es verificat (password: adminadmin)');
 

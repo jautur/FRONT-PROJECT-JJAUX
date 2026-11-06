@@ -18,9 +18,10 @@ TRUNCATE TABLE
     usuaris
 CASCADE;
 
+-- Les contrasenyes van amb hash BCrypt (la base no n'accepta en clar): adminadmin, clicli i propro.
 INSERT INTO usuaris (nom, email, password, rol, telefon, verificat) VALUES
-    ('Administrador General', 'admin@admin.es', 'adminadmin', 'ADMIN', '960000000', TRUE),
-    ('cli', 'cli', 'clicli', 'CLIENT', '600111222', FALSE),
-    ('pro', 'pro', 'propro', 'PROFESSIONAL', '600333444', TRUE);
+    ('Administrador General', 'admin@admin.es', '$2a$10$HGNe3I7XGe.Dzw99EByMFeRwMwGUPy7uzHfjnt8qw5zw.MAzzqd3K', 'ADMIN', '960000000', TRUE),
+    ('cli', 'cli', '$2a$10$MZIblNQyKxURCF9s6VNjheFZOhxFpFUVyh1a3ut/5XrCycDMOn1Eq', 'CLIENT', '600111222', FALSE),
+    ('pro', 'pro', '$2a$10$JTBioMAwGTTt0iZrt0Wu4u6UbJGvBtf4ayviXGNc0mqB.lBHJiNgu', 'PROFESSIONAL', '600333444', TRUE);
 
 COMMIT;
