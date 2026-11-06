@@ -45,16 +45,7 @@ export class UsuariService {
    * @returns Observable amb l'usuari actualitzat
    */
   updateProfile(id: string, data: Partial<Usuari>): Observable<Usuari> {
-    const raw = localStorage.getItem('jjaux_user');
-    const headers: Record<string, string> = {};
-    if (raw) {
-      try {
-        const u = JSON.parse(raw);
-        if (u.rol) headers['X-User-Rol'] = u.rol;
-        if (u.id) headers['X-User-Id'] = u.id;
-      } catch {}
-    }
-    return this.http.put<Usuari>(`${this.apiUrl}/${id}`, data, { headers });
+    return this.http.put<Usuari>(`${this.apiUrl}/${id}`, data);
   }
 
   /**
@@ -85,15 +76,7 @@ export class UsuariService {
    * @returns Observable amb l'usuari actualitzat
    */
   verificarProfessional(id: string, estat: boolean = true): Observable<Usuari> {
-    const raw = localStorage.getItem('jjaux_user');
-    const headers: Record<string, string> = {};
-    if (raw) {
-      try {
-        const u = JSON.parse(raw);
-        if (u.rol) headers['X-User-Rol'] = u.rol;
-      } catch {}
-    }
-    return this.http.put<Usuari>(`${this.apiUrl}/${id}/verificar?estat=${estat}`, {}, { headers });
+    return this.http.put<Usuari>(`${this.apiUrl}/${id}/verificar?estat=${estat}`, {});
   }
 
   /**
@@ -104,15 +87,7 @@ export class UsuariService {
    * @returns Observable amb l'usuari actualitzat
    */
   assignarFoto(id: string, foto: string): Observable<Usuari> {
-    const raw = localStorage.getItem('jjaux_user');
-    const headers: Record<string, string> = {};
-    if (raw) {
-      try {
-        const u = JSON.parse(raw);
-        if (u.rol) headers['X-User-Rol'] = u.rol;
-      } catch {}
-    }
-    return this.http.put<Usuari>(`${this.apiUrl}/${id}/foto`, { foto }, { headers });
+    return this.http.put<Usuari>(`${this.apiUrl}/${id}/foto`, { foto });
   }
 
   /**

@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Pressupost, CrearPressupostRequest } from '../models/pressupost.model';
 import { Tasca } from '../models/tasca.model';
-import { AuthService } from '../core/services/auth.service';
 import { environment } from '../../environments/environment';
 
 /**
@@ -17,34 +16,21 @@ import { environment } from '../../environments/environment';
 export class PressupostService {
   private readonly apiUrl = `${environment.apiUrl}/pressupostos`;
 
-  constructor(
-    private readonly http: HttpClient,
-    private readonly authService: AuthService
-  ) {}
+  constructor(private readonly http: HttpClient) {}
 
-  private getHeaders(): HttpHeaders {
-    let headers = new HttpHeaders();
-    const user = this.authService.getCurrentUser();
-    if (user) {
-      if (user.id) headers = headers.set('X-User-Id', user.id);
-      if (user.nom) headers = headers.set('X-User-Nom', user.nom);
-      if (user.rol) headers = headers.set('X-User-Rol', user.rol);
-    }
-    return headers;
-  }
 
   /**
    * Obté el llistat complet de tots els pressupostos (privilegi d'administrador).
    */
   getAll(): Observable<Pressupost[]> {
-    return this.http.get<Pressupost[]>(this.apiUrl, { headers: this.getHeaders() });
+    return this.http.get<Pressupost[]>(this.apiUrl);
   }
 
   /**
    * Envia un pressupost per a una incidència.
    */
   create(data: CrearPressupostRequest): Observable<Pressupost> {
-    return this.http.post<Pressupost>(this.apiUrl, data, { headers: this.getHeaders() });
+    return this.http.post<Pressupost>(this.apiUrl, data);
   }
 
   /**
@@ -53,25 +39,21 @@ export class PressupostService {
    * un professional només veu el seu propi pressupost.
    */
   getByIncidencia(incidenciaId: string): Observable<Pressupost[]> {
-    return this.http.get<Pressupost[]>(`${this.apiUrl}/incidencia/${encodeURIComponent(incidenciaId)}`, {
-      headers: this.getHeaders()
-    });
+    return this.http.get<Pressupost[]>(`${this.apiUrl}/incidencia/${encodeURIComponent(incidenciaId)}`);
   }
 
   /**
    * Obté un pressupost pel seu ID (només visible si l'usuari és un dels 2 implicats o admin).
    */
   getById(id: string): Observable<Pressupost> {
-    return this.http.get<Pressupost>(`${this.apiUrl}/${id}`, { headers: this.getHeaders() });
+    return this.http.get<Pressupost>(`${this.apiUrl}/${id}`);
   }
 
   /**
    * Obté tots els pressupostos presentats pel propi professional.
    */
   getByProfessional(proId: string): Observable<Pressupost[]> {
-    return this.http.get<Pressupost[]>(`${this.apiUrl}/professional/${encodeURIComponent(proId)}`, {
-      headers: this.getHeaders()
-    });
+    return this.http.get<Pressupost[]>(`${this.apiUrl}/professional/${encodeURIComponent(proId)}`);
   }
 
   /**
@@ -79,13 +61,13 @@ export class PressupostService {
    * Transaccionalment crea la tasca en curs i elimina la incidència de les publicacions.
    */
   accept(id: string): Observable<Tasca> {
-    return this.http.post<Tasca>(`${this.apiUrl}/${id}/acceptar`, {}, { headers: this.getHeaders() });
+    return this.http.post<Tasca>(`${this.apiUrl}/${id}/acceptar`, {});
   }
 
   /**
    * El client rebutja el pressupost (no es crea tasca).
    */
   reject(id: string): Observable<void> {
-    return this.http.post<void>(`${this.apiUrl}/${id}/rebutjar`, {}, { headers: this.getHeaders() });
+    return this.http.post<void>(`${this.apiUrl}/${id}/rebutjar`, {});
   }
 }
