@@ -1,4 +1,4 @@
-import { Component, OnInit, isDevMode } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -178,19 +178,6 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
         <div *ngIf="pasRecuperacio === 2" class="modal-body">
           <p class="modal-desc">{{ 'AUTH.LOGIN.RECOVERY_STEP2_DESC' | translate }}</p>
 
-          <!-- Banner informatiu únicament en mode desenvolupament / local (mai a producció) -->
-          <div *ngIf="isDev && recuperarCodiDev" class="dev-code-banner">
-            <span class="dev-badge">DEV CODE</span>
-            <span class="dev-code-text">{{ 'AUTH.LOGIN.RECOVERY_DEV_HINT' | translate }}<strong>{{ recuperarCodiDev }}</strong></span>
-            <button
-              type="button"
-              class="btn-autofill"
-              (click)="autoOmplirCodiDev()"
-              title="Copiar al camp"
-            >
-              Auto-omplir
-            </button>
-          </div>
 
           <label class="modal-field">
             <span>{{ 'AUTH.LOGIN.RECOVERY_CODE_LABEL' | translate }}</span>
@@ -757,8 +744,6 @@ export class LoginComponent implements OnInit {
   pasRecuperacio: 1 | 2 | 3 = 1;
   recuperarEmail = '';
   recuperarCodi = '';
-  recuperarCodiDev = '';
-  readonly isDev = isDevMode();
   novaContrasenya = '';
   confirmarContrasenya = '';
   recuperarLoading = false;
@@ -847,7 +832,6 @@ export class LoginComponent implements OnInit {
     this.pasRecuperacio = 1;
     this.recuperarEmail = this.email.trim();
     this.recuperarCodi = '';
-    this.recuperarCodiDev = '';
     this.novaContrasenya = '';
     this.confirmarContrasenya = '';
     this.recuperarError = '';
@@ -863,11 +847,6 @@ export class LoginComponent implements OnInit {
     this.recuperarError = '';
   }
 
-  autoOmplirCodiDev(): void {
-    if (this.isDev && this.recuperarCodiDev) {
-      this.recuperarCodi = this.recuperarCodiDev;
-    }
-  }
 
   sollicitarCodi(): void {
     const mail = this.recuperarEmail.trim();
@@ -881,10 +860,7 @@ export class LoginComponent implements OnInit {
     this.authService.demanarRecuperacio(mail).subscribe({
       next: (resp) => {
         this.recuperarLoading = false;
-        if (resp && resp.codiDev && this.isDev) {
-          this.recuperarCodiDev = resp.codiDev;
-          // A producció no s'auto-omple mai: l'usuari ha de consultar el seu email
-        }
+        // El codi no arriba mai al navegador: en desenvolupament es llig al log del backend
         this.pasRecuperacio = 2;
       },
       error: (err) => {

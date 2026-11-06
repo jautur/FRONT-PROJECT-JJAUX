@@ -18,8 +18,6 @@ export interface LoginCredentials {
 export interface RecuperacioResponse {
   success: boolean;
   message: string;
-  email: string;
-  codiDev?: string;
 }
 
 /**
