@@ -3767,7 +3767,7 @@ export class MainComponent implements OnInit, OnDestroy {
   }
 
   loadUsuaris(): void {
-    this.usuariService.getAll().subscribe({
+    this.usuariService.getProfessionals().subscribe({
       next: (users) => {
         this.allUsuaris = users ?? [];
         this.startProCarouselTimer();

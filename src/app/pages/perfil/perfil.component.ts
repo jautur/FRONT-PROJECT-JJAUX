@@ -16,6 +16,8 @@ import { TranslationService } from '../../core/services/translation.service';
 import { ConfirmService } from '../../core/services/confirm.service';
 import { PressupostService } from '../../services/pressupost.service';
 import { TranslatePipe } from '../../core/pipes/translate.pipe';
+import { ResenyaService } from '../../services/resenya.service';
+import { Resenya } from '../../models/resenya.model';
 
 /**
  * Component de Perfil d'Usuari (/perfil).
@@ -694,7 +696,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
               </div>
 
               <div class="task-work-body">
-                <h4 class="task-work-title">{{ t.titol }}</h4>
+                <h4 class="task-work-title" *ngIf="t.titol">{{ t.titol }}</h4>
                 <p class="task-work-desc" *ngIf="t.descripcio && t.descripcio !== t.comentari">{{ t.descripcio }}</p>
                 <div class="task-opinion-box" *ngIf="t.comentari">
                   <span class="opinion-quote-label">{{ 'PERFIL.CLIENT_OPINION' | translate }}</span>
@@ -2328,6 +2330,7 @@ export class PerfilComponent implements OnInit {
     private readonly ofertaService: OfertaService,
     private readonly pressupostService: PressupostService,
     private readonly incidenciaService: IncidenciaService,
+    private readonly resenyaService: ResenyaService,
     private readonly confirmService: ConfirmService,
     private readonly router: Router,
     private readonly route: ActivatedRoute,
@@ -2445,7 +2448,9 @@ export class PerfilComponent implements OnInit {
   }
 
   private carregarPerfilUsuari(userId: string): void {
-    this.usuariService.getById(userId).subscribe({
+    // Sense sessió només es pot veure el perfil públic d'un professional
+    const perfil$ = this.authService.isLoggedIn() ? this.usuariService.getById(userId) : this.usuariService.getProfessional(userId);
+    perfil$.subscribe({
       next: (freshUser) => {
         if (freshUser) {
           this.usuari = freshUser;
@@ -2486,11 +2491,15 @@ export class PerfilComponent implements OnInit {
     const userId = user.id || '';
 
     forkJoin({
-      allTasks: this.tascaService.getAll().pipe(catchError(() => of([]))),
+      // GET /api/tasks només dona les tasques pròpies, i demana sessió
+      allTasks: (this.isOwnProfile ? this.tascaService.getAll() : of([] as Tasca[])).pipe(catchError(() => of([] as Tasca[]))),
+      ressenyes: (this.isOwnProfile ? of([] as Resenya[])
+        : user.rol === 'PROFESSIONAL' ? this.resenyaService.getByTreballador(userId) : this.resenyaService.getByClient(userId)
+      ).pipe(catchError(() => of([] as Resenya[]))),
       clientIncidencies: (userId ? this.incidenciaService.getByClient(userId) : of([])).pipe(catchError(() => of([]))),
       allOffers: this.ofertaService.getAll().pipe(catchError(() => of([])))
     }).subscribe({
-      next: ({ allTasks, clientIncidencies, allOffers }) => {
+      next: ({ allTasks, clientIncidencies, allOffers, ressenyes }) => {
         this.loadingTabData = false;
 
         // 1. Tasques de l'usuari (on és client o professional assignat)
@@ -2517,10 +2526,19 @@ export class PerfilComponent implements OnInit {
         const combinedTasks = [...userTasks, ...mappedIncidencies];
         this.tasquesUsuari = this.isOwnProfile ? combinedTasks : [];
 
-        // 2. Tasques finalitzades amb valoració (per a la pestanya de ressenyes públiques)
-        this.tasquesFinalitzades = combinedTasks.filter(
-          t => t.estat === 'Finalitzada' || (t.valoracio != null && t.valoracio > 0)
-        );
+        // 2. Tasques finalitzades amb valoració. D'un altre usuari, les seues ressenyes públiques
+        this.tasquesFinalitzades = this.isOwnProfile
+          ? combinedTasks.filter(t => t.estat === 'Finalitzada' || (t.valoracio != null && t.valoracio > 0))
+          : ressenyes.map(r => ({
+              id: r.tascaId || r.id,
+              titol: '',
+              clientId: r.clientId,
+              client: r.clientNom,
+              clientNom: r.clientNom,
+              estat: 'Finalitzada',
+              valoracio: r.puntuacio,
+              comentari: r.descripcio
+            } as Tasca));
         const rated = this.tasquesFinalitzades.filter(t => t.valoracio != null && t.valoracio > 0);
         this.totalValoracions = rated.length;
         if (rated.length > 0) {

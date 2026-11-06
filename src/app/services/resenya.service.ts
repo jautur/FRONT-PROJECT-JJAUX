@@ -25,6 +25,14 @@ export class ResenyaService {
   }
 
   /**
+   * Obté les ressenyes rebudes per un professional. És públic: el fa servir el perfil.
+   * @param treballadorId Identificador del professional
+   */
+  getByTreballador(treballadorId: string): Observable<Resenya[]> {
+    return this.http.get<Resenya[]>(`${this.apiUrl}/treballador/${encodeURIComponent(treballadorId)}`);
+  }
+
+  /**
    * Obté les ressenyes escrites per un client concret.
    * @param clientId Identificador del client
    * @returns Observable amb les ressenyes del client

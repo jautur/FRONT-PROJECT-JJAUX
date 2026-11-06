@@ -15,14 +15,30 @@ export class UsuariService {
   /** URL base de l'API per a usuaris */
   private readonly apiUrl = `${environment.apiUrl}/users`;
 
+  /** Directori públic de professionals: el que pot veure qualsevol visitant */
+  private readonly professionalsUrl = `${environment.apiUrl}/professionals`;
+
   /** URL base de l'API per a autenticació i seguretat */
   private readonly authUrl = `${environment.apiUrl}/auth`;
 
   constructor(private readonly http: HttpClient) {}
 
   /**
-   * Obté la llista completa de tots els usuaris registrats.
-   * Útil per a panells d'administració o directoris.
+   * Perfils públics de tots els professionals, sense dades de contacte. No demana sessió.
+   */
+  getProfessionals(): Observable<Usuari[]> {
+    return this.http.get<Usuari[]>(this.professionalsUrl);
+  }
+
+  /**
+   * Perfil públic d'un professional pel seu ID o nom. No demana sessió.
+   */
+  getProfessional(id: string): Observable<Usuari> {
+    return this.http.get<Usuari>(`${this.professionalsUrl}/${encodeURIComponent(id)}`);
+  }
+
+  /**
+   * Obté la llista completa de tots els usuaris registrats (només administrador).
    * @returns Observable amb la llista d'usuaris
    */
   getAll(): Observable<Usuari[]> {
