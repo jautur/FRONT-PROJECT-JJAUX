@@ -29,6 +29,29 @@
   --color-bone-muted: #bab8ae;
   --color-bone-dim: #949185;
 
+  /* Tokens semàntics per a targetes i metadades WCAG AA (Contrast >= 4.5:1) */
+  --pro-card-bg: #ecfdf5;
+  --pro-card-border: #a7f3d0;
+  --pro-card-label: #065f46;
+  --pro-card-val: #047857;
+
+  --rating-card-bg: #fffbeb;
+  --rating-card-border: #fde68a;
+  --rating-card-label: #78350f;
+  --rating-card-star: #92400e;
+  --rating-card-star-icon: #b45309;
+  --rating-card-text: #78350f;
+
+  --category-badge-bg: #f0ece3;
+  --category-badge-border: #dcd6cb;
+  --category-badge-text: #09090c;
+
+  --meta-box-bg: #faf8f4;
+  --meta-box-border: #e5e0d7;
+  --meta-label-color: #524f48;
+  --meta-budget-color: #b91c1c;
+  --btn-primary-bg: #d5002e;
+
   /* ÚNIC COLOR NEÓ LLAMATIU: NEÓ ROIG (Electric Neon Red) */
   --neon: #ff1744;
   --neon-hover: #d5002e;
@@ -290,6 +313,29 @@ html.theme-app-dark,
   --color-bone-dim: #cbd5e1;
   --bg-black: #131722;
   --bg-sidebar: #181d29;
+
+  /* Tokens semàntics de targetes i metadades WCAG AA en Mode Fosc (/app) */
+  --pro-card-bg: rgba(16, 185, 129, 0.15);
+  --pro-card-border: rgba(52, 211, 153, 0.38);
+  --pro-card-label: #6ee7b7;
+  --pro-card-val: #a7f3d0;
+
+  --rating-card-bg: rgba(245, 158, 11, 0.15);
+  --rating-card-border: rgba(245, 158, 11, 0.38);
+  --rating-card-label: #fde68a;
+  --rating-card-star: #fbbf24;
+  --rating-card-star-icon: #fbbf24;
+  --rating-card-text: #fef3c7;
+
+  --category-badge-bg: #272f42;
+  --category-badge-border: #43506e;
+  --category-badge-text: #ffffff;
+
+  --meta-box-bg: #181d29;
+  --meta-box-border: #333d54;
+  --meta-label-color: #cbd5e1;
+  --meta-budget-color: #ff6b8b;
+  --btn-primary-bg: #d5002e;
 
   --shadow-xs: 0 1px 3px rgba(0, 0, 0, 0.3);
   --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.35);
@@ -1304,15 +1350,59 @@ body.theme-app-dark .review-display-card {
   border-color: var(--border-card, #43506e) !important;
 }
 body.theme-app-dark .budget-wrap .budget-label,
-body.theme-app-dark .tasca-meta .meta-label,
+body.theme-app-dark .tasca-meta .meta-item:not(.pro-assigned-item):not(.rating-item) .meta-label,
 body.theme-app-dark .assigned-meta-item .lbl,
 body.theme-app-dark .preu-label {
   color: var(--color-text-dim, #cbd5e1) !important;
 }
 body.theme-app-dark .budget-wrap .budget-value,
-body.theme-app-dark .tasca-meta .meta-value,
+body.theme-app-dark .tasca-meta .meta-item:not(.pro-assigned-item):not(.rating-item):not(.budget-item) .meta-value,
 body.theme-app-dark .preu-value.muted {
   color: var(--color-text, #ffffff) !important;
+}
+
+/* Bloc Professional Assignat WCAG AA */
+body.theme-app-dark .pro-assigned-item {
+  background: var(--pro-card-bg, rgba(16, 185, 129, 0.15)) !important;
+  border-color: var(--pro-card-border, rgba(52, 211, 153, 0.38)) !important;
+}
+body.theme-app-dark .pro-assigned-item .meta-label {
+  color: var(--pro-card-label, #6ee7b7) !important;
+}
+body.theme-app-dark .pro-assigned-item .pro-assigned-val,
+body.theme-app-dark .pro-assigned-item .pro-assigned-val strong {
+  color: var(--pro-card-val, #a7f3d0) !important;
+}
+
+/* Bloc de Valoració WCAG AA */
+body.theme-app-dark .rating-item {
+  background: var(--rating-card-bg, rgba(245, 158, 11, 0.15)) !important;
+  border-color: var(--rating-card-border, rgba(245, 158, 11, 0.38)) !important;
+}
+body.theme-app-dark .rating-item .meta-label {
+  color: var(--rating-card-label, #fde68a) !important;
+}
+body.theme-app-dark .rating-item .rating-stars {
+  color: var(--rating-card-star, #fbbf24) !important;
+}
+body.theme-app-dark .rating-item .rating-stars svg {
+  color: var(--rating-card-star-icon, #fbbf24) !important;
+  fill: currentColor !important;
+}
+body.theme-app-dark .rating-item .rating-quote {
+  color: var(--rating-card-text, #fef3c7) !important;
+}
+
+/* Etiqueta de Categoria WCAG AA */
+body.theme-app-dark .badge-categoria {
+  background: var(--category-badge-bg, #272f42) !important;
+  border-color: var(--category-badge-border, #43506e) !important;
+  color: var(--category-badge-text, #ffffff) !important;
+}
+
+/* Preu/Pressupost en mode fosc */
+body.theme-app-dark .tasca-meta .budget.meta-value {
+  color: var(--meta-budget-color, #ff6b8b) !important;
 }
 body.theme-app-dark .oferta-nota {
   background: var(--bg-surface, #272f42) !important;

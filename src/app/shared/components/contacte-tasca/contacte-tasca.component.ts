@@ -15,13 +15,15 @@ import { UsuariService } from '../../../services/usuari.service';
   template: `
     <div class="contacte-box" *ngIf="usuari">
       <span class="contacte-titol">{{ titol | translate }}</span>
-      <strong class="contacte-nom">{{ usuari.nom }}</strong>
-      <div class="contacte-enllacos">
-        <a *ngIf="telefon" class="contacte-link wa" [href]="whatsappUrl" target="_blank" rel="noopener noreferrer">
-          WhatsApp · {{ telefon }}
-        </a>
-        <a *ngIf="emailValid" class="contacte-link mail" [href]="'mailto:' + usuari.email">{{ usuari.email }}</a>
-        <span *ngIf="!telefon && !emailValid" class="contacte-buit">{{ 'TREBALL.CONTACTE_SENSE_DADES' | translate }}</span>
+      <div class="contacte-fila">
+        <strong class="contacte-nom">{{ usuari.nom }}</strong>
+        <div class="contacte-enllacos">
+          <a *ngIf="telefon" class="contacte-link wa" [href]="whatsappUrl" target="_blank" rel="noopener noreferrer">
+            WhatsApp · {{ telefon }}
+          </a>
+          <a *ngIf="emailValid" class="contacte-link mail" [href]="'mailto:' + usuari.email">{{ usuari.email }}</a>
+          <span *ngIf="!telefon && !emailValid" class="contacte-buit">{{ 'TREBALL.CONTACTE_SENSE_DADES' | translate }}</span>
+        </div>
       </div>
     </div>
   `,
@@ -29,20 +31,43 @@ import { UsuariService } from '../../../services/usuari.service';
     .contacte-box {
       display: flex;
       flex-direction: column;
-      gap: 0.35rem;
+      gap: 0.4rem;
       padding: 0.75rem 0.9rem;
-      border: 1px solid #bbf7d0;
-      background: #f0fdf4;
+      border: 1px solid var(--pro-card-border, #bbf7d0);
+      background: var(--pro-card-bg, #f0fdf4);
       border-radius: 10px;
       font-size: 0.85rem;
     }
-    .contacte-titol { font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; color: #166534; }
-    .contacte-nom { color: #09090c; }
-    .contacte-enllacos { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .contacte-titol {
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--pro-card-label, #166534);
+    }
+    .contacte-fila {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .contacte-nom {
+      color: var(--color-text, #09090c);
+      font-size: 0.95rem;
+      font-weight: 800;
+    }
+    .contacte-enllacos {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.5rem;
+    }
     .contacte-link {
       padding: 0.35rem 0.7rem;
       border-radius: 8px;
       font-weight: 700;
+      font-size: 0.8rem;
       text-decoration: none;
       border: 1px solid #86efac;
       color: #166534;
@@ -55,14 +80,14 @@ import { UsuariService } from '../../../services/usuari.service';
     .contacte-buit { color: #57534e; }
 
     :host-context(.theme-app-dark) .contacte-box {
-      background: rgba(16, 185, 129, 0.12);
-      border-color: rgba(52, 211, 153, 0.35);
+      background: var(--pro-card-bg, rgba(16, 185, 129, 0.14));
+      border-color: var(--pro-card-border, rgba(52, 211, 153, 0.35));
     }
     :host-context(.theme-app-dark) .contacte-titol {
-      color: #34d399;
+      color: var(--pro-card-label, #6ee7b7);
     }
     :host-context(.theme-app-dark) .contacte-nom {
-      color: #ffffff;
+      color: var(--color-text, #ffffff);
     }
     :host-context(.theme-app-dark) .contacte-link {
       background: #1e2433;
@@ -70,8 +95,8 @@ import { UsuariService } from '../../../services/usuari.service';
       color: #34d399;
     }
     :host-context(.theme-app-dark) .contacte-link.wa {
-      background: rgba(37, 211, 102, 0.12);
-      border-color: rgba(37, 211, 102, 0.4);
+      background: rgba(37, 211, 102, 0.14);
+      border-color: rgba(37, 211, 102, 0.45);
       color: #4ade80;
     }
     :host-context(.theme-app-dark) .contacte-link.wa:hover {
@@ -80,8 +105,8 @@ import { UsuariService } from '../../../services/usuari.service';
       color: #ffffff;
     }
     :host-context(.theme-app-dark) .contacte-link.mail {
-      background: rgba(59, 130, 246, 0.12);
-      border-color: rgba(59, 130, 246, 0.4);
+      background: rgba(59, 130, 246, 0.14);
+      border-color: rgba(59, 130, 246, 0.45);
       color: #60a5fa;
     }
     :host-context(.theme-app-dark) .contacte-link.mail:hover {
