@@ -40,14 +40,11 @@ export interface Usuari {
   /** Indica si hi ha una sol·licitud de verificació pendent de comprovació telefònica */
   sollicitudVerificacio?: boolean;
 
-  /** Fotografia o imatge de fons de la targeta del professional recomanat */
-  foto?: string;
+  /** Foto de perfil pròpia, servida pel backend (/api/imatges/...) */
+  fotoUrl?: string;
 
-  /** Foto de perfil o isotip d'empresa */
-  fotoPerfil?: string;
-
-  /** Logotip o imatge de fons distintiva de la targeta d'empresa */
-  logo?: string;
+  /** Logotip propi, servit pel backend (/api/imatges/...) */
+  logoUrl?: string;
 
   /** Token JWT d'autenticació i sessió de l'usuari */
   token?: string;

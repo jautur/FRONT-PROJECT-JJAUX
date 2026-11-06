@@ -3664,12 +3664,12 @@ export class MainComponent implements OnInit, OnDestroy {
   /** Obté la foto de perfil o isotip d'empresa si està disponible */
   getProFotoPerfil(pro: any): string | null {
     if (!pro) return null;
-    return pro.fotoPerfil || pro.foto_perfil || null;
+    return pro.logoUrl || pro.fotoUrl || null;
   }
 
   /** Imatge de fons del banner principal del professional destacat */
   getProMainBackground(pro: any): string {
-    const bg = pro.logo || pro.foto;
+    const bg: string | null = null;
     if (bg) {
       return `url('${bg}')`;
     }
@@ -3678,7 +3678,7 @@ export class MainComponent implements OnInit, OnDestroy {
 
   /** Imatge de fons amb degradat fosc per a les previsualitzacions laterals */
   getProSideBackground(pro: any): string {
-    const bg = pro.logo || pro.foto;
+    const bg: string | null = null;
     if (bg) {
       return `linear-gradient(180deg, rgba(15, 23, 42, 0.45) 0%, rgba(15, 23, 42, 0.88) 100%), url('${bg}')`;
     }
@@ -3687,7 +3687,7 @@ export class MainComponent implements OnInit, OnDestroy {
 
   /** Retorna el fons degradat + fotografia assignada per a la targeta del professional recomanat */
   getProCardBackground(pro: any): string {
-    const bg = pro.logo || pro.foto;
+    const bg: string | null = null;
     if (!bg) return '';
     return `linear-gradient(180deg, rgba(15, 23, 42, 0.72) 0%, rgba(15, 23, 42, 0.90) 100%), url('${bg}')`;
   }

@@ -554,14 +554,6 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'pressupostos' | 'usuari
                     <a [routerLink]="[getNavUrl('/perfil'), u.id]" class="user-inline-link" title="Veure perfil">
                       <strong>{{ u.nom }}</strong>
                     </a>
-                    <span *ngIf="u.rol === 'PROFESSIONAL' && u.foto" class="badge-has-photo" [title]="'ADMIN.USER_HAS_PHOTO' | translate">
-                      <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
-                        <polyline points="21 15 16 10 5 21"></polyline>
-                      </svg>
-                      {{ 'ADMIN.USER_HAS_PHOTO' | translate }}
-                    </span>
                   </div>
                 </td>
                 <td>{{ u.email }}</td>
@@ -599,20 +591,6 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'pressupostos' | 'usuari
                         <path d="M11.5 11.5 21 21m-4 0 2-2m-2-2 2-2"></path>
                       </svg>
                       {{ 'ADMIN.BTN_NEW_PASSWORD' | translate }}
-                    </button>
-                    <button
-                      *ngIf="u.rol === 'PROFESSIONAL'"
-                      type="button"
-                      class="btn-sm btn-foto"
-                      (click)="obrirModalFoto(u)"
-                      [title]="u.foto ? ('ADMIN.BTN_CHANGE_PHOTO' | translate) : ('ADMIN.BTN_ASSIGN_PHOTO' | translate)"
-                    >
-                      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;">
-                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
-                        <polyline points="21 15 16 10 5 21"></polyline>
-                      </svg>
-                      {{ u.foto ? ('ADMIN.BTN_CHANGE_PHOTO' | translate) : ('ADMIN.BTN_ASSIGN_PHOTO' | translate) }}
                     </button>
                     <button
                       *ngIf="u.telefon && !isTelefonBloquejat(u.telefon)"
@@ -1133,132 +1111,6 @@ type AdminTab = 'tasques' | 'ofertes' | 'incidencies' | 'pressupostos' | 'usuari
         </div>
       </div>
 
-      <!-- ============================================================== -->
-      <!-- MODAL D'ADMINISTRADOR: ASSIGNAR FOTOGRAFIA DE FONS PROFESSIONAL-->
-      <!-- ============================================================== -->
-      <div class="modal-backdrop" *ngIf="modalFotoObert" (click)="tancarModalFoto()">
-        <div class="modal-card modal-photo-card" (click)="$event.stopPropagation()">
-          <div class="modal-header">
-            <h3>
-              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#ff1744" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                <circle cx="8.5" cy="8.5" r="1.5"></circle>
-                <polyline points="21 15 16 10 5 21"></polyline>
-              </svg>
-              {{ 'ADMIN.PHOTO_MODAL_TITLE' | translate }}
-            </h3>
-            <button type="button" class="btn-close" (click)="tancarModalFoto()" aria-label="Tancar">
-              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="18" y1="6" x2="6" y2="18"></line>
-                <line x1="6" y1="6" x2="18" y2="18"></line>
-              </svg>
-            </button>
-          </div>
-
-          <div class="modal-body" *ngIf="usuariFotoSeleccionat">
-            <div class="user-highlight">
-              <div><strong>Professional:</strong> {{ usuariFotoSeleccionat.nom }}</div>
-              <div class="user-subinfo">
-                <span>ID: {{ usuariFotoSeleccionat.id }}</span>
-                <span>•</span>
-                <span>{{ usuariFotoSeleccionat.email }}</span>
-              </div>
-            </div>
-
-            <p class="photo-modal-desc">{{ 'ADMIN.PHOTO_MODAL_DESC' | translate }}</p>
-
-            <!-- Galeria d'oficis recomanats / Presets ràpids -->
-            <div class="form-group">
-              <label>{{ 'ADMIN.PHOTO_PRESETS_LABEL' | translate }}</label>
-              <div class="presets-gallery-grid">
-                <button
-                  type="button"
-                  class="preset-card-btn"
-                  *ngFor="let p of fotoPresets"
-                  [class.active-preset]="fotoUrlInput === p.url"
-                  (click)="seleccionarPresetFoto(p.url)"
-                >
-                  <img [src]="p.url" [alt]="p.nom" class="preset-thumbnail" />
-                  <span class="preset-label">{{ p.nom }}</span>
-                </button>
-              </div>
-            </div>
-
-            <!-- Entrada d'URL lliure -->
-            <div class="form-group">
-              <label for="adminFotoUrl">{{ 'ADMIN.PHOTO_INPUT_LABEL' | translate }}:</label>
-              <input
-                id="adminFotoUrl"
-                type="url"
-                [(ngModel)]="fotoUrlInput"
-                class="form-control"
-                [placeholder]="'ADMIN.PHOTO_INPUT_PLACEHOLDER' | translate"
-              />
-            </div>
-
-            <!-- Vista prèvia de la targeta de recomanats -->
-            <div class="form-group">
-              <label>{{ 'ADMIN.PHOTO_PREVIEW_LABEL' | translate }}</label>
-              <div
-                class="card-live-preview"
-                [style.background-image]="fotoUrlInput ? ('linear-gradient(180deg, rgba(15, 23, 42, 0.72) 0%, rgba(15, 23, 42, 0.90) 100%), url(' + fotoUrlInput + ')') : 'linear-gradient(135deg, #1e293b, #0f172a)'"
-              >
-                <div class="preview-tag-wrap">
-                  <span class="preview-verified-tag">VERIFICAT OFICIAL</span>
-                  <span class="preview-spec-tag">{{ getEspecialitatNom(usuariFotoSeleccionat) }}</span>
-                </div>
-                <h4 class="preview-pro-name">{{ usuariFotoSeleccionat.nom }}</h4>
-                <div class="preview-rating-row">
-                  <span class="preview-star-pill">
-                    <svg viewBox="0 0 24 24" width="12" height="12" fill="#f59e0b" style="vertical-align: -1px; margin-right: 2px;" aria-hidden="true">
-                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-                    </svg>
-                    4.9
-                  </span>
-                  <span class="preview-stars" aria-hidden="true">
-                    <svg *ngFor="let s of [1,2,3,4,5]" viewBox="0 0 24 24" width="11" height="11" fill="#f59e0b" style="margin-right: 1px;">
-                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-                    </svg>
-                  </span>
-                  <span class="preview-opinions">(12 opinions)</span>
-                </div>
-                <p class="preview-pro-bio">
-                  {{ usuariFotoSeleccionat.bio || 'Servei professional certificat per AVISA amb atenció a València i comarques.' }}
-                </p>
-                <div class="preview-btn-fake">
-                  Veure perfil complet →
-                </div>
-              </div>
-            </div>
-
-            <div *ngIf="errorFoto" class="modal-error">
-              {{ errorFoto }}
-            </div>
-          </div>
-
-          <div class="modal-footer" style="justify-content: space-between;">
-            <div>
-              <button
-                *ngIf="usuariFotoSeleccionat?.foto"
-                type="button"
-                class="btn-danger-outline"
-                (click)="eliminarFoto()"
-                [disabled]="guardantFoto"
-              >
-                {{ 'ADMIN.PHOTO_REMOVE_BTN' | translate }}
-              </button>
-            </div>
-            <div style="display: flex; gap: 0.75rem;">
-              <button type="button" class="btn-secondary" (click)="tancarModalFoto()" [disabled]="guardantFoto">
-                {{ 'CONFIRM_MODAL.DEFAULT_CANCEL' | translate }}
-              </button>
-              <button type="button" class="btn-primary" (click)="guardarFoto()" [disabled]="guardantFoto">
-                {{ guardantFoto ? ('ADMIN.PHOTO_SAVING' | translate) : ('ADMIN.PHOTO_SAVE_BTN' | translate) }}
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   `,
   styles: [`
@@ -2745,25 +2597,6 @@ export class AdminPanellComponent implements OnInit {
   savingPassword = false;
   errorModalPassword = '';
 
-  /** Estat del modal d'assignació de fotografia de fons per a professionals recomanats */
-  modalFotoObert = false;
-  usuariFotoSeleccionat: Usuari | null = null;
-  fotoUrlInput = '';
-  guardantFoto = false;
-  errorFoto = '';
-
-  /** Galeria de fotografies recomanades per a diferents oficis de la llar */
-  readonly fotoPresets = [
-    { nom: 'Lampisteria', url: 'https://images.unsplash.com/photo-1581244277943-fe4a9c777189?w=800&auto=format&fit=crop&q=80' },
-    { nom: 'Electricitat', url: 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=800&auto=format&fit=crop&q=80' },
-    { nom: 'Pintura', url: 'https://images.unsplash.com/photo-1589939705384-5185137a7f0f?w=800&auto=format&fit=crop&q=80' },
-    { nom: 'Climatització', url: 'https://images.unsplash.com/photo-1621905252507-b35492cc74b4?w=800&auto=format&fit=crop&q=80' },
-    { nom: 'Fusteria', url: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=800&auto=format&fit=crop&q=80' },
-    { nom: 'Reformes', url: 'https://images.unsplash.com/photo-1541888946425-d0fbb186156f?w=800&auto=format&fit=crop&q=80' },
-    { nom: 'Neteja', url: 'https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=800&auto=format&fit=crop&q=80' },
-    { nom: 'Jardineria', url: 'https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?w=800&auto=format&fit=crop&q=80' }
-  ];
-
   constructor(
     private readonly tascaService: TascaService,
     private readonly ofertaService: OfertaService,
@@ -3298,101 +3131,6 @@ export class AdminPanellComponent implements OnInit {
       error: (err) => {
         this.savingPassword = false;
         this.errorModalPassword = typeof err?.error === 'string' ? err.error : 'Error en actualitzar la contrasenya.';
-      }
-    });
-  }
-
-  /**
-   * Obre el modal per assignar o modificar la fotografia de fons del professional seleccionat.
-   */
-  obrirModalFoto(u: Usuari): void {
-    this.usuariFotoSeleccionat = u;
-    this.fotoUrlInput = u.foto || '';
-    this.errorFoto = '';
-    this.modalFotoObert = true;
-  }
-
-  /**
-   * Tanca el modal de gestió de fotografia.
-   */
-  tancarModalFoto(): void {
-    this.modalFotoObert = false;
-    this.usuariFotoSeleccionat = null;
-    this.fotoUrlInput = '';
-    this.errorFoto = '';
-  }
-
-  /**
-   * Selecciona una imatge preset de la galeria d'oficis.
-   */
-  seleccionarPresetFoto(url: string): void {
-    this.fotoUrlInput = url;
-  }
-
-  /**
-   * Determina el nom de l'ofici del professional per mostrar a la vista prèvia.
-   */
-  getEspecialitatNom(u: Usuari | null): string {
-    if (!u) return 'Servei Professional';
-    const nom = u.nom.toLowerCase();
-    if (nom.includes('lampist') || nom.includes('fontan')) return 'Lampisteria';
-    if (nom.includes('electr')) return 'Electricitat';
-    if (nom.includes('pint')) return 'Pintura i Decoració';
-    if (nom.includes('clima') || nom.includes('aire')) return 'Climatització';
-    if (nom.includes('fust') || nom.includes('carpint')) return 'Fusteria';
-    if (nom.includes('reforma') || nom.includes('palet')) return 'Reformes i Paleteria';
-    return 'Professional Certificat';
-  }
-
-  /**
-   * Guarda la fotografia al backend per al professional seleccionat.
-   */
-  guardarFoto(): void {
-    if (!this.usuariFotoSeleccionat) return;
-    this.guardantFoto = true;
-    this.errorFoto = '';
-
-    const url = this.fotoUrlInput.trim();
-    const userId = this.usuariFotoSeleccionat.id;
-    const userNom = this.usuariFotoSeleccionat.nom;
-
-    this.usuariService.assignarFoto(userId, url).subscribe({
-      next: (actualitzat) => {
-        this.guardantFoto = false;
-        this.usuaris = this.usuaris.map(u => u.id === actualitzat.id ? { ...u, foto: actualitzat.foto } : u);
-        this.successMsg = `S'ha assignat la fotografia de fons a ${userNom} correctament!`;
-        setTimeout(() => this.successMsg = '', 4500);
-        this.tancarModalFoto();
-      },
-      error: (err) => {
-        this.guardantFoto = false;
-        this.errorFoto = err?.error?.message || 'Error en actualitzar la fotografia del professional.';
-      }
-    });
-  }
-
-  /**
-   * Elimina la fotografia assignada al professional.
-   */
-  eliminarFoto(): void {
-    if (!this.usuariFotoSeleccionat) return;
-    this.guardantFoto = true;
-    this.errorFoto = '';
-
-    const userId = this.usuariFotoSeleccionat.id;
-    const userNom = this.usuariFotoSeleccionat.nom;
-
-    this.usuariService.assignarFoto(userId, '').subscribe({
-      next: (actualitzat) => {
-        this.guardantFoto = false;
-        this.usuaris = this.usuaris.map(u => u.id === actualitzat.id ? { ...u, foto: undefined } : u);
-        this.successMsg = `S'ha eliminat la fotografia de fons de ${userNom}.`;
-        setTimeout(() => this.successMsg = '', 4500);
-        this.tancarModalFoto();
-      },
-      error: (err) => {
-        this.guardantFoto = false;
-        this.errorFoto = err?.error?.message || 'Error en eliminar la fotografia.';
       }
     });
   }

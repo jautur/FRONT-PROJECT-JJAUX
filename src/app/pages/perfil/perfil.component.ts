@@ -2632,7 +2632,7 @@ export class PerfilComponent implements OnInit {
 
   get usuariFotoPerfil(): string | null {
     if (!this.usuari) return null;
-    return (this.usuari as any).fotoPerfil || (this.usuari as any).foto_perfil || null;
+    return this.usuari?.fotoUrl || null;
   }
 
   /**

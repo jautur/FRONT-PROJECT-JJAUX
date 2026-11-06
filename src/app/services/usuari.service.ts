@@ -96,17 +96,6 @@ export class UsuariService {
   }
 
   /**
-   * Permet a un administrador assignar o canviar la fotografia de fons d'un professional.
-   * Aquesta fotografia es farà servir com a fons a la secció de professionals recomanats.
-   * @param id Identificador de l'usuari
-   * @param foto URL de la fotografia de fons (o null/buit per eliminar-la)
-   * @returns Observable amb l'usuari actualitzat
-   */
-  assignarFoto(id: string, foto: string): Observable<Usuari> {
-    return this.http.put<Usuari>(`${this.apiUrl}/${id}/foto`, { foto });
-  }
-
-  /**
    * Elimina o dona de baixa un usuari de la plataforma.
    * @param id Identificador de l'usuari
    * @returns Observable buit de confirmació
