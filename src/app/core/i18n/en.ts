@@ -415,7 +415,7 @@ export const en = {
       "NO_ACCOUNT": "Don't have an account yet?",
       "REGISTER_HERE": "Sign up here",
       "ERROR_REQUIRED": "An email or username is required.",
-      "ERROR_INVALID": "Invalid credentials. Please check username or password (e.g. cli / clicli, pro / propro).",
+      "ERROR_INVALID": "Invalid credentials. Please check your username and password.",
       "ERROR_SERVER": "Cannot connect to backend server (port 8080). Check that it is running.",
       "ERROR_GENERIC": "Error logging in. Check data or server.",
       "RECOVERY_MODAL_TITLE": "Reset Password",

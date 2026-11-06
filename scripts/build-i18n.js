@@ -26,7 +26,7 @@ const vaAdditions = {
       NO_ACCOUNT: 'Encara no tens compte?',
       REGISTER_HERE: 'Registra\'t aquí',
       ERROR_REQUIRED: 'Cal indicar un correu o nom d’usuari.',
-      ERROR_INVALID: 'Credencials no vàlides. Comprova l’usuari o contrasenya (p. ex: cli / clicli, pro / propro).',
+      ERROR_INVALID: 'Credencials no vàlides. Comprova l’usuari i la contrasenya.',
       ERROR_SERVER: 'No es pot connectar amb el servidor backend (port 8080). Comprova que estigui executant-se.',
       ERROR_GENERIC: 'Error en iniciar sessió. Comprova les dades o el servidor.'
     },
@@ -358,7 +358,7 @@ const esAdditions = {
       NO_ACCOUNT: '¿Aún no tienes cuenta?',
       REGISTER_HERE: 'Regístrate aquí',
       ERROR_REQUIRED: 'Es necesario indicar un correo o nombre de usuario.',
-      ERROR_INVALID: 'Credenciales no válidas. Comprueba el usuario o contraseña (ej: cli / clicli, pro / propro).',
+      ERROR_INVALID: 'Credenciales no válidas. Comprueba el usuario y la contraseña.',
       ERROR_SERVER: 'No se puede conectar con el servidor backend (puerto 8080). Comprueba que esté ejecutándose.',
       ERROR_GENERIC: 'Error al iniciar sesión. Comprueba los datos o el servidor.'
     },
@@ -690,7 +690,7 @@ const enAdditions = {
       NO_ACCOUNT: 'Don\'t have an account yet?',
       REGISTER_HERE: 'Sign up here',
       ERROR_REQUIRED: 'An email or username is required.',
-      ERROR_INVALID: 'Invalid credentials. Please check username or password (e.g. cli / clicli, pro / propro).',
+      ERROR_INVALID: 'Invalid credentials. Please check your username and password.',
       ERROR_SERVER: 'Cannot connect to backend server (port 8080). Check that it is running.',
       ERROR_GENERIC: 'Error logging in. Check data or server.'
     },

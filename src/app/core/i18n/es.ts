@@ -415,7 +415,7 @@ export const es = {
       "NO_ACCOUNT": "¿Aún no tienes cuenta?",
       "REGISTER_HERE": "Regístrate aquí",
       "ERROR_REQUIRED": "Es necesario indicar un correo o nombre de usuario.",
-      "ERROR_INVALID": "Credenciales no válidas. Comprueba el usuario o contraseña (ej: cli / clicli, pro / propro).",
+      "ERROR_INVALID": "Credenciales no válidas. Comprueba el usuario y la contraseña.",
       "ERROR_SERVER": "No se puede conectar con el servidor backend (puerto 8080). Comprueba que esté ejecutándose.",
       "ERROR_GENERIC": "Error al iniciar sesión. Comprueba los datos o el servidor.",
       "RECOVERY_MODAL_TITLE": "Recuperar contraseña",

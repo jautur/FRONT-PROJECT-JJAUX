@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
+import { environment } from '../../../../environments/environment';
 
 /**
  * Component d'Inici de Sessió (/login).
@@ -80,18 +81,12 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
         </button>
         <p *ngIf="error" class="error">{{ error | translate }}</p>
 
-        <!-- Botons d'accés ràpid per a proves des de mòbil o PC -->
-        <div class="quick-test-section">
+        <!-- Botons d'accés ràpid: només en el build de desenvolupament (environment.development.ts) -->
+        <div class="quick-test-section" *ngIf="accesRapid.length">
           <span class="quick-test-title">{{ 'AUTH.LOGIN.QUICK_TEST_TITLE' | translate }}</span>
           <div class="quick-test-buttons">
-            <button type="button" class="btn-quick-user" (click)="omplirCredencials('cli', 'clicli')">
-              {{ 'AUTH.LOGIN.QUICK_CLIENT' | translate }}
-            </button>
-            <button type="button" class="btn-quick-user" (click)="omplirCredencials('pro', 'propro')">
-              {{ 'AUTH.LOGIN.QUICK_PRO' | translate }}
-            </button>
-            <button type="button" class="btn-quick-user" (click)="omplirCredencials('admin@admin.es', 'adminadmin')">
-              {{ 'AUTH.LOGIN.QUICK_ADMIN' | translate }}
+            <button type="button" class="btn-quick-user" *ngFor="let compte of accesRapid" (click)="omplirCredencials(compte.usuari, compte.contrasenya)">
+              {{ compte.etiqueta | translate }}
             </button>
           </div>
         </div>
@@ -765,6 +760,9 @@ export class LoginComponent implements OnInit {
       }
     });
   }
+
+  /** Comptes de prova: buit en el build de producció. */
+  readonly accesRapid = environment.accesRapid;
 
   omplirCredencials(u: string, p: string): void {
     this.email = u;

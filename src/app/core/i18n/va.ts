@@ -415,7 +415,7 @@ export const va = {
       "NO_ACCOUNT": "Encara no tens compte?",
       "REGISTER_HERE": "Registra't aquí",
       "ERROR_REQUIRED": "Cal indicar un correu o nom d’usuari.",
-      "ERROR_INVALID": "Credencials no vàlides. Comprova l’usuari o contrasenya (p. ex: cli / clicli, pro / propro).",
+      "ERROR_INVALID": "Credencials no vàlides. Comprova l’usuari i la contrasenya.",
       "ERROR_SERVER": "No es pot connectar amb el servidor backend (port 8080). Comprova que estigui executant-se.",
       "ERROR_GENERIC": "Error en iniciar sessió. Comprova les dades o el servidor.",
       "RECOVERY_MODAL_TITLE": "Recuperar contrasenya",

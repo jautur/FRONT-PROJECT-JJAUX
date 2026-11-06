@@ -6,5 +6,11 @@
  */
 export const environment = {
   production: false,
-  apiUrl: '/api'
+  apiUrl: '/api',
+  /** Comptes de prova del perfil dev del backend. Només existeixen en el build de desenvolupament. */
+  accesRapid: [
+    { etiqueta: 'AUTH.LOGIN.QUICK_CLIENT', usuari: 'cli', contrasenya: 'clicli' },
+    { etiqueta: 'AUTH.LOGIN.QUICK_PRO', usuari: 'pro', contrasenya: 'propro' },
+    { etiqueta: 'AUTH.LOGIN.QUICK_ADMIN', usuari: 'admin@admin.es', contrasenya: 'adminadmin' }
+  ] as { etiqueta: string; usuari: string; contrasenya: string }[]
 };
