@@ -25,6 +25,17 @@ if [ -z "${AVISA_JWT_SECRET:-}" ]; then
 fi
 export AVISA_JWT_SECRET
 
+# Contrasenya de l'administrador: de l'entorn o del fitxer local ~/.avisa/admin_password (fora dels repositoris).
+# Fora del perfil dev és obligatòria: sense ella el backend no arrenca. En dev, si falta, es fa servir la de proves.
+if [ -z "${AVISA_ADMIN_PASSWORD:-}" ] && [ -f "$HOME/.avisa/admin_password" ]; then
+    AVISA_ADMIN_PASSWORD="$(tr -d '\r\n' < "$HOME/.avisa/admin_password")"
+fi
+if [ -z "${AVISA_ADMIN_PASSWORD:-}" ] && [ "$SPRING_PROFILES_ACTIVE" != "dev" ]; then
+    echo "ERROR: amb el perfil '$SPRING_PROFILES_ACTIVE' cal AVISA_ADMIN_PASSWORD. Crea-la amb: mkdir -p ~/.avisa && openssl rand -base64 24 > ~/.avisa/admin_password"
+    exit 1
+fi
+[ -n "${AVISA_ADMIN_PASSWORD:-}" ] && export AVISA_ADMIN_PASSWORD
+
 # Assegurar accés a binaris en entorns Windows/Git Bash/WSL
 export PATH="/c/Program Files/nodejs:/c/Program Files/Eclipse Adoptium/jdk-21.0.12.101-hotspot/bin:/c/Program Files/PostgreSQL/18/bin:$PATH"
 

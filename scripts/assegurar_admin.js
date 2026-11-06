@@ -34,6 +34,14 @@ try {
 }
 const { Client } = pg;
 
+// Fora del perfil dev, l'admin el crea el backend (AdminSeeder) amb la contrasenya de AVISA_ADMIN_PASSWORD.
+// Aquest script només hi posa la contrasenya de proves en dev, perquè no la trepitge.
+const perfil = process.env.SPRING_PROFILES_ACTIVE || '';
+if (perfil.split(',').map(s => s.trim()).indexOf('dev') === -1) {
+  console.log("ℹ️  Perfil '" + perfil + "': l'administrador el crea el backend amb AVISA_ADMIN_PASSWORD.");
+  process.exit(0);
+}
+
 const config = {
   host: process.env.PGHOST || 'localhost',
   port: parseInt(process.env.PGPORT || '5432', 10),
