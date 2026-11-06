@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { BehaviorSubject, Observable, catchError, map, of, tap } from 'rxjs';
 import { Usuari, RolUsuari } from '../../models/usuari.model';
 import { environment } from '../../../environments/environment';
 
@@ -161,10 +161,36 @@ export class AuthService {
     );
   }
 
+  /** Rol confirmat pel servidor per al token actual: evita preguntar-lo a cada navegació. */
+  private rolConfirmatPer: { token: string; rol: RolUsuari } | null = null;
+
+  /**
+   * Rol de la sessió segons el servidor (/api/auth/me), no segons localStorage, que es pot editar a mà.
+   * Corregeix la còpia local amb les dades del servidor. Retorna null si no hi ha sessió vàlida.
+   */
+  confirmarRol(): Observable<RolUsuari | null> {
+    const token = this.getToken();
+    if (!token) {
+      return of(null);
+    }
+    if (this.rolConfirmatPer?.token === token) {
+      return of(this.rolConfirmatPer.rol);
+    }
+    return this.me().pipe(
+      map((usuari) => {
+        const rol = (usuari?.rol || '').toUpperCase() as RolUsuari;
+        this.rolConfirmatPer = { token, rol };
+        return rol;
+      }),
+      catchError(() => of(null))
+    );
+  }
+
   /**
    * Tanca la sessió eliminant les dades de l'usuari del magatzem local.
    */
   logout(): void {
+    this.rolConfirmatPer = null;
     localStorage.removeItem(this.USER_KEY);
     this.currentUserSubject.next(null);
   }

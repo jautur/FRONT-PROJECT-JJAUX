@@ -1,5 +1,6 @@
 import { inject, Injectable } from '@angular/core';
-import { CanActivate, CanActivateFn, Router, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
+import { CanActivate, CanActivateFn, GuardResult, MaybeAsync, Router, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
+import { map } from 'rxjs';
 import { AuthService } from '../services/auth.service';
 
 /**
@@ -24,12 +25,12 @@ export const professionalGuard: CanActivateFn = (
     return false;
   }
 
-  if (authService.isProfessional()) {
-    return true;
-  }
-
-  router.navigate([homeUrl], { queryParams: { error: 'Aquesta secció requereix un compte de professional.' } });
-  return false;
+  // El rol el confirma el servidor: el de localStorage es pot editar a mà
+  return authService.confirmarRol().pipe(
+    map((rol) => rol === 'PROFESSIONAL'
+      ? true
+      : router.createUrlTree([homeUrl], { queryParams: { error: 'Aquesta secció requereix un compte de professional.' } }))
+  );
 };
 
 /**
@@ -44,7 +45,7 @@ export class ProfessionalGuard implements CanActivate {
     private readonly router: Router
   ) {}
 
-  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
-    return professionalGuard(route, state) as boolean;
+  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): MaybeAsync<GuardResult> {
+    return professionalGuard(route, state);
   }
 }

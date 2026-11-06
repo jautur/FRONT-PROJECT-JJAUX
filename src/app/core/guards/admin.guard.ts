@@ -1,5 +1,6 @@
 import { inject, Injectable } from '@angular/core';
-import { CanActivate, CanActivateFn, Router, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
+import { CanActivate, CanActivateFn, GuardResult, MaybeAsync, Router, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
+import { map } from 'rxjs';
 import { AuthService } from '../services/auth.service';
 
 /**
@@ -18,13 +19,12 @@ export const adminGuard: CanActivateFn = (
     return false;
   }
 
-  if (authService.isAdmin()) {
-    return true;
-  }
-
-  // Redirigeix usuaris sense permisos d'administrador
-  router.navigate(['/'], { queryParams: { error: 'Accés denegat: es requereixen permisos d’administrador.' } });
-  return false;
+  // El rol el confirma el servidor: el de localStorage es pot editar a mà
+  return authService.confirmarRol().pipe(
+    map((rol) => rol === 'ADMIN'
+      ? true
+      : router.createUrlTree(['/'], { queryParams: { error: 'Accés denegat: es requereixen permisos d’administrador.' } }))
+  );
 };
 
 /**
@@ -39,7 +39,7 @@ export class AdminGuard implements CanActivate {
     private readonly router: Router
   ) {}
 
-  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
-    return adminGuard(route, state) as boolean;
+  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): MaybeAsync<GuardResult> {
+    return adminGuard(route, state);
   }
 }
