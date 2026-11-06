@@ -15,6 +15,17 @@ set -e
 # Per a les dades de demostració: SPRING_PROFILES_ACTIVE=demo ./clase_desplegar.sh
 export SPRING_PROFILES_ACTIVE="${SPRING_PROFILES_ACTIVE:-dev}"
 
+# Secret de signatura dels tokens JWT: mai al repositori. Ve de l'entorn o del fitxer local ~/.avisa/jwt_secret
+# (fora dels repositoris). Sense secret el backend no arrenca. Per crear-lo: vegeu docs/configuracio.md del back.
+if [ -z "${AVISA_JWT_SECRET:-}" ] && [ -f "$HOME/.avisa/jwt_secret" ]; then
+    AVISA_JWT_SECRET="$(tr -d '\r\n' < "$HOME/.avisa/jwt_secret")"
+fi
+if [ -z "${AVISA_JWT_SECRET:-}" ]; then
+    echo "ERROR: falta AVISA_JWT_SECRET. Crea'l amb: mkdir -p ~/.avisa && openssl rand -base64 48 > ~/.avisa/jwt_secret"
+    exit 1
+fi
+export AVISA_JWT_SECRET
+
 # Paràmetres opcionals:
 #   --rebuild, -f, --force: Recompila backend i frontend forçosament
 #   --no-browser:           No obre el navegador web automàticament
