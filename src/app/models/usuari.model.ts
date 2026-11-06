@@ -48,6 +48,9 @@ export interface Usuari {
 
   /** Token JWT d'autenticació i sessió de l'usuari */
   token?: string;
+
+  /** Indica si l'usuari ha verificat la seva adreça d'email */
+  emailVerificat?: boolean;
 }
 
 /** Imatges pròpies d'un usuari: la ruta de POST/DELETE /api/users/{id}/{tipus}. */

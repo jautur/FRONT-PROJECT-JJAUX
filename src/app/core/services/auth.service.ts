@@ -161,6 +161,35 @@ export class AuthService {
     );
   }
 
+  /**
+   * Verifica l'adreça de correu mitjançant el token rebut (/api/auth/verificar-email).
+   */
+  verificarEmail(token: string): Observable<{ success: boolean; message: string; user?: Usuari }> {
+    return this.http.get<{ success: boolean; message: string; user?: Usuari }>(
+      `${this.apiUrl}/verificar-email`,
+      { params: { token } }
+    ).pipe(
+      tap((res) => {
+        if (res.success && res.user) {
+          const current = this.getCurrentUser();
+          if (current && current.id === res.user.id) {
+            this.setCurrentUser({ ...current, emailVerificat: true });
+          }
+        }
+      })
+    );
+  }
+
+  /**
+   * Sol·licita el reenviament del correu de verificació (/api/auth/reenviar-verificacio).
+   */
+  reenviarVerificacio(email: string): Observable<{ success: boolean; message: string }> {
+    return this.http.post<{ success: boolean; message: string }>(
+      `${this.apiUrl}/reenviar-verificacio`,
+      { email }
+    );
+  }
+
   /** Rol confirmat pel servidor per al token actual: evita preguntar-lo a cada navegació. */
   private rolConfirmatPer: { token: string; rol: RolUsuari } | null = null;
 

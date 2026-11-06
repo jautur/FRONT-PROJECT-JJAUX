@@ -36,6 +36,10 @@ export const appRoutes: Routes = [
     loadComponent: () => import('./pages/auth/registre/registre.component').then(m => m.RegistreComponent)
   },
   {
+    path: 'verificar-compte',
+    loadComponent: () => import('./pages/auth/verificar-compte/verificar-compte.component').then(m => m.VerificarCompteComponent)
+  },
+  {
     path: 'perfil',
     canActivate: [webToAppGuard, authGuard],
     loadComponent: () => import('./pages/perfil/perfil.component').then(m => m.PerfilComponent)

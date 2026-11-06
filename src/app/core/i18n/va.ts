@@ -438,11 +438,29 @@ export const va = {
       "RECOVERY_SUCCESS_TITLE": "Contrasenya restablida!",
       "RECOVERY_SUCCESS_DESC": "La teva contrasenya s'ha actualitzat correctament. Ja pots iniciar sessió amb les teves noves credencials.",
       "RECOVERY_CLOSE_BTN": "Tancar i iniciar sessió",
-      "RECOVERY_CANCEL_BTN": "Cancel·lar"
+      "RECOVERY_CANCEL_BTN": "Cancel·lar",
+      "EMAIL_NOT_VERIFIED_TITLE": "Compte pendent de verificació",
+      "EMAIL_NOT_VERIFIED_DESC": "La teva adreça de correu encara no ha estat verificada. Revisa la teva bústia d'entrada o sol·licita un nou enllaç.",
+      "RESEND_VERIFICATION_BTN": "Reenviar email de verificació",
+      "RESENDING_VERIFICATION": "Reenviant correu...",
+      "RESEND_SUCCESS": "T'hem tornat a enviar l'enllaç de verificació. Revisa el teu correu electrònic."
+    },
+    "VERIFY": {
+      "LOADING_TITLE": "Verificant el teu compte...",
+      "LOADING_DESC": "Estem validant el teu enllaç de verificació, un segon...",
+      "SUCCESS_TITLE": "Compte verificat amb èxit!",
+      "SUCCESS_DESC": "La teva adreça de correu s'ha verificat correctament. Ja pots accedir a totes les funcionalitats d'AVISA.",
+      "GOTO_LOGIN": "Iniciar sessió",
+      "ERROR_TITLE": "Enllaç no vàlid o caducat",
+      "ERROR_DESC": "No s'ha pogut verificar el compte. És possible que l'enllaç hagi caducat o ja s'hagi utilitzat.",
+      "BACK_LOGIN": "Tornar a l'inici de sessió"
     },
     "REGISTER": {
       "TITLE": "Crear un compte",
       "SUBTITLE": "Registra't a AVISA com a client o com a professional.",
+      "EMAIL_SENT_TITLE": "Verifica el teu correu electrònic",
+      "EMAIL_SENT_DESC": "Hem enviat un correu de benvinguda i verificació a la teva adreça. Si us plau, fes clic a l'enllaç que hi trobaràs per activar el teu compte.",
+      "EMAIL_SENT_CONTINUE": "Entesos, continuar a l'aplicació",
       "ACCOUNT_TYPE": "Tipus de compte",
       "ROLE_CLIENT_TITLE": "Client",
       "ROLE_CLIENT_SUB": "Publicar feines i peticions",

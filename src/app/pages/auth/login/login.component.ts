@@ -81,6 +81,23 @@ import { environment } from '../../../../environments/environment';
         </button>
         <p *ngIf="error" class="error">{{ error | translate }}</p>
 
+        <!-- Avís de compte no verificat amb opció de reenviar correu -->
+        <div *ngIf="mostrarAvisNoVerificat" class="unverified-box">
+          <div class="unverified-header">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#b45309" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+              <line x1="12" y1="9" x2="12" y2="13"></line>
+              <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+            <strong>{{ 'AUTH.LOGIN.EMAIL_NOT_VERIFIED_TITLE' | translate }}</strong>
+          </div>
+          <p class="unverified-desc">{{ 'AUTH.LOGIN.EMAIL_NOT_VERIFIED_DESC' | translate }}</p>
+          <button type="button" class="btn-resend-verification" (click)="reenviarEmail()" [disabled]="reenviant">
+            {{ reenviant ? ('AUTH.LOGIN.RESENDING_VERIFICATION' | translate) : ('AUTH.LOGIN.RESEND_VERIFICATION_BTN' | translate) }}
+          </button>
+          <p *ngIf="reenviarExit" class="resend-success-msg">{{ 'AUTH.LOGIN.RESEND_SUCCESS' | translate }}</p>
+        </div>
+
         <!-- Botons d'accés ràpid: només en el build de desenvolupament (environment.development.ts) -->
         <div class="quick-test-section" *ngIf="accesRapid.length">
           <span class="quick-test-title">{{ 'AUTH.LOGIN.QUICK_TEST_TITLE' | translate }}</span>
@@ -384,6 +401,59 @@ import { environment } from '../../../../environments/environment';
         font-weight: 700;
         font-size: 0.875rem;
         margin: 0;
+      }
+      .unverified-box {
+        margin-top: 1rem;
+        background: #fffbeb;
+        border: 1px solid #fde68a;
+        border-radius: 10px;
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        text-align: left;
+      }
+      .unverified-header {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #b45309;
+        font-size: 0.92rem;
+      }
+      .unverified-desc {
+        margin: 0;
+        font-size: 0.86rem;
+        color: #78350f;
+        line-height: 1.45;
+      }
+      .btn-resend-verification {
+        align-self: flex-start;
+        background: #b45309;
+        color: #ffffff;
+        border: none;
+        border-radius: 6px;
+        padding: 0.5rem 0.9rem;
+        font-size: 0.82rem;
+        font-weight: 700;
+        cursor: pointer;
+        margin-top: 0.25rem;
+        box-shadow: none;
+        transition: background 0.15s ease;
+      }
+      .btn-resend-verification:hover:not(:disabled) {
+        background: #92400e;
+        transform: none;
+        box-shadow: none;
+      }
+      .btn-resend-verification:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+      .resend-success-msg {
+        margin: 0.35rem 0 0;
+        font-size: 0.82rem;
+        color: #166534;
+        font-weight: 700;
       }
       .footer-hint {
         text-align: center;
@@ -744,6 +814,11 @@ export class LoginComponent implements OnInit {
   recuperarLoading = false;
   recuperarError = '';
 
+  // Verificació d'email
+  mostrarAvisNoVerificat = false;
+  reenviant = false;
+  reenviarExit = false;
+
   constructor(
     private readonly authService: AuthService,
     private readonly router: Router,
@@ -803,12 +878,18 @@ export class LoginComponent implements OnInit {
     }
     this.loading = true;
     this.error = '';
+    this.mostrarAvisNoVerificat = false;
+    this.reenviarExit = false;
 
     this.authService.login({ email: cleanEmail, password: cleanPassword }).subscribe({
-      next: () => {
+      next: (usuari) => {
         this.loading = false;
-        const target = (this.isAppPage && (this.returnUrl === '/' || this.returnUrl === '/inici')) ? '/app' : this.returnUrl;
-        this.router.navigateByUrl(target);
+        if (usuari && usuari.emailVerificat === false) {
+          this.mostrarAvisNoVerificat = true;
+        } else {
+          const target = (this.isAppPage && (this.returnUrl === '/' || this.returnUrl === '/inici')) ? '/app' : this.returnUrl;
+          this.router.navigateByUrl(target);
+        }
       },
       error: (err) => {
         this.loading = false;
@@ -916,5 +997,24 @@ export class LoginComponent implements OnInit {
     this.email = this.recuperarEmail.trim();
     this.password = this.novaContrasenya.trim();
     this.tancarModalRecuperacio();
+  }
+
+  reenviarEmail(): void {
+    const cleanEmail = (this.email || '').trim();
+    if (!cleanEmail) return;
+
+    this.reenviant = true;
+    this.reenviarExit = false;
+
+    this.authService.reenviarVerificacio(cleanEmail).subscribe({
+      next: () => {
+        this.reenviant = false;
+        this.reenviarExit = true;
+      },
+      error: (err) => {
+        this.reenviant = false;
+        this.error = err.error?.message || 'AUTH.LOGIN.ERROR_GENERIC';
+      }
+    });
   }
 }

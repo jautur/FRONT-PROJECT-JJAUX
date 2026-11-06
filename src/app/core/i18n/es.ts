@@ -438,11 +438,29 @@ export const es = {
       "RECOVERY_SUCCESS_TITLE": "¡Contraseña restablecida!",
       "RECOVERY_SUCCESS_DESC": "Tu contraseña ha sido actualizada correctamente. Ya puedes iniciar sesión con tus nuevas credenciales.",
       "RECOVERY_CLOSE_BTN": "Cerrar e iniciar sesión",
-      "RECOVERY_CANCEL_BTN": "Cancelar"
+      "RECOVERY_CANCEL_BTN": "Cancelar",
+      "EMAIL_NOT_VERIFIED_TITLE": "Cuenta pendiente de verificación",
+      "EMAIL_NOT_VERIFIED_DESC": "Tu dirección de correo aún no ha sido verificada. Revisa tu bandeja de entrada o solicita un nuevo enlace.",
+      "RESEND_VERIFICATION_BTN": "Reenviar email de verificación",
+      "RESENDING_VERIFICATION": "Reenviando correo...",
+      "RESEND_SUCCESS": "Te hemos reenviado el enlace de verificación. Revisa tu correo electrónico."
+    },
+    "VERIFY": {
+      "LOADING_TITLE": "Verificando tu cuenta...",
+      "LOADING_DESC": "Estamos validando tu enlace de verificación, un segundo...",
+      "SUCCESS_TITLE": "¡Cuenta verificada con éxito!",
+      "SUCCESS_DESC": "Tu dirección de correo ha sido verificada correctamente. Ya puedes acceder a todas las funcionalidades de AVISA.",
+      "GOTO_LOGIN": "Iniciar sesión",
+      "ERROR_TITLE": "Enlace no válido o caducado",
+      "ERROR_DESC": "No se ha podido verificar la cuenta. Es posible que el enlace haya caducado o ya haya sido utilizado.",
+      "BACK_LOGIN": "Volver al inicio de sesión"
     },
     "REGISTER": {
       "TITLE": "Crear una cuenta",
       "SUBTITLE": "Regístrate en AVISA como cliente o como profesional.",
+      "EMAIL_SENT_TITLE": "Verifica tu correo electrónico",
+      "EMAIL_SENT_DESC": "Hemos enviado un correo de bienvenida y verificación a tu dirección. Por favor, haz clic en el enlace que encontrarás para activar tu cuenta.",
+      "EMAIL_SENT_CONTINUE": "Entendido, continuar a la aplicación",
       "ACCOUNT_TYPE": "Tipo de cuenta",
       "ROLE_CLIENT_TITLE": "Cliente",
       "ROLE_CLIENT_SUB": "Publicar trabajos y peticiones",

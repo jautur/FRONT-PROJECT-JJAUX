@@ -36,14 +36,29 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
     </div>
 
     <section class="auth-card">
-      <h1>{{ 'AUTH.REGISTER.TITLE' | translate }}</h1>
-      <p class="subtitle">{{ 'AUTH.REGISTER.SUBTITLE' | translate }}</p>
-
-      <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
-        {{ errorMessage | translate }}
+      <div *ngIf="registreExit" class="register-success-box">
+        <div class="success-icon-badge">
+          <svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+            <polyline points="22,6 12,13 2,6"></polyline>
+          </svg>
+        </div>
+        <h1>{{ 'AUTH.REGISTER.EMAIL_SENT_TITLE' | translate }}</h1>
+        <p class="subtitle" style="margin-bottom: 1.5rem;">{{ 'AUTH.REGISTER.EMAIL_SENT_DESC' | translate }}</p>
+        <button type="button" class="submit-btn" (click)="continuarDespresDeRegistre()">
+          {{ 'AUTH.REGISTER.EMAIL_SENT_CONTINUE' | translate }}
+        </button>
       </div>
 
-      <form [formGroup]="registerForm" (ngSubmit)="onRegister()">
+      <div *ngIf="!registreExit">
+        <h1>{{ 'AUTH.REGISTER.TITLE' | translate }}</h1>
+        <p class="subtitle">{{ 'AUTH.REGISTER.SUBTITLE' | translate }}</p>
+
+        <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
+          {{ errorMessage | translate }}
+        </div>
+
+        <form [formGroup]="registerForm" (ngSubmit)="onRegister()">
         <!-- Selecció de Tipus de Compte (Herència) -->
         <div class="field-wrap">
           <span class="field-label">{{ 'AUTH.REGISTER.ACCOUNT_TYPE' | translate }}</span>
@@ -216,6 +231,7 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
           {{ 'AUTH.REGISTER.ALREADY_ACCOUNT' | translate }} <a [routerLink]="getNavUrl('/login')">{{ 'AUTH.REGISTER.LOGIN_HERE' | translate }}</a>
         </p>
       </form>
+      </div>
 
       <!-- Modal emergent amb el text legal complet -->
       <app-termes-modal
@@ -238,6 +254,26 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
         box-shadow: var(--shadow-lg, 0 16px 40px rgba(0, 0, 0, 0.06));
         color: var(--color-text, #09090c);
         box-sizing: border-box;
+      }
+
+      .register-success-box {
+        text-align: center;
+        padding: 1.5rem 0.5rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .success-icon-badge {
+        width: 76px;
+        height: 76px;
+        border-radius: 50%;
+        background: #e8f5e9;
+        color: #2e7d32;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1.2rem;
       }
 
       h1 {
@@ -542,6 +578,9 @@ export class RegistreComponent implements OnInit {
   /** Missatge d'error general o del servidor */
   errorMessage = '';
 
+  /** Indica si el registre ha estat exitós i s'ha d'informar de l'email enviat */
+  registreExit = false;
+
   /** Control de visibilitat del modal legal */
   showTermsModal = false;
 
@@ -677,8 +716,7 @@ export class RegistreComponent implements OnInit {
     this.authService.register(registerData).subscribe({
       next: () => {
         this.loading = false;
-        // Sessió iniciada directament -> tornem a la pàgina principal adaptada
-        this.router.navigate([this.getNavUrl('/inici')]);
+        this.registreExit = true;
       },
       error: (err) => {
         this.loading = false;
@@ -696,5 +734,9 @@ export class RegistreComponent implements OnInit {
         }
       }
     });
+  }
+
+  continuarDespresDeRegistre(): void {
+    this.router.navigate([this.getNavUrl('/inici')]);
   }
 }

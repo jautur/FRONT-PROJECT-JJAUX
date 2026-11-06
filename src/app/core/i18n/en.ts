@@ -438,11 +438,29 @@ export const en = {
       "RECOVERY_SUCCESS_TITLE": "Password Reset Successfully!",
       "RECOVERY_SUCCESS_DESC": "Your password has been updated. You can now log in with your new credentials.",
       "RECOVERY_CLOSE_BTN": "Close & Log In",
-      "RECOVERY_CANCEL_BTN": "Cancel"
+      "RECOVERY_CANCEL_BTN": "Cancel",
+      "EMAIL_NOT_VERIFIED_TITLE": "Account pending verification",
+      "EMAIL_NOT_VERIFIED_DESC": "Your email address has not been verified yet. Please check your inbox or request a new verification link.",
+      "RESEND_VERIFICATION_BTN": "Resend verification email",
+      "RESENDING_VERIFICATION": "Resending email...",
+      "RESEND_SUCCESS": "We have sent you a new verification link. Please check your inbox."
+    },
+    "VERIFY": {
+      "LOADING_TITLE": "Verifying your account...",
+      "LOADING_DESC": "Validating your verification link, one moment...",
+      "SUCCESS_TITLE": "Account verified successfully!",
+      "SUCCESS_DESC": "Your email address has been verified. You can now access all AVISA features.",
+      "GOTO_LOGIN": "Log in",
+      "ERROR_TITLE": "Invalid or expired link",
+      "ERROR_DESC": "Could not verify your account. The link may have expired or already been used.",
+      "BACK_LOGIN": "Back to login"
     },
     "REGISTER": {
       "TITLE": "Create an Account",
       "SUBTITLE": "Sign up to AVISA as a client or contractor.",
+      "EMAIL_SENT_TITLE": "Verify your email address",
+      "EMAIL_SENT_DESC": "We have sent a welcome and verification email to your address. Please click the link inside to activate your account.",
+      "EMAIL_SENT_CONTINUE": "Got it, continue to the app",
       "ACCOUNT_TYPE": "Account type",
       "ROLE_CLIENT_TITLE": "Client",
       "ROLE_CLIENT_SUB": "Post jobs and requests",
