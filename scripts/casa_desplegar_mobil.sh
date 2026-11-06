@@ -8,7 +8,8 @@
 set -e
 
 # Perfil del backend: dev crea els usuaris de prova (admin, cli i pro) si no existeixen.
-# Per a les dades de demostració: SPRING_PROFILES_ACTIVE=demo ./casa_desplegar_mobil.sh
+# Per a les dades de demostració (només en desenvolupament): SPRING_PROFILES_ACTIVE=dev,demo ./casa_desplegar_mobil.sh
+# El perfil demo tot sol compta com a producció: no crea usuaris de prova.
 export SPRING_PROFILES_ACTIVE="${SPRING_PROFILES_ACTIVE:-dev}"
 
 # Secret de signatura dels tokens JWT: mai al repositori. Ve de l'entorn o del fitxer local ~/.avisa/jwt_secret
@@ -27,7 +28,8 @@ export AVISA_JWT_SECRET
 if [ -z "${AVISA_ADMIN_PASSWORD:-}" ] && [ -f "$HOME/.avisa/admin_password" ]; then
     AVISA_ADMIN_PASSWORD="$(tr -d '\r\n' < "$HOME/.avisa/admin_password")"
 fi
-if [ -z "${AVISA_ADMIN_PASSWORD:-}" ] && [ "$SPRING_PROFILES_ACTIVE" != "dev" ]; then
+case ",${SPRING_PROFILES_ACTIVE// /}," in *,dev,*) PERFIL_DEV=true ;; *) PERFIL_DEV=false ;; esac
+if [ -z "${AVISA_ADMIN_PASSWORD:-}" ] && [ "$PERFIL_DEV" != true ]; then
     echo "ERROR: amb el perfil '$SPRING_PROFILES_ACTIVE' cal AVISA_ADMIN_PASSWORD. Crea-la amb: mkdir -p ~/.avisa && openssl rand -base64 24 > ~/.avisa/admin_password"
     exit 1
 fi
