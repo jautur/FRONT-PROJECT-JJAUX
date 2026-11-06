@@ -814,6 +814,9 @@ export class LoginComponent implements OnInit {
         this.loading = false;
         if (err.status === 401) {
           this.error = 'AUTH.LOGIN.ERROR_INVALID';
+        } else if (err.status === 429) {
+          // Compte bloquejat temporalment per massa intents: el back diu quants minuts falten
+          this.error = err?.error?.error || 'AUTH.LOGIN.ERROR_GENERIC';
         } else if (err.status === 0) {
           this.error = 'AUTH.LOGIN.ERROR_SERVER';
         } else {
