@@ -9,7 +9,8 @@ import { AuthService } from '../services/auth.service';
  * 
  * Funcionalitats clau:
  * 1. Adjunta automàticament el token JWT Bearer si l'usuari està autenticat.
- * 2. Gestiona sessions caducades o no autoritzades (errors 401 i 403):
+ * 2. Gestiona les sessions caducades o invàlides (error 401). Un 403 vol dir que la sessió és bona
+ *    però l'acció no està permesa: es mostra l'error i no es tanca la sessió.
  *    - Neteja la sessió local mitjançant AuthService.
  *    - Redirigeix netament a la pantalla de login corresponent (web o /app/login).
  * 3. Assegura la comunicació tant des de PC (localhost) com des de dispositius mòbils a la xarxa local:
@@ -37,12 +38,12 @@ export const apiInterceptor: HttpInterceptorFn = (req, next) => {
   // 2. Executar la petició amb gestió de 401/403 i reintents de resiliència
   return next(clonedReq).pipe(
     catchError((error: HttpErrorResponse) => {
-      // Cas 1: Sessió caducada o token invàlid (401 / 403) fora dels endpoints de login/registre
+      // Cas 1: Sessió caducada o token invàlid (401) fora dels endpoints de login/registre
       const isAuthEndpoint = req.url.includes('/api/auth/login') ||
                              req.url.includes('/api/auth/register') ||
                              req.url.includes('/api/auth/recuperar');
 
-      if ((error.status === 401 || error.status === 403) && !isAuthEndpoint) {
+      if (error.status === 401 && !isAuthEndpoint) {
         if (authService.isLoggedIn()) {
           authService.logout();
           const isAppMode = typeof window !== 'undefined' && (
