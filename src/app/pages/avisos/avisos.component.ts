@@ -5,6 +5,7 @@ import { AvisService } from '../../services/avis.service';
 import { AuthService } from '../../core/services/auth.service';
 import { TranslatePipe } from '../../core/pipes/translate.pipe';
 import { Avis } from '../../models/avis.model';
+import { EstatPush, PushService } from '../../core/services/push.service';
 
 /**
  * Filtre actiu per al panell de notificacions.
@@ -38,7 +39,16 @@ export class AvisosComponent implements OnInit {
   /** Missatge d'èxit de l'última acció */
   successMsg = '';
 
+  /** Estat de les notificacions push d'aquest dispositiu */
+  estatPush: EstatPush = 'no-suportat';
+  /** Mentre s'activa o es desactiva */
+  pushOcupat = false;
+  /** Clau (AVISOS_PAGE.*) del resultat de l'última acció de push, i si és un error */
+  pushMsg = '';
+  pushError = false;
+
   constructor(
+    private readonly pushService: PushService,
     private readonly avisService: AvisService,
     private readonly authService: AuthService,
     private readonly router: Router
@@ -148,6 +158,23 @@ export class AvisosComponent implements OnInit {
    */
   ngOnInit(): void {
     this.carregarAvisos();
+    void this.pushService.estat().then((estat) => (this.estatPush = estat));
+  }
+
+  /** Activa o desactiva les notificacions push d'aquest dispositiu. */
+  async canviarPush(): Promise<void> {
+    if (this.pushOcupat) return;
+    this.pushOcupat = true;
+    this.pushMsg = '';
+    const volActivar = this.estatPush !== 'activat';
+    this.estatPush = volActivar ? await this.pushService.activar() : await this.pushService.desactivar();
+    this.pushOcupat = false;
+    this.pushError = volActivar && this.estatPush !== 'activat';
+    if (this.pushError) {
+      this.pushMsg = this.estatPush === 'denegat' ? 'PUSH_DENIED' : this.estatPush === 'no-configurat' ? 'PUSH_NOT_CONFIGURED' : 'PUSH_ERROR';
+    } else {
+      this.pushMsg = volActivar ? 'PUSH_OK' : 'PUSH_OFF_OK';
+    }
   }
 
   /**

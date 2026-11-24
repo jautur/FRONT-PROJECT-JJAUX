@@ -798,6 +798,16 @@ export const en = {
     "EMPTY_USERS": "No users match search filters."
   },
   "AVISOS_PAGE": {
+    "PUSH_TITLE": "Device notifications",
+    "PUSH_DESC": "Get an alert on your phone or computer when there is news, even if AVISA is not open.",
+    "PUSH_ON": "Turn on",
+    "PUSH_OFF": "Turn off",
+    "PUSH_OK": "Notifications turned on for this device.",
+    "PUSH_OFF_OK": "Notifications turned off.",
+    "PUSH_DENIED": "You have blocked notifications in this browser. Allow them in the site settings.",
+    "PUSH_UNSUPPORTED": "This browser does not support notifications, or the app needs to be installed.",
+    "PUSH_NOT_CONFIGURED": "Notifications are not available on this server yet.",
+    "PUSH_ERROR": "Could not turn on notifications. Please try again.",
     "TITLE": "Notifications & Notices Inbox",
     "SUBTITLE": "Real-time status of your tasks, offers, and alerts.",
     "MARK_ALL_READ": "Mark all as read",

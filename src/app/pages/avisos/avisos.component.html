@@ -46,6 +46,18 @@
 
   <!-- Estat de càrrega o error -->
   <div *ngIf="loading" class="state-box">{{ 'MERCAT.LOADING' | translate }}</div>
+  <!-- Notificacions push d'aquest dispositiu -->
+  <div class="push-box" *ngIf="estatPush !== 'no-suportat'">
+    <div class="push-text">
+      <strong>{{ 'AVISOS_PAGE.PUSH_TITLE' | translate }}</strong>
+      <span>{{ 'AVISOS_PAGE.PUSH_DESC' | translate }}</span>
+    </div>
+    <button type="button" class="btn-action-alt" (click)="canviarPush()" [disabled]="pushOcupat || estatPush === 'denegat' || estatPush === 'no-configurat'">
+      {{ (estatPush === 'activat' ? 'AVISOS_PAGE.PUSH_OFF' : 'AVISOS_PAGE.PUSH_ON') | translate }}
+    </button>
+  </div>
+  <div *ngIf="pushMsg" [class.alert-error]="pushError" [class.alert-success]="!pushError" role="status">{{ 'AVISOS_PAGE.' + pushMsg | translate }}</div>
+
   <div *ngIf="errorMsg" class="alert-error">{{ errorMsg }}</div>
   <div *ngIf="successMsg" class="alert-success">{{ successMsg }}</div>
 

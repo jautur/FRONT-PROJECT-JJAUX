@@ -798,6 +798,16 @@ export const es = {
     "EMPTY_USERS": "Ningún usuario coincide con los filtros de búsqueda."
   },
   "AVISOS_PAGE": {
+    "PUSH_TITLE": "Notificaciones en el dispositivo",
+    "PUSH_DESC": "Recibe un aviso en el móvil o en el ordenador cuando haya novedades, aunque no tengas AVISA abierta.",
+    "PUSH_ON": "Activar",
+    "PUSH_OFF": "Desactivar",
+    "PUSH_OK": "Notificaciones activadas en este dispositivo.",
+    "PUSH_OFF_OK": "Notificaciones desactivadas.",
+    "PUSH_DENIED": "Has bloqueado las notificaciones en este navegador. Permítelas en la configuración del sitio.",
+    "PUSH_UNSUPPORTED": "Este navegador no admite notificaciones, o hay que instalar la aplicación.",
+    "PUSH_NOT_CONFIGURED": "Las notificaciones aún no están disponibles en este servidor.",
+    "PUSH_ERROR": "No se han podido activar las notificaciones. Inténtalo de nuevo.",
     "TITLE": "Bandeja de Avisos y Notificaciones",
     "SUBTITLE": "Estado de tus tareas, ofertas y alertas en tiempo real.",
     "MARK_ALL_READ": "Marcar todas como leídas",

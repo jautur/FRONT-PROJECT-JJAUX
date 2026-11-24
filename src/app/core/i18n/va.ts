@@ -798,6 +798,16 @@ export const va = {
     "EMPTY_USERS": "Cap usuari coincideix amb els filtres de cerca."
   },
   "AVISOS_PAGE": {
+    "PUSH_TITLE": "Notificacions al dispositiu",
+    "PUSH_DESC": "Rep un avís al mòbil o a l'ordinador quan hi haja novetats, encara que no tingues AVISA oberta.",
+    "PUSH_ON": "Activar",
+    "PUSH_OFF": "Desactivar",
+    "PUSH_OK": "Notificacions activades en aquest dispositiu.",
+    "PUSH_OFF_OK": "Notificacions desactivades.",
+    "PUSH_DENIED": "Has bloquejat les notificacions en aquest navegador. Permet-les a la configuració del lloc.",
+    "PUSH_UNSUPPORTED": "Aquest navegador no admet notificacions, o cal instal·lar l'aplicació.",
+    "PUSH_NOT_CONFIGURED": "Les notificacions encara no estan disponibles en aquest servidor.",
+    "PUSH_ERROR": "No s'han pogut activar les notificacions. Torna-ho a provar.",
     "TITLE": "Safata d'Avisos i Notificacions",
     "SUBTITLE": "Estat de les teves tasques, ofertes i alertes en temps real.",
     "MARK_ALL_READ": "Marcar totes com a llegides",

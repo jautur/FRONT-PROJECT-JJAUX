@@ -3,3 +3,4 @@
 // Des de aquí es pot reutilitzar AuthService al llarg del frontend.
 export * from './auth.service';
 export * from './translation.service';
+export * from './push.service';

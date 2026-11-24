@@ -328,3 +328,27 @@
     justify-content: flex-end;
   }
 }
+
+.push-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin: 0 0 1rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid #e7e5e4;
+  border-radius: 12px;
+  background: #fafaf9;
+}
+.push-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  font-size: 0.85rem;
+  min-width: 0;
+  flex: 1 1 240px;
+}
+.push-text span {
+  color: #57534e;
+}
