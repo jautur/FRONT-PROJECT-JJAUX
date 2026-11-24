@@ -28,3 +28,6 @@ jobs:
 
       - name: Compilar aplicació Angular
         run: npm run build
+
+      - name: Executar tests unitaris (Karma + Chrome headless)
+        run: npm run test:ci
