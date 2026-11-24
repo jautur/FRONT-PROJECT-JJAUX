@@ -1,0 +1,140 @@
+<div class="avisos-container">
+  <div class="avisos-header">
+    <div>
+      <h2>{{ 'AVISOS_PAGE.TITLE' | translate }}</h2>
+      <p class="subtitle">{{ 'AVISOS_PAGE.SUBTITLE' | translate }}</p>
+    </div>
+    <div class="header-actions">
+      <button type="button" class="btn-refresh-avisos" (click)="carregarAvisos()" [class.spinning]="loading" [title]="'COMMON.ACTUALITZAR' | translate" [attr.aria-label]="'COMMON.ACTUALITZAR' | translate">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+        </svg>
+      </button>
+      <button *ngIf="avisos.length > 0" type="button" class="btn-action-alt" (click)="marcarTotesLlegides()" [disabled]="pendentsCount === 0">
+        {{ 'AVISOS_PAGE.MARK_ALL_READ' | translate }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Filtres -->
+  <div class="filter-tabs">
+    <button
+      type="button"
+      class="tab-btn"
+      [class.active]="filtreActiu === 'totes'"
+      (click)="canviarFiltre('totes')"
+    >
+      {{ 'AVISOS_PAGE.TAB_ALL' | translate }} ({{ avisos.length }})
+    </button>
+    <button
+      type="button"
+      class="tab-btn"
+      [class.active]="filtreActiu === 'pendents'"
+      (click)="canviarFiltre('pendents')"
+    >
+      {{ 'AVISOS_PAGE.TAB_PENDING' | translate }} ({{ pendentsCount }})
+    </button>
+    <button
+      type="button"
+      class="tab-btn"
+      [class.active]="filtreActiu === 'llegides'"
+      (click)="canviarFiltre('llegides')"
+    >
+      {{ 'AVISOS_PAGE.TAB_READ' | translate }} ({{ avisos.length - pendentsCount }})
+    </button>
+  </div>
+
+  <!-- Estat de càrrega o error -->
+  <div *ngIf="loading" class="state-box">{{ 'MERCAT.LOADING' | translate }}</div>
+  <div *ngIf="errorMsg" class="alert-error">{{ errorMsg }}</div>
+  <div *ngIf="successMsg" class="alert-success">{{ successMsg }}</div>
+
+  <!-- Llista de notificacions -->
+  <div class="avisos-list" *ngIf="!loading && avisosFiltrats.length > 0">
+    <div
+      *ngFor="let a of avisosFiltrats"
+      class="avis-card"
+      [class.no-llegit]="!a.llegit"
+      (click)="anarApartat(a)"
+      title="Clica per anar a l'apartat relacionat amb aquest avís"
+    >
+      <div class="avis-indicator">
+        <span class="dot" *ngIf="!a.llegit" title="Pendent de llegir"></span>
+      </div>
+
+      <div class="avis-body">
+        <div class="avis-meta">
+          <span class="badge-category" [style.background]="getCategoryBadgeStyle(a).bg" [style.color]="getCategoryBadgeStyle(a).color">
+            {{ getCategoriaAvis(a) }}
+          </span>
+          <span class="badge-status" [class.badge-pendent]="!a.llegit" [class.badge-llegit]="a.llegit">
+            {{ a.llegit ? ('AVISOS_PAGE.STATUS_READ' | translate) : ('AVISOS_PAGE.STATUS_NEW' | translate) }}
+          </span>
+          <span class="avis-date">{{ formatData(a.data) }}</span>
+        </div>
+        <p class="avis-text">{{ a.missatge }}</p>
+        <span class="avis-link-hint">
+          <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 3px;">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+            <polyline points="15 3 21 3 21 9"></polyline>
+            <line x1="10" y1="14" x2="21" y2="3"></line>
+          </svg>
+          {{ getNomDestinacio(a) }}
+        </span>
+      </div>
+
+      <div class="avis-actions">
+        <button
+          type="button"
+          class="btn-icon btn-anar"
+          title="Anar a l'apartat relacionat"
+          (click)="$event.stopPropagation(); anarApartat(a)"
+        >
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+            <polyline points="15 3 21 3 21 9"></polyline>
+            <line x1="10" y1="14" x2="21" y2="3"></line>
+          </svg>
+          {{ 'AVISOS_PAGE.OPEN_SECTION' | translate }}
+        </button>
+        <button
+          *ngIf="!a.llegit"
+          type="button"
+          class="btn-icon"
+          title="Marcar com a llegit"
+          (click)="$event.stopPropagation(); marcarLlegit(a.id)"
+        >
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          {{ 'AVISOS_PAGE.MARK_READ' | translate }}
+        </button>
+        <button
+          type="button"
+          class="btn-icon danger"
+          [title]="'AVISOS_PAGE.DELETE' | translate"
+          (click)="$event.stopPropagation(); eliminarAvis(a.id)"
+          [attr.aria-label]="'AVISOS_PAGE.DELETE' | translate"
+        >
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Llista buida -->
+  <div class="empty-state" *ngIf="!loading && avisosFiltrats.length === 0">
+    <div class="empty-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M22 12h-6l-2 3h-4l-2-3H2"></path>
+        <path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path>
+      </svg>
+    </div>
+    <h3>{{ 'AVISOS_PAGE.EMPTY_TITLE' | translate }}</h3>
+    <p>{{ 'AVISOS_PAGE.EMPTY_DESC' | translate }}</p>
+    <a [routerLink]="getNavUrl('/inici')" class="btn-primary">{{ 'NAV.HOME' | translate }}</a>
+  </div>
+</div>

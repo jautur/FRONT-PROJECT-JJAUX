@@ -1,0 +1,291 @@
+<div class="panell-container">
+  <div class="app-back-nav" *ngIf="isAppPage">
+    <button type="button" class="btn-app-back" (click)="goBack()" [title]="'COMMON.TORNAR' | translate">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <polyline points="15 18 9 12 15 6"></polyline>
+      </svg>
+      <span>{{ 'COMMON.TORNAR' | translate }}</span>
+    </button>
+  </div>
+
+  <div class="panell-header">
+    <div>
+      <h2>{{ 'LES_MEVES_TASQUES.TITLE' | translate }}</h2>
+      <p class="subtitle">{{ 'LES_MEVES_TASQUES.SUBTITLE' | translate }}</p>
+    </div>
+    <div>
+      <a [routerLink]="getNavUrl('/client/crear-tasca')" class="btn-crear">
+        {{ 'LES_MEVES_TASQUES.BTN_NEW_INCIDENCIA' | translate }}
+      </a>
+    </div>
+  </div>
+
+  <!-- Filtres per estat -->
+  <div class="filter-tabs">
+    <button
+      type="button"
+      class="tab-btn"
+      [class.active]="filtreActiu === 'totes'"
+      (click)="canviarFiltre('totes')"
+    >
+      {{ 'LES_MEVES_TASQUES.TAB_ALL' | translate }} ({{ tasques.length }})
+    </button>
+    <button
+      type="button"
+      class="tab-btn"
+      [class.active]="filtreActiu === 'sollicitada'"
+      (click)="canviarFiltre('sollicitada')"
+    >
+      {{ 'TREBALL.TAB_SOLLICITUDS' | translate }} ({{ countSollicituds() }})
+    </button>
+    <button
+      type="button"
+      class="tab-btn"
+      [class.active]="filtreActiu === 'oberta'"
+      (click)="canviarFiltre('oberta')"
+    >
+      {{ 'LES_MEVES_TASQUES.TAB_OPEN' | translate }} ({{ countIncidencies() }})
+    </button>
+    <button
+      type="button"
+      class="tab-btn"
+      [class.active]="filtreActiu === 'en_curs'"
+      (click)="canviarFiltre('en_curs')"
+    >
+      {{ 'LES_MEVES_TASQUES.TAB_IN_PROGRESS' | translate }} ({{ countEnCurs() }})
+    </button>
+    <button
+      type="button"
+      class="tab-btn"
+      [class.active]="filtreActiu === 'finalitzada'"
+      (click)="canviarFiltre('finalitzada')"
+    >
+      {{ 'LES_MEVES_TASQUES.TAB_COMPLETED' | translate }} ({{ countFinalitzades() }})
+    </button>
+    <button
+      type="button"
+      class="tab-btn"
+      [class.active]="filtreActiu === 'cancellada'"
+      (click)="canviarFiltre('cancellada')"
+    >
+      {{ 'TREBALL.TAB_CANCELLADES' | translate }} ({{ countCancellades() }})
+    </button>
+  </div>
+
+  <!-- Missatges d'estat -->
+  <div *ngIf="loading" class="state-box">{{ 'COMMON.CARREGANT' | translate }}</div>
+  <div *ngIf="errorMsg" class="alert-error" role="alert">{{ errorMsg | translate }}</div>
+  <div *ngIf="successMsg" class="alert-success" role="status">{{ successMsg | translate }}</div>
+
+  <!-- Llista de tasques -->
+  <div class="tasques-grid" *ngIf="!loading && tasquesFiltrades.length > 0">
+    <div *ngFor="let t of tasquesFiltrades" class="tasca-card" [class.converged-card]="isTascaConvergida(t) || esSollicitud(t)">
+      <div class="card-header">
+        <div class="header-nature-group">
+          <span class="badge-nature" [ngClass]="esIncidencia(t) ? 'is-incidencia' : 'is-tasca'">
+            {{ esSollicitud(t) ? ('TREBALL.NATURE_SOLLICITUD' | translate) : (esIncidencia(t) ? ('LES_MEVES_TASQUES.NATURE_INCIDENCIA' | translate) : ('LES_MEVES_TASQUES.NATURE_TASK' | translate)) }}
+          </span>
+          <span class="badge-categoria">{{ t.categoria ? (t.categoria | translate) : ('CATEGORIES.Altres Serveis' | translate) }}</span>
+        </div>
+        <span class="badge-estat" [ngClass]="getEstatClass(t.estat)">{{ t.estat ? (t.estat | translate) : '' }}</span>
+      </div>
+
+      <h3 class="tasca-titol">{{ t.titol }}</h3>
+      <p class="tasca-desc">{{ t.descripcio }}</p>
+
+      <div class="tasca-meta">
+        <!-- Professional assignat si és tasca en curs o finalitzada -->
+        <div class="meta-item pro-assigned-item" *ngIf="!esIncidencia(t)">
+          <span class="meta-label">{{ 'LES_MEVES_TASQUES.PRO_ASSIGNED' | translate }}</span>
+          <span class="meta-value pro-assigned-val">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+            <a [routerLink]="[getNavUrl('/perfil'), t.professionalNom || t.professional]" class="user-inline-link">
+              <strong>{{ t.professionalNom || t.professional }}</strong>
+            </a>
+          </span>
+        </div>
+
+        <!-- Sense professional si és incidència oberta -->
+        <div class="meta-item waiting-item" *ngIf="esIncidencia(t)">
+          <span class="meta-label">{{ 'LES_MEVES_TASQUES.PRO_STATUS' | translate }}</span>
+          <span class="meta-value waiting-badge">{{ 'LES_MEVES_TASQUES.NO_PRO_ASSIGNED' | translate }}</span>
+        </div>
+
+        <div class="meta-item budget-item">
+          <span class="meta-label">{{ esIncidencia(t) ? ('LES_MEVES_TASQUES.ESTIMATED_BUDGET' | translate) : ('LES_MEVES_TASQUES.AGREED_PRICE' | translate) }}</span>
+          <span class="meta-value budget">{{ t.budget }}</span>
+        </div>
+
+        <div class="meta-item ofertes-item" *ngIf="esIncidencia(t) && ofertesCount[t.id] !== undefined">
+          <span class="meta-label">{{ 'LES_MEVES_TASQUES.QUOTES_RECEIVED' | translate }}</span>
+          <span class="meta-value ofertes-badge">{{ ofertesCount[t.id] }} {{ 'LES_MEVES_TASQUES.QUOTES_COUNT' | translate }}</span>
+        </div>
+
+        <!-- Mostra la valoració si ja ha estat avaluada -->
+        <div class="meta-item rating-item" *ngIf="t.valoracio">
+          <span class="meta-label">{{ 'LES_MEVES_TASQUES.YOUR_RATING' | translate }}</span>
+          <span class="meta-value rating-stars">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor" style="vertical-align: -1px; margin-right: 2px;" aria-hidden="true">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+            </svg>
+            {{ t.valoracio }}/5
+            <span *ngIf="t.comentari" class="rating-quote">"{{ t.comentari }}"</span>
+          </span>
+        </div>
+      </div>
+
+      <!-- El contacte de l'altra part només es mostra quan la tasca està acceptada -->
+      <app-contacte-tasca
+        *ngIf="teContacte(t)"
+        [usuariId]="t.professionalId"
+        titol="TREBALL.CONTACTE_PROFESSIONAL"
+      ></app-contacte-tasca>
+
+      <p class="revisio-avis" *ngIf="t.estat === 'En revisió'">{{ 'TREBALL.CANCEL_IN_REVIEW' | translate }}</p>
+      <p class="revisio-avis" *ngIf="esSollicitud(t)">{{ 'TREBALL.SOL_PENDING_HINT' | translate }}</p>
+
+      <div class="card-actions">
+        <a *ngIf="!esSollicitud(t)" [routerLink]="[getNavUrl('/tasca-detall'), t.id]" class="btn-action primary">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 5px;" aria-hidden="true">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          {{ esIncidencia(t) ? ('LES_MEVES_TASQUES.BTN_REVIEW_QUOTES' | translate) + ' (' + (ofertesCount[t.id] || 0) + ')' : ('TASQUES_OFERTES.VEURE_SEGUIMENT' | translate) }}
+        </a>
+
+        <!-- Finalitzar: el client ho pot fer sense confirmació del professional -->
+        <button *ngIf="t.estat === 'En curs'" type="button" class="btn-action evaluate-btn" (click)="obrirModalFinalitzar(t)">
+          {{ 'TREBALL.FINISH_BTN' | translate }}
+        </button>
+
+        <!-- Si ja està finalitzada però encara no s'ha avaluat -->
+        <button *ngIf="t.estat === 'Finalitzada' && !t.valoracio" type="button" class="btn-action evaluate-btn" (click)="obrirModalFinalitzar(t)">
+          {{ 'TASCA_DETALL.BTN_EVALUATE' | translate }}
+        </button>
+
+        <button *ngIf="t.estat === 'En curs'" type="button" class="btn-action neutral" (click)="tascaPerCancellar = t">
+          {{ 'TREBALL.CANCEL_BTN' | translate }}
+        </button>
+
+        <!-- Una incidència oberta es pot tancar sense triar cap professional -->
+        <button *ngIf="esIncidencia(t) && t.estat === 'Oberta'" type="button" class="btn-action neutral" (click)="tancarIncidencia(t)">
+          {{ 'TREBALL.CLOSE_INCIDENT_BTN' | translate }}
+        </button>
+
+        <button *ngIf="esSollicitud(t)" type="button" class="btn-action danger" (click)="retirarSollicitud(t)">
+          {{ 'TREBALL.SOL_WITHDRAW' | translate }}
+        </button>
+
+        <!-- Només s'esborra una incidència; una tasca acordada forma part de l'historial -->
+        <button *ngIf="esIncidencia(t) && t.estat === 'Oberta'" type="button" class="btn-action danger" (click)="eliminarIncidencia(t)">
+          {{ 'COMMON.BORRAR' | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Estat buit -->
+  <div class="empty-state" *ngIf="!loading && tasquesFiltrades.length === 0">
+    <div class="empty-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+      </svg>
+    </div>
+    <h3>{{ 'LES_MEVES_TASQUES.EMPTY_TITLE' | translate }}</h3>
+    <p>{{ 'LES_MEVES_TASQUES.EMPTY_DESC' | translate }}</p>
+    <a [routerLink]="getNavUrl('/client/crear-tasca')" class="btn-crear">{{ 'LES_MEVES_TASQUES.BTN_NEW_INCIDENCIA' | translate }}</a>
+  </div>
+
+  <app-cancellar-tasca-modal
+    *ngIf="tascaPerCancellar"
+    [tasca]="tascaPerCancellar"
+    (tancat)="tascaPerCancellar = null"
+    (enviat)="alCancellacioSollicitada($event)"
+  ></app-cancellar-tasca-modal>
+
+  <!-- MODAL D'AVALUACIÓ I FINALITZACIÓ DE TASCA -->
+  <div class="modal-backdrop" *ngIf="modalFinalitzarObert" (click)="tancarModalFinalitzar()">
+    <div class="modal-dialog" (click)="$event.stopPropagation()">
+      <header class="modal-header">
+        <div>
+          <span class="modal-badge-tag">{{ 'TASCA_DETALL.REVIEW_HEADER' | translate }}</span>
+          <h2>{{ 'TASCA_DETALL.MODAL_EVALUATE_TITLE' | translate }}</h2>
+        </div>
+        <button type="button" class="btn-close-modal" (click)="tancarModalFinalitzar()" aria-label="Tancar">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </header>
+
+      <div class="modal-body" *ngIf="tascaPerFinalitzar">
+        <div class="modal-task-summary">
+          <span class="badge-categoria">{{ tascaPerFinalitzar.categoria ? (tascaPerFinalitzar.categoria | translate) : '' }}</span>
+          <h3>{{ tascaPerFinalitzar.titol }}</h3>
+          <p class="summary-pro">
+            {{ 'LES_MEVES_TASQUES.PRO_ASSIGNED' | translate }} 
+            <strong>
+              <a *ngIf="professionalPerFinalitzar; else noProModal" [routerLink]="[getNavUrl('/perfil'), professionalPerFinalitzar]" class="user-inline-link" title="Veure perfil de {{ professionalPerFinalitzar }}">
+                {{ professionalPerFinalitzar }}
+              </a>
+              <ng-template #noProModal>Professional AVISA</ng-template>
+            </strong>
+          </p>
+        </div>
+
+        <div class="rating-input-group">
+          <label class="rating-title">{{ 'TASCA_DETALL.MODAL_RATING_LABEL' | translate }}</label>
+          <div class="stars-picker">
+            <button
+              type="button"
+              *ngFor="let star of [1, 2, 3, 4, 5]"
+              class="star-btn"
+              [class.active]="star <= puntuacioSeleccionada"
+              (click)="puntuacioSeleccionada = star"
+              title="{{ star }} estrelles"
+            >
+              <svg viewBox="0 0 24 24" width="18" height="18" [attr.fill]="star <= puntuacioSeleccionada ? '#f59e0b' : 'none'" [attr.stroke]="star <= puntuacioSeleccionada ? '#f59e0b' : '#9ca3af'" stroke-width="2" aria-hidden="true">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+              </svg>
+            </button>
+            <span class="star-rating-text">{{ getRatingLabel(puntuacioSeleccionada) }}</span>
+          </div>
+        </div>
+
+        <div class="comment-input-group">
+          <label for="ressenya-desc">{{ 'TASCA_DETALL.MODAL_COMMENT_LABEL' | translate }}</label>
+          <textarea
+            id="ressenya-desc"
+            [(ngModel)]="ressenyaDescripcio"
+            rows="4"
+            [placeholder]="'TASCA_DETALL.MODAL_COMMENT_PLACEHOLDER' | translate"
+          ></textarea>
+        </div>
+
+        <div class="modal-actions-col">
+          <button
+            type="button"
+            class="btn-submit-review"
+            (click)="confirmarFinalitzacioAmbRessenya()"
+            [disabled]="enviantRessenya"
+          >
+            {{ enviantRessenya ? ('COMMON.CARREGANT' | translate) : ('TASCA_DETALL.BTN_SAVE_REVIEW' | translate) }}
+          </button>
+          <button
+            *ngIf="tascaPerFinalitzar?.estat !== 'Finalitzada'"
+            type="button"
+            class="btn-skip-review"
+            (click)="finalitzarSenseRessenya()"
+            [disabled]="enviantRessenya"
+          >
+            {{ 'TASCA_DETALL.BTN_COMPLETE_PRO' | translate }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

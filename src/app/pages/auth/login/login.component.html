@@ -1,0 +1,244 @@
+<section class="auth-card">
+  <div class="app-back-nav" *ngIf="isAppPage">
+    <button type="button" class="btn-app-back" (click)="goBack()" [title]="'COMMON.TORNAR' | translate">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <polyline points="15 18 9 12 15 6"></polyline>
+      </svg>
+      <span>{{ 'COMMON.TORNAR' | translate }}</span>
+    </button>
+  </div>
+
+  <h1>{{ 'AUTH.LOGIN.TITLE' | translate }}</h1>
+  <p *ngIf="message" class="alert-message">{{ message }}</p>
+  <p *ngIf="!message">{{ 'AUTH.LOGIN.SUBTITLE' | translate }}</p>
+
+  <form (ngSubmit)="onSubmit()">
+    <div class="form-field-group">
+      <label for="login-email">{{ 'AUTH.LOGIN.EMAIL_LABEL' | translate }}</label>
+      <input
+        id="login-email"
+        type="email"
+        inputmode="email"
+        [(ngModel)]="email"
+        name="email"
+        required
+        [placeholder]="'AUTH.LOGIN.EMAIL_PLACEHOLDER' | translate"
+        autocapitalize="none"
+        autocorrect="off"
+        spellcheck="false"
+        autocomplete="username"
+      />
+    </div>
+
+    <div class="form-field-group">
+      <div class="label-with-action">
+        <label for="login-password">{{ 'AUTH.LOGIN.PASSWORD_LABEL' | translate }}</label>
+        <button
+          type="button"
+          class="link-forgot"
+          (click)="obrirModalRecuperacio()"
+          tabindex="0"
+        >
+          {{ 'AUTH.LOGIN.FORGOT_PASSWORD_LINK' | translate }}
+        </button>
+      </div>
+      <input
+        id="login-password"
+        type="password"
+        [(ngModel)]="password"
+        name="password"
+        placeholder="••••••••"
+        autocapitalize="none"
+        autocorrect="off"
+        spellcheck="false"
+        autocomplete="current-password"
+        required
+      />
+    </div>
+
+    <button type="submit" [disabled]="loading">
+      {{ loading ? ('AUTH.LOGIN.SUBMITTING' | translate) : ('AUTH.LOGIN.SUBMIT_BTN' | translate) }}
+    </button>
+    <p *ngIf="error" class="error">{{ error | translate }}</p>
+
+    <!-- Botons d'accés ràpid: només en el build de desenvolupament (environment.development.ts) -->
+    <div class="quick-test-section" *ngIf="accesRapid.length">
+      <span class="quick-test-title">{{ 'AUTH.LOGIN.QUICK_TEST_TITLE' | translate }}</span>
+      <div class="quick-test-buttons">
+        <button type="button" class="btn-quick-user" *ngFor="let compte of accesRapid" (click)="omplirCredencials(compte.usuari, compte.contrasenya)">
+          {{ compte.etiqueta | translate }}
+        </button>
+      </div>
+    </div>
+
+    <p class="footer-hint">
+      {{ 'AUTH.LOGIN.NO_ACCOUNT' | translate }} <a [routerLink]="getNavUrl('/registre')" [queryParams]="returnUrl !== '/' ? { returnUrl: returnUrl } : null">{{ 'AUTH.LOGIN.REGISTER_HERE' | translate }}</a>
+    </p>
+  </form>
+</section>
+
+<!-- MODAL DE RECUPERACIÓ DE CONTRASENYA -->
+<div
+  *ngIf="mostrarModalRecuperacio"
+  class="modal-backdrop"
+  (click)="tancarModalRecuperacio()"
+  role="dialog"
+  aria-modal="true"
+>
+  <div class="modal-card" (click)="$event.stopPropagation()">
+    <!-- Header del Modal -->
+    <div class="modal-header">
+      <div class="modal-title-wrap">
+        <span class="modal-icon">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          </svg>
+        </span>
+        <h2>{{ 'AUTH.LOGIN.RECOVERY_MODAL_TITLE' | translate }}</h2>
+      </div>
+      <button
+        type="button"
+        class="btn-close-modal"
+        (click)="tancarModalRecuperacio()"
+        aria-label="Tancar"
+      >
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+
+    <!-- PAS 1: Sol·licitar codi temporal -->
+    <div *ngIf="pasRecuperacio === 1" class="modal-body">
+      <p class="modal-desc">{{ 'AUTH.LOGIN.RECOVERY_STEP1_DESC' | translate }}</p>
+
+      <label class="modal-field">
+        <span>{{ 'AUTH.LOGIN.RECOVERY_EMAIL_LABEL' | translate }}</span>
+        <input
+          type="text"
+          [(ngModel)]="recuperarEmail"
+          name="recuperarEmail"
+          [placeholder]="'AUTH.LOGIN.RECOVERY_EMAIL_PLACEHOLDER' | translate"
+          autocapitalize="none"
+          autocorrect="off"
+          spellcheck="false"
+          (keyup.enter)="sollicitarCodi()"
+        />
+      </label>
+
+      <p *ngIf="recuperarError" class="modal-error">{{ recuperarError | translate }}</p>
+
+      <div class="modal-actions">
+        <button
+          type="button"
+          class="btn-modal-cancel"
+          (click)="tancarModalRecuperacio()"
+        >
+          {{ 'AUTH.LOGIN.RECOVERY_CANCEL_BTN' | translate }}
+        </button>
+        <button
+          type="button"
+          class="btn-modal-submit"
+          [disabled]="recuperarLoading || !recuperarEmail.trim()"
+          (click)="sollicitarCodi()"
+        >
+          {{ recuperarLoading ? ('AUTH.LOGIN.RECOVERY_SENDING' | translate) : ('AUTH.LOGIN.RECOVERY_SEND_BTN' | translate) }}
+        </button>
+      </div>
+    </div>
+
+    <!-- PAS 2: Introduir codi de verificació i nova contrasenya -->
+    <div *ngIf="pasRecuperacio === 2" class="modal-body">
+      <p class="modal-desc">{{ 'AUTH.LOGIN.RECOVERY_STEP2_DESC' | translate }}</p>
+
+
+      <label class="modal-field">
+        <span>{{ 'AUTH.LOGIN.RECOVERY_CODE_LABEL' | translate }}</span>
+        <input
+          type="text"
+          [(ngModel)]="recuperarCodi"
+          name="recuperarCodi"
+          maxlength="6"
+          [placeholder]="'AUTH.LOGIN.RECOVERY_CODE_PLACEHOLDER' | translate"
+          class="code-input"
+          autocapitalize="none"
+          autocorrect="off"
+        />
+      </label>
+
+      <label class="modal-field">
+        <span>{{ 'AUTH.LOGIN.RECOVERY_NEW_PWD_LABEL' | translate }}</span>
+        <input
+          type="password"
+          [(ngModel)]="novaContrasenya"
+          name="novaContrasenya"
+          placeholder="••••••••"
+          autocapitalize="none"
+          autocorrect="off"
+        />
+      </label>
+
+      <label class="modal-field">
+        <span>{{ 'AUTH.LOGIN.RECOVERY_CONFIRM_PWD_LABEL' | translate }}</span>
+        <input
+          type="password"
+          [(ngModel)]="confirmarContrasenya"
+          name="confirmarContrasenya"
+          placeholder="••••••••"
+          autocapitalize="none"
+          autocorrect="off"
+          (keyup.enter)="aplicarNovaContrasenya()"
+        />
+      </label>
+
+      <p *ngIf="recuperarError" class="modal-error">{{ recuperarError | translate }}</p>
+
+      <button
+        type="button"
+        class="btn-back-step"
+        (click)="tornarPas1()"
+      >
+        {{ 'AUTH.LOGIN.RECOVERY_BACK_STEP1' | translate }}
+      </button>
+
+      <div class="modal-actions">
+        <button
+          type="button"
+          class="btn-modal-cancel"
+          (click)="tancarModalRecuperacio()"
+        >
+          {{ 'AUTH.LOGIN.RECOVERY_CANCEL_BTN' | translate }}
+        </button>
+        <button
+          type="button"
+          class="btn-modal-submit"
+          [disabled]="recuperarLoading || !recuperarCodi.trim() || !novaContrasenya.trim() || !confirmarContrasenya.trim()"
+          (click)="aplicarNovaContrasenya()"
+        >
+          {{ recuperarLoading ? ('AUTH.LOGIN.RECOVERY_SUBMITTING' | translate) : ('AUTH.LOGIN.RECOVERY_SUBMIT_BTN' | translate) }}
+        </button>
+      </div>
+    </div>
+
+    <!-- PAS 3: Èxit confirmació -->
+    <div *ngIf="pasRecuperacio === 3" class="modal-body success-body">
+      <div class="success-icon-wrap">
+        <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+      </div>
+      <h3>{{ 'AUTH.LOGIN.RECOVERY_SUCCESS_TITLE' | translate }}</h3>
+      <p class="success-desc">{{ 'AUTH.LOGIN.RECOVERY_SUCCESS_DESC' | translate }}</p>
+
+      <button
+        type="button"
+        class="btn-modal-submit btn-full"
+        (click)="tancarModalAmbExit()"
+      >
+        {{ 'AUTH.LOGIN.RECOVERY_CLOSE_BTN' | translate }}
+      </button>
+    </div>
+  </div>
+</div>

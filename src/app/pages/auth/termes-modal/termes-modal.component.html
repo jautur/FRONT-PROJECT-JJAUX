@@ -1,0 +1,259 @@
+<div [class.modal-backdrop]="isModal" (click)="onBackdropClick($event)">
+  <div class="legal-container" [class.is-modal-window]="isModal" (click)="$event.stopPropagation()">
+    <!-- Capçalera amb pestanyes -->
+    <header class="legal-header">
+      <div class="header-titles">
+        <span class="legal-eyebrow">{{ 'AUTH.TERMES_MODAL.EYEBROW' | translate }}</span>
+        <h2>{{ activeTab === 'termes' ? ('AUTH.TERMES_MODAL.TERMES_TITLE' | translate) : ('AUTH.TERMES_MODAL.PRIVACY_TITLE' | translate) }}</h2>
+      </div>
+      <button *ngIf="isModal" type="button" class="btn-close" (click)="close.emit()" [attr.aria-label]="'AUTH.TERMES_MODAL.CLOSE' | translate">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </header>
+
+    <!-- Selector de pestanyes: Termes vs Privacitat -->
+    <nav class="legal-tabs" aria-label="Navegació legal">
+      <button
+        type="button"
+        class="tab-btn"
+        [class.active]="activeTab === 'termes'"
+        (click)="activeTab = 'termes'">
+        {{ 'AUTH.TERMES_MODAL.TAB_TERMES' | translate }}
+      </button>
+      <button
+        type="button"
+        class="tab-btn"
+        [class.active]="activeTab === 'privacitat'"
+        (click)="activeTab = 'privacitat'">
+        {{ 'AUTH.TERMES_MODAL.TAB_PRIVACY' | translate }}
+      </button>
+    </nav>
+
+    <!-- Contingut legal desplaçable (Scroll còmode per a mòbils) -->
+    <main class="legal-body">
+      <!-- PESTANYA 1: TERMES I CONDICIONS D'ÚS -->
+      <article *ngIf="activeTab === 'termes'" class="legal-article">
+        <div class="legal-doc-intro">
+          <p class="doc-date">Darrera actualització: Octubre 2026</p>
+          <p class="doc-summary">
+            Benvingut/da a la plataforma <strong>AVISA</strong>. En registrar-vos com a Client o com a Professional,
+            accepteu de manera vinculant els presents termes i condicions que regeixen l'ús de la plataforma.
+          </p>
+        </div>
+
+        <!-- Secció 1 -->
+        <section class="legal-section">
+          <h3 class="section-title">
+            <span class="section-num">1</span>
+            Naturalesa del servei (Rol d'intermediació)
+          </h3>
+          <ul class="legal-points">
+            <li>
+              <strong>Intermediació tecnològica:</strong> La Plataforma AVISA actua exclusivament com a punt de trobada
+              tecnològic entre professionals independents ("Professionals") i usuaris demandants de serveis ("Clients").
+            </li>
+            <li>
+              <strong>Independència de les parts:</strong> La relació contractual i laboral per a l'execució del treball
+              s'estableix directament i exclusiva entre el Client i el Professional. AVISA no és part del contracte de
+              prestació de serveis ni manté vincle laboral o de subordinació amb cap professional registrat.
+            </li>
+          </ul>
+        </section>
+
+        <!-- Secció 2 -->
+        <section class="legal-section">
+          <h3 class="section-title">
+            <span class="section-num">2</span>
+            Compromisos i obligacions dels Clients
+          </h3>
+          <p class="section-intro">En sol·licitar o contractar un servei, el Client accepta expressament:</p>
+          <ul class="legal-points">
+            <li>
+              <strong>Obligació de pagament:</strong> Pagar l'import total acordat per a la tasca mitjançant les
+              passarel·les de pagament habilitades a la Plataforma.
+            </li>
+            <li>
+              <strong>Prohibició de pagaments fora de la plataforma:</strong> Queda terminantment prohibit acordar o
+              efectuar pagaments en efectiu o per vies externes amb la finalitat d'eludir les comissions d'intermediació.
+              L'incompliment comportarà el bloqueig permanent del compte.
+            </li>
+            <li>
+              <strong>Tracte i respecte:</strong> Mantindre un tracte respectuós, professional i lliure de qualsevol
+              tipus de discriminació, assetjament o violència cap al professional.
+            </li>
+            <li>
+              <strong>Facilitat d'accés i veracitat:</strong> Proporcionar informació veraç sobre l'abast de la tasca
+              i garantir un accés segur i adequat a l'espai on s'haja de realitzar el treball.
+            </li>
+            <li>
+              <strong>Cancel·lacions injustificades:</strong> Les cancel·lacions d'última hora sense causa de força
+              major podran comportar penalitzacions econòmiques per a cobrir el desplaçament o temps reservat pel professional.
+            </li>
+          </ul>
+        </section>
+
+        <!-- Secció 3 -->
+        <section class="legal-section">
+          <h3 class="section-title">
+            <span class="section-num">3</span>
+            Compromisos i obligacions dels Professionals
+          </h3>
+          <p class="section-intro">En registrar-se i acceptar tasques, el Professional accepta expressament:</p>
+          <ul class="legal-points">
+            <li>
+              <strong>Execució i professionalitat:</strong> Realitzar la tasca acceptada amb diligència professional,
+              complint els terminis acordats i garantint la qualitat del treball.
+            </li>
+            <li>
+              <strong>Compromís de no abandonament:</strong> No cancel·lar ni abandonar serveis acceptats sense motiu
+              de força major degudament comunicat. Les cancel·lacions reiterades o deixar un client sense atenció implicaran
+              la baixa immediata de la plataforma.
+            </li>
+            <li>
+              <strong>Prohibició de falsejament:</strong> Es prohibeix expressament marcar com a completades tasques que
+              no s'hagen finalitzat, unflar hores no treballades o incloure conceptes ficticis per a obtindre un rendiment
+              econòmic indegut.
+            </li>
+            <li>
+              <strong>Legalitat i capacitació:</strong> El professional declara sota la seua responsabilitat comptar amb
+              les altes fiscals pertinents (autònom o empresa), llicències, permisos i assegurances que la llei exigisca
+              per a la seua activitat.
+            </li>
+          </ul>
+        </section>
+
+        <!-- Secció 4 -->
+        <section class="legal-section">
+          <h3 class="section-title">
+            <span class="section-num">4</span>
+            Gestió econòmica, comissions i dipòsit de garantia
+          </h3>
+          <ul class="legal-points">
+            <li>
+              <strong>Comissió de la plataforma:</strong> Per cada tasca contractada i completada satisfactòriament,
+              AVISA deduïrà automàticament el percentatge de comissió establit sobre el cost total facturat abans de liquidar
+              la quantitat restant al professional.
+            </li>
+            <li>
+              <strong>Retenció temporal (Escrow / Pagament segur):</strong> En confirmar el servei, el Client diposita l'import
+              a través de la passarel·la integrada. Aquest import queda retingut cautelarment per la Plataforma i no s'allibera
+              al professional fins que el client confirma la correcta execució de la tasca o expira el termini establit per a obrir incidències.
+            </li>
+            <li>
+              <strong>Facturació:</strong> AVISA emetrà factura al professional per l'import de la comissió de gestió. El professional
+              és el responsable directe d'emetre la factura corresponent al client final pel servei realitzat.
+            </li>
+            <li>
+              <strong>Finançament de la plataforma i plans prèmium:</strong> La plataforma AVISA es finança principalment mitjançant
+              espais de publicitat i patrocini. Posteriorment, s'adheriran plans de subscripció i funcionalitats prèmium opcionals per a usuaris
+              i professionals que requereixin serveis addicionals o eines avançades de gestió. Durant el període inicial de llançament
+              (primer any), l'accés bàsic és 100% gratuït i exempt de quotes fixes obligatòries per a tots els professionals.
+            </li>
+          </ul>
+        </section>
+
+        <!-- Secció 5 -->
+        <section class="legal-section">
+          <h3 class="section-title">
+            <span class="section-num">5</span>
+            Resolució de conflictes i incidències
+          </h3>
+          <ul class="legal-points">
+            <li>
+              <strong>Període de revisió:</strong> Una vegada el professional marca la tasca com a finalitzada, el Client disposa
+              d'un marge de temps per a verificar el treball o obrir una disputa des de l'app si considera que el servei no s'ha realitzat
+              o conté defectes greus.
+            </li>
+            <li>
+              <strong>Mediació:</strong> En cas de desacord, l'equip d'AVISA revisarà les proves aportades per ambdues parts
+              (xat, fotografies, registres horaris) i prendrà una decisió respecte a l'alliberament o reembossament dels fons retinguts.
+            </li>
+          </ul>
+        </section>
+
+        <!-- Secció 6 -->
+        <section class="legal-section">
+          <h3 class="section-title">
+            <span class="section-num">6</span>
+            Sancions i cancel·lació de comptes
+          </h3>
+          <p class="section-intro">
+            AVISA es reserva el dret de suspendre cautelarment o cancel·lar de manera definitiva el compte de qualsevol
+            usuari (Client o Professional) que:
+          </p>
+          <ul class="legal-points">
+            <li>Falsege informació o intente cometre frau econòmic.</li>
+            <li>Incumpleixi de forma reiterada les obligacions de respecte, puntualitat o pagament.</li>
+            <li>Intente derivar clients o professionals fora de l'aplicació per a evitar la comissió de servei.</li>
+          </ul>
+        </section>
+      </article>
+
+      <!-- PESTANYA 2: POLÍTICA DE PRIVACITAT -->
+      <article *ngIf="activeTab === 'privacitat'" class="legal-article">
+        <div class="legal-doc-intro">
+          <p class="doc-date">Darrera actualització: Octubre 2026</p>
+          <p class="doc-summary">
+            La privadesa i seguretat de les teves dades és una prioritat a AVISA.
+            A continuació detallem com recollim, utilitzem i protegim la teva informació d'acord amb el Reglament General de Protecció de Dades (RGPD).
+          </p>
+        </div>
+
+        <section class="legal-section">
+          <h3 class="section-title">
+            <span class="section-num">1</span>
+            Responsable del Tractament
+          </h3>
+          <p>
+            La plataforma <strong>AVISA Serveis Tecnològics S.L.</strong> és la responsable del tractament de les dades personals
+            facilitades durant el registre i la utilització del servei.
+          </p>
+        </section>
+
+        <section class="legal-section">
+          <h3 class="section-title">
+            <span class="section-num">2</span>
+            Finalitat del Tractament
+          </h3>
+          <ul class="legal-points">
+            <li><strong>Gestió del compte d'usuari:</strong> Registre, inici de sessió i autenticació segura mitjançant tokens JWT.</li>
+            <li><strong>Intermediació de serveis:</strong> Facilitar el contacte directe entre clients i professionals per gestionar pressupostos i tasques.</li>
+            <li><strong>Transaccions i pagaments:</strong> Gestió del dipòsit de garantia (Escrow) i facturació legal de les comissions de servei.</li>
+            <li><strong>Prevenció del frau:</strong> Supervisió del compliment dels termes d'ús i seguretat dels contractes acordats.</li>
+          </ul>
+        </section>
+
+        <section class="legal-section">
+          <h3 class="section-title">
+            <span class="section-num">3</span>
+            Drets de l'Usuari (RGPD)
+          </h3>
+          <p>
+            Tens dret a accedir a les teves dades, rectificar-les, sol·licitar la seva supressió (dret a l'oblit),
+            limitar el seu tractament i oposar-te al mateix directament des del teu panell de perfil o contactant
+            amb el delegat de protecció de dades a <em>privacitat&#64;avisa.cat</em>.
+          </p>
+        </section>
+      </article>
+    </main>
+
+    <!-- Peu amb accions -->
+    <footer class="legal-footer">
+      <button *ngIf="isModal" type="button" class="btn-cancel" (click)="close.emit()">
+        {{ 'COMMON.TANCAR' | translate }}
+      </button>
+      <button *ngIf="isModal" type="button" class="btn-accept" (click)="onAcceptClick()">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;" aria-hidden="true">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+        {{ 'AUTH.TERMES_MODAL.ACCEPT_DOC' | translate }}
+      </button>
+      <a *ngIf="!isModal" [routerLink]="getNavUrl('/registre')" class="btn-accept" style="text-decoration: none;">
+        {{ 'AUTH.REGISTER.TITLE' | translate }}
+      </a>
+    </footer>
+  </div>
+</div>

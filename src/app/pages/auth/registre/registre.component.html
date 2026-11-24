@@ -1,0 +1,200 @@
+<div class="app-back-nav" *ngIf="isAppPage">
+  <button type="button" class="btn-app-back" (click)="goBack()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <polyline points="15 18 9 12 15 6"></polyline>
+    </svg>
+    <span>{{ 'COMMON.TORNAR' | translate }}</span>
+  </button>
+</div>
+
+<section class="auth-card">
+  <h1>{{ 'AUTH.REGISTER.TITLE' | translate }}</h1>
+  <p class="subtitle">{{ 'AUTH.REGISTER.SUBTITLE' | translate }}</p>
+
+  <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
+    {{ errorMessage | translate }}
+  </div>
+
+  <form [formGroup]="registerForm" (ngSubmit)="onRegister()">
+    <!-- Selecció de Tipus de Compte (Herència) -->
+    <div class="field-wrap">
+      <span class="field-label">{{ 'AUTH.REGISTER.ACCOUNT_TYPE' | translate }}</span>
+      <div class="role-selector">
+        <button
+          type="button"
+          class="role-btn"
+          [class.active]="registerForm.get('rol')?.value === 'CLIENT'"
+          (click)="onSelectRole('CLIENT')">
+          <strong>{{ 'AUTH.REGISTER.ROLE_CLIENT_TITLE' | translate }}</strong>
+          <small>{{ 'AUTH.REGISTER.ROLE_CLIENT_SUB' | translate }}</small>
+        </button>
+
+        <button
+          type="button"
+          class="role-btn"
+          [class.active]="registerForm.get('rol')?.value === 'PROFESSIONAL'"
+          (click)="onSelectRole('PROFESSIONAL')">
+          <strong>{{ 'AUTH.REGISTER.ROLE_PRO_TITLE' | translate }}</strong>
+          <small>{{ 'AUTH.REGISTER.ROLE_PRO_SUB' | translate }}</small>
+        </button>
+      </div>
+    </div>
+
+    <!-- Informació pedagògica del rol seleccionat -->
+    <div class="role-info-box" [ngClass]="registerForm.get('rol')?.value?.toLowerCase()">
+      <div *ngIf="registerForm.get('rol')?.value === 'CLIENT'">
+        {{ 'AUTH.REGISTER.CLIENT_INFO' | translate }}
+      </div>
+      <div *ngIf="registerForm.get('rol')?.value === 'PROFESSIONAL'">
+        {{ 'AUTH.REGISTER.PRO_INFO' | translate }}
+        <div style="margin-top: 0.5rem; color: #166534; font-weight: 600; display: flex; align-items: flex-start; gap: 0.35rem; line-height: 1.45;">
+          <span style="flex-shrink: 0; margin-top: 1px;">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#16a34a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+            </svg>
+          </span>
+          <span><strong>{{ 'AUTH.REGISTER.PRO_PROMO_TITLE' | translate }}</strong> {{ 'AUTH.REGISTER.PRO_PROMO_DESC' | translate }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Nom complet -->
+    <label>
+      {{ 'AUTH.REGISTER.NAME_LABEL' | translate }}
+      <input
+        type="text"
+        formControlName="nom"
+        required
+        [placeholder]="'AUTH.REGISTER.NAME_PLACEHOLDER' | translate"
+        [class.input-error]="submitted && registerForm.get('nom')?.invalid"
+      />
+      <small *ngIf="submitted && registerForm.get('nom')?.hasError('required')" class="field-error-text">
+        {{ 'AUTH.REGISTER.NAME_REQUIRED' | translate }}
+      </small>
+    </label>
+
+    <!-- Correu electrònic -->
+    <label>
+      {{ 'AUTH.REGISTER.EMAIL_LABEL' | translate }}
+      <input
+        type="email"
+        formControlName="email"
+        required
+        placeholder="nom@exemple.cat"
+        autocapitalize="none"
+        spellcheck="false"
+        [class.input-error]="submitted && registerForm.get('email')?.invalid"
+      />
+      <small *ngIf="submitted && registerForm.get('email')?.hasError('required')" class="field-error-text">
+        {{ 'AUTH.REGISTER.EMAIL_REQUIRED' | translate }}
+      </small>
+      <small *ngIf="submitted && registerForm.get('email')?.hasError('email')" class="field-error-text">
+        {{ 'AUTH.REGISTER.EMAIL_INVALID' | translate }}
+      </small>
+    </label>
+
+    <!-- Telèfon obligatori per a professionals -->
+    <label *ngIf="registerForm.get('rol')?.value === 'PROFESSIONAL'">
+      {{ 'AUTH.REGISTER.PHONE_LABEL' | translate }}
+      <input
+        type="tel"
+        formControlName="telefon"
+        required
+        placeholder="Ex: +34 600 123 456"
+        class="input-required"
+        [class.input-error]="submitted && registerForm.get('rol')?.value === 'PROFESSIONAL' && !registerForm.get('telefon')?.value"
+      />
+      <small class="hint">{{ 'AUTH.REGISTER.PHONE_HINT' | translate }}</small>
+      <small *ngIf="submitted && registerForm.get('rol')?.value === 'PROFESSIONAL' && !registerForm.get('telefon')?.value" class="field-error-text">
+        {{ 'AUTH.REGISTER.PHONE_REQUIRED' | translate }}
+      </small>
+    </label>
+
+    <!-- Contrasenya -->
+    <label>
+      {{ 'AUTH.REGISTER.PASSWORD_LABEL' | translate }}
+      <input
+        type="password"
+        formControlName="password"
+        required
+        minlength="6"
+        placeholder="Mínim 6 caràcters"
+        [class.input-error]="submitted && registerForm.get('password')?.invalid"
+      />
+      <small *ngIf="submitted && registerForm.get('password')?.hasError('required')" class="field-error-text">
+        {{ 'AUTH.REGISTER.PASSWORD_REQUIRED' | translate }}
+      </small>
+      <small *ngIf="submitted && registerForm.get('password')?.hasError('minlength')" class="field-error-text">
+        {{ 'AUTH.REGISTER.PASSWORD_MINLENGTH' | translate }}
+      </small>
+    </label>
+
+    <!-- Caselles de verificació obligatòries (Termes i Privacitat) -->
+    <div class="legal-checkboxes-block">
+      <!-- Checkbox 1: Termes i Condicions d'Ús -->
+      <div class="legal-checkbox-item">
+        <label class="checkbox-container" [class.field-error]="submitted && registerForm.get('acceptedTerms')?.invalid">
+          <input
+            type="checkbox"
+            formControlName="acceptedTerms"
+            id="acceptedTerms"
+            class="native-checkbox"
+          />
+          <span class="checkbox-label-text">
+            {{ 'AUTH.REGISTER.TERMS_READ' | translate }}
+            <button
+              type="button"
+              class="link-terms-btn"
+              (click)="obrirModalTermes('termes')">
+              {{ 'AUTH.REGISTER.TERMS_LINK' | translate }}
+            </button> *
+          </span>
+        </label>
+        <div *ngIf="submitted && registerForm.get('acceptedTerms')?.hasError('required')" class="checkbox-error-msg">
+          {{ 'AUTH.REGISTER.TERMS_REQUIRED' | translate }}
+        </div>
+      </div>
+
+      <!-- Checkbox 2: Política de Privacitat -->
+      <div class="legal-checkbox-item">
+        <label class="checkbox-container" [class.field-error]="submitted && registerForm.get('acceptedPrivacy')?.invalid">
+          <input
+            type="checkbox"
+            formControlName="acceptedPrivacy"
+            id="acceptedPrivacy"
+            class="native-checkbox"
+          />
+          <span class="checkbox-label-text">
+            {{ 'AUTH.REGISTER.PRIVACY_READ' | translate }}
+            <button
+              type="button"
+              class="link-terms-btn"
+              (click)="obrirModalTermes('privacitat')">
+              {{ 'AUTH.REGISTER.PRIVACY_LINK' | translate }}
+            </button> *
+          </span>
+        </label>
+        <div *ngIf="submitted && registerForm.get('acceptedPrivacy')?.hasError('required')" class="checkbox-error-msg">
+          {{ 'AUTH.REGISTER.PRIVACY_REQUIRED' | translate }}
+        </div>
+      </div>
+    </div>
+
+    <button type="submit" class="submit-btn" [disabled]="loading">
+      {{ loading ? ('AUTH.REGISTER.SUBMITTING' | translate) : ('AUTH.REGISTER.SUBMIT_PREFIX' | translate) + (registerForm.get('rol')?.value === 'PROFESSIONAL' ? ('AUTH.REGISTER.ROLE_PRO_TITLE' | translate) : ('AUTH.REGISTER.ROLE_CLIENT_TITLE' | translate)) }}
+    </button>
+
+    <p class="footer-hint">
+      {{ 'AUTH.REGISTER.ALREADY_ACCOUNT' | translate }} <a [routerLink]="getNavUrl('/login')">{{ 'AUTH.REGISTER.LOGIN_HERE' | translate }}</a>
+    </p>
+  </form>
+
+  <!-- Modal emergent amb el text legal complet -->
+  <app-termes-modal
+    *ngIf="showTermsModal"
+    [isModal]="true"
+    [activeTab]="modalActiveTab"
+    (close)="tancarModalTermes()"
+    (accept)="onAcceptLegal($event)">
+  </app-termes-modal>
+</section>

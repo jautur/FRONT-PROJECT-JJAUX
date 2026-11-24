@@ -1,0 +1,1069 @@
+<div class="admin-container">
+  <div class="app-back-nav" *ngIf="isAppPage">
+    <button type="button" class="btn-app-back" (click)="goBack()" [title]="'COMMON.TORNAR' | translate">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <polyline points="15 18 9 12 15 6"></polyline>
+      </svg>
+      <span>{{ 'COMMON.TORNAR' | translate }}</span>
+    </button>
+  </div>
+
+  <!-- Capçalera del Panell -->
+  <div class="admin-header">
+    <div class="title-group">
+      <div class="admin-badge">{{ 'ADMIN.BADGE' | translate }}</div>
+      <h2>{{ 'ADMIN.TITLE' | translate }}</h2>
+      <p class="subtitle">{{ 'ADMIN.SUBTITLE' | translate }}</p>
+    </div>
+    <div class="refresh-group">
+      <button type="button" class="btn-refresh" (click)="carregarDades()" [disabled]="loading">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;">
+          <polyline points="23 4 23 10 17 10"></polyline>
+          <polyline points="1 20 1 14 7 14"></polyline>
+          <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+        </svg>
+        {{ loading ? ('ADMIN.REFRESHING' | translate) : ('ADMIN.BTN_REFRESH' | translate) }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Mètriques globals interactives -->
+  <div class="metrics-grid">
+    <div
+      class="metric-card"
+      [class.active-card]="tabActiva === 'tasques'"
+      (click)="canviarTab('tasques')"
+      role="button"
+      tabindex="0"
+      title="Veure i filtrar tasques"
+    >
+      <span class="metric-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+          <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+          <line x1="9" y1="12" x2="15" y2="12"></line>
+          <line x1="9" y1="16" x2="15" y2="16"></line>
+        </svg>
+      </span>
+      <div class="metric-info">
+        <span class="metric-value">{{ tasques.length }}</span>
+        <span class="metric-label">{{ 'ADMIN.METRIC_TASKS' | translate }}</span>
+        <small class="metric-sub">
+          <span class="clickable-sub" (click)="filtrarPerEstatTasca('curs', $event)">{{ countTasquesEnCurs() }} en curs</span> ·
+          <span class="clickable-sub" (click)="filtrarPerEstatTasca('finalitzad', $event)">{{ countTasquesFinalitzades() }} fetes</span>
+        </small>
+      </div>
+    </div>
+
+    <div
+      class="metric-card"
+      [class.active-card]="tabActiva === 'ofertes'"
+      (click)="canviarTab('ofertes')"
+      role="button"
+      tabindex="0"
+      title="Veure llistat d'ofertes de professionals"
+    >
+      <span class="metric-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+          <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+        </svg>
+      </span>
+      <div class="metric-info">
+        <span class="metric-value">{{ ofertes.length }}</span>
+        <span class="metric-label">{{ 'ADMIN.METRIC_OFFERS' | translate }}</span>
+        <small class="metric-sub">{{ ofertes.length }} {{ 'MERCAT.AVAILABLE' | translate }}</small>
+      </div>
+    </div>
+
+    <div
+      class="metric-card"
+      [class.active-card]="tabActiva === 'incidencies'"
+      (click)="canviarTab('incidencies')"
+      role="button"
+      tabindex="0"
+      title="Veure llistat d'incidències de clients"
+    >
+      <span class="metric-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+      </span>
+      <div class="metric-info">
+        <span class="metric-value">{{ incidencies.length }}</span>
+        <span class="metric-label">{{ 'ADMIN.METRIC_INCIDENCIES' | translate }}</span>
+        <small class="metric-sub">{{ incidencies.length }} {{ 'MERCAT.AVAILABLE' | translate }}</small>
+      </div>
+    </div>
+
+    <div
+      class="metric-card"
+      [class.active-card]="tabActiva === 'usuaris'"
+      (click)="canviarTab('usuaris')"
+      role="button"
+      tabindex="0"
+      title="Veure usuaris del sistema"
+    >
+      <span class="metric-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+          <circle cx="9" cy="7" r="4"></circle>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+        </svg>
+      </span>
+      <div class="metric-info">
+        <span class="metric-value">{{ usuaris.length }}</span>
+        <span class="metric-label">{{ 'ADMIN.METRIC_USERS' | translate }}</span>
+        <small class="metric-sub">
+          <span class="clickable-sub" (click)="filtrarPerRolUsuari('CLIENT', $event)">{{ countClients() }} clients</span> ·
+          <span class="clickable-sub" (click)="filtrarPerRolUsuari('PROFESSIONAL', $event)">{{ countProfessionals() }} prof.</span>
+        </small>
+      </div>
+    </div>
+
+    <div
+      class="metric-card"
+      [class.active-card]="tabActiva === 'pressupostos'"
+      (click)="canviarTab('pressupostos')"
+      role="button"
+      tabindex="0"
+      title="Veure i supervisar pressupostos privats"
+    >
+      <span class="metric-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+          <line x1="2" y1="10" x2="22" y2="10"></line>
+          <line x1="12" y1="14" x2="16" y2="14"></line>
+        </svg>
+      </span>
+      <div class="metric-info">
+        <span class="metric-value">{{ pressupostos.length }}</span>
+        <span class="metric-label">{{ 'ADMIN.METRIC_PRESSUPOSTOS' | translate }}</span>
+        <small class="metric-sub">{{ pressupostos.length }} propostes privades</small>
+      </div>
+    </div>
+
+    <div
+      class="metric-card"
+      [class.active-card]="tabActiva === 'resenyes'"
+      (click)="canviarTab('resenyes')"
+      role="button"
+      tabindex="0"
+      title="Veure ressenyes i opinions"
+    >
+      <span class="metric-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="#f59e0b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+        </svg>
+      </span>
+      <div class="metric-info">
+        <span class="metric-value">{{ resenyes.length }}</span>
+        <span class="metric-label">{{ 'ADMIN.METRIC_RESENYES' | translate }}</span>
+        <small class="metric-sub">
+          <svg viewBox="0 0 24 24" width="12" height="12" fill="#f59e0b" style="vertical-align: -1px; margin-right: 2px;" aria-hidden="true">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+          </svg>
+          {{ mitjanaRessenyes() }} / 5.0 mitjana
+        </small>
+      </div>
+    </div>
+
+    <div
+      class="metric-card"
+      [class.active-card]="tabActiva === 'avisos'"
+      (click)="canviarTab('avisos')"
+      role="button"
+      tabindex="0"
+      title="Historial i emissió de notificacions"
+    >
+      <span class="metric-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+          <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+        </svg>
+      </span>
+      <div class="metric-info">
+        <span class="metric-value">{{ totalAvisos }}</span>
+        <span class="metric-label">{{ 'ADMIN.METRIC_NOTICES' | translate }}</span>
+        <small class="metric-sub">{{ totalAvisos }} notificacions</small>
+      </div>
+    </div>
+
+    <div
+      class="metric-card"
+      [class.active-card]="tabActiva === 'blacklist'"
+      (click)="canviarTab('blacklist')"
+      role="button"
+      tabindex="0"
+      title="Veure i gestionar la llista negra de telèfons"
+    >
+      <span class="metric-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="#ff1744" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+          <line x1="1" y1="1" x2="23" y2="23" stroke="#ff1744" stroke-width="2.2"></line>
+        </svg>
+      </span>
+      <div class="metric-info">
+        <span class="metric-value">{{ blacklist.length }}</span>
+        <span class="metric-label">{{ 'ADMIN.METRIC_BLACKLIST' | translate }}</span>
+        <small class="metric-sub">{{ blacklist.length }} {{ 'ADMIN.USER_PHONE_BLOCKED' | translate }}</small>
+      </div>
+    </div>
+
+    <div
+      class="metric-card"
+      [class.active-card]="tabActiva === 'cancellacions'"
+      (click)="canviarTab('cancellacions')"
+      (keydown.enter)="canviarTab('cancellacions')"
+      role="button"
+      tabindex="0"
+      [title]="'TREBALL.ADMIN_CANCEL_CARD_HINT' | translate"
+    >
+      <span class="metric-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="#ff1744" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="4.9" y1="4.9" x2="19.1" y2="19.1"></line>
+        </svg>
+      </span>
+      <div class="metric-info">
+        <span class="metric-label">{{ 'TREBALL.ADMIN_CANCEL_CARD' | translate }}</span>
+        <small class="metric-sub">{{ 'TREBALL.ADMIN_CANCEL_CARD_HINT' | translate }}</small>
+      </div>
+    </div>
+  </div>
+
+  <!-- Missatges de feedback -->
+  <div *ngIf="successMsg" class="alert-success">{{ successMsg }}</div>
+  <div *ngIf="errorMsg" class="alert-error">{{ errorMsg }}</div>
+
+  <!-- ============================================================== -->
+  <!-- PESTANYA 1: TOTES LES TASQUES -->
+  <!-- ============================================================== -->
+  <section class="tab-content" *ngIf="tabActiva === 'tasques'">
+    <div class="filter-bar">
+      <input
+        type="text"
+        [(ngModel)]="searchTasca"
+        [placeholder]="'ADMIN.SEARCH_TASKS_PLACEHOLDER' | translate"
+        class="search-input"
+      />
+      <select [(ngModel)]="filtreEstatTasca" class="select-filter">
+        <option value="tots">{{ 'ADMIN.ALL_STATUSES' | translate }}</option>
+        <option value="oberta">Obertes</option>
+        <option value="curs">En curs</option>
+        <option value="finalitzada">Finalitzades</option>
+      </select>
+    </div>
+
+    <div class="table-wrapper" *ngIf="tasquesFiltrades.length > 0">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>{{ 'ADMIN.TABLE_COL_ID' | translate }}</th>
+            <th>{{ 'ADMIN.TABLE_COL_TITLE_DESC' | translate }}</th>
+            <th>{{ 'ADMIN.TABLE_COL_CLIENT' | translate }}</th>
+            <th>{{ 'ADMIN.TABLE_COL_CATEGORY' | translate }}</th>
+            <th>{{ 'ADMIN.TABLE_COL_BUDGET' | translate }}</th>
+            <th>{{ 'ADMIN.TABLE_COL_STATUS' | translate }}</th>
+            <th>{{ 'ADMIN.TABLE_COL_ACTIONS' | translate }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let t of tasquesFiltrades">
+            <td class="font-mono"><strong>{{ t.id }}</strong></td>
+            <td>
+              <div class="table-titol">{{ t.titol }}</div>
+              <div class="table-desc">{{ t.descripcio }}</div>
+            </td>
+            <td>
+              <a [routerLink]="[getNavUrl('/perfil'), t.clientNom || t.client]" class="user-inline-link" title="Veure perfil">
+                {{ t.clientNom || t.client }}
+              </a>
+            </td>
+            <td><span class="tag-cat">{{ t.categoria | translate }}</span></td>
+            <td><strong>{{ t.budget }}</strong></td>
+            <td>
+              <span class="badge-status" [ngClass]="getEstatTascaClass(t.estat)">
+                {{ t.estat | translate }}
+              </span>
+            </td>
+            <td>
+              <div class="action-buttons">
+                <a [routerLink]="[getNavUrl('/tasca-detall'), t.id]" class="btn-sm btn-info" title="Revisar detall">
+                  <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                  </svg>
+                  {{ 'MERCAT.DETALL' | translate }}
+                </a>
+                <button
+                  *ngIf="t.estat === 'En curs'"
+                  type="button"
+                  class="btn-sm btn-success"
+                  (click)="finalitzarTasca(t.id)"
+                  title="Forçar finalització"
+                >
+                  <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                  {{ 'ADMIN.BTN_FINALIZE' | translate }}
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="empty-box" *ngIf="tasquesFiltrades.length === 0">
+      {{ 'ADMIN.EMPTY_TASKS' | translate }}
+    </div>
+  </section>
+
+  <!-- ============================================================== -->
+  <!-- PESTANYA 2: TOTES LES OFERTES -->
+  <!-- ============================================================== -->
+  <section class="tab-content" *ngIf="tabActiva === 'ofertes'">
+    <div class="filter-bar">
+      <input
+        type="text"
+        [(ngModel)]="searchOferta"
+        [placeholder]="'ADMIN.SEARCH_OFFERS_PLACEHOLDER' | translate"
+        class="search-input"
+      />
+    </div>
+
+    <div class="table-wrapper" *ngIf="ofertesFiltrades.length > 0">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>{{ 'ADMIN.TABLE_COL_ID' | translate }}</th>
+            <th>{{ 'ADMIN.TABLE_COL_REF_TASK' | translate }}</th>
+            <th>{{ 'ADMIN.TABLE_COL_PRO' | translate }}</th>
+            <th>{{ 'ADMIN.TABLE_COL_PRICE_PROPOSED' | translate }}</th>
+            <th>{{ 'ADMIN.TABLE_COL_NOTE' | translate }}</th>
+            <th>{{ 'ADMIN.TABLE_COL_ACTIONS' | translate }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let o of ofertesFiltrades">
+            <td class="font-mono"><strong>{{ o.id }}</strong></td>
+            <td>
+              <a *ngIf="o.tascaId" [routerLink]="[getNavUrl('/tasca-detall'), o.tascaId]" class="link-ref">
+                {{ o.tascaId }}
+              </a>
+              <span *ngIf="!o.tascaId">-</span>
+            </td>
+            <td>
+              <a [routerLink]="[getNavUrl('/perfil'), o.professionalNom || o.professional]" class="user-inline-link" title="Veure perfil">
+                <strong>{{ o.professionalNom || o.professional }}</strong>
+              </a>
+            </td>
+            <td class="price-cell">{{ o.price }}</td>
+            <td class="note-cell">{{ o.note || '-' }}</td>
+            <td>
+              <div class="action-buttons">
+                <button
+                  type="button"
+                  class="btn-sm btn-danger"
+                  (click)="eliminarOferta(o.id)"
+                  title="Borrar oferta"
+                >
+                  <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                  </svg>
+                  {{ 'ADMIN.BTN_DELETE' | translate }}
+                </button>
+                <a *ngIf="o.tascaId" [routerLink]="[getNavUrl('/tasca-detall'), o.tascaId]" class="btn-sm btn-info" title="Anar a la tasca">
+                  <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                  </svg>
+                  {{ 'MERCAT.DETALL' | translate }}
+                </a>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="empty-box" *ngIf="ofertesFiltrades.length === 0">
+      {{ 'ADMIN.EMPTY_OFFERS' | translate }}
+    </div>
+  </section>
+
+  <!-- ============================================================== -->
+  <!-- PESTANYA: INCIDÈNCIES DE CLIENTS (SENSE ESTAT) -->
+  <!-- ============================================================== -->
+  <section class="tab-content" *ngIf="tabActiva === 'incidencies'">
+    <div class="filter-bar">
+      <input
+        type="text"
+        [(ngModel)]="searchIncidencia"
+        [placeholder]="'ADMIN.SEARCH_INCIDENCIES_PLACEHOLDER' | translate"
+        class="search-input"
+      />
+    </div>
+
+    <div class="table-wrapper" *ngIf="incidenciesFiltrades.length > 0">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>{{ 'ADMIN.TABLE_COL_ID' | translate }}</th>
+            <th>{{ 'ADMIN.TABLE_COL_TITLE_DESC' | translate }}</th>
+            <th>{{ 'ADMIN.TABLE_COL_CLIENT' | translate }}</th>
+            <th>{{ 'ADMIN.TABLE_COL_CATEGORY' | translate }}</th>
+            <th>{{ 'ADMIN.TABLE_COL_MAX_BUDGET' | translate }}</th>
+            <th>{{ 'ADMIN.TABLE_COL_ACTIONS' | translate }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let inc of incidenciesFiltrades">
+            <td class="font-mono"><strong>{{ inc.id }}</strong></td>
+            <td>
+              <div class="table-titol">{{ inc.titol }}</div>
+              <div class="table-desc">{{ inc.descripcio }}</div>
+            </td>
+            <td>
+              <a [routerLink]="[getNavUrl('/perfil'), inc.clientNom || inc.client]" class="user-inline-link" title="Veure perfil">
+                {{ inc.clientNom || inc.client }}
+              </a>
+            </td>
+            <td><span class="tag-cat">{{ inc.categoria | translate }}</span></td>
+            <td><strong>{{ inc.budget }}</strong></td>
+            <td>
+              <div class="action-buttons">
+                <a [routerLink]="[getNavUrl('/tasca-detall'), inc.id]" class="btn-sm btn-info" title="Revisar incidència">
+                  <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                  </svg>
+                  {{ 'MERCAT.DETALL' | translate }}
+                </a>
+                <button
+                  type="button"
+                  class="btn-sm btn-danger"
+                  (click)="eliminarIncidencia(inc.id)"
+                  title="Borrar incidència"
+                >
+                  <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                  </svg>
+                  {{ 'ADMIN.BTN_DELETE' | translate }}
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="empty-box" *ngIf="incidenciesFiltrades.length === 0">
+      {{ 'ADMIN.EMPTY_INCIDENCIES' | translate }}
+    </div>
+  </section>
+
+  <!-- ============================================================== -->
+  <!-- PESTANYA 3: TOTS ELS USUARIS -->
+  <!-- ============================================================== -->
+  <section class="tab-content" *ngIf="tabActiva === 'usuaris'">
+    <div class="filter-bar">
+      <input
+        type="text"
+        [(ngModel)]="searchUsuari"
+        [placeholder]="'ADMIN.SEARCH_USERS_PLACEHOLDER' | translate"
+        class="search-input"
+      />
+      <select [(ngModel)]="filtreRolUsuari" class="select-filter">
+        <option value="tots">{{ 'ADMIN.ALL_ROLES' | translate }}</option>
+        <option value="CLIENT">Client</option>
+        <option value="PROFESSIONAL">Professional</option>
+        <option value="ADMIN">Administrador</option>
+      </select>
+    </div>
+
+    <div class="table-wrapper" *ngIf="usuarisFiltrats.length > 0">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>{{ 'ADMIN.TABLE_COL_ID' | translate }}</th>
+            <th>{{ 'ADMIN.TABLE_COL_USERNAME' | translate }}</th>
+            <th>{{ 'ADMIN.TABLE_COL_EMAIL' | translate }}</th>
+            <th>{{ 'ADMIN.TABLE_COL_ROLE' | translate }}</th>
+            <th>{{ 'ADMIN.TABLE_COL_PHONE' | translate }}</th>
+            <th>{{ 'ADMIN.TABLE_COL_BIO' | translate }}</th>
+            <th>{{ 'ADMIN.TABLE_COL_ACTIONS' | translate }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let u of usuarisFiltrats">
+            <td class="font-mono"><strong>{{ u.id }}</strong></td>
+            <td>
+              <div class="user-name-cell">
+                <a [routerLink]="[getNavUrl('/perfil'), u.id]" class="user-inline-link" title="Veure perfil">
+                  <strong>{{ u.nom }}</strong>
+                </a>
+              </div>
+            </td>
+            <td>{{ u.email }}</td>
+            <td>
+              <span class="user-badge-tag" [ngClass]="u.rol?.toLowerCase()">
+                {{ u.rol | uppercase }}
+              </span>
+            </td>
+            <td>
+              <div class="user-phone-cell">
+                <span>{{ u.telefon || '-' }}</span>
+                <span *ngIf="u.telefon && isTelefonBloquejat(u.telefon)" class="badge-blacklisted">
+                  {{ 'ADMIN.USER_PHONE_BLOCKED' | translate }}
+                </span>
+              </div>
+            </td>
+            <td class="bio-cell">{{ u.bio || '-' }}</td>
+            <td>
+              <div class="action-buttons">
+                <a [routerLink]="[getNavUrl('/perfil'), u.id]" class="btn-sm btn-info" title="Veure perfil">
+                  <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;">
+                    <circle cx="12" cy="7" r="4"></circle>
+                    <path d="M5.5 21a6.5 6.5 0 0 1 13 0"></path>
+                  </svg>
+                  {{ 'PERFIL.TITLE_OWN' | translate }}
+                </a>
+                <button
+                  type="button"
+                  class="btn-sm btn-password"
+                  (click)="obrirModalPassword(u)"
+                  title="Canviar contrasenya d'aquest usuari"
+                >
+                  <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;">
+                    <circle cx="8" cy="8" r="5"></circle>
+                    <path d="M11.5 11.5 21 21m-4 0 2-2m-2-2 2-2"></path>
+                  </svg>
+                  {{ 'ADMIN.BTN_NEW_PASSWORD' | translate }}
+                </button>
+                <button
+                  *ngIf="u.telefon && !isTelefonBloquejat(u.telefon)"
+                  type="button"
+                  class="btn-sm btn-blacklist-action"
+                  (click)="bloquejarTelefonUsuari(u)"
+                  title="Bloquejar telèfon a la llista negra"
+                >
+                  <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line>
+                  </svg>
+                  {{ 'ADMIN.BTN_BLOCK_PHONE' | translate }}
+                </button>
+                <button
+                  *ngIf="u.telefon && isTelefonBloquejat(u.telefon)"
+                  type="button"
+                  class="btn-sm btn-unblock-action"
+                  (click)="desbloquejarPerTelefon(u.telefon)"
+                  title="Desbloquejar aquest telèfon"
+                >
+                  <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                  {{ 'ADMIN.BTN_UNBLOCK_PHONE' | translate }}
+                </button>
+                <button
+                  type="button"
+                  class="btn-sm btn-avis-action"
+                  (click)="prepararAvisUsuari(u)"
+                  title="Enviar una notificació o alerta a aquest usuari"
+                >
+                  <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                  </svg>
+                  {{ 'ADMIN.BTN_SEND_NOTICE' | translate }}
+                </button>
+                <button
+                  *ngIf="u.rol !== 'ADMIN'"
+                  type="button"
+                  class="btn-sm btn-danger"
+                  (click)="eliminarUsuari(u)"
+                  title="Eliminar aquest usuari de la base de dades"
+                >
+                  <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                  </svg>
+                  {{ 'ADMIN.BTN_DELETE' | translate }}
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="empty-box" *ngIf="usuarisFiltrats.length === 0">
+      {{ 'ADMIN.EMPTY_USERS' | translate }}
+    </div>
+  </section>
+
+  <!-- ============================================================== -->
+  <!-- PESTANYA 5: LLISTA NEGRA DE TELÈFONS -->
+  <!-- ============================================================== -->
+  <section class="tab-content" *ngIf="tabActiva === 'cancellacions'">
+    <app-admin-cancellacions></app-admin-cancellacions>
+  </section>
+
+  <section class="tab-content" *ngIf="tabActiva === 'blacklist'">
+    <!-- Formulari d'afegir telèfon a la llista negra -->
+    <div class="blacklist-add-card">
+      <form (ngSubmit)="afegirABlacklist()" class="blacklist-add-form">
+        <div class="form-field">
+          <label>{{ 'ADMIN.BLACKLIST_PHONE_LABEL' | translate }}</label>
+          <input
+            type="text"
+            [(ngModel)]="nouTelefonBlacklist"
+            name="nouTelefonBlacklist"
+            required
+            [placeholder]="'ADMIN.BLACKLIST_PHONE_PLACEHOLDER' | translate"
+          />
+        </div>
+        <div class="form-field flex-grow">
+          <label>{{ 'ADMIN.BLACKLIST_REASON_LABEL' | translate }}</label>
+          <input
+            type="text"
+            [(ngModel)]="nouMotiuBlacklist"
+            name="nouMotiuBlacklist"
+            [placeholder]="'ADMIN.BLACKLIST_REASON_PLACEHOLDER' | translate"
+          />
+        </div>
+        <button
+          type="submit"
+          class="btn-blacklist-submit"
+          [disabled]="afegintBlacklist || !nouTelefonBlacklist.trim()"
+        >
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line>
+          </svg>
+          {{ afegintBlacklist ? ('ADMIN.BLACKLIST_ADDING' | translate) : ('ADMIN.BLACKLIST_ADD_BTN' | translate) }}
+        </button>
+      </form>
+    </div>
+
+    <div class="filter-bar" *ngIf="blacklist.length > 0">
+      <input
+        type="text"
+        [(ngModel)]="searchBlacklist"
+        placeholder="Cerca per telèfon, motiu o qui ho ha bloquejat..."
+        class="search-input"
+      />
+    </div>
+
+    <div class="table-wrapper" *ngIf="blacklistFiltrada.length > 0">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>{{ 'ADMIN.BLACKLIST_TABLE_PHONE' | translate }}</th>
+            <th>{{ 'ADMIN.BLACKLIST_TABLE_REASON' | translate }}</th>
+            <th>{{ 'ADMIN.BLACKLIST_TABLE_BY' | translate }}</th>
+            <th>{{ 'ADMIN.BLACKLIST_TABLE_DATE' | translate }}</th>
+            <th>{{ 'ADMIN.BLACKLIST_TABLE_ACTIONS' | translate }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let bl of blacklistFiltrada">
+            <td class="font-mono"><strong>{{ bl.id }}</strong></td>
+            <td>
+              <span class="phone-highlight">
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;" aria-hidden="true">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line>
+                </svg>
+                {{ bl.telefon }}
+              </span>
+            </td>
+            <td>{{ bl.motiu || '-' }}</td>
+            <td><span class="user-badge-tag admin">{{ bl.bloquejatPer || 'admin' }}</span></td>
+            <td>{{ bl.createdAt ? (bl.createdAt | date:'dd/MM/yyyy HH:mm') : '-' }}</td>
+            <td>
+              <button
+                type="button"
+                class="btn-sm btn-unblock-action"
+                (click)="eliminarDeBlacklist(bl)"
+                title="Desbloquejar aquest número"
+              >
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                {{ 'ADMIN.BLACKLIST_BTN_UNBLOCK' | translate }}
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="empty-box" *ngIf="blacklist.length === 0">
+      {{ 'ADMIN.BLACKLIST_EMPTY' | translate }}
+    </div>
+  </section>
+
+  <!-- ============================================================== -->
+  <!-- PESTANYA 6: PRESSUPOSTOS PRIVATS -->
+  <!-- ============================================================== -->
+  <section class="tab-content" *ngIf="tabActiva === 'pressupostos'">
+    <div class="filter-bar">
+      <input
+        type="text"
+        [(ngModel)]="searchPressupost"
+        [placeholder]="'ADMIN.SEARCH_PRESSUPOSTOS_PLACEHOLDER' | translate"
+        class="search-input"
+      />
+    </div>
+
+    <div class="table-wrapper" *ngIf="pressupostosFiltrats.length > 0">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Incidència</th>
+            <th>Professional</th>
+            <th>Preu Proposat</th>
+            <th>Termini Estimat</th>
+            <th>Proposta / Nota</th>
+            <th>Accions Administrador</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let p of pressupostosFiltrats">
+            <td class="font-mono"><strong>{{ p.id }}</strong></td>
+            <td>
+              <a [routerLink]="[getNavUrl('/tasca-detall'), p.incidenciaId]" class="table-titol user-inline-link" title="Veure incidència">
+                {{ p.incidenciaTitol || p.incidenciaId }}
+              </a>
+              <div class="table-desc">Ref: {{ p.incidenciaId }}</div>
+            </td>
+            <td>
+              <a [routerLink]="[getNavUrl('/perfil'), p.professionalNom]" class="user-inline-link" title="Veure perfil professional">
+                {{ p.professionalNom }}
+              </a>
+            </td>
+            <td><strong class="budget-highlight">{{ p.preu }}</strong></td>
+            <td><span>{{ p.duracioEstimada || 'No indicada' }}</span></td>
+            <td><div class="table-desc">{{ p.descripcio }}</div></td>
+            <td>
+              <div class="action-buttons">
+                <button
+                  type="button"
+                  class="btn-sm btn-danger"
+                  (click)="eliminarPressupost(p.id)"
+                  title="Cancel·lar i eliminar aquest pressupost del sistema"
+                >
+                  <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                  </svg>
+                  {{ 'ADMIN.BTN_DELETE' | translate }}
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="empty-box" *ngIf="pressupostosFiltrats.length === 0">
+      {{ 'ADMIN.EMPTY_PRESSUPOSTOS' | translate }}
+    </div>
+  </section>
+
+  <!-- ============================================================== -->
+  <!-- PESTANYA 7: RESSENYES I VALORACIONS -->
+  <!-- ============================================================== -->
+  <section class="tab-content" *ngIf="tabActiva === 'resenyes'">
+    <div class="filter-bar">
+      <input
+        type="text"
+        [(ngModel)]="searchResenya"
+        [placeholder]="'ADMIN.SEARCH_RESENYES_PLACEHOLDER' | translate"
+        class="search-input"
+      />
+      <div class="rating-summary-badge" *ngIf="resenyes.length > 0">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="#f59e0b" style="vertical-align: -2px; margin-right: 3px;" aria-hidden="true">
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+        </svg>
+        Mitjana plataforma: <strong>{{ mitjanaRessenyes() }} / 5.0</strong> ({{ resenyes.length }} valoracions)
+      </div>
+    </div>
+
+    <div class="table-wrapper" *ngIf="resenyesFiltrades.length > 0">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Puntuació</th>
+            <th>Client Autor</th>
+            <th>Professional Valorat</th>
+            <th>Ref. Tasca</th>
+            <th>Comentari / Opinió</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let r of resenyesFiltrades">
+            <td>
+              <span class="stars-badge">
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="#f59e0b" style="vertical-align: -1px; margin-right: 3px;" aria-hidden="true">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                </svg>
+                {{ r.puntuacio }}.0
+              </span>
+            </td>
+            <td>
+              <a [routerLink]="[getNavUrl('/perfil'), r.clientNom || r.clientId]" class="user-inline-link">
+                {{ r.clientNom || r.clientId }}
+              </a>
+            </td>
+            <td>
+              <a [routerLink]="[getNavUrl('/perfil'), r.treballadorNom || r.treballadorId]" class="user-inline-link">
+                {{ r.treballadorNom || r.treballadorId }}
+              </a>
+            </td>
+            <td>
+              <a *ngIf="r.tascaId" [routerLink]="[getNavUrl('/tasca-detall'), r.tascaId]" class="font-mono user-inline-link">
+                {{ r.tascaId }}
+              </a>
+              <span *ngIf="!r.tascaId">—</span>
+            </td>
+            <td>
+              <div class="table-desc">{{ r.descripcio }}</div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="empty-box" *ngIf="resenyesFiltrades.length === 0">
+      {{ 'ADMIN.EMPTY_RESENYES' | translate }}
+    </div>
+  </section>
+
+  <!-- ============================================================== -->
+  <!-- PESTANYA 8: AVISOS I NOTIFICACIONS DEL SISTEMA -->
+  <!-- ============================================================== -->
+  <section class="tab-content" *ngIf="tabActiva === 'avisos'">
+    <!-- Formulari d'emissió de nou avís -->
+    <div class="blacklist-add-card" style="margin-bottom: 1.5rem;">
+      <div class="blacklist-card-header">
+        <h3>
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+          </svg>
+          Emetre Notificació a un Usuari
+        </h3>
+        <p class="blacklist-card-sub">Envia un missatge oficial a la safata d'entrada de qualsevol client o professional.</p>
+      </div>
+
+      <form (ngSubmit)="enviarNouAvis()" class="blacklist-add-form" style="display: flex; flex-direction: column; gap: 1rem;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem;">
+          <div class="form-field">
+            <label for="destinatariAvis">Usuari Destinatari:</label>
+            <select id="destinatariAvis" [(ngModel)]="nouAvis.destinatariId" name="destinatariId" class="search-input" required>
+              <option value="" disabled>-- Tria un usuari registrat --</option>
+              <option *ngFor="let u of usuaris" [value]="u.id">
+                {{ u.nom }} ({{ u.email }}) — {{ u.rol | uppercase }}
+              </option>
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="enllacAvis">Enllaç opcional (ruta):</label>
+            <input
+              id="enllacAvis"
+              type="text"
+              [(ngModel)]="nouAvis.enllac"
+              name="enllac"
+              placeholder="Ex: /tasques-ofertes o /perfil"
+              class="search-input"
+            />
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label for="missatgeAvis">Missatge de la notificació:</label>
+          <textarea
+            id="missatgeAvis"
+            rows="2"
+            [(ngModel)]="nouAvis.missatge"
+            name="missatge"
+            placeholder="Escriu aquí el text de l'avís que rebrà l'usuari..."
+            class="search-input"
+            required
+            style="height: auto; resize: vertical;"
+          ></textarea>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end;">
+          <button
+            type="submit"
+            class="btn-primary"
+            [disabled]="enviantAvis || !nouAvis.destinatariId || !nouAvis.missatge.trim()"
+            style="padding: 0.6rem 1.5rem;"
+          >
+            {{ enviantAvis ? 'Enviant...' : 'Emetre Notificació' }}
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <div class="filter-bar">
+      <input
+        type="text"
+        [(ngModel)]="searchAvis"
+        [placeholder]="'ADMIN.SEARCH_AVISOS_PLACEHOLDER' | translate"
+        class="search-input"
+      />
+    </div>
+
+    <div class="table-wrapper" *ngIf="avisosFiltrats.length > 0">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Destinatari</th>
+            <th>Missatge</th>
+            <th>Enllaç de Navegació</th>
+            <th>Estat</th>
+            <th>Data</th>
+            <th>Accions Administrador</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let a of avisosFiltrats">
+            <td class="font-mono"><strong>{{ a.id }}</strong></td>
+            <td>
+              <span class="user-badge-tag">{{ a.destinatariId }}</span>
+            </td>
+            <td>
+              <div class="table-titol">{{ a.missatge }}</div>
+            </td>
+            <td>
+              <code *ngIf="a.enllac">{{ a.enllac }}</code>
+              <span *ngIf="!a.enllac">—</span>
+            </td>
+            <td>
+              <span class="badge-estat" [ngClass]="a.llegit ? 'estat-finalitzada' : 'estat-oberta'">
+                {{ a.llegit ? 'Llegit' : 'Pendent' }}
+              </span>
+            </td>
+            <td><small>{{ a.data }}</small></td>
+            <td>
+              <div class="action-buttons">
+                <button
+                  type="button"
+                  class="btn-sm btn-danger"
+                  (click)="eliminarAvis(a.id)"
+                  title="Eliminar aquest avís del sistema"
+                >
+                  <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                  </svg>
+                  {{ 'ADMIN.BTN_DELETE' | translate }}
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="empty-box" *ngIf="avisosFiltrats.length === 0">
+      {{ 'ADMIN.EMPTY_AVISOS' | translate }}
+    </div>
+  </section>
+
+  <!-- ============================================================== -->
+  <!-- MODAL D'ADMINISTRADOR: ASSIGNAR NOVA CONTRASENYA SENSE ANTIGA -->
+  <!-- ============================================================== -->
+  <div class="modal-backdrop" *ngIf="modalPasswordObert">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>{{ 'ADMIN.BTN_NEW_PASSWORD' | translate }}</h3>
+        <button type="button" class="btn-close" (click)="tancarModalPassword()" aria-label="Tancar">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div class="modal-body" *ngIf="usuariSeleccionat">
+        <div class="user-highlight">
+          <div>
+            <strong>Usuari:</strong> {{ usuariSeleccionat.nom }}
+          </div>
+          <div class="user-subinfo">
+            <span>{{ usuariSeleccionat.email }}</span>
+            <span class="user-badge-tag" [ngClass]="usuariSeleccionat.rol?.toLowerCase()">{{ usuariSeleccionat.rol | uppercase }}</span>
+          </div>
+        </div>
+
+        <div class="alert-info-box">
+          <strong>Privilegi d'Administrador:</strong> Pots assignar directament una nova contrasenya sense conèixer ni veure la contrasenya anterior de l'usuari.
+        </div>
+
+        <div class="form-group">
+          <label for="adminNovaPass">{{ 'PERFIL.NEW_PASSWORD' | translate }}:</label>
+          <div class="input-password-wrapper">
+            <input
+              id="adminNovaPass"
+              [type]="mostrarPassword ? 'text' : 'password'"
+              [(ngModel)]="novaContrasenya"
+              placeholder="Mínim 6 caràcters..."
+              class="form-control"
+            />
+            <button type="button" class="btn-toggle-eye" (click)="mostrarPassword = !mostrarPassword" title="Mostrar/Amagar" aria-label="Mostrar o amagar contrasenya">
+              <svg *ngIf="mostrarPassword" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                <line x1="1" y1="1" x2="23" y2="23"></line>
+              </svg>
+              <svg *ngIf="!mostrarPassword" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="adminConfirmaPass">{{ 'PERFIL.REPEAT_PASSWORD' | translate }}:</label>
+          <input
+            id="adminConfirmaPass"
+            [type]="mostrarPassword ? 'text' : 'password'"
+            [(ngModel)]="confirmarContrasenya"
+            placeholder="Torna a escriure la nova contrasenya..."
+            class="form-control"
+          />
+        </div>
+
+        <div class="modal-error" *ngIf="errorModalPassword">
+          {{ errorModalPassword }}
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-secondary" (click)="tancarModalPassword()" [disabled]="savingPassword">
+          {{ 'CONFIRM_MODAL.DEFAULT_CANCEL' | translate }}
+        </button>
+        <button type="button" class="btn-primary" (click)="guardarNovaPassword()" [disabled]="savingPassword">
+          {{ savingPassword ? ('PERFIL.UPDATING_PASSWORD' | translate) : ('PERFIL.UPDATE_PASSWORD' | translate) }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div>

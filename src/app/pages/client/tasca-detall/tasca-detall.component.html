@@ -1,0 +1,294 @@
+<section class="detall-container" *ngIf="tasca">
+  <!-- Barra de navegació de retorn ràpid -->
+  <div class="app-back-nav">
+    <button type="button" class="btn-app-back" (click)="goBack()" [title]="'COMMON.TORNAR' | translate">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <polyline points="15 18 9 12 15 6"></polyline>
+      </svg>
+      <span>{{ 'COMMON.TORNAR' | translate }}</span>
+    </button>
+  </div>
+
+  <!-- Capçalera de la tasca o incidència -->
+  <header class="detall-header" [class.converged-header]="isTascaConvergida">
+    <div class="top-row">
+      <div class="header-tags-group">
+        <span class="nature-tag" [ngClass]="isTascaConvergida ? 'is-tasca' : 'is-incidencia'">
+          {{ (isTascaConvergida ? 'TASCA_DETALL.TAG_CONVERGED' : 'TASCA_DETALL.TAG_OPEN') | translate }}
+        </span>
+        <span class="category-tag">{{ tasca.categoria | translate }}</span>
+      </div>
+      <span class="status-badge" [ngClass]="getStatusClass(tasca.estat)">
+        {{ tasca.estat | translate }}
+      </span>
+    </div>
+    <h1>{{ tasca.titol }}</h1>
+    <div class="meta-row">
+      <span>Client: <strong><a [routerLink]="[getNavUrl('/perfil'), tasca.clientId || tasca.client]" class="user-profile-link" title="Veure perfil">{{ tasca.client }}</a></strong></span>
+      <span *ngIf="isTascaConvergida">
+        {{ 'TASCA_DETALL.PRO_ASSIGNED_LABEL' | translate }} <strong><a [routerLink]="[getNavUrl('/perfil'), assignedProfessional]" class="user-profile-link pro-link" title="Veure perfil">{{ assignedProfessional }}</a></strong>
+      </span>
+      <span *ngIf="!isTascaConvergida">
+        {{ 'TASCA_DETALL.PRO_ASSIGNED_LABEL' | translate }} <em>{{ 'TASCA_DETALL.PRO_UNASSIGNED' | translate }}</em>
+      </span>
+      <span>{{ (isTascaConvergida ? 'TASCA_DETALL.AGREED_PRICE' : 'TASCA_DETALL.ESTIMATED_BUDGET') | translate }} <strong>{{ tasca.budget }}</strong></span>
+      <span>{{ 'TASCA_DETALL.IDENTIFIER' | translate }} <code>{{ tasca.id }}</code></span>
+    </div>
+  </header>
+
+  <!-- Descripció de la tasca -->
+  <article class="card desc-card">
+    <h2>{{ 'TASCA_DETALL.WORK_DESC_TITLE' | translate }}</h2>
+    <p class="description-text">{{ tasca.descripcio }}</p>
+
+    <!-- Banner informatiu quan és una TASCA oficial en curs -->
+    <div *ngIf="isTascaConvergida" class="converged-info-banner">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+      </svg>
+      <div>
+        <strong>{{ 'TASCA_DETALL.TAG_CONVERGED' | translate }}:</strong>
+        <span> {{ 'TASCA_DETALL.CONVERGED_BANNER' | translate }} ({{ tasca.budget }}).</span>
+      </div>
+    </div>
+
+    <!-- Avís per al client mentre la feina està en curs -->
+    <div *ngIf="isClientOwner && tasca.estat === 'En curs'" class="complete-box" style="background: rgba(59, 130, 246, 0.06); border-color: rgba(59, 130, 246, 0.25);">
+      <p style="color: #1e40af; font-weight: 700;">
+        {{ 'TASCA_DETALL.IN_PROGRESS_CLIENT_NOTICE' | translate }}
+      </p>
+      <button type="button" class="btn btn-complete-client" (click)="onCompleteTask()">
+        {{ 'TREBALL.FINISH_BTN' | translate }}
+      </button>
+    </div>
+
+    <!-- Botó per al client quan la tasca ja està finalitzada pel professional però encara no té valoració -->
+    <div *ngIf="isClientOwner && tasca.estat === 'Finalitzada' && !tasca.valoracio" class="evaluate-box">
+      <div class="evaluate-box-content">
+        <span class="evaluate-icon">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="#f59e0b" aria-hidden="true">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+          </svg>
+        </span>
+        <div>
+          <h3>{{ 'TASCA_DETALL.EVALUATE_TITLE' | translate }}</h3>
+          <p>{{ 'TASCA_DETALL.EVALUATE_SUB' | translate }}</p>
+        </div>
+      </div>
+      <button type="button" class="btn btn-evaluate" (click)="onCompleteTask()">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" style="vertical-align: -1px; margin-right: 4px;" aria-hidden="true">
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+        </svg>
+        {{ 'TASCA_DETALL.BTN_EVALUATE' | translate }}
+      </button>
+    </div>
+
+    <!-- Mostra la valoració registrada a la tasca finalitzada (només una vegada) -->
+    <div *ngIf="tasca.estat === 'Finalitzada' && tasca.valoracio" class="review-display-card">
+      <div class="review-display-header">
+        <span class="review-display-badge">{{ 'TASCA_DETALL.REVIEW_HEADER' | translate }}</span>
+        <div class="stars-display">
+          <span *ngFor="let s of [1, 2, 3, 4, 5]" class="star-glyph">
+            <svg viewBox="0 0 24 24" width="16" height="16" [attr.fill]="s <= (tasca.valoracio || 0) ? '#f59e0b' : '#d1d5db'" aria-hidden="true">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+            </svg>
+          </span>
+          <span class="score-text">{{ tasca.valoracio }}/5</span>
+        </div>
+      </div>
+      <p class="review-display-opinion" *ngIf="tasca.comentari">"{{ tasca.comentari }}"</p>
+    </div>
+
+    <!-- Botó per al professional assignat per donar per acabada la tasca -->
+    <div *ngIf="(isAssignedProfessional || isAdminUser) && !isClientOwner && tasca.estat === 'En curs'" class="complete-box pro-complete-box">
+      <p>{{ 'TASCA_DETALL.PRO_FINISHED_QUESTION' | translate }}</p>
+      <button type="button" class="btn btn-complete-pro" (click)="onCompleteTaskByPro()">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 6px;">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+        {{ 'TASCA_DETALL.BTN_COMPLETE_PRO' | translate }}
+      </button>
+    </div>
+
+    <!-- El contacte de l'altra part només es mostra quan el treball està acceptat -->
+    <app-contacte-tasca
+      *ngIf="contacteUsuariId"
+      [usuariId]="contacteUsuariId"
+      [titol]="contacteTitol"
+    ></app-contacte-tasca>
+
+    <p class="revisio-avis" *ngIf="tasca.estat === 'En revisió'">{{ 'TREBALL.CANCEL_IN_REVIEW' | translate }}</p>
+
+    <div class="action-box" *ngIf="potCancellar">
+      <button type="button" class="btn btn-cancel-task" (click)="mostrarCancellacio = true">
+        {{ 'TREBALL.CANCEL_BTN' | translate }}
+      </button>
+    </div>
+
+    <!-- El client pot tancar la seua incidència oberta sense triar cap professional -->
+    <div class="action-box" *ngIf="potTancarIncidencia">
+      <button type="button" class="btn btn-cancel-task" (click)="onCloseIncidencia()">
+        {{ 'TREBALL.CLOSE_INCIDENT_BTN' | translate }}
+      </button>
+    </div>
+
+    <!-- Botó per a professionals si la incidència està oberta i sense professional -->
+    <div *ngIf="isProfessional && !isTascaConvergida && tasca.estat === 'Oberta'" class="action-box">
+      <a [routerLink]="[getNavUrl('/professional/crear-oferta')]" [queryParams]="{ taskId: tasca.id }" class="btn btn-primary">
+        {{ 'TASCA_DETALL.BTN_BID_INCIDENCIA' | translate }}
+      </a>
+    </div>
+  </article>
+
+  <!-- Notificacions / Alertes -->
+  <div *ngIf="noticeMessage" class="alert alert-info" role="status">
+    {{ noticeMessage | translate }}
+  </div>
+
+  <!-- Llistat d'ofertes rebudes -->
+  <section class="offers-section" *ngIf="isIncidencia">
+    <div class="section-header">
+      <h2>{{ 'TASCA_DETALL.OFFERS_RECEIVED_TITLE' | translate }} ({{ ofertes.length }})</h2>
+    </div>
+
+    <div *ngIf="ofertes.length === 0" class="empty-state">
+      <p>{{ 'TASCA_DETALL.NO_OFFERS' | translate }}</p>
+    </div>
+
+    <div class="offers-grid" *ngIf="ofertes.length > 0">
+      <article class="card offer-card" *ngFor="let offer of ofertes">
+        <div class="offer-header">
+          <h3>
+            <a [routerLink]="[getNavUrl('/perfil'), offer.professionalId || offer.professional]" class="user-profile-link" title="Veure perfil">
+              {{ offer.professional }}
+            </a>
+          </h3>
+        </div>
+
+        <p class="offer-note">{{ offer.note }}</p>
+
+        <div class="offer-footer">
+          <span class="price-tag">{{ 'TASCA_DETALL.PROPOSED_PRICE' | translate }} <strong>{{ offer.price }}</strong></span>
+
+          <!-- Accions sobre l'oferta: les ofertes no tenen estat, sols s'accepten o es borren -->
+          <div class="offer-actions" *ngIf="tasca.estat === 'Oberta'">
+            <button
+              *ngIf="isClientOwner"
+              type="button"
+              class="btn btn-accept"
+              (click)="onAcceptOffer(offer.id)"
+            >
+              {{ 'TASCA_DETALL.BTN_ACCEPT_QUOTE' | translate }}
+            </button>
+            <button
+              *ngIf="isClientOwner || isAdminUser"
+              type="button"
+              class="btn btn-reject"
+              (click)="onDeleteOffer(offer.id)"
+              title="Borrar aquesta oferta"
+            >
+              {{ 'TASCA_DETALL.BTN_REJECT_QUOTE' | translate }}
+            </button>
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- MODAL D'AVALUACIÓ I FINALITZACIÓ -->
+  <div class="modal-backdrop" *ngIf="modalFinalitzarObert" (click)="tancarModalFinalitzar()">
+    <div class="modal-dialog" (click)="$event.stopPropagation()">
+      <header class="modal-header">
+        <div>
+          <span class="modal-badge-tag">{{ 'TASCA_DETALL.REVIEW_HEADER' | translate }}</span>
+          <h2>{{ 'TASCA_DETALL.MODAL_EVALUATE_TITLE' | translate }}</h2>
+        </div>
+        <button type="button" class="btn-close-modal" (click)="tancarModalFinalitzar()" aria-label="Tancar">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </header>
+
+      <div class="modal-body" *ngIf="tasca">
+        <div class="modal-task-summary">
+          <span class="category-tag">{{ tasca.categoria | translate }}</span>
+          <h3>{{ tasca.titol }}</h3>
+          <p class="summary-pro">
+            {{ 'TASCA_DETALL.PRO_ASSIGNED_LABEL' | translate }} <strong>{{ assignedProfessional }}</strong>
+          </p>
+        </div>
+
+        <div class="rating-input-group">
+          <label class="rating-title">{{ 'TASCA_DETALL.MODAL_RATING_LABEL' | translate }}</label>
+          <div class="stars-picker">
+            <button
+              type="button"
+              *ngFor="let star of [1, 2, 3, 4, 5]"
+              class="star-btn"
+              [class.active]="star <= puntuacioSeleccionada"
+              (click)="puntuacioSeleccionada = star"
+              title="{{ star }} estrelles"
+            >
+              <svg viewBox="0 0 24 24" width="18" height="18" [attr.fill]="star <= puntuacioSeleccionada ? '#f59e0b' : 'none'" [attr.stroke]="star <= puntuacioSeleccionada ? '#f59e0b' : '#9ca3af'" stroke-width="2" aria-hidden="true">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+              </svg>
+            </button>
+            <span class="star-rating-text">{{ getRatingLabel(puntuacioSeleccionada) }}</span>
+          </div>
+        </div>
+
+        <div class="comment-input-group">
+          <label for="ressenya-text-detall">{{ 'TASCA_DETALL.MODAL_COMMENT_LABEL' | translate }}</label>
+          <textarea
+            id="ressenya-text-detall"
+            [(ngModel)]="ressenyaDescripcio"
+            rows="4"
+            [placeholder]="'TASCA_DETALL.MODAL_COMMENT_PLACEHOLDER' | translate"
+          ></textarea>
+        </div>
+
+        <div class="modal-actions-col">
+          <button
+            type="button"
+            class="btn-submit-review"
+            (click)="confirmarFinalitzacioAmbRessenya()"
+            [disabled]="enviantRessenya"
+          >
+            {{ 'TASCA_DETALL.BTN_SAVE_REVIEW' | translate }}
+          </button>
+          <button
+            *ngIf="tasca.estat !== 'Finalitzada'"
+            type="button"
+            class="btn-skip-review"
+            (click)="finalitzarSenseRessenya()"
+            [disabled]="enviantRessenya"
+          >
+            {{ 'TREBALL.FINISH_NO_REVIEW' | translate }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <app-cancellar-tasca-modal
+    *ngIf="mostrarCancellacio"
+    [tasca]="tasca"
+    (tancat)="mostrarCancellacio = false"
+    (enviat)="alCancellacioSollicitada($event)"
+  ></app-cancellar-tasca-modal>
+</section>
+
+<!-- Estat de càrrega o no trobat -->
+<div *ngIf="loading" class="task-loading-state card">
+  <div class="task-loading-spinner" aria-hidden="true"></div>
+  <p>{{ 'COMMON.CARREGANT' | translate }}</p>
+</div>
+
+<div *ngIf="!tasca && !loading" class="not-found card">
+  <h2>{{ 'COMMON.NO_RESULTS' | translate }}</h2>
+  <p>No s'ha pogut localitzar la tasca sol·licitada.</p>
+  <a [routerLink]="getNavUrl('/inici')" class="btn btn-primary">{{ 'COMMON.TORNAR' | translate }}</a>
+</div>

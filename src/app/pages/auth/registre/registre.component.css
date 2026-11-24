@@ -1,0 +1,297 @@
+.auth-card {
+  width: min(540px, 100%);
+  background: var(--bg-card, #ffffff);
+  padding: 2.4rem;
+  border-radius: var(--radius-xl, 20px);
+  border: 1px solid var(--border-subtle, #e5e0d7);
+  box-shadow: var(--shadow-lg, 0 16px 40px rgba(0, 0, 0, 0.06));
+  color: var(--color-text, #09090c);
+  box-sizing: border-box;
+}
+
+h1 {
+  margin: 0 0 0.4rem;
+  font-size: 1.85rem;
+  font-weight: 900;
+  color: var(--color-text, #09090c);
+  letter-spacing: -0.03em;
+}
+
+.subtitle {
+  margin: 0 0 1.4rem;
+  color: var(--color-text-muted, #57554e);
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
+}
+
+.field-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.field-label,
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  font-weight: 800;
+  font-size: 0.82rem;
+  color: #09090c;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="password"] {
+  background: #ffffff;
+  color: #09090c;
+  border: 1px solid #dcd7ce;
+  border-radius: 10px;
+  padding: 0.85rem 1rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  outline: none;
+  box-sizing: border-box;
+  width: 100%;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+input:focus {
+  border-color: #ff1744;
+  box-shadow: 0 0 0 3px rgba(255, 23, 68, 0.15), 0 0 14px rgba(255, 23, 68, 0.25);
+}
+
+.input-required {
+  border-color: #ff1744;
+  background: rgba(255, 23, 68, 0.02);
+}
+
+.input-error {
+  border-color: #ef4444 !important;
+  background: #fef2f2 !important;
+}
+
+.field-error-text {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #dc2626;
+  text-transform: none;
+  letter-spacing: normal;
+  margin-top: 0.15rem;
+}
+
+.hint {
+  font-size: 0.78rem;
+  color: #7d7a72;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.role-selector {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-top: 0.2rem;
+}
+
+.role-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 0.95rem 0.6rem;
+  background: #faf8f4;
+  border: 2px solid #e5e0d7;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.role-btn strong {
+  font-size: 0.95rem;
+  font-weight: 900;
+  color: #09090c;
+}
+
+.role-btn small {
+  font-size: 0.75rem;
+  color: #57554e;
+  margin-top: 0.25rem;
+  font-weight: 600;
+}
+
+.role-btn.active {
+  background: rgba(255, 23, 68, 0.08);
+  border-color: #ff1744;
+  box-shadow: 0 0 16px rgba(255, 23, 68, 0.25);
+}
+
+.role-btn.active strong {
+  color: #ff1744;
+}
+
+.role-info-box {
+  padding: 0.85rem 1.1rem;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  line-height: 1.45;
+  font-weight: 600;
+  background: #faf8f4;
+  border: 1px solid #e5e0d7;
+  color: #09090c;
+}
+
+.role-info-box.client {
+  border-left: 4px solid #09090c;
+}
+
+.role-info-box.professional {
+  border-left: 4px solid #ff1744;
+  color: #09090c;
+}
+
+/* Bloc de caselles de verificació legal */
+.legal-checkboxes-block {
+  background: #faf8f4;
+  border: 1px solid #e5e0d7;
+  border-radius: 14px;
+  padding: 1.15rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  margin: 0.35rem 0;
+}
+
+.legal-checkbox-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.checkbox-container {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 0.75rem;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.88rem;
+  color: #2b2a26;
+  text-transform: none;
+  letter-spacing: normal;
+  user-select: none;
+}
+
+.native-checkbox {
+  width: 19px;
+  height: 19px;
+  accent-color: #ff1744;
+  cursor: pointer;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.checkbox-label-text {
+  line-height: 1.4;
+}
+
+.link-terms-btn {
+  background: transparent;
+  border: none;
+  padding: 0;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: 800;
+  color: #ff1744;
+  text-decoration: underline;
+  cursor: pointer;
+  display: inline;
+  transition: color 0.15s ease;
+}
+
+.link-terms-btn:hover {
+  color: #09090c;
+}
+
+.checkbox-error-msg {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #dc2626;
+  margin-top: 0.3rem;
+  margin-left: 1.9rem;
+}
+
+.submit-btn {
+  margin-top: 0.5rem;
+  border: none;
+  background: #ff1744;
+  color: #ffffff;
+  padding: 0.95rem 1rem;
+  border-radius: 10px;
+  font-weight: 900;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(255, 23, 68, 0.35);
+  transition: all 0.2s ease;
+}
+
+.submit-btn:hover:not(:disabled) {
+  background: #09090c;
+  color: #ffffff;
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.25);
+  transform: translateY(-2px);
+}
+
+.submit-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.alert-danger {
+  background: #fee2e2;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  color: #991b1b;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.footer-hint {
+  text-align: center;
+  font-size: 0.88rem;
+  color: #57554e;
+  margin: 0.5rem 0 0;
+  font-weight: 600;
+}
+
+.footer-hint a {
+  color: #ff1744;
+  text-decoration: none;
+  font-weight: 800;
+}
+
+@media (max-width: 520px) {
+  .auth-card {
+    padding: 1.5rem 1.15rem;
+    border-radius: 14px;
+  }
+  .role-selector {
+    grid-template-columns: 1fr;
+  }
+  .legal-checkboxes-block {
+    padding: 0.85rem;
+  }
+}
