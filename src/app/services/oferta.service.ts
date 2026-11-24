@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Observable, map } from 'rxjs';
+import { Pagina, aPagina } from '../models/pagina.model';
 import { Oferta } from '../models/oferta.model';
 import { Tasca } from '../models/tasca.model';
 import { environment } from '../../environments/environment';
@@ -38,6 +39,19 @@ export class OfertaService {
   private readonly apiUrl = `${environment.apiUrl}/offers`;
 
   constructor(private readonly http: HttpClient) {}
+
+  /**
+   * Una pàgina de ofertes, paginada pel servidor (el total ve a X-Total-Count).
+   * Prefereix-la a getAll() als llistats llargs: només baixa els elements que es mostren.
+   * @param pagina Número de pàgina, des de 0
+   * @param mida Elements per pàgina (1 a 100)
+   */
+  getPage(pagina = 0, mida = 20): Observable<Pagina<Oferta>> {
+    const params = new HttpParams().set('page', pagina).set('size', mida);
+    return this.http
+      .get<Oferta[]>(this.apiUrl, { params, observe: 'response' })
+      .pipe(map((resposta) => aPagina(resposta, pagina, mida)));
+  }
 
   /**
    * Obté totes les ofertes registrades a la plataforma.

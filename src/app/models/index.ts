@@ -16,3 +16,4 @@ export * from './incidencia.model';
 export * from './interes.model';
 export * from './pressupost.model';
 export * from './cancellacio.model';
+export * from './pagina.model';
