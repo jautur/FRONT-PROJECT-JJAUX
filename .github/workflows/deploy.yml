@@ -1,0 +1,37 @@
+name: Deploy Avisa Frontend
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-avisa-front
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: Build Angular y deploy a VM
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - name: Build Angular (base /avisa/)
+        run: npx ng build --base-href /avisa/ --configuration production
+
+      - name: Configurar SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.VM_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.VM_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Subir dist/ a la VM
+        run: rsync -az --delete dist/*/browser/ ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }}:/var/www/avisa/
